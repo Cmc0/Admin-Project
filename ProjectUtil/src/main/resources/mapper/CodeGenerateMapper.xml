@@ -8,6 +8,7 @@
                b.TABLE_COMMENT,
                a.COLUMN_NAME,
                a.DATA_TYPE,
+               a.COLUMN_TYPE,
                a.COLUMN_COMMENT
         FROM information_schema.`COLUMNS` a
                  LEFT JOIN (
