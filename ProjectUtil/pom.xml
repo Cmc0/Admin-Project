@@ -5,8 +5,8 @@
     <groupId>com.cmc</groupId>
     <artifactId>projectutil</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>projectutil</name>
-    <description>projectutil</description>
+    <name>ProjectUtil</name>
+    <description>ProjectUtil</description>
 
     <properties>
         <java.version>11</java.version>
@@ -73,7 +73,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.3.7.RELEASE</version>
                 <configuration>
-                    <mainClass>com.cmc.projectutil.ProjectutilApplication</mainClass>
+                    <mainClass>com.cmc.projectutil.ProjectUtilApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
