@@ -5,11 +5,11 @@ import com.cmc.projectutil.mapper.CodeGenerateMapper;
 import com.cmc.projectutil.model.dto.CodeGeneratePageDTO;
 import com.cmc.projectutil.model.vo.CodeGeneratePageVO;
 import com.cmc.projectutil.service.CodeGenerateService;
-import io.swagger.v3.oas.annotations.servers.Server;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-@Server
+@Service
 public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Resource
