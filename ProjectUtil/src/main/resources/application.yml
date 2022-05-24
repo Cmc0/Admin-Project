@@ -1,3 +1,8 @@
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-enums-package: /**/model.enums
+
 server:
   port: 9526
 spring:
