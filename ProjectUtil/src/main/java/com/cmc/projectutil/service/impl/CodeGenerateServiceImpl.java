@@ -20,9 +20,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      */
     @Override
     public Page<CodeGeneratePageVO> myPage(CodeGeneratePageDTO dto) {
-
-
-
-        return null;
+        return baseMapper.myPage(dto.getPage(), dto);
     }
 }
