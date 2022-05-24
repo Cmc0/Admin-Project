@@ -14,10 +14,10 @@ import java.util.List;
 public class MyPageDTO {
 
     @ApiModelProperty(value = "第几页")
-    private Long pageNum;
+    private long pageNum = 1;
 
     @ApiModelProperty(value = "每页显示条数")
-    private Long pageSize;
+    private long pageSize = 10;
 
     @ApiModelProperty(value = "排序 list")
     List<OrderItem> orderList;
