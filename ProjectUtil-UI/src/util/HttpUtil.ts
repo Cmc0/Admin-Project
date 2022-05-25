@@ -1,3 +1,4 @@
+import {RequestData} from '@ant-design/pro-components'
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {ToastError} from './ToastUtil'
 
@@ -65,6 +66,8 @@ interface MyAxiosInstance extends AxiosInstance {
     myPost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>
 
     myPagePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
+
+    myProPagePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
 }
 
 $http.myPost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T> => {
@@ -88,6 +91,20 @@ $http.myPagePost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>)
     return new Promise((resolve, reject) => {
         return $http.post<IResVO, AxiosResponse<IResVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
             resolve(data.data)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+$http.myProPagePost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
+    return new Promise((resolve, reject) => {
+        return $http.myPagePost<T, D>(url, data, config).then((res) => {
+            resolve({
+                success: true,
+                total: res.total,
+                data: res.records
+            })
         }).catch(err => {
             reject(err)
         })

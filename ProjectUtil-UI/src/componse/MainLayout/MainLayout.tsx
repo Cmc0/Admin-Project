@@ -1,6 +1,4 @@
-import ProLayout, {MenuDataItem, PageContainer, SettingDrawer} from '@ant-design/pro-layout';
-import {Avatar} from "antd";
-import {UserOutlined,} from '@ant-design/icons';
+import ProLayout, {MenuDataItem, PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 
@@ -14,34 +12,23 @@ const leftMenuList: MenuDataItem[] = [
 export default function () {
 
     return (
-        <div className={"vh100"} id="pro-layout">
-            <ProLayout
-                title={CommonConstant.SYS_NAME}
-                location={{
-                    pathname: leftMenuList[0].path,
-                }}
-                menu={{
-                    request: async () => {
-                        return leftMenuList;
-                    },
-                }}
-                rightContentRender={() => (
-                    <div>
-                        <Avatar shape="square" size="small" icon={<UserOutlined/>}/>
-                    </div>
-                )}>
-                <PageContainer fixedHeader waterMarkProps={{
-                    content: CommonConstant.SYS_NAME,
-                }}>
-                    <Outlet/>
-                </PageContainer>
-            </ProLayout>
-
-            <SettingDrawer
-                enableDarkTheme
-                getContainer={() => document.getElementById('pro-layout')}
-                disableUrlParams={false}
-            />
-        </div>
+        <ProLayout
+            className={"vh100"}
+            title={CommonConstant.SYS_NAME}
+            location={{
+                pathname: leftMenuList[0].path,
+            }}
+            menu={{
+                request: async () => {
+                    return leftMenuList;
+                },
+            }}
+        >
+            <PageContainer fixedHeader waterMarkProps={{
+                content: CommonConstant.SYS_NAME,
+            }}>
+                <Outlet/>
+            </PageContainer>
+        </ProLayout>
     )
 }
