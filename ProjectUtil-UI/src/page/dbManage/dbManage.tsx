@@ -36,8 +36,7 @@ const columns = [
 
 export default function () {
     useEffect(() => {
-        CodeGeneratePage({}).then(res => {
-            console.log(res.records)
+        CodeGeneratePage({pageSize: -1}).then(res => {
         })
     }, [])
 
