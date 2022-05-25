@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {ToastError} from './ToastUtil'
 
 export interface IResVO<T = string> {
@@ -16,7 +16,7 @@ const config: AxiosRequestConfig = {
     timeout: 15 * 60 * 1000, // 默认 15分钟
 }
 
-const $http = axios.create(config)
+const $http = axios.create(config) as MyAxiosInstance
 
 // 请求拦截器
 $http.interceptors.request.use(
@@ -60,5 +60,38 @@ $http.interceptors.response.use(
         return Promise.reject(err) // 这里会触发 catch
     }
 )
+
+interface MyAxiosInstance extends AxiosInstance {
+    myPost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>
+
+    myPagePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
+}
+
+$http.myPost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T> => {
+    return new Promise((resolve, reject) => {
+        return $http.post<IResVO, AxiosResponse<IResVO<T>>, D>(url, data, config).then(({data}) => {
+            resolve(data.data)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+export interface IPageVO<T> {
+    total: number // 总数
+    size: number // 每页显示条数，默认 10
+    current: number // 当前页
+    records: T[] // 查询数据列表
+}
+
+$http.myPagePost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>> => {
+    return new Promise((resolve, reject) => {
+        return $http.post<IResVO, AxiosResponse<IResVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
+            resolve(data.data)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
 
 export default $http

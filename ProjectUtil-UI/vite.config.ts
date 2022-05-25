@@ -12,7 +12,7 @@ export default ({mode}) =>
             },
         },
         server: {
-            port: 7111,
+            port: 9525,
             proxy: {
                 '/api': {
                     target: loadEnv(mode, process.cwd()).VITE_API_BASE_URL,
