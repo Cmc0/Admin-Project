@@ -4,20 +4,23 @@
 
     <!-- 分页排序查询 -->
     <select id="myPage" resultType="com.cmc.projectutil.model.vo.CodeGeneratePageVO">
-        SELECT a.TABLE_NAME,
-               b.TABLE_COMMENT,
-               a.COLUMN_NAME,
-               a.COLUMN_TYPE,
-               a.COLUMN_COMMENT
+        SELECT CONCAT(a.TABLE_NAME, ':', a.COLUMN_NAME) AS id,
+               a.TABLE_NAME                             AS tableName,
+               b.TABLE_COMMENT                          AS tableComment,
+               a.COLUMN_NAME                            AS columnName,
+               a.COLUMN_TYPE                            AS columnType,
+               a.COLUMN_COMMENT                         AS columnComment
         FROM information_schema.`COLUMNS` a
                  LEFT JOIN (
             SELECT a.TABLE_NAME,
                    a.TABLE_COMMENT
             FROM information_schema.TABLES a
-            WHERE a.TABLE_SCHEMA = (SELECT DATABASE())) b ON b.table_name = a.table_name
-        WHERE a.TABLE_SCHEMA = (SELECT DATABASE())
-        ORDER BY a.TABLE_NAME,
-                 a.ORDINAL_POSITION
+            WHERE a.TABLE_SCHEMA = (
+                SELECT DATABASE
+                           ())) b ON b.table_name = a.table_name
+        WHERE a.TABLE_SCHEMA = (
+            SELECT DATABASE
+                       ())
     </select>
 
 </mapper>

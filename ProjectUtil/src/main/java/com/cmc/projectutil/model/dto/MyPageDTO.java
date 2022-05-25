@@ -21,7 +21,7 @@ public class MyPageDTO {
     private String keyword;
 
     @ApiModelProperty(value = "排序字段")
-    private MyOrderItemDTO order;
+    private MyOrderDTO order;
 
     /**
      * 分页属性拷贝
@@ -45,7 +45,7 @@ public class MyPageDTO {
     /**
      * 自定义的排序规则，转换为 mybatis plus 的排序规则
      */
-    public static OrderItem orderToOrderItem(MyOrderItemDTO order) {
+    public static OrderItem orderToOrderItem(MyOrderDTO order) {
         OrderItem orderItem = new OrderItem();
         orderItem.setColumn(order.getName());
         if (StrUtil.isNotBlank(order.getValue())) {

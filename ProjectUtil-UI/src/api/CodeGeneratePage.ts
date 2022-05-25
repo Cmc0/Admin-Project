@@ -6,6 +6,7 @@ export interface CodeGeneratePageDTO extends MyPageDTO {
 }
 
 export interface CodeGeneratePageVO {
+    id: string // 表名:字段名
     tableName: string // 表名
     tableComment: string // 表描述
     columnName: string // 字段名

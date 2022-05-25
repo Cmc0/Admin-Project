@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class CodeGeneratePageVO {
 
+    @ApiModelProperty(value = "表名:字段名")
+    private String id;
+
     @ApiModelProperty(value = "表名")
     private String tableName;
 

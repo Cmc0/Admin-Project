@@ -100,6 +100,11 @@ $http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: Axio
 
 $http.myProPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
     return new Promise((resolve, reject) => {
+        if (data?.sort) {
+            const name = Object.keys(data.sort)[0]
+            data.order = {name, value: data.sort[name]}
+            data.sort = undefined
+        }
         return $http.myPagePost<T, D>(url, data, config).then((res) => {
             resolve({
                 success: true,

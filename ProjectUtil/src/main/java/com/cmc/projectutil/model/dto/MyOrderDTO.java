@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 
 @Data
-public class MyOrderItemDTO {
+public class MyOrderDTO {
 
     @ApiModelProperty(value = "排序的字段名")
     private String name;
