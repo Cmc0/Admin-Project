@@ -3,6 +3,7 @@ import {ProColumns, ProTable} from "@ant-design/pro-components";
 
 const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
+        title: '#',
         dataIndex: 'index',
         valueType: 'indexBorder',
         width: 48,
@@ -42,7 +43,12 @@ export default function () {
         }}
         pagination={{
             pageSize: 10,
+            showQuickJumper: true,
         }}
+        search={{
+            filterType: 'light',
+        }}
+        rowSelection={{}}
         columns={columns}
         request={async (params = {}, sort, filter) => {
             return CodeGeneratePage({pageSize: params.pageSize, pageNum: params.current})
