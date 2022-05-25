@@ -1,7 +1,7 @@
 import {BrowserRouter, NavigateFunction, Route, Routes, useNavigate} from "react-router-dom";
 import NoLoginRouterList from "@/router/NoLoginRouterList";
 import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
-import UserRouterList from "@/router/UserRouterList";
+import MainLayoutRouterList from "@/router/MainLayoutRouterList";
 
 export default function App() {
     return (
@@ -20,7 +20,7 @@ export default function App() {
                     path="/main"
                     element={<LoadElement element="MainLayout"/>}
                 >
-                    {UserRouterList.map((item, index) => (
+                    {MainLayoutRouterList.map((item, index) => (
                         <Route
                             key={index}
                             path={item.path}
