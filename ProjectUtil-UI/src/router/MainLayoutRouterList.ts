@@ -5,8 +5,8 @@ interface IMainLayoutRouterList {
 
 const MainLayoutRouterList: IMainLayoutRouterList[] = [
     {
-        path: '/main/home',
-        element: 'homeHome',
+        path: '/main/dbManage',
+        element: 'dbManageDbManage',
     },
 ]
 

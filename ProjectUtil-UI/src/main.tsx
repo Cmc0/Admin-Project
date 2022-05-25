@@ -10,12 +10,17 @@ import "antd/dist/antd.css"
 import moment from 'moment';
 import 'moment/dist/locale/zh-cn';
 
+import redux from './redux'
+import {Provider} from 'react-redux'
+
 moment.locale('zh-cn');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <ConfigProvider locale={zhCN}>
-            <App/>
-        </ConfigProvider>
+        <Provider store={redux}>
+            <ConfigProvider locale={zhCN}>
+                <App/>
+            </ConfigProvider>
+        </Provider>
     </React.StrictMode>
 )

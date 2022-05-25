@@ -1,5 +1,6 @@
 import {Navigate} from "react-router-dom";
+import {MainLayoutRouterPathList} from "@/router/MainLayoutRouterList";
 
-export default function Jump() {
-    return <Navigate to="/main/home"/>
+export default function () {
+    return <Navigate to={MainLayoutRouterPathList[0]}/>
 }

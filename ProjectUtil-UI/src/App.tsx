@@ -3,7 +3,7 @@ import NoLoginRouterList from "@/router/NoLoginRouterList";
 import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
 import MainLayoutRouterList from "@/router/MainLayoutRouterList";
 
-export default function App() {
+export default function () {
     return (
         <BrowserRouter>
             <Routes>
@@ -30,6 +30,10 @@ export default function App() {
                         />
                     ))}
                 </Route>
+                <Route
+                    path="*"
+                    element={<LoadElement element="Jump"/>}
+                />
             </Routes>
         </BrowserRouter>
     )

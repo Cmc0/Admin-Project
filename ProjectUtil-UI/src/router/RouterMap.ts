@@ -22,7 +22,7 @@ const fileObj: Record<string, { [key: string]: any }> = import.meta.globEager(
 Object.keys(fileObj).forEach((item: string) => {
     const split = item.split('/');
     if ((split[split.length - 2] + '.ts') !== split[split.length - 1]) {
-        return // 只要：/src/page/home/home.ts
+        return // 只要：/src/page/home/home.tsx
     }
     const fileName = toHump(
         item.split('/src/page/')[1].split('.tsx')[0].replaceAll('/', '_')
