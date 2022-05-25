@@ -11,7 +11,8 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '表名',
         dataIndex: 'tableName',
-        sorter: true
+        copyable: true,
+        order: 99
     },
     {
         title: '表描述',
@@ -28,6 +29,8 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '字段描述',
         dataIndex: 'columnComment',
+        copyable: true,
+        order: 99
     },
 ];
 
@@ -35,15 +38,18 @@ export default function () {
     return <ProTable<CodeGeneratePageVO, CodeGeneratePageDTO>
         rowKey={"id"}
         scroll={{
-            y: 500 + 'px'
+            y: 450
         }}
         pagination={{
-            pageSize: 10,
+            // pageSize: 10,
             showQuickJumper: true,
         }}
         revalidateOnFocus={false}
         rowSelection={{}}
         columns={columns}
+        options={{
+            density: false,
+        }}
         request={(params, sort, filter) => {
             return CodeGeneratePage({...params, sort})
         }}>

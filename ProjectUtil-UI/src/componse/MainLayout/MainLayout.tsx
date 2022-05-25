@@ -24,9 +24,7 @@ export default function () {
                 },
             }}
         >
-            <PageContainer fixedHeader waterMarkProps={{
-                content: CommonConstant.SYS_NAME,
-            }}>
+            <PageContainer>
                 <Outlet/>
             </PageContainer>
         </ProLayout>
