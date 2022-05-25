@@ -1,46 +1,70 @@
 import {Table} from "antd";
-import {useEffect} from "react";
-import CodeGeneratePage from "@/api/CodeGeneratePage";
+import {useEffect, useRef, useState} from "react";
+import CodeGeneratePage, {CodeGeneratePageVO} from "@/api/CodeGeneratePage";
 
-const dataSource = [
-    {
-        key: '1',
-        name: '胡彦斌',
-        age: 32,
-        address: '西湖区湖底公园1号',
-    },
-    {
-        key: '2',
-        name: '胡彦祖',
-        age: 42,
-        address: '西湖区湖底公园1号',
-    },
-];
 const columns = [
     {
-        title: '姓名',
-        dataIndex: 'name',
-        key: 'name',
+        title: '#',
+        dataIndex: 'index',
+        render: (text: any, record: CodeGeneratePageVO, index: any) => {
+            return index + 1;
+        }
     },
     {
-        title: '年龄',
-        dataIndex: 'age',
-        key: 'age',
+        title: '表名',
+        dataIndex: 'tableName',
     },
     {
-        title: '住址',
-        dataIndex: 'address',
-        key: 'address',
+        title: '表描述',
+        dataIndex: 'tableComment',
+    },
+    {
+        title: '字段名',
+        dataIndex: 'columnName',
+    },
+    {
+        title: '字段类型',
+        dataIndex: 'dataType',
+    },
+    {
+        title: '字段类型',
+        dataIndex: 'columnType',
+    },
+    {
+        title: '字段描述',
+        dataIndex: 'columnComment',
     },
 ];
 
 export default function () {
+    const [dataSource, setDataSource] = useState<CodeGeneratePageVO[]>();
+    const [total, setTotal] = useState<number>();
+    const [loading, setLoading] = useState<boolean>();
+    const [tableHeight, setTableHeight] = useState<number>();
+    const MainLayout = useRef<HTMLDivElement>(null)
     useEffect(() => {
+        setLoading(true)
         CodeGeneratePage({pageSize: -1}).then(res => {
+            setTotal(res.total)
+            setDataSource(res.records)
+            setLoading(false)
         })
+        setTimeout(() => {
+            setTableHeight(MainLayout.current!.clientHeight - 32 - 32 - 35 - 40)
+        }, 20)
     }, [])
 
-    return <div className={"p-20"}>
-        <Table dataSource={dataSource} columns={columns}/>
+    return <div className={"p-20 h100"} id={"MainLayout"} ref={MainLayout}>
+        <Table loading={loading} dataSource={dataSource} columns={columns}
+               rowKey={record => record.tableName + record.columnName}
+               scroll={{
+                   y: tableHeight + 'px'
+               }}
+               pagination={{
+                   total,
+                   showQuickJumper: true,
+                   showTotal: (total, range) => `显示第 ${range[0]} 条-第 ${range[1]} 条，共 ${total} 条`
+               }}/>
     </div>
 }
+

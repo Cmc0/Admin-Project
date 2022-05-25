@@ -21,9 +21,11 @@ export default function () {
                 }}>
                     <Menu items={leftMenuList} mode={"inline"} selectedKeys={selectedKeys}/>
                 </Layout.Sider>
-                <Layout.Content className={"overflow h100"}>
+                <Layout.Content className={"h100 flex-c"}>
                     <PageHeader title="数据库管理" ghost={false}/>
-                    <Outlet/>
+                    <div className={'flex-1 overflow h100'}>
+                        <Outlet/>
+                    </div>
                 </Layout.Content>
             </Layout>
         </Layout>
