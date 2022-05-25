@@ -1,9 +1,56 @@
-function App() {
+import {BrowserRouter, NavigateFunction, Route, Routes, useNavigate} from "react-router-dom";
+import NoLoginRouterList from "@/router/NoLoginRouterList";
+import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
+import UserRouterList from "@/router/UserRouterList";
+
+export default function App() {
     return (
-        <div>
-            App
-        </div>
+        <BrowserRouter>
+            <Routes>
+                {NoLoginRouterList.map((item, index) => (
+                    <Route
+                        key={index}
+                        path={item.path}
+                        element={
+                            <LoadElement element={item.element}/>
+                        }
+                    />
+                ))}
+                <Route
+                    path="/main"
+                    element={<LoadElement element="MainLayout"/>}
+                >
+                    {UserRouterList.map((item, index) => (
+                        <Route
+                            key={index}
+                            path={item.path}
+                            element={
+                                <LoadElement element={item.element}/>
+                            }
+                        />
+                    ))}
+                </Route>
+            </Routes>
+        </BrowserRouter>
     )
 }
 
-export default App
+let AppNav: NavigateFunction
+
+export function getAppNav() {
+    return AppNav
+}
+
+interface ILoadElement {
+    element: string
+}
+
+// 加载 element
+function LoadElement(props: ILoadElement) {
+    AppNav = useNavigate()
+    if (RouterMapKeyList.includes(props.element)) {
+        const Element = RouterMap[props.element].element
+        return <Element/>
+    }
+    return null
+}
