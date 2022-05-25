@@ -7,9 +7,16 @@ export default ({mode}) =>
     defineConfig({
         plugins: [react()],
         resolve: {
-            alias: {
-                '@': resolve(__dirname, 'src'),
-            },
+            alias: [
+                {
+                    find: /^~/,
+                    replacement: '',
+                },
+                {
+                    find: '@',
+                    replacement: resolve(__dirname, './src')
+                }
+            ],
         },
         server: {
             port: 9525,

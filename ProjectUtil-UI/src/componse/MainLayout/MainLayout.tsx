@@ -1,33 +1,47 @@
-import {Layout, Menu, PageHeader} from "antd";
+import ProLayout, {MenuDataItem, PageContainer, SettingDrawer} from '@ant-design/pro-layout';
+import {Avatar} from "antd";
+import {UserOutlined,} from '@ant-design/icons';
+import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
-import {ItemType} from "antd/lib/menu/hooks/useItems";
-import {useState} from "react";
 
-const leftMenuList: ItemType[] = [
-    {label: '数据库管理', key: 'dbManage'},
-];
-
-const selectedKeys = ['dbManage']
+const leftMenuList: MenuDataItem[] = [
+    {
+        path: '/main/dbManage123',
+        name: '数据库管理',
+    }
+]
 
 export default function () {
-    const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <Layout className={"vwh100 overflow bg"}>
-            <Layout.Header/>
-            <Layout>
-                <Layout.Sider theme={"light"} collapsible collapsed={collapsed} onCollapse={(collapsed) => {
-                    setCollapsed(collapsed)
-                }}>
-                    <Menu items={leftMenuList} mode={"inline"} selectedKeys={selectedKeys}/>
-                </Layout.Sider>
-                <Layout.Content className={"h100 flex-c"}>
-                    <PageHeader title="数据库管理" ghost={false}/>
-                    <div className={'flex-1 overflow h100'}>
-                        <Outlet/>
+        <div className={"vh100"} id="pro-layout">
+            <ProLayout
+                title={CommonConstant.SYS_NAME}
+                location={{
+                    pathname: leftMenuList[0].path,
+                }}
+                menu={{
+                    request: async () => {
+                        return leftMenuList;
+                    },
+                }}
+                rightContentRender={() => (
+                    <div>
+                        <Avatar shape="square" size="small" icon={<UserOutlined/>}/>
                     </div>
-                </Layout.Content>
-            </Layout>
-        </Layout>
+                )}>
+                <PageContainer fixedHeader waterMarkProps={{
+                    content: CommonConstant.SYS_NAME,
+                }}>
+                    <Outlet/>
+                </PageContainer>
+            </ProLayout>
+
+            <SettingDrawer
+                enableDarkTheme
+                getContainer={() => document.getElementById('pro-layout')}
+                disableUrlParams={false}
+            />
+        </div>
     )
 }

@@ -1,3 +1,1 @@
-const SessionStorageKey = {}
-
-export default SessionStorageKey
+export default {}

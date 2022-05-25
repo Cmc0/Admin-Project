@@ -1,3 +1,1 @@
-const LocalStorageKey = {}
-
-export default LocalStorageKey
+export default {}
