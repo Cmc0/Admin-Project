@@ -1,5 +1,6 @@
 import CodeGeneratePage, {CodeGeneratePageDTO, CodeGeneratePageVO} from "@/api/CodeGeneratePage";
 import {ProColumns, ProTable} from "@ant-design/pro-components";
+import {useEffect, useState} from "react";
 
 const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
@@ -35,13 +36,22 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
 ];
 
 export default function () {
+    const [y, setY] = useState(0)
+
+    useEffect(() => {
+        setTimeout(() => {
+            const y = (document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47
+            )
+            setY(y)
+        }, 20)
+    }, [])
+
     return <ProTable<CodeGeneratePageVO, CodeGeneratePageDTO>
         rowKey={"id"}
         scroll={{
-            y: 450
+            y
         }}
         pagination={{
-            // pageSize: 10,
             showQuickJumper: true,
         }}
         revalidateOnFocus={false}
