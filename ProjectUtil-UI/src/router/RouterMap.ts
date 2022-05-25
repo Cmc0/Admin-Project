@@ -21,7 +21,8 @@ const fileObj: Record<string, { [key: string]: any }> = import.meta.globEager(
 
 Object.keys(fileObj).forEach((item: string) => {
     const split = item.split('/');
-    if ((split[split.length - 2] + '.ts') !== split[split.length - 1]) {
+    debugger
+    if ((split[split.length - 2] + '.tsx') !== split[split.length - 1]) {
         return // 只要：/src/page/home/home.tsx
     }
     const fileName = toHump(
@@ -41,5 +42,7 @@ RouterMap['Jump'] = {
 }
 
 export const RouterMapKeyList = Object.keys(RouterMap)
+
+console.log('RouterMapKeyList', RouterMapKeyList)
 
 export default RouterMap

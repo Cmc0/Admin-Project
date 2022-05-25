@@ -10,14 +10,14 @@ const leftMenuList: ItemType[] = [
 const selectedKeys = ['dbManage']
 
 export default function () {
-    const [leftMenuCollapsed, setLeftMenuCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
 
     return (
         <Layout className={"vwh100 overflow bg"}>
             <Layout.Header/>
             <Layout>
-                <Layout.Sider theme={"light"} collapsible collapsed={leftMenuCollapsed} onCollapse={(collapsed) => {
-                    setLeftMenuCollapsed(collapsed)
+                <Layout.Sider theme={"light"} collapsible collapsed={collapsed} onCollapse={(collapsed) => {
+                    setCollapsed(collapsed)
                 }}>
                     <Menu items={leftMenuList} mode={"inline"} selectedKeys={selectedKeys}/>
                 </Layout.Sider>
