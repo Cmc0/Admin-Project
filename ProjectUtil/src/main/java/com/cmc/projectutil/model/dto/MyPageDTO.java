@@ -1,26 +1,27 @@
 package com.cmc.projectutil.model.dto;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-@ApiModel(description = "分页参数，查询所有：pageSize = -1，默认：pageNum = 1，pageSize = 10")
+@ApiModel(description = "分页参数，查询所有：pageSize = -1，默认：current = 1，pageSize = 10")
 public class MyPageDTO {
 
     @ApiModelProperty(value = "第几页")
-    private long pageNum = 1;
+    private long current = 1;
 
     @ApiModelProperty(value = "每页显示条数")
     private long pageSize = 10;
 
-    @ApiModelProperty(value = "排序 list")
-    List<OrderItem> orderList;
+    @ApiModelProperty(value = "关键字")
+    private String keyword;
+
+    @ApiModelProperty(value = "排序字段")
+    private MyOrderItemDTO order;
 
     /**
      * 分页属性拷贝
@@ -28,14 +29,29 @@ public class MyPageDTO {
     public <T> Page<T> getPage() {
         Page<T> resPage = new Page<>();
 
-        resPage.setCurrent(getPageNum());
+        resPage.setCurrent(getCurrent());
         resPage.setSize(getPageSize());
-        if (CollUtil.isEmpty(getOrderList())) {
+
+        if (getOrder() == null || StrUtil.isBlank(order.getName())) {
             return resPage;
         }
 
-        resPage.orders().addAll(getOrderList()); // 添加 orderList里面的排序规则
+        // 添加 orderList里面的排序规则
+        resPage.orders().add(orderToOrderItem(getOrder()));
+
         return resPage;
+    }
+
+    /**
+     * 自定义的排序规则，转换为 mybatis plus 的排序规则
+     */
+    public static OrderItem orderToOrderItem(MyOrderItemDTO order) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setColumn(order.getName());
+        if (StrUtil.isNotBlank(order.getValue())) {
+            orderItem.setAsc("ascend".equals(order.getValue()));
+        }
+        return orderItem;
     }
 
 }

@@ -5,7 +5,7 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '#',
         dataIndex: 'index',
-        valueType: 'indexBorder',
+        valueType: 'index',
         width: 48,
     },
     {
@@ -19,11 +19,6 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '字段名',
         dataIndex: 'columnName',
-    },
-    {
-        title: '字段类型',
-        dataIndex: 'dataType',
-        hideInSearch: true
     },
     {
         title: '字段类型',
@@ -45,13 +40,10 @@ export default function () {
             pageSize: 10,
             showQuickJumper: true,
         }}
-        search={{
-            filterType: 'light',
-        }}
         rowSelection={{}}
         columns={columns}
-        request={async (params = {}, sort, filter) => {
-            return CodeGeneratePage({pageSize: params.pageSize, pageNum: params.current})
+        request={(params, sort, filter) => {
+            return CodeGeneratePage({...params, ...sort})
         }}>
 
     </ProTable>

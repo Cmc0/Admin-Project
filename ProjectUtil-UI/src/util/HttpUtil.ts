@@ -1,6 +1,7 @@
 import {RequestData} from '@ant-design/pro-components'
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {ToastError} from './ToastUtil'
+import MyPageDTO from "@/model/dto/MyPageDTO";
 
 export interface IResVO<T = string> {
     code: number
@@ -65,9 +66,9 @@ $http.interceptors.response.use(
 interface MyAxiosInstance extends AxiosInstance {
     myPost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>
 
-    myPagePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
+    myPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
 
-    myProPagePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
+    myProPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
 }
 
 $http.myPost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T> => {
@@ -87,7 +88,7 @@ export interface IPageVO<T> {
     records: T[] // 查询数据列表
 }
 
-$http.myPagePost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>> => {
+$http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>> => {
     return new Promise((resolve, reject) => {
         return $http.post<IResVO, AxiosResponse<IResVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
             resolve(data.data)
@@ -97,7 +98,7 @@ $http.myPagePost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>)
     })
 }
 
-$http.myProPagePost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
+$http.myProPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
     return new Promise((resolve, reject) => {
         return $http.myPagePost<T, D>(url, data, config).then((res) => {
             resolve({

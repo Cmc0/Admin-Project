@@ -9,7 +9,6 @@ export interface CodeGeneratePageVO {
     tableName: string // 表名
     tableComment: string // 表描述
     columnName: string // 字段名
-    dataType: string // 字段类型，如：tinyint varchar
     columnType: string // 字段类型，如：tinyint(1) varchar(300)
     columnComment: string // 字段描述
 }

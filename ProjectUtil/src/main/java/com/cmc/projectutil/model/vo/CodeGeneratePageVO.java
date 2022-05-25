@@ -15,9 +15,6 @@ public class CodeGeneratePageVO {
     @ApiModelProperty(value = "字段名")
     private String columnName;
 
-    @ApiModelProperty(value = "字段类型，如：tinyint varchar")
-    private String dataType;
-
     @ApiModelProperty(value = "字段类型，如：tinyint(1) varchar(300)")
     private String columnType;
 
