@@ -14,8 +14,6 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '表名',
         dataIndex: 'tableName',
-        copyable: true,
-        order: 99
     },
     {
         title: '表描述',
@@ -29,12 +27,12 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '字段类型',
         dataIndex: 'columnType',
+        copyable: true,
     },
     {
         title: '字段描述',
         dataIndex: 'columnComment',
         copyable: true,
-        order: 99
     },
 ];
 
