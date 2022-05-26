@@ -20,6 +20,7 @@ const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
         title: '表描述',
         dataIndex: 'tableComment',
+        copyable: true,
     },
     {
         title: '字段名',
