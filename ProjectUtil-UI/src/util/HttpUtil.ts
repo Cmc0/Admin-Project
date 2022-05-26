@@ -64,17 +64,17 @@ $http.interceptors.response.use(
 )
 
 interface MyAxiosInstance extends AxiosInstance {
-    myPost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>
+    myPost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IResVO<T>>
 
     myPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
 
     myProPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
 }
 
-$http.myPost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T> => {
+$http.myPost = <T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IResVO<T>> => {
     return new Promise((resolve, reject) => {
         return $http.post<IResVO, AxiosResponse<IResVO<T>>, D>(url, data, config).then(({data}) => {
-            resolve(data.data)
+            resolve(data)
         }).catch(err => {
             reject(err)
         })
@@ -104,6 +104,9 @@ $http.myProPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: A
             const name = Object.keys(data.sort)[0]
             data.order = {name, value: data.sort[name]}
             data.sort = undefined
+        }
+        if (data?.keyword) {
+            data.keyword = undefined
         }
         return $http.myPagePost<T, D>(url, data, config).then((res) => {
             resolve({

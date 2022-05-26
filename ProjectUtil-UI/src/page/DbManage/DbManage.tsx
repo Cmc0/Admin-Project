@@ -1,5 +1,7 @@
-import CodeGeneratePage, {CodeGeneratePageDTO, CodeGeneratePageVO} from "@/api/CodeGeneratePage";
+import {CodeGeneratePageDTO, CodeGeneratePageVO, forSpring, page} from "@/api/CodeGenerate";
 import {ProColumns, ProTable} from "@ant-design/pro-components";
+import {Button} from "antd";
+import {ToastSuccess} from "@/util/ToastUtil";
 
 const columns: ProColumns<CodeGeneratePageVO>[] = [
     {
@@ -41,7 +43,6 @@ export default function () {
             y: 450
         }}
         pagination={{
-            // pageSize: 10,
             showQuickJumper: true,
         }}
         revalidateOnFocus={false}
@@ -49,11 +50,28 @@ export default function () {
         columns={columns}
         options={{
             density: false,
+            fullScreen: true,
         }}
         request={(params, sort, filter) => {
-            return CodeGeneratePage({...params, sort})
-        }}>
+            return page({...params, sort})
+        }}
+        tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
+            <>
+                <Button type="link">生成前端代码</Button>
+                <Button type="link" onClick={() => {
+                    codeGenerateForSpringClick(selectedRows)
+                }}>生成后台代码</Button>
+                <Button type="link" onClick={onCleanSelected}>取消选择</Button>
+            </>
+        )}
+    >
 
     </ProTable>
+}
+
+function codeGenerateForSpringClick(selectedRows: CodeGeneratePageVO[]) {
+    forSpring(selectedRows).then(res => {
+        ToastSuccess(res.msg)
+    })
 }
 
