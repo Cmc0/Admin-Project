@@ -142,6 +142,15 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template.render(json, file);
 
+        template = engine.getTemplate("BaseMapper.xml.ftl");
+
+        file = FileUtil.file(
+            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
+                + "Mapper.xml");
+        file.createNewFile();
+
+        template.render(json, file);
+
     }
 
     /**
