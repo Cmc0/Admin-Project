@@ -2,6 +2,7 @@ package com.cmc.projectutil.service.impl;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Dict;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.template.Template;
 import cn.hutool.extra.template.TemplateConfig;
 import cn.hutool.extra.template.TemplateEngine;
@@ -42,32 +43,51 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     @Override
     public String codeGenerateForSpring(List<CodeGeneratePageVO> list) {
 
-        Map<String, List<CodeGeneratePageVO>> groupMap =
-            list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
-
-        for (Map.Entry<String, List<CodeGeneratePageVO>> item : groupMap.entrySet()) {
-
-        }
-
-        TemplateEngine engine =
-            TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
-        Template template = engine.getTemplate("BaseController.java.ftl");
-
-        Dict dict = Dict.create().set("name", "area").set("fileName", "Area").set("fileTags", "区域控制器");
-
         String rootFileName = System.getProperty("user.dir");
         rootFileName = rootFileName + "/src/main/java/generate/" ;
 
         File rootFile = FileUtil.file(rootFileName);
-        rootFile.mkdirs(); // 不存在则会创建，存在了则不管
+        rootFile.mkdirs(); // 不存在则会创建，存在了则不进行操作
 
-        File file = FileUtil.file(rootFileName + "/controller/AreaController.java");
-        File parentFile = file.getParentFile();
-        parentFile.mkdirs();
+        FileUtil.file(rootFileName + "/controller").mkdirs();
+        FileUtil.file(rootFileName + "/model").mkdirs();
+        FileUtil.file(rootFileName + "/model/dto").mkdirs();
+        FileUtil.file(rootFileName + "/model/vo").mkdirs();
+        FileUtil.file(rootFileName + "/model/entity").mkdirs();
+        FileUtil.file(rootFileName + "/service").mkdirs();
+        FileUtil.file(rootFileName + "/service/impl").mkdirs();
+
+        TemplateEngine engine =
+            TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
+
+        Map<String, List<CodeGeneratePageVO>> groupMap =
+            list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
+
+        for (Map.Entry<String, List<CodeGeneratePageVO>> item : groupMap.entrySet()) {
+            String name = item.getKey();
+            String fileTags = item.getValue().get(0).getTableComment();
+
+            String fileName = StrUtil.toCamelCase(name);
+            fileName = StrUtil.upperFirst(fileName);
+
+            generateSpringController(rootFileName, engine, name, fileTags, fileName);
+
+        }
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    @SneakyThrows
+    private void generateSpringController(String rootFileName, TemplateEngine engine, String name, String fileTags,
+        String fileName) {
+
+        Template template = engine.getTemplate("BaseController.java.ftl");
+
+        Dict dict = Dict.create().set("name", name).set("fileName", fileName).set("fileTags", fileTags);
+
+        File file = FileUtil.file(rootFileName + "/controller/" + fileName + "Controller.java");
         file.createNewFile();
 
         template.render(dict, file);
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 }
