@@ -43,8 +43,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     @Override
     public String codeGenerateForSpring(List<CodeGeneratePageVO> list) {
 
-        String rootFileName = System.getProperty("user.dir");
-        rootFileName = rootFileName + "/src/main/java/generate/" ;
+        String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/" ;
 
         File rootFile = FileUtil.file(rootFileName);
         rootFile.mkdirs(); // 不存在则会创建，存在了则不进行操作

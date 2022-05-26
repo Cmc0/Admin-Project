@@ -43,7 +43,7 @@ export default function () {
 
     useEffect(() => {
         setTimeout(() => {
-            const y = (document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47
+            const y = (document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47 - 58 - 16
             )
             setY(y)
         }, 20)
