@@ -15,6 +15,11 @@ export interface CodeGeneratePageVO {
 }
 
 // 代码生成控制器：分页排序查询
-export default function (form: CodeGeneratePageDTO) {
+export function page(form: CodeGeneratePageDTO) {
     return $http.myProPagePost<CodeGeneratePageVO, CodeGeneratePageDTO>('/codeGenerate/page', form)
+}
+
+// 代码生成控制器：生成后台代码
+export function forSpring(list: CodeGeneratePageVO[]) {
+    return $http.myPost<String, CodeGeneratePageVO[]>('/codeGenerate/forSpring', list)
 }

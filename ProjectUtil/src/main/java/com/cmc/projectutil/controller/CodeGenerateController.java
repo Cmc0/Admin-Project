@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/codeGenerate")
@@ -27,6 +28,12 @@ public class CodeGenerateController {
     @PostMapping(value = "/page")
     public ApiResultVO<Page<CodeGeneratePageVO>> myPage(@RequestBody @Valid CodeGeneratePageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
+    }
+
+    @ApiOperation(value = "生成后台代码")
+    @PostMapping(value = "/forSpring")
+    public ApiResultVO<String> codeGenerateForSpring(@RequestBody @Valid List<CodeGeneratePageVO> list) {
+        return ApiResultVO.ok(baseService.codeGenerateForSpring(list));
     }
 
 }
