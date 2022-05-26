@@ -8,6 +8,7 @@ import com.cmc.projectutil.model.vo.ApiResultVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
+import generate.service.${tableNameCamelCaseUpperFirst}Service;
 import generate.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
 import generate.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
 import generate.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
@@ -32,21 +33,24 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
     @ApiOperation(value = "新增/修改")
     @PostMapping("/insertOrUpdate")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:insertOrUpdate')")
-    public ApiResultVO<String> insertOrUpdate(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
+    public ApiResultVO<String> insertOrUpdate(
+        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
         return ApiResultVO.ok(baseService.insertOrUpdate(dto));
     }
 
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:page')")
-    public ApiResultVO<Page<${tableNameCamelCaseUpperFirst}PageVO>> myPage(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public ApiResultVO<Page<${tableNameCamelCaseUpperFirst}PageVO>> myPage(
+        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 
     @ApiOperation(value = "查询：树结构")
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:page')")
-    public ApiResultVO<List<${tableNameCamelCaseUpperFirst}PageVO>> tree(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public ApiResultVO<List<${tableNameCamelCaseUpperFirst}PageVO>> tree(
+        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.tree(dto));
     }
 

@@ -59,6 +59,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         FileUtil.file(rootFileName + "/model/entity").mkdirs();
         FileUtil.file(rootFileName + "/service").mkdirs();
         FileUtil.file(rootFileName + "/service/impl").mkdirs();
+        FileUtil.file(rootFileName + "/mapper").mkdirs();
 
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
@@ -101,9 +102,46 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
             generateSpringModel(rootFileName, engine, codeGenerateForSpringDTO, json);
 
+            generateSpringServiceAndMapper(rootFileName, engine, codeGenerateForSpringDTO, json);
+
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 生成 spring-service
+     */
+    @SneakyThrows
+    private void generateSpringServiceAndMapper(String rootFileName, TemplateEngine engine,
+        CodeGenerateForSpringDTO codeGenerateForSpringDTO, JSONObject json) {
+
+        Template template = engine.getTemplate("BaseService.java.ftl");
+
+        File file = FileUtil.file(
+            rootFileName + "/service/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Service.java");
+        file.createNewFile();
+
+        template.render(json, file);
+
+        template = engine.getTemplate("BaseServiceImpl.java.ftl");
+
+        file = FileUtil.file(
+            rootFileName + "/service/impl/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
+                + "ServiceImpl.java");
+        file.createNewFile();
+
+        template.render(json, file);
+
+        template = engine.getTemplate("BaseMapper.java.ftl");
+
+        file = FileUtil.file(
+            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
+                + "Mapper.java");
+        file.createNewFile();
+
+        template.render(json, file);
+
     }
 
     /**
@@ -124,8 +162,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BaseInfoByIdVO.java.ftl");
 
-        file = FileUtil
-            .file(rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "InfoByIdVO.java");
+        file = FileUtil.file(rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
+            + "InfoByIdVO.java");
         file.createNewFile();
 
         template.render(json, file);
