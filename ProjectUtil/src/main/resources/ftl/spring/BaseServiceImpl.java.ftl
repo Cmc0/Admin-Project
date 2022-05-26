@@ -54,7 +54,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
 
         // 根据条件进行筛选，得到符合条件的数据，然后再逆向生成整棵树，并返回这个树结构
         dto.setPageSize(-1); // 不分页
-        List<${tableNameCamelCaseUpperFirst}DO> dbList = baseMapper.myPage(dto.getPage(), dto);
+        List<${tableNameCamelCaseUpperFirst}DO> dbList = baseMapper.myPage(dto.getPage(), dto).getRecords();
 
         if (dbList.size() == 0) {
             return new ArrayList<>();
