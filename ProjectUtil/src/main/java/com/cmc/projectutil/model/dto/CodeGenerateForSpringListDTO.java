@@ -12,4 +12,7 @@ public class CodeGenerateForSpringListDTO extends CodeGeneratePageVO {
     @ApiModelProperty(value = "字段名（驼峰）", hidden = true)
     private String columnNameCamelCase;
 
+    @ApiModelProperty(value = "字段类型，对应的 java类型", hidden = true)
+    private String columnJavaType;
+
 }

@@ -13,7 +13,7 @@ public class ${tableNameCamelCaseUpperFirst}DO {
 
 <#list columnList as column>
     @ApiModelProperty(value = "${column.columnComment}")
-    private ${column.columnType} ${column.columnNameCamelCase};
+    private ${column.columnJavaType} ${column.columnNameCamelCase};
 
 </#list>
 

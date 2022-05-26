@@ -16,6 +16,7 @@ import com.cmc.projectutil.model.dto.CodeGenerateForSpringListDTO;
 import com.cmc.projectutil.model.dto.CodeGeneratePageDTO;
 import com.cmc.projectutil.model.vo.CodeGeneratePageVO;
 import com.cmc.projectutil.service.CodeGenerateService;
+import com.cmc.projectutil.util.CodeGenerateHelperUtil;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +76,16 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
             for (CodeGenerateForSpringListDTO subItem : item.getValue()) {
                 subItem.setColumnNameCamelCase(StrUtil.toCamelCase(subItem.getColumnName()));
+
+                // 寻找：对应的 java类型
+                String columnJavaType;
+                if (CodeGenerateHelperUtil.TINYINT_ONE.equals(subItem.getColumnType())) {
+                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_MAP.getStr(subItem.getColumnType());
+                } else {
+                    String subBefore = StrUtil.subBefore(subItem.getColumnType(), "(", false);
+                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_MAP.getStr(subBefore);
+                }
+                subItem.setColumnJavaType(columnJavaType);
             }
 
             CodeGenerateForSpringDTO codeGenerateForSpringDTO = new CodeGenerateForSpringDTO();
