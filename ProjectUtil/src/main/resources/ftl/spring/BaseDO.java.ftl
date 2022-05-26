@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @TableName(value = "${tableName}")
 @Data
 @ApiModel(description = "${tableComment}")
@@ -16,5 +18,4 @@ public class ${tableNameCamelCaseUpperFirst}DO {
     private ${column.columnJavaType} ${column.columnNameCamelCase};
 
 </#list>
-
 }
