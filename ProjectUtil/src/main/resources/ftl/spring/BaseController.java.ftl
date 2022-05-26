@@ -54,7 +54,7 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
         return ApiResultVO.ok(baseService.tree(dto));
     }
 
-    @ApiOperation(value = "删除（可批量）")
+    @ApiOperation(value = "批量删除")
     @PostMapping("/deleteByIdSet")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:deleteByIdSet')")
     public ApiResultVO<String> deleteByIdSet(@RequestBody @Valid NotEmptyIdSet notEmptyIdSet) {
