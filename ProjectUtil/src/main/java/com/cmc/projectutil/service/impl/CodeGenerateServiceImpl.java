@@ -120,6 +120,43 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         file.createNewFile();
 
         template.render(json, file);
+        // DO ↑
+
+        template = engine.getTemplate("BaseInfoByIdVO.java.ftl");
+
+        file = FileUtil
+            .file(rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "InfoByIdVO.java");
+        file.createNewFile();
+
+        template.render(json, file);
+        // InfoByIdVO ↑
+
+        template = engine.getTemplate("BaseInsertOrUpdateDTO.java.ftl");
+
+        file = FileUtil.file(rootFileName + "/model/dto/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
+            + "InsertOrUpdateDTO.java");
+        file.createNewFile();
+
+        template.render(json, file);
+        // InsertOrUpdateDTO ↑
+
+        template = engine.getTemplate("BasePageDTO.java.ftl");
+
+        file = FileUtil.file(
+            rootFileName + "/model/dto/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "PageDTO.java");
+        file.createNewFile();
+
+        template.render(json, file);
+        // PageDTO ↑
+
+        template = engine.getTemplate("BasePageVO.java.ftl");
+
+        file = FileUtil.file(
+            rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "PageVO.java");
+        file.createNewFile();
+
+        template.render(json, file);
+        // PageVO ↑
 
     }
 
