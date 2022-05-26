@@ -1,15 +1,18 @@
 package com.cmc.projectutil.service.impl;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.template.Template;
 import cn.hutool.extra.template.TemplateConfig;
 import cn.hutool.extra.template.TemplateEngine;
 import cn.hutool.extra.template.TemplateUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmc.projectutil.exception.BaseBizCodeEnum;
 import com.cmc.projectutil.mapper.CodeGenerateMapper;
+import com.cmc.projectutil.model.dto.CodeGenerateForSpringDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateForSpringListDTO;
 import com.cmc.projectutil.model.dto.CodeGeneratePageDTO;
 import com.cmc.projectutil.model.vo.CodeGeneratePageVO;
 import com.cmc.projectutil.service.CodeGenerateService;
@@ -41,7 +44,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      */
     @SneakyThrows
     @Override
-    public String codeGenerateForSpring(List<CodeGeneratePageVO> list) {
+    public String codeGenerateForSpring(List<CodeGenerateForSpringListDTO> list) {
 
         String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/" ;
 
@@ -59,34 +62,70 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
 
-        Map<String, List<CodeGeneratePageVO>> groupMap =
+        Map<String, List<CodeGenerateForSpringListDTO>> groupMap =
             list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
 
-        for (Map.Entry<String, List<CodeGeneratePageVO>> item : groupMap.entrySet()) {
-            String name = item.getKey();
-            String fileTags = item.getValue().get(0).getTableComment();
+        for (Map.Entry<String, List<CodeGenerateForSpringListDTO>> item : groupMap.entrySet()) {
 
-            String fileName = StrUtil.toCamelCase(name);
-            fileName = StrUtil.upperFirst(fileName);
+            String tableName = item.getKey();
+            String tableComment = item.getValue().get(0).getTableComment();
 
-            generateSpringController(rootFileName, engine, name, fileTags, fileName);
+            String tableNameCamelCase = StrUtil.toCamelCase(tableName);
+            String tableNameCamelCaseUpperFirst = StrUtil.upperFirst(tableNameCamelCase);
+
+            for (CodeGenerateForSpringListDTO subItem : item.getValue()) {
+                subItem.setColumnNameCamelCase(StrUtil.toCamelCase(subItem.getColumnName()));
+            }
+
+            CodeGenerateForSpringDTO codeGenerateForSpringDTO = new CodeGenerateForSpringDTO();
+            codeGenerateForSpringDTO.setTableName(tableName);
+            codeGenerateForSpringDTO.setTableComment(tableComment);
+            codeGenerateForSpringDTO.setTableNameCamelCase(tableNameCamelCase);
+            codeGenerateForSpringDTO.setTableNameCamelCaseUpperFirst(tableNameCamelCaseUpperFirst);
+            codeGenerateForSpringDTO.setColumnList(item.getValue());
+
+            JSONObject json = JSONUtil.parseObj(codeGenerateForSpringDTO);
+
+            generateSpringController(rootFileName, engine, codeGenerateForSpringDTO, json);
+
+            generateSpringModel(rootFileName, engine, codeGenerateForSpringDTO, json);
 
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
+    /**
+     * 生成 spring-model
+     */
     @SneakyThrows
-    private void generateSpringController(String rootFileName, TemplateEngine engine, String name, String fileTags,
-        String fileName) {
+    private void generateSpringModel(String rootFileName, TemplateEngine engine,
+        CodeGenerateForSpringDTO codeGenerateForSpringDTO, JSONObject json) {
+
+        Template template = engine.getTemplate("BaseDO.java.ftl");
+
+        File file = FileUtil.file(
+            rootFileName + "/model/entity/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "DO.java");
+        file.createNewFile();
+
+        template.render(json, file);
+
+    }
+
+    /**
+     * 生成 spring-controller
+     */
+    @SneakyThrows
+    private void generateSpringController(String rootFileName, TemplateEngine engine,
+        CodeGenerateForSpringDTO codeGenerateForSpringDTO, JSONObject json) {
 
         Template template = engine.getTemplate("BaseController.java.ftl");
 
-        Dict dict = Dict.create().set("name", name).set("fileName", fileName).set("fileTags", fileTags);
-
-        File file = FileUtil.file(rootFileName + "/controller/" + fileName + "Controller.java");
+        File file = FileUtil.file(
+            rootFileName + "/controller/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
+                + "Controller.java");
         file.createNewFile();
 
-        template.render(dict, file);
+        template.render(json, file);
     }
 }
