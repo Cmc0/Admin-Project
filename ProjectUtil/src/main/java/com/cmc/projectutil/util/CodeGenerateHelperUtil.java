@@ -84,7 +84,7 @@ public class CodeGenerateHelperUtil {
         List<CodeGenerateForSpringListDTO> columnList) {
 
         if (supperClassName == null) {
-            return null;
+            return new ArrayList<>(columnList);
         }
 
         Set<String> supperClassFieldNameSet = CodeGenerateHelperUtil.BASE_ENTITY_MAP.get(supperClassName);

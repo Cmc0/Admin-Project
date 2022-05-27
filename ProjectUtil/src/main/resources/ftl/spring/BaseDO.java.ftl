@@ -7,7 +7,9 @@ import com.cmc.projectutil.model.entity.${supperClassName};
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+<#if supperClassName??>
 import lombok.EqualsAndHashCode;
+</#if>
 
 import java.util.Date;
 
