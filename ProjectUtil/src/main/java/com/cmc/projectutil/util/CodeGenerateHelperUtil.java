@@ -11,10 +11,7 @@ import com.cmc.projectutil.model.entity.BaseEntityThree;
 import com.cmc.projectutil.model.entity.BaseEntityTwo;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CodeGenerateHelperUtil {
@@ -23,7 +20,7 @@ public class CodeGenerateHelperUtil {
 
     public static final Map<String, String> COLUMN_TYPE_REF_JAVA_MAP = MapUtil.newHashMap();
 
-    private static final Map<String, Set<String>> BASE_ENTITY_MAP = MapUtil.newHashMap();
+    private static final Map<String, Set<String>> BASE_ENTITY_MAP = new LinkedHashMap<>();
 
     static {
 
@@ -36,10 +33,10 @@ public class CodeGenerateHelperUtil {
         COLUMN_TYPE_REF_JAVA_MAP.put("longtext", "String");
         COLUMN_TYPE_REF_JAVA_MAP.put("datetime", "Date");
 
-        putBaseEntityMap(BaseEntity.class);
-        putBaseEntityMap(BaseEntityTwo.class);
-        putBaseEntityMap(BaseEntityThree.class);
         putBaseEntityMap(BaseEntityFour.class);
+        putBaseEntityMap(BaseEntityThree.class);
+        putBaseEntityMap(BaseEntityTwo.class);
+        putBaseEntityMap(BaseEntity.class);
 
     }
 
