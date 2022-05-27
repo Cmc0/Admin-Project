@@ -11,5 +11,8 @@ public interface CodeGenerateService {
 
     Page<CodeGeneratePageVO> myPage(CodeGeneratePageDTO dto);
 
-    String codeGenerateForSpring(List<CodeGenerateForSpringListDTO> list);
+    String forSpring(List<CodeGenerateForSpringListDTO> list);
+
+    String forAnt(List<CodeGenerateForSpringListDTO> list);
+
 }

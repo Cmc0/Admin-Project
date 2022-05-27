@@ -33,8 +33,14 @@ public class CodeGenerateController {
 
     @ApiOperation(value = "生成后台代码")
     @PostMapping(value = "/forSpring")
-    public ApiResultVO<String> codeGenerateForSpring(@RequestBody @Valid List<CodeGenerateForSpringListDTO> list) {
-        return ApiResultVO.ok(baseService.codeGenerateForSpring(list));
+    public ApiResultVO<String> forSpring(@RequestBody @Valid List<CodeGenerateForSpringListDTO> list) {
+        return ApiResultVO.ok(baseService.forSpring(list));
+    }
+
+    @ApiOperation(value = "生成前端代码")
+    @PostMapping(value = "/forAnt")
+    public ApiResultVO<String> forAnt(@RequestBody @Valid List<CodeGenerateForSpringListDTO> list) {
+        return ApiResultVO.ok(baseService.forAnt(list));
     }
 
 }

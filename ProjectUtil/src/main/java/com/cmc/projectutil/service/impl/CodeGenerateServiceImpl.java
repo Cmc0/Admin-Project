@@ -47,7 +47,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      */
     @SneakyThrows
     @Override
-    public String codeGenerateForSpring(List<CodeGenerateForSpringListDTO> list) {
+    public String forSpring(List<CodeGenerateForSpringListDTO> list) {
 
         String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/";
 
@@ -244,4 +244,14 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template.render(json, file);
     }
+
+    /**
+     * 生成前端代码
+     */
+    @Override
+    public String forAnt(List<CodeGenerateForSpringListDTO> list) {
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
 }
