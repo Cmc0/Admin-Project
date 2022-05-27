@@ -1,4 +1,4 @@
-import {CodeGeneratePageDTO, CodeGeneratePageVO, forSpring, page} from "@/api/CodeGenerate";
+import {CodeGeneratePageDTO, CodeGeneratePageVO, forAnt, forSpring, page} from "@/api/CodeGenerateController";
 import {ProColumns, ProTable} from "@ant-design/pro-components";
 import {Button} from "antd";
 import {ToastSuccess} from "@/util/ToastUtil";
@@ -76,7 +76,9 @@ export default function () {
         }}
         tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
             <>
-                <Button type="link">生成前端代码</Button>
+                <Button type="link" onClick={() => {
+                    codeGenerateForAnt(selectedRows)
+                }}>生成前端代码</Button>
 
                 <Button type="link" onClick={() => {
                     codeGenerateForSpringClick(selectedRows)
@@ -88,6 +90,12 @@ export default function () {
     >
 
     </ProTable>
+}
+
+function codeGenerateForAnt(selectedRows: CodeGeneratePageVO[]) {
+    forAnt(selectedRows).then(res => {
+        ToastSuccess(res.msg)
+    })
 }
 
 function codeGenerateForSpringClick(selectedRows: CodeGeneratePageVO[]) {

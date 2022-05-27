@@ -23,3 +23,8 @@ export function page(form: CodeGeneratePageDTO) {
 export function forSpring(list: CodeGeneratePageVO[]) {
     return $http.myPost<String, CodeGeneratePageVO[]>('/codeGenerate/forSpring', list)
 }
+
+// 代码生成控制器：生成前端代码
+export function forAnt(list: CodeGeneratePageVO[]) {
+    return $http.myPost<String, CodeGeneratePageVO[]>('/codeGenerate/forAnt', list)
+}
