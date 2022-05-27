@@ -56,7 +56,7 @@ public class CodeGenerateHelperUtil {
     }
 
     /**
-     * 匹配父类，如果没有匹配上，则返回 null
+     * 匹配父类名，如果没有匹配上，则返回 null
      */
     public static String getSupperClassName(List<CodeGenerateForSpringListDTO> columnList) {
 
@@ -77,4 +77,19 @@ public class CodeGenerateHelperUtil {
 
     }
 
+    /**
+     * 获取：没有父类字段 list
+     */
+    public static List<CodeGenerateForSpringListDTO> getNoSupperClassColumnList(String supperClassName,
+        List<CodeGenerateForSpringListDTO> columnList) {
+
+        if (supperClassName == null) {
+            return null;
+        }
+
+        Set<String> supperClassFieldNameSet = CodeGenerateHelperUtil.BASE_ENTITY_MAP.get(supperClassName);
+
+        return columnList.stream().filter(it -> !supperClassFieldNameSet.contains(it.getColumnNameCamelCase()))
+            .collect(Collectors.toList());
+    }
 }

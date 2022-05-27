@@ -1,7 +1,7 @@
 package generate.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-<#if supperClassName?? && supperClassName != "">
+<#if supperClassName??>
 import com.cmc.projectutil.model.entity.${supperClassName};
 </#if>
 import io.swagger.annotations.ApiModel;
@@ -11,19 +11,29 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
-<#if supperClassName?? && supperClassName != "">
+<#if supperClassName??>
 @EqualsAndHashCode(callSuper = true)
 </#if>
 @TableName(value = "${tableName}")
 @Data
 @ApiModel(description = "${tableComment}")
-public class ${tableNameCamelCaseUpperFirst}DO<#if supperClassName?? && supperClassName != ""><#if supperClassName == "BaseEntityFour"> extends BaseEntityFour<${tableNameCamelCaseUpperFirst}DO><#else> extends ${supperClassName}</#if></#if> {
+public class ${tableNameCamelCaseUpperFirst}DO<#if supperClassName??><#if supperClassName == "BaseEntityFour"> extends BaseEntityFour<${tableNameCamelCaseUpperFirst}DO><#else> extends ${supperClassName}</#if></#if> {
 
-<#list columnList as column>
-    <#if column.columnComment?? && column.columnComment != "">
+<#if supperClassName??>
+    <#list noSupperClassColumnList as column>
+        <#if column.columnComment?? && column.columnComment != "">
     @ApiModelProperty(value = "${column.columnComment}")
-    </#if>
+        </#if>
     private ${column.columnJavaType} ${column.columnNameCamelCase};
 
-</#list>
+    </#list>
+<#else>
+    <#list columnList as column>
+        <#if column.columnComment?? && column.columnComment != "">
+    @ApiModelProperty(value = "${column.columnComment}")
+        </#if>
+    private ${column.columnJavaType} ${column.columnNameCamelCase};
+
+    </#list>
+</#if>
 }

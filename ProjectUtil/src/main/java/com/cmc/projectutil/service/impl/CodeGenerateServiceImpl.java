@@ -1,6 +1,5 @@
 package com.cmc.projectutil.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.template.Template;
@@ -25,7 +24,6 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,7 +89,12 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
                 subItem.setColumnJavaType(columnJavaType);
             }
 
+            // 获取：父类名
             String supperClassName = CodeGenerateHelperUtil.getSupperClassName(item.getValue());
+
+            // 获取：没有父类字段 list
+            List<CodeGenerateForSpringListDTO> noSupperClassColumnList =
+                CodeGenerateHelperUtil.getNoSupperClassColumnList(supperClassName, item.getValue());
 
             CodeGenerateForSpringDTO codeGenerateForSpringDTO = new CodeGenerateForSpringDTO();
             codeGenerateForSpringDTO.setTableName(tableName);
@@ -100,6 +103,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             codeGenerateForSpringDTO.setTableNameCamelCaseUpperFirst(tableNameCamelCaseUpperFirst);
             codeGenerateForSpringDTO.setColumnList(item.getValue());
             codeGenerateForSpringDTO.setSupperClassName(supperClassName);
+            codeGenerateForSpringDTO.setNoSupperClassColumnList(noSupperClassColumnList);
 
             JSONObject json = JSONUtil.parseObj(codeGenerateForSpringDTO);
 
@@ -160,40 +164,20 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      * 生成 spring-model
      */
     @SneakyThrows
-    private void generateSpringModel(String rootFileName, TemplateEngine engine,
-        CodeGenerateForSpringDTO codeGenerateForSpringDTO, JSONObject json) {
+    private void generateSpringModel(String rootFileName, TemplateEngine engine, CodeGenerateForSpringDTO dto,
+        JSONObject json) {
 
         Template template = engine.getTemplate("BaseDO.java.ftl");
 
-        File file = FileUtil.file(
-            rootFileName + "/model/entity/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "DO.java");
+        File file = FileUtil.file(rootFileName + "/model/entity/" + dto.getTableNameCamelCaseUpperFirst() + "DO.java");
         FileUtil.touch(file);
 
-        if (codeGenerateForSpringDTO.getSupperClassName() != null) {
-
-            Set<String> supperClassFieldNameSet =
-                CodeGenerateHelperUtil.BASE_ENTITY_MAP.get(codeGenerateForSpringDTO.getSupperClassName());
-
-            CodeGenerateForSpringDTO newDTO =
-                BeanUtil.copyProperties(codeGenerateForSpringDTO, CodeGenerateForSpringDTO.class);
-
-            // 不要父类有的属性
-            List<CodeGenerateForSpringListDTO> newColumnList = newDTO.getColumnList().stream()
-                .filter(it -> !supperClassFieldNameSet.contains(it.getColumnNameCamelCase()))
-                .collect(Collectors.toList());
-
-            newDTO.setColumnList(newColumnList);
-
-            template.render(JSONUtil.parseObj(newDTO), file);
-        } else {
-            template.render(json, file);
-        }
+        template.render(json, file);
         // DO ↑
 
         template = engine.getTemplate("BaseInfoByIdVO.java.ftl");
 
-        file = FileUtil.file(rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
-            + "InfoByIdVO.java");
+        file = FileUtil.file(rootFileName + "/model/vo/" + dto.getTableNameCamelCaseUpperFirst() + "InfoByIdVO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -201,8 +185,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BaseInsertOrUpdateDTO.java.ftl");
 
-        file = FileUtil.file(rootFileName + "/model/dto/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
-            + "InsertOrUpdateDTO.java");
+        file = FileUtil
+            .file(rootFileName + "/model/dto/" + dto.getTableNameCamelCaseUpperFirst() + "InsertOrUpdateDTO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -210,8 +194,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BasePageDTO.java.ftl");
 
-        file = FileUtil.file(
-            rootFileName + "/model/dto/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "PageDTO.java");
+        file = FileUtil.file(rootFileName + "/model/dto/" + dto.getTableNameCamelCaseUpperFirst() + "PageDTO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -219,8 +202,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BasePageVO.java.ftl");
 
-        file = FileUtil.file(
-            rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "PageVO.java");
+        file = FileUtil.file(rootFileName + "/model/vo/" + dto.getTableNameCamelCaseUpperFirst() + "PageVO.java");
         FileUtil.touch(file);
 
         template.render(json, file);

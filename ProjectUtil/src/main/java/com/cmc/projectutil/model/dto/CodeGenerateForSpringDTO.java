@@ -26,6 +26,9 @@ public class CodeGenerateForSpringDTO {
     @ApiModelProperty(value = "字段 list")
     private List<CodeGenerateForSpringListDTO> columnList;
 
+    @ApiModelProperty(value = "没有父类字段 list")
+    private List<CodeGenerateForSpringListDTO> noSupperClassColumnList;
+
     @ApiModelProperty(value = "父类类名（simpleName）")
     private String supperClassName;
 
