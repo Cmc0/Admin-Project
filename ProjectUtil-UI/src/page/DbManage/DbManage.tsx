@@ -40,12 +40,20 @@ export default function () {
 
     const [y, setY] = useState(0)
 
+    function handleResize() {
+        const y = document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47 - 58 - 16
+
+        setY(y)
+    }
+
     useEffect(() => {
         setTimeout(() => {
-            const y = (document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47 - 58 - 16
-            )
-            setY(y)
+            handleResize()
         }, 20)
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
     }, [])
 
     return <ProTable<CodeGeneratePageVO, CodeGeneratePageDTO>
