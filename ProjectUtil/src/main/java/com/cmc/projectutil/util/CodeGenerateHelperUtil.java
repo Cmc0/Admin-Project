@@ -20,7 +20,7 @@ public class CodeGenerateHelperUtil {
 
     public static final Map<String, String> COLUMN_TYPE_REF_JAVA_MAP = MapUtil.newHashMap();
 
-    private static final Map<String, Set<String>> BASE_ENTITY_MAP = new LinkedHashMap<>();
+    public static final Map<String, Set<String>> BASE_ENTITY_MAP = new LinkedHashMap<>();
 
     static {
 

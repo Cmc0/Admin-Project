@@ -1,5 +1,6 @@
 package com.cmc.projectutil.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.template.Template;
@@ -24,6 +25,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -167,7 +169,25 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             rootFileName + "/model/entity/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "DO.java");
         FileUtil.touch(file);
 
-        template.render(json, file);
+        if (codeGenerateForSpringDTO.getSupperClassName() != null) {
+
+            Set<String> supperClassFieldNameSet =
+                CodeGenerateHelperUtil.BASE_ENTITY_MAP.get(codeGenerateForSpringDTO.getSupperClassName());
+
+            CodeGenerateForSpringDTO newDTO =
+                BeanUtil.copyProperties(codeGenerateForSpringDTO, CodeGenerateForSpringDTO.class);
+
+            // 不要父类有的属性
+            List<CodeGenerateForSpringListDTO> newColumnList = newDTO.getColumnList().stream()
+                .filter(it -> !supperClassFieldNameSet.contains(it.getColumnNameCamelCase()))
+                .collect(Collectors.toList());
+
+            newDTO.setColumnList(newColumnList);
+
+            template.render(JSONUtil.parseObj(newDTO), file);
+        } else {
+            template.render(json, file);
+        }
         // DO ↑
 
         template = engine.getTemplate("BaseInfoByIdVO.java.ftl");
