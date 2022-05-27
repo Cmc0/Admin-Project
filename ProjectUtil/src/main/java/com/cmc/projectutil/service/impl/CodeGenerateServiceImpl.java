@@ -11,9 +11,10 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmc.projectutil.exception.BaseBizCodeEnum;
 import com.cmc.projectutil.mapper.CodeGenerateMapper;
-import com.cmc.projectutil.model.dto.CodeGenerateForSpringDTO;
-import com.cmc.projectutil.model.dto.CodeGenerateForSpringListDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
 import com.cmc.projectutil.model.dto.CodeGeneratePageDTO;
+import com.cmc.projectutil.model.enums.ColumnTypeRefEnum;
 import com.cmc.projectutil.model.vo.CodeGeneratePageVO;
 import com.cmc.projectutil.service.CodeGenerateService;
 import com.cmc.projectutil.util.CodeGenerateHelperUtil;
@@ -45,7 +46,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      */
     @SneakyThrows
     @Override
-    public String forSpring(List<CodeGenerateForSpringListDTO> list) {
+    public String forSpring(List<CodeGenerateListDTO> list) {
 
         String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/";
 
@@ -64,54 +65,21 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
 
-        Map<String, List<CodeGenerateForSpringListDTO>> groupMap =
+        Map<String, List<CodeGenerateListDTO>> groupMap =
             list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
 
-        for (Map.Entry<String, List<CodeGenerateForSpringListDTO>> item : groupMap.entrySet()) {
+        for (Map.Entry<String, List<CodeGenerateListDTO>> item : groupMap.entrySet()) {
 
-            String tableName = item.getKey();
-            String tableComment = item.getValue().get(0).getTableComment();
+            // 处理并封装数据
+            CodeGenerateDTO codeGenerateDTO = getCodeGenerateDTO(item);
 
-            String tableNameCamelCase = StrUtil.toCamelCase(tableName);
-            String tableNameCamelCaseUpperFirst = StrUtil.upperFirst(tableNameCamelCase);
+            JSONObject json = JSONUtil.parseObj(codeGenerateDTO);
 
-            for (CodeGenerateForSpringListDTO subItem : item.getValue()) {
-                subItem.setColumnNameCamelCase(StrUtil.toCamelCase(subItem.getColumnName()));
+            generateSpringController(rootFileName, engine, codeGenerateDTO, json);
 
-                // 寻找：对应的 java类型
-                String columnJavaType;
-                if (CodeGenerateHelperUtil.TINYINT_ONE.equals(subItem.getColumnType())) {
-                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_JAVA_MAP.get(subItem.getColumnType());
-                } else {
-                    String subBefore = StrUtil.subBefore(subItem.getColumnType(), "(", false);
-                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_JAVA_MAP.get(subBefore);
-                }
-                subItem.setColumnJavaType(columnJavaType);
-            }
+            generateSpringModel(rootFileName, engine, codeGenerateDTO, json);
 
-            // 获取：父类名
-            String supperClassName = CodeGenerateHelperUtil.getSupperClassName(item.getValue());
-
-            // 获取：没有父类字段 list
-            List<CodeGenerateForSpringListDTO> noSupperClassColumnList =
-                CodeGenerateHelperUtil.getNoSupperClassColumnList(supperClassName, item.getValue());
-
-            CodeGenerateForSpringDTO codeGenerateForSpringDTO = new CodeGenerateForSpringDTO();
-            codeGenerateForSpringDTO.setTableName(tableName);
-            codeGenerateForSpringDTO.setTableComment(tableComment);
-            codeGenerateForSpringDTO.setTableNameCamelCase(tableNameCamelCase);
-            codeGenerateForSpringDTO.setTableNameCamelCaseUpperFirst(tableNameCamelCaseUpperFirst);
-            codeGenerateForSpringDTO.setColumnList(item.getValue());
-            codeGenerateForSpringDTO.setSupperClassName(supperClassName);
-            codeGenerateForSpringDTO.setNoSupperClassColumnList(noSupperClassColumnList);
-
-            JSONObject json = JSONUtil.parseObj(codeGenerateForSpringDTO);
-
-            generateSpringController(rootFileName, engine, codeGenerateForSpringDTO, json);
-
-            generateSpringModel(rootFileName, engine, codeGenerateForSpringDTO, json);
-
-            generateSpringServiceAndMapper(rootFileName, engine, codeGenerateForSpringDTO, json);
+            generateSpringServiceAndMapper(rootFileName, engine, codeGenerateDTO, json);
 
         }
 
@@ -119,16 +87,58 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     }
 
     /**
+     * 处理并封装数据
+     */
+    private CodeGenerateDTO getCodeGenerateDTO(Map.Entry<String, List<CodeGenerateListDTO>> item) {
+
+        String tableName = item.getKey();
+        String tableComment = item.getValue().get(0).getTableComment();
+
+        String tableNameCamelCase = StrUtil.toCamelCase(tableName);
+        String tableNameCamelCaseUpperFirst = StrUtil.upperFirst(tableNameCamelCase);
+
+        for (CodeGenerateListDTO subItem : item.getValue()) {
+
+            subItem.setColumnNameCamelCase(StrUtil.toCamelCase(subItem.getColumnName()));
+
+            ColumnTypeRefEnum columnTypeRefEnum = ColumnTypeRefEnum.getByColumnType(subItem);
+
+            if (columnTypeRefEnum != null) {
+                subItem.setColumnJavaType(columnTypeRefEnum.getJavaType());
+                subItem.setColumnTsType(columnTypeRefEnum.getTsType());
+            }
+        }
+
+        // 获取：父类名
+        String supperClassName = CodeGenerateHelperUtil.getSupperClassName(item.getValue());
+
+        // 获取：没有父类字段 list
+        List<CodeGenerateListDTO> noSupperClassColumnList =
+            CodeGenerateHelperUtil.getNoSupperClassColumnList(supperClassName, item.getValue());
+
+        CodeGenerateDTO codeGenerateDTO = new CodeGenerateDTO();
+        codeGenerateDTO.setTableName(tableName);
+        codeGenerateDTO.setTableComment(tableComment);
+        codeGenerateDTO.setTableNameCamelCase(tableNameCamelCase);
+        codeGenerateDTO.setTableNameCamelCaseUpperFirst(tableNameCamelCaseUpperFirst);
+        codeGenerateDTO.setColumnList(item.getValue());
+        codeGenerateDTO.setSupperClassName(supperClassName);
+        codeGenerateDTO.setNoSupperClassColumnList(noSupperClassColumnList);
+
+        return codeGenerateDTO;
+    }
+
+    /**
      * 生成 spring-service
      */
     @SneakyThrows
     private void generateSpringServiceAndMapper(String rootFileName, TemplateEngine engine,
-        CodeGenerateForSpringDTO codeGenerateForSpringDTO, JSONObject json) {
+        CodeGenerateDTO codeGenerateDTO, JSONObject json) {
 
         Template template = engine.getTemplate("BaseService.java.ftl");
 
-        File file = FileUtil.file(
-            rootFileName + "/service/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Service.java");
+        File file = FileUtil
+            .file(rootFileName + "/service/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "Service.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -136,24 +146,23 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         template = engine.getTemplate("BaseServiceImpl.java.ftl");
 
         file = FileUtil.file(
-            rootFileName + "/service/impl/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
-                + "ServiceImpl.java");
+            rootFileName + "/service/impl/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "ServiceImpl.java");
         FileUtil.touch(file);
 
         template.render(json, file);
 
         template = engine.getTemplate("BaseMapper.java.ftl");
 
-        file = FileUtil.file(
-            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Mapper.java");
+        file = FileUtil
+            .file(rootFileName + "/mapper/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "Mapper.java");
         FileUtil.touch(file);
 
         template.render(json, file);
 
         template = engine.getTemplate("BaseMapper.xml.ftl");
 
-        file = FileUtil.file(
-            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Mapper.xml");
+        file =
+            FileUtil.file(rootFileName + "/mapper/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "Mapper.xml");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -164,8 +173,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      * 生成 spring-model
      */
     @SneakyThrows
-    private void generateSpringModel(String rootFileName, TemplateEngine engine, CodeGenerateForSpringDTO dto,
-        JSONObject json) {
+    private void generateSpringModel(String rootFileName, TemplateEngine engine, CodeGenerateDTO dto, JSONObject json) {
 
         Template template = engine.getTemplate("BaseDO.java.ftl");
 
@@ -214,14 +222,13 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      * 生成 spring-controller
      */
     @SneakyThrows
-    private void generateSpringController(String rootFileName, TemplateEngine engine,
-        CodeGenerateForSpringDTO codeGenerateForSpringDTO, JSONObject json) {
+    private void generateSpringController(String rootFileName, TemplateEngine engine, CodeGenerateDTO codeGenerateDTO,
+        JSONObject json) {
 
         Template template = engine.getTemplate("BaseController.java.ftl");
 
         File file = FileUtil.file(
-            rootFileName + "/controller/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
-                + "Controller.java");
+            rootFileName + "/controller/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "Controller.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -231,7 +238,17 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      * 生成前端代码
      */
     @Override
-    public String forAnt(List<CodeGenerateForSpringListDTO> list) {
+    public String forAnt(List<CodeGenerateListDTO> list) {
+
+        Map<String, List<CodeGenerateListDTO>> groupMap =
+            list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
+
+        for (Map.Entry<String, List<CodeGenerateListDTO>> item : groupMap.entrySet()) {
+
+            // 处理并封装数据
+            CodeGenerateDTO codeGenerateDTO = getCodeGenerateDTO(item);
+
+        }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }

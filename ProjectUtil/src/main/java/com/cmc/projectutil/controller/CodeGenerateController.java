@@ -1,7 +1,7 @@
 package com.cmc.projectutil.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cmc.projectutil.model.dto.CodeGenerateForSpringListDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
 import com.cmc.projectutil.model.dto.CodeGeneratePageDTO;
 import com.cmc.projectutil.model.vo.ApiResultVO;
 import com.cmc.projectutil.model.vo.CodeGeneratePageVO;
@@ -33,13 +33,13 @@ public class CodeGenerateController {
 
     @ApiOperation(value = "生成后台代码")
     @PostMapping(value = "/forSpring")
-    public ApiResultVO<String> forSpring(@RequestBody @Valid List<CodeGenerateForSpringListDTO> list) {
+    public ApiResultVO<String> forSpring(@RequestBody @Valid List<CodeGenerateListDTO> list) {
         return ApiResultVO.ok(baseService.forSpring(list));
     }
 
     @ApiOperation(value = "生成前端代码")
     @PostMapping(value = "/forAnt")
-    public ApiResultVO<String> forAnt(@RequestBody @Valid List<CodeGenerateForSpringListDTO> list) {
+    public ApiResultVO<String> forAnt(@RequestBody @Valid List<CodeGenerateListDTO> list) {
         return ApiResultVO.ok(baseService.forAnt(list));
     }
 
