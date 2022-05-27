@@ -47,19 +47,19 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     @Override
     public String codeGenerateForSpring(List<CodeGenerateForSpringListDTO> list) {
 
-        String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/" ;
+        String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/";
 
         File rootFile = FileUtil.file(rootFileName);
-        rootFile.mkdirs(); // 不存在则会创建，存在了则不进行操作
+        FileUtil.mkdir(rootFile); // 不存在则会创建，存在了则不进行操作
 
-        FileUtil.file(rootFileName + "/controller").mkdirs();
-        FileUtil.file(rootFileName + "/model").mkdirs();
-        FileUtil.file(rootFileName + "/model/dto").mkdirs();
-        FileUtil.file(rootFileName + "/model/vo").mkdirs();
-        FileUtil.file(rootFileName + "/model/entity").mkdirs();
-        FileUtil.file(rootFileName + "/service").mkdirs();
-        FileUtil.file(rootFileName + "/service/impl").mkdirs();
-        FileUtil.file(rootFileName + "/mapper").mkdirs();
+        FileUtil.mkdir(rootFileName + "/controller");
+        FileUtil.mkdir(rootFileName + "/model");
+        FileUtil.mkdir(rootFileName + "/model/dto");
+        FileUtil.mkdir(rootFileName + "/model/vo");
+        FileUtil.mkdir(rootFileName + "/model/entity");
+        FileUtil.mkdir(rootFileName + "/service");
+        FileUtil.mkdir(rootFileName + "/service/impl");
+        FileUtil.mkdir(rootFileName + "/mapper");
 
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
@@ -120,7 +120,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         File file = FileUtil.file(
             rootFileName + "/service/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Service.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
 
@@ -129,25 +129,23 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         file = FileUtil.file(
             rootFileName + "/service/impl/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
                 + "ServiceImpl.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
 
         template = engine.getTemplate("BaseMapper.java.ftl");
 
         file = FileUtil.file(
-            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
-                + "Mapper.java");
-        file.createNewFile();
+            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Mapper.java");
+        FileUtil.touch(file);
 
         template.render(json, file);
 
         template = engine.getTemplate("BaseMapper.xml.ftl");
 
         file = FileUtil.file(
-            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
-                + "Mapper.xml");
-        file.createNewFile();
+            rootFileName + "/mapper/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "Mapper.xml");
+        FileUtil.touch(file);
 
         template.render(json, file);
 
@@ -164,7 +162,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         File file = FileUtil.file(
             rootFileName + "/model/entity/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "DO.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
         // DO ↑
@@ -173,7 +171,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         file = FileUtil.file(rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
             + "InfoByIdVO.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
         // InfoByIdVO ↑
@@ -182,7 +180,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         file = FileUtil.file(rootFileName + "/model/dto/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
             + "InsertOrUpdateDTO.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
         // InsertOrUpdateDTO ↑
@@ -191,7 +189,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         file = FileUtil.file(
             rootFileName + "/model/dto/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "PageDTO.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
         // PageDTO ↑
@@ -200,7 +198,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         file = FileUtil.file(
             rootFileName + "/model/vo/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst() + "PageVO.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
         // PageVO ↑
@@ -219,7 +217,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         File file = FileUtil.file(
             rootFileName + "/controller/" + codeGenerateForSpringDTO.getTableNameCamelCaseUpperFirst()
                 + "Controller.java");
-        file.createNewFile();
+        FileUtil.touch(file);
 
         template.render(json, file);
     }
