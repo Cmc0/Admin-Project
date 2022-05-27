@@ -46,6 +46,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
         return baseMapper.myPage(dto.getPage(), dto);
     }
 
+    <#if supperClassName?? && supperClassName == "BaseEntityFour">
     /**
      * 查询：树结构
      */
@@ -70,6 +71,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
         return MyTreeUtil.getFullTreeByDeepNode(dbList, allList);
     }
 
+    </#if>
     /**
      * 批量删除
      */
@@ -96,6 +98,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
         return BeanUtil.copyProperties(${tableNameCamelCase}DO, ${tableNameCamelCaseUpperFirst}InfoByIdVO.class);
     }
 
+    <#if supperClassName?? && supperClassName == "BaseEntityFour">
     /**
      * 通过主键 idSet，加减排序号
      */
@@ -118,4 +121,5 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
+    </#if>
 }

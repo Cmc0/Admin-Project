@@ -17,13 +17,17 @@ public interface ${tableNameCamelCaseUpperFirst}Service extends IService<${table
     String insertOrUpdate(${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto);
 
     Page<${tableNameCamelCaseUpperFirst}DO> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto);
+    <#if supperClassName?? && supperClassName == "BaseEntityFour">
 
     List<${tableNameCamelCaseUpperFirst}DO> tree(${tableNameCamelCaseUpperFirst}PageDTO dto);
+    </#if>
 
     String deleteByIdSet(NotEmptyIdSet notEmptyIdSet);
 
     ${tableNameCamelCaseUpperFirst}InfoByIdVO infoById(NotNullId notNullId);
 
+    <#if supperClassName?? && supperClassName == "BaseEntityFour">
     String addOrderNo(AddOrderNoDTO dto);
 
+    </#if>
 }

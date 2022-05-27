@@ -45,6 +45,7 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
         @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
+    <#if supperClassName?? && supperClassName == "BaseEntityFour">
 
     @ApiOperation(value = "查询：树结构")
     @PostMapping("/tree")
@@ -53,6 +54,7 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
         @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.tree(dto));
     }
+    </#if>
 
     @ApiOperation(value = "批量删除")
     @PostMapping("/deleteByIdSet")
@@ -68,6 +70,7 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
         return ApiResultVO.ok(baseService.infoById(notNullId));
     }
 
+    <#if supperClassName?? && supperClassName == "BaseEntityFour">
     @ApiOperation(value = "通过主键 idSet，加减排序号")
     @PostMapping("/addOrderNo")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:insertOrUpdate')")
@@ -75,4 +78,5 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
         return ApiResultVO.ok(baseService.addOrderNo(dto));
     }
 
+    </#if>
 }

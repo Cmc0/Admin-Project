@@ -22,7 +22,7 @@ public class ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO extends MyId{
     @ApiModelProperty(value = "${column.columnComment}")
     </#if>
     private ${column.columnJavaType} ${column.columnNameCamelCase};
-    </#if>
 
+    </#if>
 </#list>
 }
