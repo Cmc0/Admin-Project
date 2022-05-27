@@ -61,10 +61,20 @@ public class CodeGenerateHelperUtil {
     /**
      * 匹配父类，如果没有匹配上，则返回 null
      */
-    public static String getSupperClassName(List<CodeGenerateForSpringListDTO> item) {
+    public static String getSupperClassName(List<CodeGenerateForSpringListDTO> columnList) {
 
         Set<String> columnNameCamelCaseSet =
-            item.stream().map(CodeGenerateForSpringListDTO::getColumnNameCamelCase).collect(Collectors.toSet());
+            columnList.stream().map(CodeGenerateForSpringListDTO::getColumnNameCamelCase).collect(Collectors.toSet());
+
+        for (Map.Entry<String, Set<String>> item : BASE_ENTITY_MAP.entrySet()) {
+
+            Set<String> supperFieldNameSet = item.getValue();
+
+            if (columnNameCamelCaseSet.containsAll(supperFieldNameSet)) {
+                return item.getKey();
+            }
+
+        }
 
         return null;
 
