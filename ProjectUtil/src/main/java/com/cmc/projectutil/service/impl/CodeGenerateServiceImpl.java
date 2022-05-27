@@ -81,13 +81,15 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
                 // 寻找：对应的 java类型
                 String columnJavaType;
                 if (CodeGenerateHelperUtil.TINYINT_ONE.equals(subItem.getColumnType())) {
-                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_MAP.getStr(subItem.getColumnType());
+                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_JAVA_MAP.get(subItem.getColumnType());
                 } else {
                     String subBefore = StrUtil.subBefore(subItem.getColumnType(), "(", false);
-                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_MAP.getStr(subBefore);
+                    columnJavaType = CodeGenerateHelperUtil.COLUMN_TYPE_REF_JAVA_MAP.get(subBefore);
                 }
                 subItem.setColumnJavaType(columnJavaType);
             }
+
+            String supperClassName = CodeGenerateHelperUtil.getSupperClassName(item.getValue());
 
             CodeGenerateForSpringDTO codeGenerateForSpringDTO = new CodeGenerateForSpringDTO();
             codeGenerateForSpringDTO.setTableName(tableName);
@@ -95,6 +97,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             codeGenerateForSpringDTO.setTableNameCamelCase(tableNameCamelCase);
             codeGenerateForSpringDTO.setTableNameCamelCaseUpperFirst(tableNameCamelCaseUpperFirst);
             codeGenerateForSpringDTO.setColumnList(item.getValue());
+            codeGenerateForSpringDTO.setSupperClassName(supperClassName);
 
             JSONObject json = JSONUtil.parseObj(codeGenerateForSpringDTO);
 
