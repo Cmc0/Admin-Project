@@ -48,7 +48,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     @Override
     public String forSpring(List<CodeGenerateListDTO> list) {
 
-        String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/";
+        String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/spring";
 
         File rootFile = FileUtil.file(rootFileName);
         FileUtil.mkdir(rootFile); // 不存在则会创建，存在了则不进行操作
@@ -173,11 +173,13 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      * 生成 spring-model
      */
     @SneakyThrows
-    private void generateSpringModel(String rootFileName, TemplateEngine engine, CodeGenerateDTO dto, JSONObject json) {
+    private void generateSpringModel(String rootFileName, TemplateEngine engine, CodeGenerateDTO codeGenerateDTO,
+        JSONObject json) {
 
         Template template = engine.getTemplate("BaseDO.java.ftl");
 
-        File file = FileUtil.file(rootFileName + "/model/entity/" + dto.getTableNameCamelCaseUpperFirst() + "DO.java");
+        File file = FileUtil
+            .file(rootFileName + "/model/entity/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "DO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -185,7 +187,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BaseInfoByIdVO.java.ftl");
 
-        file = FileUtil.file(rootFileName + "/model/vo/" + dto.getTableNameCamelCaseUpperFirst() + "InfoByIdVO.java");
+        file = FileUtil
+            .file(rootFileName + "/model/vo/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "InfoByIdVO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -193,8 +196,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BaseInsertOrUpdateDTO.java.ftl");
 
-        file = FileUtil
-            .file(rootFileName + "/model/dto/" + dto.getTableNameCamelCaseUpperFirst() + "InsertOrUpdateDTO.java");
+        file = FileUtil.file(rootFileName + "/model/dto/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst()
+            + "InsertOrUpdateDTO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -202,7 +205,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BasePageDTO.java.ftl");
 
-        file = FileUtil.file(rootFileName + "/model/dto/" + dto.getTableNameCamelCaseUpperFirst() + "PageDTO.java");
+        file = FileUtil
+            .file(rootFileName + "/model/dto/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "PageDTO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -210,7 +214,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         template = engine.getTemplate("BasePageVO.java.ftl");
 
-        file = FileUtil.file(rootFileName + "/model/vo/" + dto.getTableNameCamelCaseUpperFirst() + "PageVO.java");
+        file = FileUtil
+            .file(rootFileName + "/model/vo/" + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "PageVO.java");
         FileUtil.touch(file);
 
         template.render(json, file);
@@ -240,6 +245,14 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     @Override
     public String forAnt(List<CodeGenerateListDTO> list) {
 
+        String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/ant/";
+
+        File rootFile = FileUtil.file(rootFileName);
+        FileUtil.mkdir(rootFile); // 不存在则会创建，存在了则不进行操作
+
+        TemplateEngine engine =
+            TemplateUtil.createEngine(new TemplateConfig("ftl/ant", TemplateConfig.ResourceMode.CLASSPATH));
+
         Map<String, List<CodeGenerateListDTO>> groupMap =
             list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
 
@@ -247,6 +260,16 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
             // 处理并封装数据
             CodeGenerateDTO codeGenerateDTO = getCodeGenerateDTO(item);
+
+            JSONObject json = JSONUtil.parseObj(codeGenerateDTO);
+
+            Template template = engine.getTemplate("Controller.ts.ftl");
+
+            File file =
+                FileUtil.file(rootFileName + codeGenerateDTO.getTableNameCamelCaseUpperFirst() + "Controller.ts");
+            FileUtil.touch(file);
+
+            template.render(json, file);
 
         }
 
