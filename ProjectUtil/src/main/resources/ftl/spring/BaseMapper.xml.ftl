@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC"-//mybatis.org//DTD Mapper 3.0//EN""http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="generate.spring.mapper.${tableNameCamelCaseUpperFirst}Mapper">
 
-    <select id="myPage" resultType="generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO">
+    <select id="myPage" resultType="generate.spring.model.entity.${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>">
         SELECT
 <#list columnList as column>
         a.${column.columnName} AS ${column.columnNameCamelCase}<#if column_index != (columnList?size-1)>,</#if>

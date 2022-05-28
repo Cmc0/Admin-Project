@@ -42,7 +42,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
      * 分页排序查询
      */
     @Override
-    public Page<${tableNameCamelCaseUpperFirst}DO> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return baseMapper.myPage(dto.getPage(), dto);
     }
 

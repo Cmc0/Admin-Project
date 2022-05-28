@@ -16,7 +16,7 @@ public interface ${tableNameCamelCaseUpperFirst}Service extends IService<${table
 
     String insertOrUpdate(${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto);
 
-    Page<${tableNameCamelCaseUpperFirst}DO> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto);
+    Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto);
     <#if supperClassName?? && supperClassName == "BaseEntityFour">
 
     List<${tableNameCamelCaseUpperFirst}DO> tree(${tableNameCamelCaseUpperFirst}PageDTO dto);

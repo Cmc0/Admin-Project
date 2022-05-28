@@ -9,6 +9,6 @@ import org.apache.ibatis.annotations.Param;
 public interface ${tableNameCamelCaseUpperFirst}Mapper extends BaseMapper<${tableNameCamelCaseUpperFirst}DO> {
 
     // 分页排序查询
-    Page<${tableNameCamelCaseUpperFirst}DO> myPage(Page<${tableNameCamelCaseUpperFirst}DO> page, @Param("dto") ${tableNameCamelCaseUpperFirst}PageDTO dto);
+    Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>> myPage(Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>> page, @Param("dto") ${tableNameCamelCaseUpperFirst}PageDTO dto);
 
 }
