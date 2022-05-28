@@ -1,4 +1,4 @@
-package generate.controller;
+package generate.spring.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmc.projectutil.model.dto.AddOrderNoDTO;
@@ -8,11 +8,11 @@ import com.cmc.projectutil.model.vo.ApiResultVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
-import generate.service.${tableNameCamelCaseUpperFirst}Service;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.service.${tableNameCamelCaseUpperFirst}Service;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

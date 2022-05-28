@@ -1,4 +1,4 @@
-package generate.model.dto;
+package generate.spring.model.dto;
 
 import com.cmc.projectutil.model.dto.MyPageDTO;
 import io.swagger.annotations.ApiModel;
@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
- * {@link generate.model.entity.${tableNameCamelCaseUpperFirst}DO}
+ * {@link generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

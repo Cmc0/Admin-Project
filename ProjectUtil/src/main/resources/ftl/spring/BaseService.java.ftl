@@ -1,14 +1,14 @@
-package generate.service;
+package generate.spring.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cmc.projectutil.model.dto.AddOrderNoDTO;
 import com.cmc.projectutil.model.dto.NotEmptyIdSet;
 import com.cmc.projectutil.model.dto.NotNullId;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
-import generate.model.entity.${tableNameCamelCaseUpperFirst}DO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
+import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
 
 import java.util.List;
 
