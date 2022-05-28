@@ -9,6 +9,7 @@ import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDT
 import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
 import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
 import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
 
 import java.util.List;
 

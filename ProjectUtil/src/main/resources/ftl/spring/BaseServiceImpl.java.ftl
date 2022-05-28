@@ -14,6 +14,7 @@ import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
 import org.springframework.stereotype.Service;
 import generate.spring.mapper.${tableNameCamelCaseUpperFirst}Mapper;
 import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
 import generate.spring.service.${tableNameCamelCaseUpperFirst}Service;
 import org.springframework.transaction.annotation.Transactional;
 
