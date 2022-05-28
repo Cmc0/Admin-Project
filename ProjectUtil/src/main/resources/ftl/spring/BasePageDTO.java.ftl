@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel(description = "${tableComment}")
-public class ${tableNameCamelCaseUpperFirst}PageDTO extends MyPageDTO{
+public class ${tableNameCamelCaseUpperFirst}PageDTO extends MyPageDTO {
 
 <#list columnList as column>
     <#if column.columnComment?? && column.columnComment != "">

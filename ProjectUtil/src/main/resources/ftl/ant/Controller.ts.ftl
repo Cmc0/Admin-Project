@@ -1,9 +1,12 @@
 import $http from "@/util/HttpUtil"
 import MyPageDTO from "@/model/dto/MyPageDTO"
+import MyId from "@/model/dto/MyId";
 
-export interface ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO {
+export interface ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO extends MyId {
     <#list columnList as column>
+        <#if column.columnName != "id">
     ${column.columnNameCamelCase}?: ${column.columnTsType} // ${column.columnComment!""}
+        </#if>
     </#list>
 }
 
@@ -13,7 +16,11 @@ export function insertOrUpdate(form: ${tableNameCamelCaseUpperFirst}InsertOrUpda
 }
 
 export interface ${tableNameCamelCaseUpperFirst}PageDTO extends MyPageDTO {
-
+    <#list columnList as column>
+        <#if column.columnName != "id">
+            ${column.columnNameCamelCase}?: ${column.columnTsType} // ${column.columnComment!""}
+        </#if>
+    </#list>
 }
 
 export interface ${tableNameCamelCaseUpperFirst}PageVO {

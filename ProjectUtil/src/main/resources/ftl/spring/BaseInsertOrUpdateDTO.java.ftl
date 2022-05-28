@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel(description = "${tableComment}")
-public class ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO extends MyId{
+public class ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO extends MyId {
 
 <#list columnList as column>
     <#if column.columnName != "id">

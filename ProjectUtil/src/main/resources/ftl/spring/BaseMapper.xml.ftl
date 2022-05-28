@@ -3,20 +3,20 @@
 <mapper namespace="generate.mapper.${tableNameCamelCaseUpperFirst}Mapper">
 
     <select id="myPage" resultType="generate.model.entity.${tableNameCamelCaseUpperFirst}DO">
-    SELECT
+        SELECT
 <#list columnList as column>
-    a.${column.columnName} AS ${column.columnNameCamelCase}<#if column_index != (columnList?size-1)>,</#if>
+        a.${column.columnName} AS ${column.columnNameCamelCase}<#if column_index != (columnList?size-1)>,</#if>
 </#list>
-    FROM area a WHERE a.del_flag=false
+        FROM area a WHERE a.del_flag=false
 <#list columnList as column>
     <#if column.columnJavaType == "String">
-    <if test="dto.${column.columnNameCamelCase} != null and dto.${column.columnNameCamelCase} != ''">
-        AND a.${column.columnName} LIKE CONCAT('%', <#noparse>#{</#noparse>dto.${column.columnNameCamelCase}},'%')
-    </if>
+        <if test="dto.${column.columnNameCamelCase} != null and dto.${column.columnNameCamelCase} != ''">
+            AND a.${column.columnName} LIKE CONCAT('%', <#noparse>#{</#noparse>dto.${column.columnNameCamelCase}},'%')
+        </if>
     <#else>
-    <if test="dto.${column.columnNameCamelCase} != null">
-        AND a.${column.columnName} = <#noparse>#{</#noparse>dto.${column.columnNameCamelCase}}
-    </if>
+        <if test="dto.${column.columnNameCamelCase} != null">
+            AND a.${column.columnName} = <#noparse>#{</#noparse>dto.${column.columnNameCamelCase}}
+        </if>
     </#if>
 </#list>
     </select>

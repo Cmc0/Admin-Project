@@ -33,16 +33,14 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
     @ApiOperation(value = "新增/修改")
     @PostMapping("/insertOrUpdate")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:insertOrUpdate')")
-    public ApiResultVO<String> insertOrUpdate(
-        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
+    public ApiResultVO<String> insertOrUpdate(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
         return ApiResultVO.ok(baseService.insertOrUpdate(dto));
     }
 
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:page')")
-    public ApiResultVO<Page<${tableNameCamelCaseUpperFirst}PageVO>> myPage(
-        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public ApiResultVO<Page<${tableNameCamelCaseUpperFirst}PageVO>> myPage(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
     <#if supperClassName?? && supperClassName == "BaseEntityFour">
@@ -50,8 +48,7 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
     @ApiOperation(value = "查询：树结构")
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:page')")
-    public ApiResultVO<List<${tableNameCamelCaseUpperFirst}PageVO>> tree(
-        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public ApiResultVO<List<${tableNameCamelCaseUpperFirst}PageVO>> tree(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.tree(dto));
     }
     </#if>
