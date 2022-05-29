@@ -66,6 +66,10 @@ $http.interceptors.response.use(
 interface MyAxiosInstance extends AxiosInstance {
     myPost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IResVO<T>>
 
+    myTreePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]>
+
+    myProTreePost<T, D>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
+
     myPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
 
     myProPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
@@ -88,6 +92,30 @@ export interface IPageVO<T> {
     records: T[] // 查询数据列表
 }
 
+$http.myTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]> => {
+    return new Promise((resolve, reject) => {
+        return $http.post<IResVO, AxiosResponse<IResVO<T[]>>, D>(url, data, config).then(({data}) => {
+            resolve(data.data)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+$http.myProTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
+    return new Promise((resolve, reject) => {
+        handleProData(data)
+        return $http.post<IResVO, AxiosResponse<IResVO<T[]>>, D>(url, data, config).then(({data}) => {
+            resolve({
+                success: true,
+                data: data.data
+            })
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
 $http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>> => {
     return new Promise((resolve, reject) => {
         return $http.post<IResVO, AxiosResponse<IResVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
@@ -100,14 +128,7 @@ $http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: Axio
 
 $http.myProPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
     return new Promise((resolve, reject) => {
-        if (data?.sort) {
-            const name = Object.keys(data.sort)[0]
-            data.order = {name, value: data.sort[name]}
-            data.sort = undefined
-        }
-        if (data?.keyword) {
-            data.keyword = undefined
-        }
+        handleProData(data)
         return $http.myPagePost<T, D>(url, data, config).then((res) => {
             resolve({
                 success: true,
@@ -118,6 +139,14 @@ $http.myProPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: A
             reject(err)
         })
     })
+}
+
+function handleProData<D extends MyPageDTO>(data?: D) {
+    if (data?.sort) {
+        const name = Object.keys(data.sort)[0]
+        data.order = {name, value: data.sort[name]}
+        data.sort = undefined
+    }
 }
 
 export default $http
