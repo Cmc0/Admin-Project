@@ -1,9 +1,9 @@
-package com.cmc.projectutil.util;
+package com.cmc.common.util;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.cmc.projectutil.model.entity.BaseEntityFour;
+import com.cmc.common.model.entity.BaseEntityFour;
 import lombok.SneakyThrows;
 
 import java.util.*;

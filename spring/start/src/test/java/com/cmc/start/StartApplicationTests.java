@@ -1,4 +1,4 @@
-package com.cmc.start;
+package java.com.cmc.start;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

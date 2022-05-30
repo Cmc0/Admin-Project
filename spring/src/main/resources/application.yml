@@ -1,5 +1,0 @@
-server:
-    port: 9527
-spring:
-    application:
-        name: start
