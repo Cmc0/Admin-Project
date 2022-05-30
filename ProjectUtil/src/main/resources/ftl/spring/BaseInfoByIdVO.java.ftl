@@ -1,8 +1,8 @@
-package generate.model.vo;
+package generate.spring.model.vo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import generate.model.entity.${tableNameCamelCaseUpperFirst}DO;
+import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
 
 import java.util.Date;
 

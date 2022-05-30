@@ -77,7 +77,7 @@ export default function () {
         tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
             <>
                 <Button type="link" onClick={() => {
-                    codeGenerateForAnt(selectedRows)
+                    codeGenerateForAntClick(selectedRows)
                 }}>生成前端代码</Button>
 
                 <Button type="link" onClick={() => {
@@ -92,7 +92,7 @@ export default function () {
     </ProTable>
 }
 
-function codeGenerateForAnt(selectedRows: CodeGeneratePageVO[]) {
+function codeGenerateForAntClick(selectedRows: CodeGeneratePageVO[]) {
     forAnt(selectedRows).then(res => {
         ToastSuccess(res.msg)
     })

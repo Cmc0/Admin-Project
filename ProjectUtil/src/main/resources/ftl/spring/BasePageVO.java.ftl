@@ -1,4 +1,4 @@
-package generate.model.vo;
+package generate.spring.model.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * {@link generate.model.entity.${tableNameCamelCaseUpperFirst}DO}
+ * {@link generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO}
  */
 @Data
 @ApiModel(description = "${tableComment}")

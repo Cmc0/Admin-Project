@@ -1,14 +1,15 @@
-package generate.service;
+package generate.spring.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cmc.projectutil.model.dto.AddOrderNoDTO;
 import com.cmc.projectutil.model.dto.NotEmptyIdSet;
 import com.cmc.projectutil.model.dto.NotNullId;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
-import generate.model.entity.${tableNameCamelCaseUpperFirst}DO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
+import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface ${tableNameCamelCaseUpperFirst}Service extends IService<${table
 
     String insertOrUpdate(${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto);
 
-    Page<${tableNameCamelCaseUpperFirst}DO> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto);
+    Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto);
     <#if supperClassName?? && supperClassName == "BaseEntityFour">
 
     List<${tableNameCamelCaseUpperFirst}DO> tree(${tableNameCamelCaseUpperFirst}PageDTO dto);

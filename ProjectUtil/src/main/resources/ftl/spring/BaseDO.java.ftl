@@ -1,4 +1,4 @@
-package generate.model.entity;
+package generate.spring.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 <#if supperClassName??>

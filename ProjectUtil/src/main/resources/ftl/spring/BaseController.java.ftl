@@ -1,4 +1,4 @@
-package generate.controller;
+package generate.spring.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmc.projectutil.model.dto.AddOrderNoDTO;
@@ -8,11 +8,12 @@ import com.cmc.projectutil.model.vo.ApiResultVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
-import generate.service.${tableNameCamelCaseUpperFirst}Service;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.service.${tableNameCamelCaseUpperFirst}Service;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
+import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,16 +34,14 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
     @ApiOperation(value = "新增/修改")
     @PostMapping("/insertOrUpdate")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:insertOrUpdate')")
-    public ApiResultVO<String> insertOrUpdate(
-        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
+    public ApiResultVO<String> insertOrUpdate(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
         return ApiResultVO.ok(baseService.insertOrUpdate(dto));
     }
 
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:page')")
-    public ApiResultVO<Page<${tableNameCamelCaseUpperFirst}PageVO>> myPage(
-        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public ApiResultVO<Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>>> myPage(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
     <#if supperClassName?? && supperClassName == "BaseEntityFour">
@@ -50,8 +49,7 @@ public class ${tableNameCamelCaseUpperFirst}Controller {
     @ApiOperation(value = "查询：树结构")
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('${tableNameCamelCase}:page')")
-    public ApiResultVO<List<${tableNameCamelCaseUpperFirst}PageVO>> tree(
-        @RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public ApiResultVO<List<${tableNameCamelCaseUpperFirst}DO>> tree(@RequestBody @Valid ${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return ApiResultVO.ok(baseService.tree(dto));
     }
     </#if>

@@ -1,4 +1,4 @@
-package generate.service.impl;
+package generate.spring.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,13 +8,14 @@ import com.cmc.projectutil.model.dto.AddOrderNoDTO;
 import com.cmc.projectutil.model.dto.NotEmptyIdSet;
 import com.cmc.projectutil.model.dto.NotNullId;
 import com.cmc.projectutil.util.MyTreeUtil;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
-import generate.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
-import generate.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO;
+import generate.spring.model.dto.${tableNameCamelCaseUpperFirst}PageDTO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}InfoByIdVO;
 import org.springframework.stereotype.Service;
-import generate.mapper.${tableNameCamelCaseUpperFirst}Mapper;
-import generate.model.entity.${tableNameCamelCaseUpperFirst}DO;
-import generate.service.${tableNameCamelCaseUpperFirst}Service;
+import generate.spring.mapper.${tableNameCamelCaseUpperFirst}Mapper;
+import generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO;
+import generate.spring.model.vo.${tableNameCamelCaseUpperFirst}PageVO;
+import generate.spring.service.${tableNameCamelCaseUpperFirst}Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
      * 分页排序查询
      */
     @Override
-    public Page<${tableNameCamelCaseUpperFirst}DO> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto) {
+    public Page<${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>> myPage(${tableNameCamelCaseUpperFirst}PageDTO dto) {
         return baseMapper.myPage(dto.getPage(), dto);
     }
 

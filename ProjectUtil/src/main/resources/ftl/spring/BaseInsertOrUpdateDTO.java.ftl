@@ -1,4 +1,4 @@
-package generate.model.dto;
+package generate.spring.model.dto;
 
 import com.cmc.projectutil.model.dto.MyId;
 import io.swagger.annotations.ApiModel;
@@ -9,12 +9,12 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
-* {@link generate.model.entity.${tableNameCamelCaseUpperFirst}DO}
+* {@link generate.spring.model.entity.${tableNameCamelCaseUpperFirst}DO}
 */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel(description = "${tableComment}")
-public class ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO extends MyId{
+public class ${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO extends MyId {
 
 <#list columnList as column>
     <#if column.columnName != "id">
