@@ -27,7 +27,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
      * 新增/修改
      */
     @Override
-    @Transactional(rollbackFor = RuntimeException.class)
+    @Transactional(rollbackFor = Exception.class)
     public String insertOrUpdate(${tableNameCamelCaseUpperFirst}InsertOrUpdateDTO dto) {
 
         ${tableNameCamelCaseUpperFirst}DO ${tableNameCamelCase}DO = new ${tableNameCamelCaseUpperFirst}DO();
@@ -103,7 +103,7 @@ public class ${tableNameCamelCaseUpperFirst}ServiceImpl extends ServiceImpl<${ta
      * 通过主键 idSet，加减排序号
      */
     @Override
-    @Transactional(rollbackFor = RuntimeException.class)
+    @Transactional(rollbackFor = Exception.class)
     public String addOrderNo(AddOrderNoDTO dto) {
 
         if (dto.getNumber() == 0) {
