@@ -8,7 +8,6 @@ export interface MyOrderDTO {
 export default interface MyPageDTO {
     current?: number // 第几页
     pageSize?: number // 每页显示条数
-    keyword?: string // 关键字，需要开启：ProTable.options.search
     sort?: Record<string, SortOrder> // 排序字段（只在前端使用，实际传值：order）
     order?: MyOrderDTO // 排序字段
 }
