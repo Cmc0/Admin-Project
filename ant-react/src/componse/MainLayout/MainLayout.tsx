@@ -4,7 +4,7 @@ import {Outlet} from "react-router-dom";
 
 const leftMenuList: MenuDataItem[] = [
     {
-        path: '/main/dbManage123',
+        path: '/main/dbManage',
         name: '数据库管理',
     }
 ]
