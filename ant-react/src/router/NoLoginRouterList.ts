@@ -8,6 +8,10 @@ const NoLoginRouterList: INoLoginRouterList[] = [
         path: '/',
         element: 'Jump',
     },
+    {
+        path: '/login',
+        element: 'LoginLogin',
+    },
 ]
 
 export const NoLoginRouterPathList = NoLoginRouterList.map((item) => item.path)
