@@ -25,8 +25,14 @@ public class SqlToJavaServiceImpl implements SqlToJavaService {
 
         for (String item : stringList) {
 
-            if (StrUtil.containsIgnoreCase(item, "AS ")) {
+            if (StrUtil.contains(item, "AS ")) {
                 String subBefore = StrUtil.subAfter(item, "AS ", false);
+                appendStrBuilder(strBuilder, subBefore);
+                continue;
+            }
+
+            if (StrUtil.contains(item, "as ")) {
+                String subBefore = StrUtil.subAfter(item, "as ", false);
                 appendStrBuilder(strBuilder, subBefore);
                 continue;
             }
