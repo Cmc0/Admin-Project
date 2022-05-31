@@ -41,7 +41,7 @@ export default function () {
     const [y, setY] = useState(0)
 
     function handleResize() {
-        const y = document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47 - 58 - 16 - 60
+        const y = document.querySelector('.ant-pro-basicLayout-content')!.clientHeight - document.querySelector('.ant-pro-page-container-warp')!.clientHeight - 24 - 80 - 16 - 24 - 48 - 24 - 32 - 24 - 47 - 58 - 16
 
         setY(y)
     }
