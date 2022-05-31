@@ -46,13 +46,13 @@ export function getAppNav() {
 }
 
 interface ILoadElement {
-    element: string
+    element?: string
 }
 
 // 加载 element
 function LoadElement(props: ILoadElement) {
     AppNav = useNavigate()
-    if (RouterMapKeyList.includes(props.element)) {
+    if (props.element && RouterMapKeyList.includes(props.element)) {
         const Element = RouterMap[props.element].element
         return <Element/>
     }
