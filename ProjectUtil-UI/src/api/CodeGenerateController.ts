@@ -21,10 +21,10 @@ export function page(form: CodeGeneratePageDTO) {
 
 // 代码生成控制器：生成后台代码
 export function forSpring(list: CodeGeneratePageVO[]) {
-    return $http.myPost<String, CodeGeneratePageVO[]>('/codeGenerate/forSpring', list)
+    return $http.myPost<string, CodeGeneratePageVO[]>('/codeGenerate/forSpring', list)
 }
 
 // 代码生成控制器：生成前端代码
 export function forAnt(list: CodeGeneratePageVO[]) {
-    return $http.myPost<String, CodeGeneratePageVO[]>('/codeGenerate/forAnt', list)
+    return $http.myPost<string, CodeGeneratePageVO[]>('/codeGenerate/forAnt', list)
 }
