@@ -14,7 +14,7 @@ export const timeoutMsg = '请求超时，请重试 ٩(๑❛ᴗ❛๑)۶'
 export const baseErrorMsg = "请求错误 (灬ꈍ ꈍ灬)："
 
 const config: AxiosRequestConfig = {
-    baseURL: '/api',
+    baseURL: import.meta.env.DEV ? '/api' : '',
     timeout: 15 * 60 * 1000, // 默认 15分钟
 }
 
