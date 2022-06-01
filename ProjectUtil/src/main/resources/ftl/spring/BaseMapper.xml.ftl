@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="generate.spring.mapper.${tableNameCamelCaseUpperFirst}Mapper">
 
+    <!-- 分页排序查询 -->
     <select id="myPage" resultType="generate.spring.model.<#if supperClassName?? && supperClassName == "BaseEntityFour">entity<#else>vo</#if>.${tableNameCamelCaseUpperFirst}<#if supperClassName?? && supperClassName == "BaseEntityFour">DO<#else>PageVO</#if>">
         SELECT
 <#list columnList as column>
@@ -19,6 +20,7 @@
         </if>
     </#if>
 </#list>
+        ORDER BY a.update_time DESC
     </select>
 
 </mapper>
