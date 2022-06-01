@@ -11,9 +11,9 @@ const MainLayoutRouterList: IMainLayoutRouterList[] = [
         element: 'DbManageDbManage',
     },
     {
-        name: 'sql转java',
-        path: '/main/sqlToJava',
-        element: 'SqlToJavaSqlToJava',
+        name: 'java转换',
+        path: '/main/javaConvert',
+        element: 'JavaConvertJavaConvert',
     }
 ]
 

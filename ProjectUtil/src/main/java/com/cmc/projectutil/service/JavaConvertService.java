@@ -2,8 +2,9 @@ package com.cmc.projectutil.service;
 
 import com.cmc.projectutil.model.dto.NotBlankStrDTO;
 
-public interface SqlToJavaService {
+public interface JavaConvertService {
 
     String sqlToJava(NotBlankStrDTO dto);
 
+    String javaToTs(NotBlankStrDTO dto);
 }

@@ -1,8 +1,6 @@
-import {Button, Input, Space} from "antd";
+import {Button, Input} from "antd";
 import {Dispatch, SetStateAction, useState} from "react";
-import {forAnt} from "@/api/CodeGenerateController";
-import {ToastSuccess} from "@/util/ToastUtil";
-import {sqlToJava} from "@/api/SqlToJavaController";
+import {javaToTs, sqlToJava} from "@/api/JavaConvertController";
 
 export default function () {
 
@@ -19,14 +17,18 @@ export default function () {
 
         <div className={"flex-c flex m-l-r-20"}>
 
-            <Button className={"m-b-20"} onClick={() => {
+            <Button onClick={() => {
                 setT1('')
                 setT2('')
-            }}>清空</Button>
+            }}>clear</Button>
 
-            <Button onClick={() => {
-                convertClick(t1, setT2)
-            }} type={"primary"}>转换</Button>
+            <Button className={"m-t-20"} onClick={() => {
+                sqlToJavaClick(t1, setT2)
+            }} type={"primary"}>sqlToJava</Button>
+
+            <Button className={"m-t-20"} onClick={() => {
+                javaToTsClick(t1, setT2)
+            }} type={"primary"}>javaToTs</Button>
 
         </div>
 
@@ -40,9 +42,17 @@ export default function () {
 
 }
 
-function convertClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+function sqlToJavaClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 
     sqlToJava({value: t1}).then(res => {
+        setT2(res.data)
+    })
+
+}
+
+function javaToTsClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+
+    javaToTs({value: t1}).then(res => {
         setT2(res.data)
     })
 

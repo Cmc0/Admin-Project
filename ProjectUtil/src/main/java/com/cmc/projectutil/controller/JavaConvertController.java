@@ -3,7 +3,7 @@ package com.cmc.projectutil.controller;
 import com.cmc.projectutil.exception.BaseBizCodeEnum;
 import com.cmc.projectutil.model.dto.NotBlankStrDTO;
 import com.cmc.projectutil.model.vo.ApiResultVO;
-import com.cmc.projectutil.service.SqlToJavaService;
+import com.cmc.projectutil.service.JavaConvertService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,17 +15,23 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/sqlToJava")
-@Api(tags = "sql转java")
-public class SqlToJavaController {
+@RequestMapping(value = "/convert")
+@Api(tags = "java转换")
+public class JavaConvertController {
 
     @Resource
-    SqlToJavaService baseService;
+    JavaConvertService baseService;
 
     @ApiOperation(value = "sql转java")
-    @PostMapping
+    @PostMapping(value = "/sqlToJava")
     public ApiResultVO<String> sqlToJava(@RequestBody @Valid NotBlankStrDTO dto) {
         return ApiResultVO.ok(BaseBizCodeEnum.API_RESULT_OK.getMsg(), baseService.sqlToJava(dto));
+    }
+
+    @ApiOperation(value = "java转ts")
+    @PostMapping(value = "/javaToTs")
+    public ApiResultVO<String> javaToTs(@RequestBody @Valid NotBlankStrDTO dto) {
+        return ApiResultVO.ok(BaseBizCodeEnum.API_RESULT_OK.getMsg(), baseService.javaToTs(dto));
     }
 
 }

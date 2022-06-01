@@ -17,7 +17,6 @@ public enum ColumnTypeRefEnum {
     text("text", "String", "string"), //
     longtext("longtext", "String", "string"), //
     datetime("datetime", "Date", "string"), //
-
     ;
 
     public static final String TINYINT_ONE = "tinyint(1)";
@@ -36,6 +35,17 @@ public enum ColumnTypeRefEnum {
 
         for (ColumnTypeRefEnum item : ColumnTypeRefEnum.values()) {
             if (item.getColumnType().equals(subBefore)) {
+                return item;
+            }
+        }
+
+        return null;
+    }
+
+    public static ColumnTypeRefEnum getByJavaType(String javaType) {
+
+        for (ColumnTypeRefEnum item : ColumnTypeRefEnum.values()) {
+            if (item.getJavaType().equals(javaType)) {
                 return item;
             }
         }
