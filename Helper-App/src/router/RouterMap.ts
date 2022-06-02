@@ -7,6 +7,12 @@ export function toHump(name: string) {
     })
 }
 
+export interface IMyRouter {
+    name?: string,
+    path: string,
+    element?: string
+}
+
 interface IRouterMap {
     element: any
 }

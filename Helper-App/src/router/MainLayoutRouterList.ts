@@ -1,4 +1,4 @@
-import {IMyRouter} from "@/router/NoLoginRouterList";
+import {IMyRouter} from "@/router/RouterMap";
 
 const MainLayoutRouterList: IMyRouter[] = [
     {

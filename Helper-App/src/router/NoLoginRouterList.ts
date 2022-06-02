@@ -1,8 +1,4 @@
-export interface IMyRouter {
-    name?: string,
-    path: string,
-    element?: string
-}
+import {IMyRouter} from "@/router/RouterMap";
 
 const NoLoginRouterList: IMyRouter[] = [
     {
