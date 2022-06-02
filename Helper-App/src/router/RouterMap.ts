@@ -1,4 +1,5 @@
 import Jump from "@/componse/Jump/Jump";
+import MainLayout from "@/componse/MainLayout/MainLayout";
 
 // 下划线转换驼峰
 export function toHump(name: string) {
@@ -40,6 +41,9 @@ Object.keys(fileObj).forEach((item: string) => {
 // 手动添加路由
 RouterMap['Jump'] = {
     element: Jump,
+}
+RouterMap['MainLayout'] = {
+    element: MainLayout,
 }
 
 export const RouterMapKeyList = Object.keys(RouterMap)
