@@ -3,15 +3,24 @@ package com.cmc.projectutil.service.impl;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.cmc.projectutil.exception.BaseBizCodeEnum;
+import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
 import com.cmc.projectutil.model.dto.NotBlankStrDTO;
 import com.cmc.projectutil.model.enums.ColumnTypeRefEnum;
+import com.cmc.projectutil.service.CodeGenerateService;
 import com.cmc.projectutil.service.JavaConvertService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JavaConvertServiceImpl implements JavaConvertService {
+
+    @Resource
+    CodeGenerateService codeGenerateService;
 
     /**
      * sql转java
@@ -149,6 +158,68 @@ public class JavaConvertServiceImpl implements JavaConvertService {
         }
 
         return strBuilder.toString();
+    }
+
+    /**
+     * 通过：表结构sql，生成后台代码
+     */
+    @Override
+    public String forSpringByTableSql(NotBlankStrDTO dto) {
+
+        List<CodeGenerateListDTO> codeGenerateListDTOList = getCodeGenerateListDTOListByTableSql(dto.getValue());
+
+        codeGenerateService.forSpring(codeGenerateListDTOList);
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 通过：表结构sql，生成前端代码
+     */
+    @Override
+    public String forAntByTableSql(NotBlankStrDTO dto) {
+
+        List<CodeGenerateListDTO> codeGenerateListDTOList = getCodeGenerateListDTOListByTableSql(dto.getValue());
+
+        codeGenerateService.forAnt(codeGenerateListDTOList);
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 通过：表结构sql，获取 List<CodeGenerateListDTO>
+     */
+    private List<CodeGenerateListDTO> getCodeGenerateListDTOListByTableSql(String value) {
+
+        List<CodeGenerateListDTO> codeGenerateListDTOList = new ArrayList<>();
+
+        String tableName = ReUtil.getGroup1("CREATE TABLE `(.*?)`", value);
+        String tableComment = ReUtil.getGroup1("COMMENT='(.*?)';", value);
+
+        List<String> stringList = StrUtil.splitTrim(value, "\n");
+
+        List<String> collectList = stringList.stream().filter(it -> it.contains(",")).collect(Collectors.toList());
+
+        for (String item : collectList) {
+
+            List<String> splitTrimList = StrUtil.splitTrim(item, " ");
+            String columnName = ReUtil.getGroup1("`(.*?)`", splitTrimList.get(0));
+            String columnType = splitTrimList.get(1);
+
+            String columnComment = ReUtil.getGroup1("COMMENT '(.*?)'", item);
+
+            CodeGenerateListDTO codeGenerateListDTO = new CodeGenerateListDTO();
+            codeGenerateListDTO.setTableName(tableName);
+            codeGenerateListDTO.setTableComment(tableComment);
+            codeGenerateListDTO.setColumnName(columnName);
+            codeGenerateListDTO.setColumnType(columnType);
+            codeGenerateListDTO.setColumnComment(columnComment);
+
+            codeGenerateListDTOList.add(codeGenerateListDTO);
+
+        }
+
+        return codeGenerateListDTOList;
     }
 
 }

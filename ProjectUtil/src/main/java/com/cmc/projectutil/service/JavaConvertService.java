@@ -9,4 +9,8 @@ public interface JavaConvertService {
     String javaToTs(NotBlankStrDTO dto);
 
     String sqlAddAs(NotBlankStrDTO dto);
+
+    String forSpringByTableSql(NotBlankStrDTO dto);
+
+    String forAntByTableSql(NotBlankStrDTO dto);
 }

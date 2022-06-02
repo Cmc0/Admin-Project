@@ -40,4 +40,16 @@ public class JavaConvertController {
         return ApiResultVO.ok(BaseBizCodeEnum.API_RESULT_OK.getMsg(), baseService.sqlAddAs(dto));
     }
 
+    @ApiOperation(value = "通过：表结构sql，生成后台代码")
+    @PostMapping(value = "/forSpringByTableSql")
+    public ApiResultVO<String> forSpringByTableSql(@RequestBody @Valid NotBlankStrDTO dto) {
+        return ApiResultVO.ok(baseService.forSpringByTableSql(dto));
+    }
+
+    @ApiOperation(value = "通过：表结构sql，生成前端代码")
+    @PostMapping(value = "/forAntByTableSql")
+    public ApiResultVO<String> forAntByTableSql(@RequestBody @Valid NotBlankStrDTO dto) {
+        return ApiResultVO.ok(baseService.forAntByTableSql(dto));
+    }
+
 }
