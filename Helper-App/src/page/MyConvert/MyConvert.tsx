@@ -181,9 +181,11 @@ export default function () {
                         if (form.id !== undefined) {
                             fbList[form.id] = {...form};
                             setFbList(fbList.concat())
+                            ToastSuccess("修改成功！")
                         } else {
                             fbList.push(form);
                             setFbList(fbList)
+                            ToastSuccess("添加成功！")
                         }
                         drawerUseForm.resetFields();
                         setDrawerVisible(false)
