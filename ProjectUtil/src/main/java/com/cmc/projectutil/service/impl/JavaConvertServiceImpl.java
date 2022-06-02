@@ -27,13 +27,13 @@ public class JavaConvertServiceImpl implements JavaConvertService {
 
         for (String item : stringList) {
 
-            if (StrUtil.contains(item, "AS ")) {
+            if (StrUtil.contains(item, " AS ")) {
                 String subBefore = StrUtil.subAfter(item, "AS ", false);
                 sqlToJavaAppendStrBuilder(strBuilder, subBefore);
                 continue;
             }
 
-            if (StrUtil.contains(item, "as ")) {
+            if (StrUtil.contains(item, " as ")) {
                 String subBefore = StrUtil.subAfter(item, "as ", false);
                 sqlToJavaAppendStrBuilder(strBuilder, subBefore);
                 continue;
@@ -125,9 +125,30 @@ public class JavaConvertServiceImpl implements JavaConvertService {
     @Override
     public String sqlAddAs(NotBlankStrDTO dto) {
 
+        String value = dto.getValue();
 
+        List<String> stringList = StrUtil.splitTrim(value, ",");
 
-        return null;
+        StrBuilder strBuilder = StrBuilder.create();
+
+        for (String item : stringList) {
+
+            if (item.contains(" AS ") || item.contains(" as ")) {
+                strBuilder.append(item).append(",\n");
+                continue;
+            }
+
+            String s = item;
+            if (item.contains(".")) {
+                s = StrUtil.splitTrim(item, ".").get(1);
+            }
+
+            String str = item + " AS " + StrUtil.toCamelCase(s) + ",\n";
+            strBuilder.append(str);
+
+        }
+
+        return strBuilder.toString();
     }
 
 }
