@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class CodeGenerateListDTO extends CodeGeneratePageVO {
+public class CodeGenerateItemDTO extends CodeGeneratePageVO {
 
     @ApiModelProperty(value = "字段名（驼峰）", hidden = true)
     private String columnNameCamelCase;

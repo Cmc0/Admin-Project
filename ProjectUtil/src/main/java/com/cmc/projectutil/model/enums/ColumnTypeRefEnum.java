@@ -1,7 +1,7 @@
 package com.cmc.projectutil.model.enums;
 
 import cn.hutool.core.util.StrUtil;
-import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateItemDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -25,7 +25,7 @@ public enum ColumnTypeRefEnum {
     private String javaType; // java数据类型
     private String tsType; // ts数据类型
 
-    public static ColumnTypeRefEnum getByColumnType(CodeGenerateListDTO dto) {
+    public static ColumnTypeRefEnum getByColumnType(CodeGenerateItemDTO dto) {
 
         if (ColumnTypeRefEnum.TINYINT_ONE.equals(dto.getColumnType())) {
             return Boolean;

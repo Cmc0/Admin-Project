@@ -1,6 +1,7 @@
 import {Button, Input} from "antd";
 import {Dispatch, SetStateAction, useState} from "react";
-import {javaToTs, sqlAddAs, sqlToJava} from "@/api/JavaConvertController";
+import {forAntByTableSql, forSpringByTableSql, javaToTs, sqlAddAs, sqlToJava} from "@/api/JavaConvertController";
+import {ToastSuccess} from "@/util/ToastUtil";
 
 export default function () {
 
@@ -10,7 +11,7 @@ export default function () {
     return <div className={"p-24 w100 flex-center"}>
 
         <div className={"flex1"}>
-            <Input.TextArea allowClear rows={30} value={t1} onChange={(e) => {
+            <Input.TextArea allowClear rows={32} value={t1} onChange={(e) => {
                 setT1(e.target.value)
             }}/>
         </div>
@@ -20,7 +21,7 @@ export default function () {
             <Button onClick={() => {
                 setT1('')
                 setT2('')
-            }}>clear</Button>
+            }}>清空</Button>
 
             <Button className={"m-t-20"} onClick={() => {
                 sqlToJavaClick(t1, setT2)
@@ -34,10 +35,19 @@ export default function () {
                 sqlAddAsClick(t1, setT2)
             }} type={"primary"}>sqlAddAs</Button>
 
+            <Button className={"m-t-20"} onClick={() => {
+                forSpringByTableSqlClick(t1, setT2)
+            }} type={"primary"}>forSpringByTableSql</Button>
+
+            <Button className={"m-t-20"} onClick={() => {
+                forAntByTableSqlClick(t1, setT2)
+            }} type={"primary"}>forAntByTableSql</Button>
+
+
         </div>
 
         <div className={"flex1"}>
-            <Input.TextArea allowClear rows={30} value={t2} onChange={(e) => {
+            <Input.TextArea allowClear rows={32} value={t2} onChange={(e) => {
                 setT2(e.target.value)
             }}/>
         </div>
@@ -50,6 +60,7 @@ function sqlToJavaClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 
     sqlToJava({value: t1}).then(res => {
         setT2(res.data)
+        ToastSuccess(res.msg)
     })
 
 }
@@ -58,6 +69,7 @@ function javaToTsClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 
     javaToTs({value: t1}).then(res => {
         setT2(res.data)
+        ToastSuccess(res.msg)
     })
 
 }
@@ -66,6 +78,23 @@ function sqlAddAsClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 
     sqlAddAs({value: t1}).then(res => {
         setT2(res.data)
+        ToastSuccess(res.msg)
+    })
+
+}
+
+function forSpringByTableSqlClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+
+    forSpringByTableSql({value: t1}).then(res => {
+        ToastSuccess(res.msg)
+    })
+
+}
+
+function forAntByTableSqlClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+
+    forAntByTableSql({value: t1}).then(res => {
+        ToastSuccess(res.msg)
     })
 
 }

@@ -8,12 +8,9 @@ import cn.hutool.extra.template.TemplateEngine;
 import cn.hutool.extra.template.TemplateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmc.projectutil.exception.BaseBizCodeEnum;
-import com.cmc.projectutil.mapper.CodeGenerateMapper;
 import com.cmc.projectutil.model.dto.CodeGenerateDTO;
-import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
-import com.cmc.projectutil.model.dto.CodeGeneratePageDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateItemDTO;
 import com.cmc.projectutil.model.enums.ColumnTypeRefEnum;
 import com.cmc.projectutil.model.vo.CodeGeneratePageVO;
 import com.cmc.projectutil.service.CodeGenerateService;
@@ -21,7 +18,6 @@ import com.cmc.projectutil.util.CodeGenerateHelperUtil;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -30,23 +26,12 @@ import java.util.stream.Collectors;
 @Service
 public class CodeGenerateServiceImpl implements CodeGenerateService {
 
-    @Resource
-    CodeGenerateMapper baseMapper;
-
-    /**
-     * 分页排序查询
-     */
-    @Override
-    public Page<CodeGeneratePageVO> myPage(CodeGeneratePageDTO dto) {
-        return baseMapper.myPage(dto.getPage(), dto);
-    }
-
     /**
      * 生成后台代码
      */
     @SneakyThrows
     @Override
-    public String forSpring(List<CodeGenerateListDTO> list) {
+    public String forSpring(List<CodeGenerateItemDTO> list) {
 
         String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/spring";
 
@@ -65,10 +50,10 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
 
-        Map<String, List<CodeGenerateListDTO>> groupMap =
+        Map<String, List<CodeGenerateItemDTO>> groupMap =
             list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
 
-        for (Map.Entry<String, List<CodeGenerateListDTO>> item : groupMap.entrySet()) {
+        for (Map.Entry<String, List<CodeGenerateItemDTO>> item : groupMap.entrySet()) {
 
             // 处理并封装数据
             CodeGenerateDTO codeGenerateDTO = getCodeGenerateDTO(item);
@@ -89,7 +74,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     /**
      * 处理并封装数据
      */
-    private CodeGenerateDTO getCodeGenerateDTO(Map.Entry<String, List<CodeGenerateListDTO>> item) {
+    private CodeGenerateDTO getCodeGenerateDTO(Map.Entry<String, List<CodeGenerateItemDTO>> item) {
 
         String tableName = item.getKey();
         String tableComment = item.getValue().get(0).getTableComment();
@@ -97,7 +82,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         String tableNameCamelCase = StrUtil.toCamelCase(tableName);
         String tableNameCamelCaseUpperFirst = StrUtil.upperFirst(tableNameCamelCase);
 
-        for (CodeGenerateListDTO subItem : item.getValue()) {
+        for (CodeGenerateItemDTO subItem : item.getValue()) {
 
             subItem.setColumnNameCamelCase(StrUtil.toCamelCase(subItem.getColumnName()));
 
@@ -113,7 +98,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         String supperClassName = CodeGenerateHelperUtil.getSupperClassName(item.getValue());
 
         // 获取：没有父类字段 list
-        List<CodeGenerateListDTO> noSupperClassColumnList =
+        List<CodeGenerateItemDTO> noSupperClassColumnList =
             CodeGenerateHelperUtil.getNoSupperClassColumnList(supperClassName, item.getValue());
 
         CodeGenerateDTO codeGenerateDTO = new CodeGenerateDTO();
@@ -243,7 +228,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
      * 生成前端代码
      */
     @Override
-    public String forAnt(List<CodeGenerateListDTO> list) {
+    public String forAnt(List<CodeGenerateItemDTO> list) {
 
         String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/ant/";
 
@@ -253,10 +238,10 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/ant", TemplateConfig.ResourceMode.CLASSPATH));
 
-        Map<String, List<CodeGenerateListDTO>> groupMap =
+        Map<String, List<CodeGenerateItemDTO>> groupMap =
             list.stream().collect(Collectors.groupingBy(CodeGeneratePageVO::getTableName));
 
-        for (Map.Entry<String, List<CodeGenerateListDTO>> item : groupMap.entrySet()) {
+        for (Map.Entry<String, List<CodeGenerateItemDTO>> item : groupMap.entrySet()) {
 
             // 处理并封装数据
             CodeGenerateDTO codeGenerateDTO = getCodeGenerateDTO(item);

@@ -3,7 +3,7 @@ package com.cmc.projectutil.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateItemDTO;
 import com.cmc.projectutil.model.entity.BaseEntity;
 import com.cmc.projectutil.model.entity.BaseEntityFour;
 import com.cmc.projectutil.model.entity.BaseEntityThree;
@@ -42,10 +42,10 @@ public class CodeGenerateHelperUtil {
     /**
      * 匹配父类名，如果没有匹配上，则返回 null
      */
-    public static String getSupperClassName(List<CodeGenerateListDTO> columnList) {
+    public static String getSupperClassName(List<CodeGenerateItemDTO> columnList) {
 
         Set<String> columnNameCamelCaseSet =
-            columnList.stream().map(CodeGenerateListDTO::getColumnNameCamelCase).collect(Collectors.toSet());
+            columnList.stream().map(CodeGenerateItemDTO::getColumnNameCamelCase).collect(Collectors.toSet());
 
         for (Map.Entry<String, Set<String>> item : BASE_ENTITY_MAP.entrySet()) {
 
@@ -64,8 +64,8 @@ public class CodeGenerateHelperUtil {
     /**
      * 获取：没有父类字段 list
      */
-    public static List<CodeGenerateListDTO> getNoSupperClassColumnList(String supperClassName,
-        List<CodeGenerateListDTO> columnList) {
+    public static List<CodeGenerateItemDTO> getNoSupperClassColumnList(String supperClassName,
+        List<CodeGenerateItemDTO> columnList) {
 
         if (supperClassName == null) {
             return new ArrayList<>(columnList);

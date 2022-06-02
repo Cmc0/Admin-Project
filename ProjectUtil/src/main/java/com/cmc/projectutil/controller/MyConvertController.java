@@ -3,7 +3,7 @@ package com.cmc.projectutil.controller;
 import com.cmc.projectutil.exception.BaseBizCodeEnum;
 import com.cmc.projectutil.model.dto.NotBlankStrDTO;
 import com.cmc.projectutil.model.vo.ApiResultVO;
-import com.cmc.projectutil.service.JavaConvertService;
+import com.cmc.projectutil.service.MyConvertService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +15,12 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/javaConvert")
+@RequestMapping(value = "/myConvert")
 @Api(tags = "java转换")
-public class JavaConvertController {
+public class MyConvertController {
 
     @Resource
-    JavaConvertService baseService;
+    MyConvertService baseService;
 
     @ApiOperation(value = "sql转java")
     @PostMapping(value = "/sqlToJava")

@@ -6,14 +6,9 @@ export interface IMainLayoutRouterList extends MenuDataItem {
 
 const MainLayoutRouterList: IMainLayoutRouterList[] = [
     {
-        name: '数据库管理',
-        path: '/main/dbManage',
-        element: 'DbManageDbManage',
-    },
-    {
-        name: 'java转换',
-        path: '/main/javaConvert',
-        element: 'JavaConvertJavaConvert',
+        name: '转换',
+        path: '/main/MyConvert',
+        element: 'MyConvertMyConvert',
     }
 ]
 

@@ -4,11 +4,11 @@ import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cmc.projectutil.exception.BaseBizCodeEnum;
-import com.cmc.projectutil.model.dto.CodeGenerateListDTO;
+import com.cmc.projectutil.model.dto.CodeGenerateItemDTO;
 import com.cmc.projectutil.model.dto.NotBlankStrDTO;
 import com.cmc.projectutil.model.enums.ColumnTypeRefEnum;
 import com.cmc.projectutil.service.CodeGenerateService;
-import com.cmc.projectutil.service.JavaConvertService;
+import com.cmc.projectutil.service.MyConvertService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class JavaConvertServiceImpl implements JavaConvertService {
+public class MyConvertServiceImpl implements MyConvertService {
 
     @Resource
     CodeGenerateService codeGenerateService;
@@ -166,9 +166,7 @@ public class JavaConvertServiceImpl implements JavaConvertService {
     @Override
     public String forSpringByTableSql(NotBlankStrDTO dto) {
 
-        List<CodeGenerateListDTO> codeGenerateListDTOList = getCodeGenerateListDTOListByTableSql(dto.getValue());
-
-        codeGenerateService.forSpring(codeGenerateListDTOList);
+        codeGenerateService.forSpring(getCodeGenerateItemDTOListByTableSql(dto.getValue()));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -179,19 +177,17 @@ public class JavaConvertServiceImpl implements JavaConvertService {
     @Override
     public String forAntByTableSql(NotBlankStrDTO dto) {
 
-        List<CodeGenerateListDTO> codeGenerateListDTOList = getCodeGenerateListDTOListByTableSql(dto.getValue());
-
-        codeGenerateService.forAnt(codeGenerateListDTOList);
+        codeGenerateService.forAnt(getCodeGenerateItemDTOListByTableSql(dto.getValue()));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**
-     * 通过：表结构sql，获取 List<CodeGenerateListDTO>
+     * 通过：表结构sql，获取 List<CodeGenerateItemDTO>
      */
-    private List<CodeGenerateListDTO> getCodeGenerateListDTOListByTableSql(String value) {
+    private List<CodeGenerateItemDTO> getCodeGenerateItemDTOListByTableSql(String value) {
 
-        List<CodeGenerateListDTO> codeGenerateListDTOList = new ArrayList<>();
+        List<CodeGenerateItemDTO> codeGenerateItemDTOList = new ArrayList<>();
 
         String tableName = ReUtil.getGroup1("CREATE TABLE `(.*?)`", value);
         String tableComment = ReUtil.getGroup1("COMMENT='(.*?)';", value);
@@ -208,18 +204,18 @@ public class JavaConvertServiceImpl implements JavaConvertService {
 
             String columnComment = ReUtil.getGroup1("COMMENT '(.*?)'", item);
 
-            CodeGenerateListDTO codeGenerateListDTO = new CodeGenerateListDTO();
-            codeGenerateListDTO.setTableName(tableName);
-            codeGenerateListDTO.setTableComment(tableComment);
-            codeGenerateListDTO.setColumnName(columnName);
-            codeGenerateListDTO.setColumnType(columnType);
-            codeGenerateListDTO.setColumnComment(columnComment);
+            CodeGenerateItemDTO codeGenerateItemDTO = new CodeGenerateItemDTO();
+            codeGenerateItemDTO.setTableName(tableName);
+            codeGenerateItemDTO.setTableComment(tableComment);
+            codeGenerateItemDTO.setColumnName(columnName);
+            codeGenerateItemDTO.setColumnType(columnType);
+            codeGenerateItemDTO.setColumnComment(columnComment);
 
-            codeGenerateListDTOList.add(codeGenerateListDTO);
+            codeGenerateItemDTOList.add(codeGenerateItemDTO);
 
         }
 
-        return codeGenerateListDTOList;
+        return codeGenerateItemDTOList;
     }
 
 }

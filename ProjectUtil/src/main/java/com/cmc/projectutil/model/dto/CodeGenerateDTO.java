@@ -24,12 +24,12 @@ public class CodeGenerateDTO {
     private String tableNameCamelCaseUpperFirst;
 
     @ApiModelProperty(value = "字段 list")
-    private List<CodeGenerateListDTO> columnList;
+    private List<CodeGenerateItemDTO> columnList;
 
     @ApiModelProperty(value = "父类类名（simpleName）只会为 null，或者实际的值，不会为空字符串")
     private String supperClassName;
 
     @ApiModelProperty(value = "没有父类字段 list，不会为 null，但是不一定有元素")
-    private List<CodeGenerateListDTO> noSupperClassColumnList;
+    private List<CodeGenerateItemDTO> noSupperClassColumnList;
 
 }
