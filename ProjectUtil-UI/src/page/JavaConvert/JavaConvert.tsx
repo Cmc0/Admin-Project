@@ -1,6 +1,6 @@
 import {Button, Input} from "antd";
 import {Dispatch, SetStateAction, useState} from "react";
-import {javaToTs, sqlToJava} from "@/api/JavaConvertController";
+import {javaToTs, sqlAddAs, sqlToJava} from "@/api/JavaConvertController";
 
 export default function () {
 
@@ -30,6 +30,10 @@ export default function () {
                 javaToTsClick(t1, setT2)
             }} type={"primary"}>javaToTs</Button>
 
+            <Button className={"m-t-20"} onClick={() => {
+                sqlAddAsClick(t1, setT2)
+            }} type={"primary"}>sqlAddAs</Button>
+
         </div>
 
         <div className={"flex1"}>
@@ -53,6 +57,14 @@ function sqlToJavaClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 function javaToTsClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 
     javaToTs({value: t1}).then(res => {
+        setT2(res.data)
+    })
+
+}
+
+function sqlAddAsClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+
+    sqlAddAs({value: t1}).then(res => {
         setT2(res.data)
     })
 

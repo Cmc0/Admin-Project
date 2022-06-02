@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/convert")
+@RequestMapping(value = "/javaConvert")
 @Api(tags = "java转换")
 public class JavaConvertController {
 
@@ -32,6 +32,12 @@ public class JavaConvertController {
     @PostMapping(value = "/javaToTs")
     public ApiResultVO<String> javaToTs(@RequestBody @Valid NotBlankStrDTO dto) {
         return ApiResultVO.ok(BaseBizCodeEnum.API_RESULT_OK.getMsg(), baseService.javaToTs(dto));
+    }
+
+    @ApiOperation(value = "给sql添加AS")
+    @PostMapping(value = "/sqlAddAs")
+    public ApiResultVO<String> sqlAddAs(@RequestBody @Valid NotBlankStrDTO dto) {
+        return ApiResultVO.ok(BaseBizCodeEnum.API_RESULT_OK.getMsg(), baseService.sqlAddAs(dto));
     }
 
 }

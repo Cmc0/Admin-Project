@@ -119,4 +119,15 @@ public class JavaConvertServiceImpl implements JavaConvertService {
         strBuilder.append(format);
     }
 
+    /**
+     * 给sql添加AS
+     */
+    @Override
+    public String sqlAddAs(NotBlankStrDTO dto) {
+
+
+
+        return null;
+    }
+
 }
