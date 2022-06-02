@@ -5,14 +5,22 @@ import {randomString} from "@/util/RandomUtil";
 import {QuestionCircleOutlined} from "@ant-design/icons/lib";
 import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
 import StrUtil from "@/util/StrUtil";
+import SqlToJavaBeanStr from "@/page/MyConvert/SqlToJavaBeanStr";
 
 interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
     name: string // 按钮名称
     functionStr: string // 按钮执行的方法
+    remark?: string // 描述
 }
 
-const defaultDrawerForm: IFunctionButton = {name: '', functionStr: ''}
+const QuickFunction: IFunctionButton[] = [{
+    name: 'SqlToJavaBean',
+    functionStr: SqlToJavaBeanStr,
+    remark: 'Sql转JavaBean'
+}];
+
+const defaultDrawerForm: IFunctionButton = {name: '', functionStr: ''};
 
 export default function () {
 
@@ -54,10 +62,10 @@ export default function () {
                                     overlay={<Menu
                                         onClick={(e) => {
                                             if (e.key === 'delFunction') {
-                                                fbList.splice(index, 1)
+                                                fbList.splice(index, 1);
                                                 setFbList(fbList.concat())
                                             } else if (e.key === 'editFunction') {
-                                                drawerUseForm.setFieldsValue({...item, id: index})
+                                                drawerUseForm.setFieldsValue({...item, id: index});
                                                 setDrawerVisible(true)
                                             }
                                         }}
@@ -75,12 +83,12 @@ export default function () {
                                     />}
                                     onClick={() => {
                                         try {
-                                            setResult('')
-                                            setFbList(fbList.concat())
-                                            new Function(...ExplainTitList, item.functionStr)(source, setResult, new StrUtil())
+                                            setResult('');
+                                            setFbList(fbList.concat());
+                                            new Function(...ExplainTitList, item.functionStr)(source, setResult, new StrUtil());
                                             ToastSuccess("操作成功 (*^▽^*)")
                                         } catch (e) {
-                                            console.error(e)
+                                            console.error(e);
                                             ToastError('操作失败 o(╥﹏╥)o')
                                         } finally {
                                             setFbList(fbList.concat())
@@ -94,7 +102,7 @@ export default function () {
                 <Button
                     type={"primary"}
                     onClick={() => {
-                        drawerUseForm.setFieldsValue({...defaultDrawerForm, name: randomString()})
+                        drawerUseForm.setFieldsValue({...defaultDrawerForm, name: randomString()});
                         setDrawerTitle(
                             <Space>
                                 <span>添加方法</span>
@@ -108,9 +116,34 @@ export default function () {
                                         /></List.Item>}
                                     />
                                 } title="说明">
-                                    <QuestionCircleOutlined/>
+                                    <QuestionCircleOutlined className={"hand main1"}/>
                                 </Popover>
-                            </Space>)
+                                <Popover content={
+                                    <List
+                                        size={"small"}
+                                        dataSource={QuickFunction}
+                                        renderItem={item => <List.Item
+                                            className={"hand"}
+                                            onClick={() => {
+                                                drawerUseForm.setFields([
+                                                    {
+                                                        name: 'name',
+                                                        value: item.name
+                                                    },
+                                                    {
+                                                        name: 'functionStr',
+                                                        value: item.functionStr
+                                                    },
+                                                ])
+                                            }}><List.Item.Meta
+                                            title={item.name}
+                                            description={item.remark}
+                                        /></List.Item>}
+                                    />
+                                } title="快速添加">
+                                    <span className={"hand cyan1"}>快速添加</span>
+                                </Popover>
+                            </Space>);
                         setDrawerVisible(true)
                     }}>添加方法</Button>
             </Space>
@@ -118,7 +151,7 @@ export default function () {
             <Drawer
                 closable={false}
                 onClose={() => {
-                    drawerUseForm.resetFields()
+                    drawerUseForm.resetFields();
                     setDrawerVisible(false)
                 }}
                 title={drawerTitle}
@@ -142,13 +175,13 @@ export default function () {
                     initialValues={drawerInitForm}
                     onFinish={(form: IFunctionButton) => {
                         if (form.id !== undefined) {
-                            fbList[form.id] = {...form}
+                            fbList[form.id] = {...form};
                             setFbList(fbList.concat())
                         } else {
-                            fbList.push(form)
+                            fbList.push(form);
                             setFbList(fbList)
                         }
-                        drawerUseForm.resetFields()
+                        drawerUseForm.resetFields();
                         setDrawerVisible(false)
                     }}>
                     <Form.Item
