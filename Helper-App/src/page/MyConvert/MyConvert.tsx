@@ -1,14 +1,13 @@
-import {Button, Drawer, Dropdown, Form, Input, Menu, PageHeader, Space, Typography} from "antd";
-import {useState} from "react";
+import {Button, Drawer, Dropdown, Form, Input, List, Menu, PageHeader, Popover, Space, Typography} from "antd";
+import {ReactNode, useState} from "react";
 import {ToastError, ToastSuccess} from "@/util/ToastUtil";
+import {randomString} from "@/util/RandomUtil";
+import {QuestionCircleOutlined} from "@ant-design/icons/lib";
+import ExplainList from "@/page/MyConvert/ExplainList";
 
 interface IFunctionButton {
     name: string // 按钮名称
     functionStr: string // 按钮执行的方法
-}
-
-const defaultFunctionButton = {
-    name: '测试', functionStr: 'setResult(source)'
 }
 
 export default function () {
@@ -16,9 +15,9 @@ export default function () {
     const [fbList, setFbList] = useState<IFunctionButton[]>([]); // 方法按钮集合
     const [source, setSource] = useState<string>(''); // 要转换的内容
     const [result, setResult] = useState<string>(''); // 转换后的内容
-    const [drawerTitle, setDrawerTitle] = useState<string>(''); // drawer的 title
+    const [drawerTitle, setDrawerTitle] = useState<ReactNode>(''); // drawer的 title
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false); // drawer的 visible
-    const [drawerForm, setDrawerForm] = useState<IFunctionButton>(defaultFunctionButton); // drawer的 form
+    const [drawerForm, setDrawerForm] = useState<IFunctionButton>({name: '', functionStr: ''}); // drawer的 form
     const [drawerUseForm] = Form.useForm(); // drawer的 useForm
 
     return <div className={"bc vwh100 flex-c"}>
@@ -80,10 +79,28 @@ export default function () {
                         )
                     }
                 </>
-                <Button type={"primary"} onClick={() => {
-                    setDrawerTitle('添加方法，可以直接使用【source】【setResult()】')
-                    setDrawerVisible(true)
-                }}>添加方法</Button>
+                <Button
+                    type={"primary"}
+                    onClick={() => {
+                        setDrawerForm({name: randomString(), functionStr: ''})
+                        setDrawerTitle(
+                            <Space>
+                                <span>添加方法</span>
+                                <Popover content={
+                                    <List
+                                        size={"small"}
+                                        dataSource={ExplainList}
+                                        renderItem={item => <List.Item><List.Item.Meta
+                                            title={item.title}
+                                            description={item.description}
+                                        /></List.Item>}
+                                    />
+                                } title="说明">
+                                    <QuestionCircleOutlined/>
+                                </Popover>
+                            </Space>)
+                        setDrawerVisible(true)
+                    }}>添加方法</Button>
             </Space>
 
             <Drawer
@@ -93,18 +110,19 @@ export default function () {
                 }}
                 title={drawerTitle}
                 visible={drawerVisible} size={"large"}
-                footer={<Space>
-                    <Button
-                        type={"primary"}
-                        onClick={() => {
-                            drawerUseForm.submit()
-                        }}
-                    >确定</Button>
-                    <Button
-                        onClick={() => {
-                            drawerUseForm.resetFields()
-                        }}>重置</Button>
-                </Space>}>
+                footer={
+                    <Space>
+                        <Button
+                            type={"primary"}
+                            onClick={() => {
+                                drawerUseForm.submit()
+                            }}
+                        >确定</Button>
+                        <Button
+                            onClick={() => {
+                                drawerUseForm.resetFields()
+                            }}>重置</Button>
+                    </Space>}>
                 <Form
                     layout={"vertical"}
                     form={drawerUseForm}
