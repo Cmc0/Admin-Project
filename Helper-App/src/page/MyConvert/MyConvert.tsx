@@ -22,7 +22,7 @@ export default function () {
     const [result, setResult] = useState<string>(''); // 转换后的内容
     const [drawerTitle, setDrawerTitle] = useState<ReactNode>(''); // drawer的 title
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false); // drawer的 visible
-    const [drawerInitForm, setDrawerInitForm] = useState<IFunctionButton>(defaultDrawerForm); // drawer的 initForm
+    const [drawerInitForm] = useState<IFunctionButton>(defaultDrawerForm); // drawer的 initForm
     const [drawerUseForm] = Form.useForm(); // drawer的 useForm
 
     return <div className={"bc vwh100 flex-c"}>
@@ -77,7 +77,7 @@ export default function () {
                                     />}
                                     onClick={() => {
                                         try {
-                                            setResult('转换中...')
+                                            setResult('')
                                             item.loading = true
                                             setFbList(fbList.concat())
                                             new Function(...ExplainTitList, item.functionStr)(source, setResult, new StrUtil())
@@ -100,7 +100,7 @@ export default function () {
                 <Button
                     type={"primary"}
                     onClick={() => {
-                        setDrawerInitForm({...defaultDrawerForm, name: randomString()})
+                        drawerUseForm.setFieldsValue({...defaultDrawerForm, name: randomString()})
                         setDrawerTitle(
                             <Space>
                                 <span>添加方法</span>
