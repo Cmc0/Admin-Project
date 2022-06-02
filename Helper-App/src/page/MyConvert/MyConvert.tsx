@@ -7,11 +7,13 @@ import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
 import StrUtil from "@/util/StrUtil";
 
 interface IFunctionButton {
+    id?: number // 按钮的 id，现在是 index（下标）
     name: string // 按钮名称
     functionStr: string // 按钮执行的方法
+    loading?: boolean // 是否执行中
 }
 
-const defaultDrawerForm = {name: '', functionStr: ''}
+const defaultDrawerForm: IFunctionButton = {name: '', functionStr: ''}
 
 export default function () {
 
@@ -20,7 +22,7 @@ export default function () {
     const [result, setResult] = useState<string>(''); // 转换后的内容
     const [drawerTitle, setDrawerTitle] = useState<ReactNode>(''); // drawer的 title
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false); // drawer的 visible
-    const [drawerForm, setDrawerForm] = useState<IFunctionButton>(defaultDrawerForm); // drawer的 form
+    const [drawerInitForm, setDrawerInitForm] = useState<IFunctionButton>(defaultDrawerForm); // drawer的 initForm
     const [drawerUseForm] = Form.useForm(); // drawer的 useForm
 
     return <div className={"bc vwh100 flex-c"}>
@@ -48,6 +50,7 @@ export default function () {
                     {
                         fbList?.map((item, index) => (
                                 <Dropdown.Button
+                                    loading={item.loading}
                                     size={"small"}
                                     key={index}
                                     overlay={<Menu
@@ -55,6 +58,9 @@ export default function () {
                                             if (e.key === 'delFunction') {
                                                 fbList.splice(index, 1)
                                                 setFbList(fbList.concat())
+                                            } else if (e.key === 'editFunction') {
+                                                drawerUseForm.setFieldsValue({...item, id: index})
+                                                setDrawerVisible(true)
                                             }
                                         }}
                                         items={[
@@ -63,6 +69,7 @@ export default function () {
                                                 label: `编辑【${item.name}】`,
                                             },
                                             {
+                                                danger: true,
                                                 key: 'delFunction',
                                                 label: `删除【${item.name}】`,
                                             },
@@ -70,12 +77,19 @@ export default function () {
                                     />}
                                     onClick={() => {
                                         try {
-                                            setResult('')
+                                            setResult('转换中...')
+                                            item.loading = true
+                                            setFbList(fbList.concat())
                                             new Function(...ExplainTitList, item.functionStr)(source, setResult, new StrUtil())
                                             ToastSuccess("操作成功 (*^▽^*)")
                                         } catch (e) {
                                             console.error(e)
                                             ToastError('操作失败 o(╥﹏╥)o')
+                                        } finally {
+                                            setTimeout(() => {
+                                                item.loading = false
+                                                setFbList(fbList.concat())
+                                            }, 300)
                                         }
                                     }}
                                 >{item.name}</Dropdown.Button>
@@ -86,7 +100,7 @@ export default function () {
                 <Button
                     type={"primary"}
                     onClick={() => {
-                        setDrawerForm({name: randomString(), functionStr: ''})
+                        setDrawerInitForm({...defaultDrawerForm, name: randomString()})
                         setDrawerTitle(
                             <Space>
                                 <span>添加方法</span>
@@ -110,6 +124,7 @@ export default function () {
             <Drawer
                 closable={false}
                 onClose={() => {
+                    drawerUseForm.resetFields()
                     setDrawerVisible(false)
                 }}
                 title={drawerTitle}
@@ -130,12 +145,26 @@ export default function () {
                 <Form
                     layout={"vertical"}
                     form={drawerUseForm}
-                    initialValues={drawerForm}
+                    initialValues={drawerInitForm}
                     onFinish={(form: IFunctionButton) => {
-                        fbList.push(form)
-                        setFbList(fbList)
+                        if (form.id !== undefined) {
+                            fbList[form.id] = {...form}
+                            setFbList(fbList.concat())
+                        } else {
+                            fbList.push(form)
+                            setFbList(fbList)
+                        }
+                        drawerUseForm.resetFields()
                         setDrawerVisible(false)
                     }}>
+                    <Form.Item
+                        hidden
+                        name="id"
+                    ><Input/></Form.Item>
+                    <Form.Item
+                        hidden
+                        name="loading"
+                    ><Input/></Form.Item>
                     <Form.Item
                         label="方法名"
                         name="name"
