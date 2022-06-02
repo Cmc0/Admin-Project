@@ -1,5 +1,5 @@
 import {BrowserRouter, NavigateFunction, Route, Routes, useNavigate} from "react-router-dom";
-import NoLoginRouterList, {IMyRouter} from "@/router/NoLoginRouterList";
+import NoLoginRouterList from "@/router/NoLoginRouterList";
 import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
 import MainLayoutRouterList from "@/router/MainLayoutRouterList";
 
@@ -45,8 +45,12 @@ export function getAppNav() {
     return AppNav
 }
 
+interface ILoadElement {
+    element?: string
+}
+
 // 加载 element
-function LoadElement(props: IMyRouter) {
+function LoadElement(props: ILoadElement) {
     AppNav = useNavigate()
     if (props.element && RouterMapKeyList.includes(props.element)) {
         const Element = RouterMap[props.element].element
