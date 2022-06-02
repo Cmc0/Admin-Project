@@ -9,8 +9,8 @@ interface IFunctionButton {
 export default function () {
 
     const [fbList, setFbList] = useState<IFunctionButton[]>([]); // 方法按钮集合
-    const [source, setSource] = useState<string>(''); // 要转换的内容
-    const [result, setResult] = useState<string>(''); // 转换后的内容
+    const [source, setSource] = useState<string>('123'); // 要转换的内容
+    const [result, setResult] = useState<string>('465'); // 转换后的内容
     const [drawerTitle, setDrawerTitle] = useState<string>(''); // drawer的 title
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false); // drawer的 visible
     const [drawerForm, setDrawerForm] = useState<IFunctionButton>({name: '测试', functionStr: 'setResult(source)'}); // drawer的 form
@@ -28,8 +28,8 @@ export default function () {
 
             <div className={"flex-c wh100"}>
                 <Space>
-                    <Typography.Text keyboard>要转换的内容</Typography.Text>
-                    <Button size={"small"}>清空</Button>
+                    <Typography.Text keyboard>要转换的内容（source）</Typography.Text>
+                    <Button size={"small"} onClick={() => setSource('')}>清空</Button>
                 </Space>
                 <Input.TextArea className={"flex1 m-t-10"} value={source} onChange={(e) => {
                     setSource(e.target.value)
@@ -65,7 +65,7 @@ export default function () {
                         )
                     }
                 </>
-                <Button onClick={() => {
+                <Button type={"primary"} onClick={() => {
                     setDrawerTitle('添加方法，可以直接使用【source】【setResult()】')
                     setDrawerVisible(true)
                 }}>添加方法</Button>
@@ -97,6 +97,7 @@ export default function () {
                     onFinish={(form: IFunctionButton) => {
                         fbList.push(form)
                         setFbList(fbList)
+                        setDrawerVisible(false)
                     }}>
                     <Form.Item
                         label="方法名"
@@ -117,8 +118,8 @@ export default function () {
 
             <div className={"flex-c wh100"}>
                 <Space>
-                    <Typography.Text keyboard>转换后的内容</Typography.Text>
-                    <Button size={"small"}>清空</Button>
+                    <Typography.Text keyboard>转换后的内容（result）</Typography.Text>
+                    <Button size={"small"} onClick={() => setResult('')}>清空</Button>
                 </Space>
                 <Input.TextArea className={"flex1 m-t-10"} value={result} onChange={(e) => {
                     setResult(e.target.value)
