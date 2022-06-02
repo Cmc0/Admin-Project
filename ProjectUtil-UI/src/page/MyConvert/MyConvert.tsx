@@ -36,11 +36,11 @@ export default function () {
             }} type={"primary"}>sqlAddAs</Button>
 
             <Button className={"m-t-20"} onClick={() => {
-                forSpringByTableSqlClick(t1, setT2)
+                forSpringByTableSqlClick(t1)
             }} type={"primary"}>forSpringByTableSql</Button>
 
             <Button className={"m-t-20"} onClick={() => {
-                forAntByTableSqlClick(t1, setT2)
+                forAntByTableSqlClick(t1)
             }} type={"primary"}>forAntByTableSql</Button>
 
 
@@ -83,7 +83,7 @@ function sqlAddAsClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
 
 }
 
-function forSpringByTableSqlClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+function forSpringByTableSqlClick(t1: string) {
 
     forSpringByTableSql({value: t1}).then(res => {
         ToastSuccess(res.msg)
@@ -91,7 +91,7 @@ function forSpringByTableSqlClick(t1: string, setT2: Dispatch<SetStateAction<str
 
 }
 
-function forAntByTableSqlClick(t1: string, setT2: Dispatch<SetStateAction<string>>) {
+function forAntByTableSqlClick(t1: string) {
 
     forAntByTableSql({value: t1}).then(res => {
         ToastSuccess(res.msg)
