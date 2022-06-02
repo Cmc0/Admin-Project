@@ -2,10 +2,11 @@ import {Button, Input} from "antd";
 import {Dispatch, SetStateAction, useState} from "react";
 import {forAntByTableSql, forSpringByTableSql, javaToTs, sqlAddAs, sqlToJava} from "@/api/JavaConvertController";
 import {ToastSuccess} from "@/util/ToastUtil";
+import LocalStorageKey from "@/model/constant/LocalStorageKey";
 
 export default function () {
 
-    const [t1, setT1] = useState<string>('');
+    const [t1, setT1] = useState<string>(localStorage.getItem(LocalStorageKey.MyConvertT1Cache) || '');
     const [t2, setT2] = useState<string>('');
 
     return <div className={"p-24 w100 flex-center"}>
@@ -13,6 +14,7 @@ export default function () {
         <div className={"flex1"}>
             <Input.TextArea allowClear rows={32} value={t1} onChange={(e) => {
                 setT1(e.target.value)
+                localStorage.setItem(LocalStorageKey.MyConvertT1Cache, e.target.value)
             }}/>
         </div>
 
