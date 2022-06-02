@@ -2,7 +2,7 @@ import {Button, Drawer, Dropdown, Form, Input, List, Menu, PageHeader, Popover, 
 import {ReactNode, useState} from "react";
 import {ToastError, ToastSuccess} from "@/util/ToastUtil";
 import {randomString} from "@/util/RandomUtil";
-import {QuestionCircleOutlined} from "@ant-design/icons/lib";
+import {CloseOutlined, QuestionCircleOutlined} from "@ant-design/icons/lib";
 import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
 import StrUtil from "@/util/StrUtil";
 import SqlToJavaBeanStr from "@/page/MyConvert/SqlToJavaBeanStr";
@@ -101,7 +101,7 @@ export default function () {
                 </>
                 <Button
                     type={"primary"}
-                    onClick={() => {
+                    onMouseEnter={() => {
                         drawerUseForm.setFieldsValue({...defaultDrawerForm, name: randomString()});
                         setDrawerTitle(
                             <Space>
@@ -145,11 +145,15 @@ export default function () {
                                 </Popover>
                             </Space>);
                         setDrawerVisible(true)
-                    }}>添加方法</Button>
+                    }}
+                >添加方法</Button>
             </Space>
 
             <Drawer
-                closable={false}
+                closeIcon={<CloseOutlined onMouseEnter={() => {
+                    drawerUseForm.resetFields();
+                    setDrawerVisible(false)
+                }}/>}
                 onClose={() => {
                     drawerUseForm.resetFields();
                     setDrawerVisible(false)
@@ -160,7 +164,7 @@ export default function () {
                     <Space>
                         <Button
                             type={"primary"}
-                            onClick={() => {
+                            onMouseEnter={() => {
                                 drawerUseForm.submit()
                             }}
                         >确定</Button>
