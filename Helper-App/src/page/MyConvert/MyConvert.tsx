@@ -1,40 +1,20 @@
-import {Button, Dropdown, Input, Menu, PageHeader, Space, Typography} from "antd";
-import {useEffect, useState} from "react";
-import {ToastError, ToastInfo} from "@/util/ToastUtil";
+import {Button, Drawer, Dropdown, Form, Input, Menu, PageHeader, Space, Typography} from "antd";
+import {useState} from "react";
 
 interface IFunctionButton {
     name: string // 按钮名称
     functionStr: string // 按钮执行的方法
 }
 
-// 自定义：控制台的输出
-function useEffectConsoleLog() {
-    return useEffect(() => {
-
-        const oldLog = console.log
-        const oldError = console.error
-        console.log = (msg) => {
-            ToastInfo(msg)
-        }
-        console.error = (msg) => {
-            ToastError(msg)
-        }
-
-        return () => {
-            console.log = oldLog
-            console.error = oldError
-        }
-    }, [])
-}
-
 export default function () {
 
-    const [fbList, setFbList] = useState<IFunctionButton[]>([])
-
-    const [source, setSource] = useState<string>('');
-    const [result, setResult] = useState<string>('');
-
-    useEffectConsoleLog()
+    const [fbList, setFbList] = useState<IFunctionButton[]>([]); // 方法按钮集合
+    const [source, setSource] = useState<string>(''); // 要转换的内容
+    const [result, setResult] = useState<string>(''); // 转换后的内容
+    const [drawerTitle, setDrawerTitle] = useState<string>(''); // drawer的 title
+    const [drawerVisible, setDrawerVisible] = useState<boolean>(false); // drawer的 visible
+    const [drawerForm, setDrawerForm] = useState<IFunctionButton>({name: '测试', functionStr: 'setResult(source)'}); // drawer的 form
+    const [drawerUseForm] = Form.useForm(); // drawer的 useForm
 
     return <div className={"bc vwh100 flex-c"}>
 
@@ -59,22 +39,81 @@ export default function () {
             <Space direction={"vertical"} className={"m-l-r-20"}>
                 <>
                     {
-                        fbList?.map(item =>
-                            <Button size={"large"} type={"primary"} onClick={() => {
-                                new Function("source", item.functionStr)(source)
-                            }}>{item.name}</Button>
+                        fbList?.map((item, index) => (
+                                <Dropdown.Button
+                                    key={index}
+                                    overlay={<Menu
+                                        onClick={(e) => {
+                                            console.log(e.key)
+                                            if (e.key === 'delFunction') {
+                                                fbList.splice(index, 1)
+                                                setFbList(fbList)
+                                            }
+                                        }}
+                                        items={[
+                                            {
+                                                key: 'delFunction',
+                                                label: '删除方法',
+                                            },
+                                        ]}
+                                    />}
+                                    onClick={() => {
+                                        new Function("source", "setResult", item.functionStr)(source, setResult)
+                                    }}
+                                >{item.name}</Dropdown.Button>
+                            )
                         )
                     }
                 </>
-                <Dropdown.Button overlay={<Menu
-                    items={[
-                        {
-                            key: 'delFunction',
-                            label: '删除方法',
-                        },
-                    ]}
-                />}>添加方法</Dropdown.Button>
+                <Button onClick={() => {
+                    setDrawerTitle('添加方法，可以直接使用【source】【setResult()】')
+                    setDrawerVisible(true)
+                }}>添加方法</Button>
             </Space>
+
+            <Drawer
+                closable={false}
+                onClose={() => {
+                    setDrawerVisible(false)
+                }}
+                title={drawerTitle}
+                visible={drawerVisible} size={"large"}
+                footer={<Space>
+                    <Button
+                        type={"primary"}
+                        onClick={() => {
+                            drawerUseForm.submit()
+                        }}
+                    >确定</Button>
+                    <Button
+                        onClick={() => {
+                            drawerUseForm.resetFields()
+                        }}>重置</Button>
+                </Space>}>
+                <Form
+                    layout={"vertical"}
+                    form={drawerUseForm}
+                    initialValues={drawerForm}
+                    onFinish={(form: IFunctionButton) => {
+                        fbList.push(form)
+                        setFbList(fbList)
+                    }}>
+                    <Form.Item
+                        label="方法名"
+                        name="name"
+                        rules={[{required: true}]}
+                    >
+                        <Input allowClear/>
+                    </Form.Item>
+                    <Form.Item
+                        label="方法"
+                        name="functionStr"
+                        rules={[{required: true}]}
+                    >
+                        <Input.TextArea allowClear rows={28}/>
+                    </Form.Item>
+                </Form>
+            </Drawer>
 
             <div className={"flex-c wh100"}>
                 <Space>
