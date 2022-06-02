@@ -3,12 +3,15 @@ import {ReactNode, useState} from "react";
 import {ToastError, ToastSuccess} from "@/util/ToastUtil";
 import {randomString} from "@/util/RandomUtil";
 import {QuestionCircleOutlined} from "@ant-design/icons/lib";
-import ExplainList from "@/page/MyConvert/ExplainList";
+import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
+import StrUtil from "@/util/StrUtil";
 
 interface IFunctionButton {
     name: string // 按钮名称
     functionStr: string // 按钮执行的方法
 }
+
+const defaultDrawerForm = {name: '', functionStr: ''}
 
 export default function () {
 
@@ -17,7 +20,7 @@ export default function () {
     const [result, setResult] = useState<string>(''); // 转换后的内容
     const [drawerTitle, setDrawerTitle] = useState<ReactNode>(''); // drawer的 title
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false); // drawer的 visible
-    const [drawerForm, setDrawerForm] = useState<IFunctionButton>({name: '', functionStr: ''}); // drawer的 form
+    const [drawerForm, setDrawerForm] = useState<IFunctionButton>(defaultDrawerForm); // drawer的 form
     const [drawerUseForm] = Form.useForm(); // drawer的 useForm
 
     return <div className={"bc vwh100 flex-c"}>
@@ -67,7 +70,8 @@ export default function () {
                                     />}
                                     onClick={() => {
                                         try {
-                                            new Function("source", "setResult", item.functionStr)(source, setResult)
+                                            setResult('')
+                                            new Function(...ExplainTitList, item.functionStr)(source, setResult, new StrUtil())
                                             ToastSuccess("操作成功 (*^▽^*)")
                                         } catch (e) {
                                             console.error(e)
