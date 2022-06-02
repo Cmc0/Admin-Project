@@ -10,7 +10,6 @@ interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
     name: string // 按钮名称
     functionStr: string // 按钮执行的方法
-    loading?: boolean // 是否执行中
 }
 
 const defaultDrawerForm: IFunctionButton = {name: '', functionStr: ''}
@@ -50,7 +49,6 @@ export default function () {
                     {
                         fbList?.map((item, index) => (
                                 <Dropdown.Button
-                                    loading={item.loading}
                                     size={"small"}
                                     key={index}
                                     overlay={<Menu
@@ -71,14 +69,13 @@ export default function () {
                                             {
                                                 danger: true,
                                                 key: 'delFunction',
-                                                label: `删除【${item.name}】`,
+                                                label: `删除`,
                                             },
                                         ]}
                                     />}
                                     onClick={() => {
                                         try {
                                             setResult('')
-                                            item.loading = true
                                             setFbList(fbList.concat())
                                             new Function(...ExplainTitList, item.functionStr)(source, setResult, new StrUtil())
                                             ToastSuccess("操作成功 (*^▽^*)")
@@ -86,10 +83,7 @@ export default function () {
                                             console.error(e)
                                             ToastError('操作失败 o(╥﹏╥)o')
                                         } finally {
-                                            setTimeout(() => {
-                                                item.loading = false
-                                                setFbList(fbList.concat())
-                                            }, 300)
+                                            setFbList(fbList.concat())
                                         }
                                     }}
                                 >{item.name}</Dropdown.Button>
@@ -160,10 +154,6 @@ export default function () {
                     <Form.Item
                         hidden
                         name="id"
-                    ><Input/></Form.Item>
-                    <Form.Item
-                        hidden
-                        name="loading"
                     ><Input/></Form.Item>
                     <Form.Item
                         label="方法名"
