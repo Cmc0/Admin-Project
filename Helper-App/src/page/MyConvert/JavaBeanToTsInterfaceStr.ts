@@ -1,3 +1,4 @@
+// language=HTML
 export const JavaBeanToTsInterfaceSourceTemp =
     `private Date createTime;
 
@@ -10,8 +11,11 @@ export const JavaBeanToTsInterfaceSourceTemp =
 @ApiModelProperty(value = "类别")
  private Byte category;
  
- @ApiModelProperty(value = "是否逻辑删除")
- private Boolean delFlag;`
+@ApiModelProperty(value = "所属区域 set")
+private Set<String> areaNameSet;
+ 
+@ApiModelProperty(value = "是否逻辑删除")
+private Boolean delFlag;`
 
 export default `    let result = ''
 
