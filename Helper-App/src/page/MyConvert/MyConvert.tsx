@@ -6,6 +6,7 @@ import {QuestionCircleOutlined} from "@ant-design/icons/lib";
 import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
 import * as StrUtil from "@/util/StrUtil";
 import SqlToJavaBeanStr, {SqlToJavaBeanSourceTemp} from "@/page/MyConvert/SqlToJavaBeanStr";
+import SqlAddAsStr, {SqlAddAsSourceTemp} from "@/page/MyConvert/SqlAddAsStr";
 
 interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
@@ -17,13 +18,22 @@ interface IFunctionButton {
 }
 
 // 快速添加的案例，集合
-const QuickFunctionList: IFunctionButton[] = [{
-    name: 'SqlToJavaBean',
-    sourceTemp: SqlToJavaBeanSourceTemp,
-    functionStr: SqlToJavaBeanStr,
-    remark: 'Sql转JavaBean',
-    quickInFbListFlag: true
-}];
+const QuickFunctionList: IFunctionButton[] = [
+    {
+        name: 'SqlToJavaBean',
+        sourceTemp: SqlToJavaBeanSourceTemp,
+        functionStr: SqlToJavaBeanStr,
+        remark: 'Sql转JavaBean',
+        quickInFbListFlag: true
+    },
+    {
+        name: 'SqlAddAs',
+        sourceTemp: SqlAddAsSourceTemp,
+        functionStr: SqlAddAsStr,
+        remark: '给Sql添加AS',
+        quickInFbListFlag: true
+    },
+];
 
 // 收集：QuickFunctionList 里面需要添加到 fbList里面的元素
 const QuickFbList = QuickFunctionList.filter(item => item.quickInFbListFlag)
@@ -116,6 +126,10 @@ export default function () {
                         )
                     }
                 </>
+                <Button onClick={() => {
+                    setSource('')
+                    setResult('')
+                }}>全部清空</Button>
                 <Button
                     type={"primary"}
                     onClick={() => {
