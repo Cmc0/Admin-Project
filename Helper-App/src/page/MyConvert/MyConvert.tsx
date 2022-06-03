@@ -245,7 +245,7 @@ export default function () {
                         name="functionStr"
                         rules={[{required: true}]}
                     >
-                        <Input.TextArea allowClear rows={23}/>
+                        <Input.TextArea allowClear rows={21}/>
                     </Form.Item>
                 </Form>
             </Drawer>
