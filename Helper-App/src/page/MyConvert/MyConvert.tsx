@@ -7,8 +7,8 @@ import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
 import StrUtil from "@/util/StrUtil";
 import SqlToJavaBeanStr, {SqlToJavaBeanSourceTemp} from "@/page/MyConvert/SqlToJavaBeanStr";
 import SqlAddAsStr, {SqlAddAsSourceTemp} from "@/page/MyConvert/SqlAddAsStr";
-import JavaBeanToTsInterFaceStr, {JavaBeanToTsInterFaceSourceTemp} from "@/page/MyConvert/JavaBeanToTsInterFaceStr";
 import TableSqlToJavaBeanStr, {TableSqlToJavaBeanSourceTemp} from "@/page/MyConvert/TableSqlToJavaBeanStr";
+import JavaBeanToTsInterfaceStr, {JavaBeanToTsInterfaceSourceTemp} from "@/page/MyConvert/JavaBeanToTsInterfaceStr";
 
 interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
@@ -43,10 +43,10 @@ const QuickFunctionList: IFunctionButton[] = [
         quickInFbListFlag: true
     },
     {
-        name: 'JavaBeanToTsInterFace',
-        sourceTemp: JavaBeanToTsInterFaceSourceTemp,
-        functionStr: JavaBeanToTsInterFaceStr,
-        remark: 'JavaBean转TsInterFace',
+        name: 'JavaBeanToTsInterface',
+        sourceTemp: JavaBeanToTsInterfaceSourceTemp,
+        functionStr: JavaBeanToTsInterfaceStr,
+        remark: 'JavaBean转TsInterface',
         quickInFbListFlag: true
     },
 ];
