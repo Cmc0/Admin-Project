@@ -79,7 +79,7 @@ export default function () {
                                                 setDrawerVisible(true)
                                             } else if (e.key === 'setSource') {
                                                 setSource(item.sourceTemp)
-                                                ToastSuccess('生成成功！')
+                                                ToastSuccess('生成成功')
                                             }
                                         }}
                                         items={[
@@ -103,10 +103,10 @@ export default function () {
                                             setResult('');
                                             setFbList(fbList.concat());
                                             new Function(...ExplainTitList, item.functionStr)(source, setResult, StrUtil);
-                                            ToastSuccess("操作成功！")
+                                            ToastSuccess("操作成功")
                                         } catch (e) {
                                             console.error(e);
-                                            ToastError('操作失败！')
+                                            ToastError('操作失败')
                                         } finally {
                                             setFbList(fbList.concat())
                                         }
@@ -199,11 +199,11 @@ export default function () {
                         if (form.id !== undefined) {
                             fbList[form.id] = {...form};
                             setFbList(fbList.concat())
-                            ToastSuccess("修改成功！")
+                            ToastSuccess("修改成功")
                         } else {
                             fbList.push(form);
                             setFbList(fbList)
-                            ToastSuccess("添加成功！")
+                            ToastSuccess("添加成功")
                         }
                         drawerUseForm.resetFields();
                         setDrawerVisible(false)
