@@ -9,6 +9,7 @@ import SqlToJavaBeanStr, {SqlToJavaBeanSourceTemp} from "@/page/MyConvert/SqlToJ
 import SqlAddAsStr, {SqlAddAsSourceTemp} from "@/page/MyConvert/SqlAddAsStr";
 import TableSqlToJavaBeanStr, {TableSqlToJavaBeanSourceTemp} from "@/page/MyConvert/TableSqlToJavaBeanStr";
 import JavaBeanToTsInterfaceStr, {JavaBeanToTsInterfaceSourceTemp} from "@/page/MyConvert/JavaBeanToTsInterfaceStr";
+import ColumnTypeRefEnum from "@/model/enums/ColumnTypeRefEnum";
 
 interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
@@ -128,7 +129,7 @@ export default function () {
                                         try {
                                             setResult('');
                                             setFbList(fbList.concat());
-                                            new Function(...ExplainTitList, item.functionStr)(source, setResult, StrUtil);
+                                            new Function(...ExplainTitList, item.functionStr)(source, setResult, StrUtil, ColumnTypeRefEnum);
                                             ToastSuccess("操作成功")
                                         } catch (e) {
                                             console.error(e);
