@@ -4,7 +4,7 @@ import {ToastError, ToastSuccess} from "@/util/ToastUtil";
 import {randomString} from "@/util/RandomUtil";
 import {QuestionCircleOutlined} from "@ant-design/icons/lib";
 import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
-import * as StrUtil from "@/util/StrUtil";
+import StrUtil from "@/util/StrUtil";
 import SqlToJavaBeanStr, {SqlToJavaBeanSourceTemp} from "@/page/MyConvert/SqlToJavaBeanStr";
 import SqlAddAsStr, {SqlAddAsSourceTemp} from "@/page/MyConvert/SqlAddAsStr";
 

@@ -1,13 +1,19 @@
 export const SqlAddAsSourceTemp =
     `a.area_name,
 a.dept_name AS deptName,
-a.category`
+a.category,
+type,
+type_name AS typeName,
+job_name`
 
 export default `    const splitList = source.split(',');
 
     let result = ''
 
     splitList.forEach((item, index) => {
+
+        item = item.replaceAll('\\n', '')
+
         if (item.includes(" as ") || item.includes(" AS ")) {
             result = result + item
         } else {
