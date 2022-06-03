@@ -7,6 +7,8 @@ import ExplainList, {ExplainTitList} from "@/page/MyConvert/ExplainList";
 import StrUtil from "@/util/StrUtil";
 import SqlToJavaBeanStr, {SqlToJavaBeanSourceTemp} from "@/page/MyConvert/SqlToJavaBeanStr";
 import SqlAddAsStr, {SqlAddAsSourceTemp} from "@/page/MyConvert/SqlAddAsStr";
+import JavaBeanToTsInterFaceStr, {JavaBeanToTsInterFaceSourceTemp} from "@/page/MyConvert/JavaBeanToTsInterFaceStr";
+import TableSqlToJavaBeanStr, {TableSqlToJavaBeanSourceTemp} from "@/page/MyConvert/TableSqlToJavaBeanStr";
 
 interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
@@ -20,6 +22,20 @@ interface IFunctionButton {
 // 快速添加的案例，集合
 const QuickFunctionList: IFunctionButton[] = [
     {
+        name: 'SqlAddAs',
+        sourceTemp: SqlAddAsSourceTemp,
+        functionStr: SqlAddAsStr,
+        remark: '给Sql添加AS',
+        quickInFbListFlag: true
+    },
+    {
+        name: 'TableSqlToJavaBean',
+        sourceTemp: TableSqlToJavaBeanSourceTemp,
+        functionStr: TableSqlToJavaBeanStr,
+        remark: '表结构Sql转JavaBean',
+        quickInFbListFlag: true
+    },
+    {
         name: 'SqlToJavaBean',
         sourceTemp: SqlToJavaBeanSourceTemp,
         functionStr: SqlToJavaBeanStr,
@@ -27,10 +43,10 @@ const QuickFunctionList: IFunctionButton[] = [
         quickInFbListFlag: true
     },
     {
-        name: 'SqlAddAs',
-        sourceTemp: SqlAddAsSourceTemp,
-        functionStr: SqlAddAsStr,
-        remark: '给Sql添加AS',
+        name: 'JavaBeanToTsInterFace',
+        sourceTemp: JavaBeanToTsInterFaceSourceTemp,
+        functionStr: JavaBeanToTsInterFaceStr,
+        remark: 'JavaBean转TsInterFace',
         quickInFbListFlag: true
     },
 ];
