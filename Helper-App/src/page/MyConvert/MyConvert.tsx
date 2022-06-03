@@ -60,11 +60,12 @@ export default function () {
                 }}/>
             </div>
 
-            <Space align={"center"} direction={"vertical"} className={"m-l-r-20"}>
+            <Space align={"center"} direction={"vertical"} className={"m-l-r-20"} size={"middle"}>
                 <>
                     {
                         fbList?.map((item, index) => (
                                 <Dropdown.Button
+                                    title={item.remark}
                                     size={"small"}
                                     key={index}
                                     overlay={<Menu
@@ -102,10 +103,10 @@ export default function () {
                                             setResult('');
                                             setFbList(fbList.concat());
                                             new Function(...ExplainTitList, item.functionStr)(source, setResult, StrUtil);
-                                            ToastSuccess("操作成功 (*^▽^*)")
+                                            ToastSuccess("操作成功！")
                                         } catch (e) {
                                             console.error(e);
-                                            ToastError('操作失败 o(╥﹏╥)o')
+                                            ToastError('操作失败！')
                                         } finally {
                                             setFbList(fbList.concat())
                                         }
