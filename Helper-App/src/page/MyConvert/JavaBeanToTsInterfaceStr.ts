@@ -1,23 +1,26 @@
 export const JavaBeanToTsInterfaceSourceTemp =
-    `private String createTime;
+    `private Date createTime;
 
 @ApiModelProperty(value = "总数")
- private String count;
+ private Integer count;
 
 @ApiModelProperty(value = "部门名称")
  private String deptName;
 
 @ApiModelProperty(value = "类别")
- private String category;`
+ private Byte category;
+ 
+ @ApiModelProperty(value = "是否逻辑删除")
+ private Boolean delFlag;`
 
 export default `    let result = ''
 
     const stringList = source.split(';');
-    
+
     stringList.forEach(item => {
 
         const splitList = item.split('\\n');
-        
+
         const str = splitList[splitList.length - 1] //private String tableName
 
         if (splitList.length === 1) {
@@ -41,13 +44,13 @@ export default `    let result = ''
 
         const strList = str.split(" ");
 
-        if (strList.length !== 3) {
+        if (strList.length < 3) {
             return;
         }
 
-        const columnTypeRefEnum = ColumnTypeRefEnum.getByJavaType(strList[1]);
+        const columnTypeRefEnum = ColumnTypeRefEnum.getByJavaType(strList[strList.length - 2]);
 
-        result = result + \`\${strList[2]}?: \${columnTypeRefEnum.tsType} // \${apiModelPropertyValue}\\n\`
+        result = result + \`\${strList[strList.length - 1]}?: \${columnTypeRefEnum.tsType} // \${apiModelPropertyValue}\\n\`
 
     }
 
