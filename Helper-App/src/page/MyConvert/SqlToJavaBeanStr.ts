@@ -1,5 +1,11 @@
-export default `
-    const splitList = source.split(',');
+export const SqlToJavaBeanSourceTemp =
+    `DATE_FORMAT(#{item}, #{format}) AS date,
+ COUNT( 1 ) as count,
+ a.dept_name AS deptName,
+ a.category
+`
+
+export default `const splitList = source.split(',');
 
     let result = ''
 
