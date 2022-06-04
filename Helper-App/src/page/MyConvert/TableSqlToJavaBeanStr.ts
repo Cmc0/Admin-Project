@@ -34,7 +34,8 @@ import lombok.Data;
 
 @Data
 @ApiModel(description = "\${tableComment}")
-public class \${tableName} {\\n\n\`
+public class \${tableName} {\\n
+\`
 
     const stringList = source.split('\\n');
 
@@ -61,8 +62,13 @@ public class \${tableName} {\\n\n\`
             columnComment = columnCommentMatchList[1]
         }
 
-        result = result + \`    @ApiModelProperty(value = "\${columnComment}")
-    private \${columnTypeRefEnum.javaType} \${columnName};\n\n\`
+        if (columnComment) {
+            result = result + \`    @ApiModelProperty(value = "\${columnComment}")\\n\`
+        }
+
+        result = result + \`    private \${columnTypeRefEnum.javaType} \${columnName};
+
+\`
 
     })
 
