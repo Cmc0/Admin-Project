@@ -49,13 +49,31 @@ const ColumnTypeRefEnum: Record<string, IColumnTypeRefEnum> = {
     },
 }
 
+const defaultColumnTypeRefEnum: IColumnTypeRefEnum = {
+    columnType: "varchar",
+    javaType: 'String',
+    tsType: 'string[]',
+}
+
+function getByColumnType(columnType: string) {
+
+    let result = defaultColumnTypeRefEnum
+
+    Object.keys(ColumnTypeRefEnum).some(item => {
+        const flag = ColumnTypeRefEnum[item].columnType === columnType
+        if (flag) {
+            result = ColumnTypeRefEnum[item]
+        }
+        return flag
+    })
+
+    return result
+
+}
+
 function getByJavaType(javaType: string) {
 
-    let result: IColumnTypeRefEnum = {
-        columnType: "",
-        javaType: 'String',
-        tsType: 'string[]',
-    }
+    let result = defaultColumnTypeRefEnum
 
     Object.keys(ColumnTypeRefEnum).some(item => {
         const flag = ColumnTypeRefEnum[item].javaType === javaType
@@ -69,6 +87,6 @@ function getByJavaType(javaType: string) {
 
 }
 
-export default {getByJavaType}
+export default {getByColumnType, getByJavaType}
 
 

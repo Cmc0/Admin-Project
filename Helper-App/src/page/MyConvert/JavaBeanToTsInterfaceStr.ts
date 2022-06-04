@@ -31,7 +31,7 @@ export default `    let result = ''
             appendToResult(str)
         } else {
             const matchList = item.match(/@ApiModelProperty\\(value = \\"(.*?)\\"\\)/);
-            if (matchList && matchList.length !== 0) {
+            if (matchList && matchList.length) {
                 appendToResult(str, matchList[1])
             } else {
                 appendToResult(str)
