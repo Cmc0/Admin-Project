@@ -57,7 +57,13 @@ const defaultColumnTypeRefEnum: IColumnTypeRefEnum = {
 
 function getByColumnType(columnType: string) {
 
+    if (columnType === TINYINT_ONE) {
+        return ColumnTypeRefEnum.Boolean
+    }
+
     let result = defaultColumnTypeRefEnum
+
+    columnType = columnType.split('(')[0]
 
     Object.keys(ColumnTypeRefEnum).some(item => {
         const flag = ColumnTypeRefEnum[item].columnType === columnType
