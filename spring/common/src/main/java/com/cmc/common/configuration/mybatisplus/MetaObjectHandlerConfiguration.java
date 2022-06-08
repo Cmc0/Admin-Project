@@ -1,4 +1,4 @@
-package com.cmc.common.configuration;
+package com.cmc.common.configuration.mybatisplus;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class MetaObjectHandlerConfig implements MetaObjectHandler {
+public class MetaObjectHandlerConfiguration implements MetaObjectHandler {
 
     private static final Long USER_ID = -1L;
 
