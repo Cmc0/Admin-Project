@@ -61,7 +61,7 @@ public class NettyServer implements CommandLineRunner {
                     }
                 });
             ChannelFuture channelFuture = serverBootstrap.bind().sync(); // 服务器同步创建绑定
-            channelFuture.channel().closeFuture().sync(); // 关闭服务器通道
+            channelFuture.channel().closeFuture().sync(); // 阻塞线程，监听关闭事件
         } finally {
             parentGroup.shutdownGracefully().sync(); // 释放线程池资源
             childGroup.shutdownGracefully().sync();
