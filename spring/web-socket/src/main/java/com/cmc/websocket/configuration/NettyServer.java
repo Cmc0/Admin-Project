@@ -30,8 +30,9 @@ public class NettyServer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         ThreadUtil.execute(this::start);
-        log.info("WebSocket 启动完成：" + BaseConfiguration.adminProperties.getSocketAddress() + ":" + BaseConfiguration.port
-            + 1);
+        log.info(
+            "WebSocket 启动完成：" + BaseConfiguration.adminProperties.getSocketAddress() + ":" + (BaseConfiguration.port
+                + 1));
     }
 
     @SneakyThrows
