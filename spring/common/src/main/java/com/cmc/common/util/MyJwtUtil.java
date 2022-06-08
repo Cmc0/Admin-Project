@@ -16,7 +16,6 @@ import com.cmc.common.model.entity.BaseUserSecurityDO;
 import com.cmc.common.model.enums.RequestCategoryEnum;
 import com.cmc.common.model.vo.ApiResultVO;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,38 +29,37 @@ import java.util.stream.Collectors;
 
 @Component
 @Data
-@Slf4j
 public class MyJwtUtil {
 
-    public static BaseRoleRefUserMapper baseRoleUserMapper;
+    private static BaseRoleRefUserMapper baseRoleUserMapper;
 
     @Resource
     private void setBaseRoleUserMapper(BaseRoleRefUserMapper value) {
         baseRoleUserMapper = value;
     }
 
-    public static BaseRoleRefMenuMapper baseRoleMenuMapper;
+    private static BaseRoleRefMenuMapper baseRoleMenuMapper;
 
     @Resource
     private void setBaseRoleMenuMapper(BaseRoleRefMenuMapper value) {
         baseRoleMenuMapper = value;
     }
 
-    public static BaseMenuMapper baseMenuMapper;
+    private static BaseMenuMapper baseMenuMapper;
 
     @Resource
     private void setBaseMenuMapper(BaseMenuMapper value) {
         baseMenuMapper = value;
     }
 
-    public static BaseUserMapper baseUserMapper;
+    private static BaseUserMapper baseUserMapper;
 
     @Resource
     private void setBaseUserMapper(BaseUserMapper value) {
         baseUserMapper = value;
     }
 
-    public static BaseUserSecurityMapper baseUserSecurityMapper;
+    private static BaseUserSecurityMapper baseUserSecurityMapper;
 
     @Resource
     private void setBaseUserSecurityMapper(BaseUserSecurityMapper value) {
@@ -83,6 +81,7 @@ public class MyJwtUtil {
      * 统一生成 jwt
      */
     public static String generateJwt(Long userId, boolean rememberMe, String jwtSecretSuf) {
+
         if (userId == null) {
             userId = (Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (userId == null) {
@@ -143,8 +142,10 @@ public class MyJwtUtil {
      * 获取 jwt密钥：配置的私钥前缀 + JWT_SECRET_SYS + 用户的私钥后缀
      */
     public static String getJwtSecret(String jwtSecretSuf) {
+
         StrBuilder strBuilder = new StrBuilder(BaseConfiguration.adminProperties.getJwtSecretPre());
         strBuilder.append(JWT_SECRET_SYS).append(jwtSecretSuf);
+
         return strBuilder.toString();
     }
 
@@ -157,7 +158,7 @@ public class MyJwtUtil {
     }
 
     /**
-     * 生成 redis中，jwt存储使用的 key前面一部分值
+     * 生成 redis中，jwtUser 存储使用的 key前面一部分值
      */
     public static String generateRedisJwtUserKeyPre(Long userId) {
         return BaseConstant.PRE_REDIS_JWT_USER + userId + ":";
@@ -341,6 +342,7 @@ public class MyJwtUtil {
      * 获取用户 jwt私钥后缀，通过 userId
      */
     public static String getUserJwtSecretSufByUserId(Long userId) {
+
         if (userId == null || BaseConstant.ADMIN_ID.equals(userId)) {
             return null;
         }
@@ -354,7 +356,7 @@ public class MyJwtUtil {
     }
 
     /**
-     * 通过 userId获取到权限的 Set
+     * 通过 userId获取到权限的 set
      */
     public static List<SimpleGrantedAuthority> getAuthSetByUserId(Long userId) {
 
