@@ -1,16 +1,25 @@
 package com.cmc.common.util;
 
-import cn.hutool.extra.spring.SpringUtil;
 import com.cmc.common.model.constant.BaseConstant;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Set;
 
 /**
  * 连锁工具类
  */
+@Component
 public class MultiLockUtil {
+
+    private static RedissonClient redissonClient;
+
+    @Resource
+    private void setRedissonClient(RedissonClient value) {
+        redissonClient = value;
+    }
 
     /**
      * 获取连锁
@@ -18,7 +27,6 @@ public class MultiLockUtil {
     public static RLock getMultiLock(String preName, Set<Long> nameSet) {
 
         RLock[] lockArr = new RLock[nameSet.size()];
-        RedissonClient redissonClient = SpringUtil.getBean(RedissonClient.class);
 
         int i = 0;
         for (Long item : nameSet) {
