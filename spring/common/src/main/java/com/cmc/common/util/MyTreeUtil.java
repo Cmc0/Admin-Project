@@ -19,7 +19,7 @@ public class MyTreeUtil {
     @SneakyThrows
     public static <T extends BaseEntityFour<T>> List<T> listToTree(List<T> list, boolean childrenFlag) {
 
-        HashMap<Long, T> listMap = MapUtil.newHashMap(); // 把 list的所有元素转换为：id -> 元素，格式
+        HashMap<Long, T> listMap = MapUtil.newHashMap(list.size()); // 把 list的所有元素转换为：id -> 元素，格式
         List<T> resultList = new ArrayList<>(); // 返回值
 
         for (T item : list) {
