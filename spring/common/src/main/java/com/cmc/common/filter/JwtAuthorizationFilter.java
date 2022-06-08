@@ -1,7 +1,6 @@
 package com.cmc.common.filter;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.exceptions.ValidateException;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
@@ -24,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -100,7 +100,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         try {
             // 校验时间字段：如果过期了，这里会抛出 ValidateException异常
-            JWTValidator.of(jwtOf).validateDate(DateUtil.date());
+            JWTValidator.of(jwtOf).validateDate(new Date());
         } catch (ValidateException e) {
             return loginExpired(response); // 提示登录过期，请重新登录
         }

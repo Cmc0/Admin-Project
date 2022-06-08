@@ -2,6 +2,7 @@ package com.cmc.common.exception;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
+import com.cmc.common.configuration.BaseConfiguration;
 import com.cmc.common.model.vo.ApiResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,14 @@ public class ExceptionHandlerAdvice {
     public ApiResultVO<?> handleValidException(MethodArgumentNotValidException e) {
 
         e.printStackTrace();
+
+        if (BaseConfiguration.prodFlag) {
+            try {
+                ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);  // 这里肯定会抛出 BaseException异常
+            } catch (BaseException baseException) {
+                return getBaseExceptionApiResult(baseException);
+            }
+        }
 
         // 返回详细的参数校验错误信息
         HashMap<String, String> map = MapUtil.newHashMap();
@@ -47,7 +56,7 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(value = BaseException.class)
     public ApiResultVO<?> handleBaseException(BaseException e) {
-        
+
         e.printStackTrace();
 
         return getBaseExceptionApiResult(e);

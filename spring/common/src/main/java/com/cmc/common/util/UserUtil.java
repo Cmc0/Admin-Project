@@ -92,14 +92,14 @@ public class UserUtil {
     }
 
     /**
-     * 通过 userId，获取数据库中用户安全以及状态相关
+     * 通过 userId，获取数据库中用户 jwt私钥后缀
      */
-    public static BaseUserSecurityDO getUserStatusInfoByUserId(Long userId) {
+    public static BaseUserSecurityDO getUserJwtSecretSufByUserId(Long userId) {
 
         if (!BaseConstant.ADMIN_ID.equals(userId)) {
-            return ChainWrappers.lambdaQueryChain(baseUserSecurityMapper)
-                .eq(BaseUserSecurityDO::getUserId, userId).eq(BaseUserSecurityDO::getEnableFlag, true)
-                .eq(BaseUserSecurityDO::getDelFlag, false).select(BaseUserSecurityDO::getJwtSecretSuf).one();
+            return ChainWrappers.lambdaQueryChain(baseUserSecurityMapper).eq(BaseUserSecurityDO::getUserId, userId)
+                .eq(BaseUserSecurityDO::getEnableFlag, true).eq(BaseUserSecurityDO::getDelFlag, false)
+                .select(BaseUserSecurityDO::getJwtSecretSuf).one();
         }
 
         return null;

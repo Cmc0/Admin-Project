@@ -95,14 +95,14 @@ public class MyJwtUtil {
         }
 
         if (StrUtil.isBlank(jwtSecretSuf)) {
-            jwtSecretSuf = MyJwtUtil.getUserJwtSecretSufByUserId(userId);
+            jwtSecretSuf = getUserJwtSecretSufByUserId(userId);
         }
 
         if (StrUtil.isBlank(jwtSecretSuf) && !BaseConstant.ADMIN_ID.equals(userId)) {
             return null;
         }
 
-        return MyJwtUtil.sign(userId, jwtSecretSuf, rememberMe);
+        return sign(userId, jwtSecretSuf, rememberMe);
     }
 
     /**
@@ -140,7 +140,7 @@ public class MyJwtUtil {
     }
 
     /**
-     * 获取 jwt密钥
+     * 获取 jwt密钥：配置的私钥前缀 + JWT_SECRET_SYS + 用户的私钥后缀
      */
     public static String getJwtSecret(String jwtSecretSuf) {
         StrBuilder strBuilder = new StrBuilder(BaseConfiguration.adminProperties.getJwtSecretPre());
@@ -175,7 +175,7 @@ public class MyJwtUtil {
      */
     public static void removeJwtHashForJwtUser(Long userId) {
 
-        String jwtUserKeyPre = MyJwtUtil.generateRedisJwtUserKeyPre(userId);
+        String jwtUserKeyPre = generateRedisJwtUserKeyPre(userId);
 
         for (RequestCategoryEnum item : RequestCategoryEnum.values()) {
             String jwtUserKey = jwtUserKeyIsExist(jwtUserKeyPre, item);
@@ -183,14 +183,14 @@ public class MyJwtUtil {
                 continue;
             }
             // 获取 jwtUser set里面所有的 jwtHash
-            BoundSetOperations<String, String> setOps = MyJwtUtil.redisTemplate.boundSetOps(jwtUserKey);
+            BoundSetOperations<String, String> setOps = redisTemplate.boundSetOps(jwtUserKey);
             Set<String> jwtHashSet = setOps.members();
             if (CollUtil.isEmpty(jwtHashSet)) {
                 continue;
             }
             Set<String> removeSet = new HashSet<>(); // 需要移除：过期了，但是还是存在于 jwtUser set里面的 jwtHash
             for (String subItem : jwtHashSet) {
-                Boolean aBoolean = MyJwtUtil.redisTemplate.hasKey(subItem);
+                Boolean aBoolean = redisTemplate.hasKey(subItem);
                 if (aBoolean == null || !aBoolean) {
                     // 如果这个 jwtHash不存在了，则移除 jwtUser set里面的 jwtHash
                     removeSet.add(subItem);
@@ -214,7 +214,7 @@ public class MyJwtUtil {
         jwtSet.addAll(jwtUserSet);
 
         if (jwtSet.size() != 0) {
-            MyJwtUtil.redisTemplate.delete(jwtSet); // 移除 全部 jwt
+            redisTemplate.delete(jwtSet); // 移除 全部 jwt
         }
 
     }
@@ -231,14 +231,14 @@ public class MyJwtUtil {
 
         boolean jwtHashFlag = StrUtil.isNotBlank(jwtHash);
         if (jwtHashFlag) {
-            MyJwtUtil.redisTemplate.delete(jwtHash); // 移除 jwtHash
+            redisTemplate.delete(jwtHash); // 移除 jwtHash
             requestCategoryEnum = null;
         }
         if (anyOneFlag != null) {
             requestCategoryEnum = null;
         }
 
-        String jwtUserKeyPre = MyJwtUtil.generateRedisJwtUserKeyPre(userId);
+        String jwtUserKeyPre = generateRedisJwtUserKeyPre(userId);
 
         Set<String> removeKeySet = new HashSet<>(); // redis需要移除的 keySet
 
@@ -256,7 +256,7 @@ public class MyJwtUtil {
                 continue;
             }
             // 获取 jwtUser set里面所有的 jwtHash
-            BoundSetOperations<String, String> setOps = MyJwtUtil.redisTemplate.boundSetOps(jwtUserKey);
+            BoundSetOperations<String, String> setOps = redisTemplate.boundSetOps(jwtUserKey);
 
             if (jwtHashFlag) {
                 Long remove = setOps.remove(jwtHash);
@@ -292,7 +292,7 @@ public class MyJwtUtil {
         }
 
         if (removeKeySet.size() != 0) {
-            MyJwtUtil.redisTemplate.delete(removeKeySet); // 执行批量移除
+            redisTemplate.delete(removeKeySet); // 执行批量移除
         }
 
     }
@@ -329,7 +329,7 @@ public class MyJwtUtil {
 
         String jwtUserKey = jwtUserKeyPre + item.getCode();
 
-        Boolean hasKey = MyJwtUtil.redisTemplate.hasKey(jwtUserKey);
+        Boolean hasKey = redisTemplate.hasKey(jwtUserKey);
         if (hasKey == null || !hasKey) {
             return null;
         }
@@ -345,18 +345,19 @@ public class MyJwtUtil {
             return null;
         }
 
-        BaseUserSecurityDO selectOne = UserUtil.getUserStatusInfoByUserId(userId);
-        if (selectOne == null || StrUtil.isBlank(selectOne.getJwtSecretSuf())) {
+        BaseUserSecurityDO baseUserSecurityDO = UserUtil.getUserJwtSecretSufByUserId(userId);
+        if (baseUserSecurityDO == null || StrUtil.isBlank(baseUserSecurityDO.getJwtSecretSuf())) {
             return null;
         }
 
-        return selectOne.getJwtSecretSuf();
+        return baseUserSecurityDO.getJwtSecretSuf();
     }
 
     /**
      * 通过 userId获取到权限的 Set
      */
     public static List<SimpleGrantedAuthority> getAuthSetByUserId(Long userId) {
+
         if (userId == null) {
             ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST); // 直接抛出异常
             return null;
