@@ -29,12 +29,12 @@ public class RedisUtil {
     public static Set<String> scan(String matchKey) {
 
         return redisTemplate.execute((RedisCallback<Set<String>>)connection -> {
-            Set<String> keysTmp = new HashSet<>();
+            Set<String> keySet = new HashSet<>();
             Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match("*" + matchKey + "*").build());
             while (cursor.hasNext()) {
-                keysTmp.add(new String(cursor.next()));
+                keySet.add(new String(cursor.next()));
             }
-            return keysTmp;
+            return keySet;
         });
 
     }
