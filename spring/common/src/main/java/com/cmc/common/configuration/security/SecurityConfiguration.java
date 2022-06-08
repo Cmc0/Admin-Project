@@ -18,14 +18,14 @@ import java.util.List;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // 不需要登录就可以 下载文件的地址
-    public final static String FILE_PUBLIC_DOWNLOAD_URL = "/file/publicDownload";
+    private final static String FILE_PUBLIC_DOWNLOAD_URL = "/file/publicDownload";
 
     // 生产环境，不需要 Security 处理的 url
-    public static final List<String> PROD_IGNORING_LIST =
+    private static final List<String> PROD_IGNORING_LIST =
         Arrays.asList("/forgotPassword/**", "/reg/**", "/login/**", FILE_PUBLIC_DOWNLOAD_URL, "/pay/notifyCallBack");
 
     // 其他环境，不需要 Security 处理的 url
-    public static final List<String> IGNORING_LIST = CollUtil.addAllIfNotContains(
+    private static final List<String> IGNORING_LIST = CollUtil.addAllIfNotContains(
         new ArrayList<>(Arrays.asList("/swagger-resources/**", "/v3/api-docs", "/webjars/**", "/doc.html")),
         PROD_IGNORING_LIST);
 
