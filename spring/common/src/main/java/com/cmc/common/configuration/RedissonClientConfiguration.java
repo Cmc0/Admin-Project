@@ -16,7 +16,7 @@ public class RedissonClientConfiguration {
     @Resource
     RedisProperties redisProperties;
 
-    @Bean(destroyMethod = "shutdown")
+    @Bean
     public RedissonClient redissonClient() {
 
         Config config = new Config();

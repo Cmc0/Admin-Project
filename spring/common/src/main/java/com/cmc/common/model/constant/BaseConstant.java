@@ -32,6 +32,7 @@ public interface BaseConstant {
 
     // properties 相关 ↓
     String ADMIN = "admin"; // 本系统相关配置前缀
+    String XXL_JOB = "xxl.job"; // xxl-job相关的配置前缀
     // properties 相关 ↑
 
     // id 相关 ↓

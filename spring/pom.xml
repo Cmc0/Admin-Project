@@ -21,10 +21,17 @@
     <modules>
         <module>start</module> <!-- 启动包 -->
         <module>common</module> <!-- 通用包 -->
+        <module>xxl-job</module> <!-- 分布式定时任务相关功能包 -->
     </modules>
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.cmc</groupId>
+                <artifactId>xxl-job</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.cmc</groupId>
