@@ -33,7 +33,7 @@ spring:
 
   kafka:
     bootstrap-servers: ${spring.redis.host}:9092
-    properties:
+    properties: # 配置连接 kafka的密码
       security:
         protocol: SASL_PLAINTEXT
       sasl:
