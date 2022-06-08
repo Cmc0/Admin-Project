@@ -9,6 +9,10 @@ import java.util.Set;
  */
 public interface BaseConstant {
 
+    // mq 相关 ↓
+    String MQ_SOCKET_TOPIC = "cmc-admin-socket-topic"; // socket的 topic
+    // mq 相关 ↑
+
     // 过期时间相关 ↓
     long DAY_1_EXPIRE_TIME = 60 * 60 * 1000 * 24; // 1天过期
     long DAY_7_EXPIRE_TIME = 60 * 60 * 1000 * 24 * 7L; // 7天过期
@@ -25,10 +29,10 @@ public interface BaseConstant {
     int SECOND_30_EXPIRE_TIME = 30 * 1000; // 30秒钟过期
     // 过期时间相关 ↑
 
-    // jwt相关 ↓
+    // jwt 相关 ↓
     String JWT_HEADER_KEY = "Authorization";
     String JWT_PREFIX = "Bearer ";
-    // jwt相关 ↑
+    // jwt 相关 ↑
 
     // properties 相关 ↓
     String ADMIN = "admin"; // 本系统相关配置前缀
@@ -53,7 +57,7 @@ public interface BaseConstant {
     String REQUEST_HEADER_CATEGORY = "category"; // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     // request 相关 ↑
 
-    // redis相关 ↓ // 【PRE_REDIS】开头和 【PRE_LOCK】开头，以及【_CACHE】结尾
+    // redis 相关 ↓ 【PRE_REDIS】开头和 【PRE_LOCK】开头，以及【_CACHE】结尾
     String PRE_REDISSON = "PRE_REDISSON:"; // 锁前缀，所有的分布式锁，都要加这个前缀
 
     // jwt 相关 ↓
@@ -66,6 +70,6 @@ public interface BaseConstant {
     String PRE_REDIS_IP_BLACKLIST = "PRE_REDIS_IP_BLACKLIST:"; // ip黑名单，redis key前端
     String PRE_REDIS_IP_TOTAL_CHECK = "PRE_REDIS_IP_TOTAL_CHECK:"; // ip 请求速率，redis key前缀
 
-    // redis相关 ↑
+    // redis 相关 ↑
 
 }

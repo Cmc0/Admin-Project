@@ -45,11 +45,11 @@ spring:
         jaas:
           config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="${spring.datasource.username}" password="${spring.redis.password}";'
     consumer:
-      enable-auto-commit: false # 关闭自动提交
-      auto-offset-reset: earliest
+      enable-auto-commit: false # 为了：ack-mode: manual_immediate，设置为 true，则 ack-mode不会生效
+      auto-offset-reset: earliest # 当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
       fetch-max-wait: 100 # 降低消费者拉取消息的延迟（ms）
     listener:
-      ack-mode: manual_immediate
+      ack-mode: manual_immediate # 手动调用 Acknowledgment.acknowledge() 后立即提交
 
 minio:
   endpoint: http://${spring.redis.host}:9000 # 文件上传时的地址
