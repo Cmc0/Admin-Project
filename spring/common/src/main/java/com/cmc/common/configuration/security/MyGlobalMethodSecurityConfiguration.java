@@ -2,6 +2,9 @@ package com.cmc.common.configuration.security;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.AccessDecisionManager;
@@ -24,7 +27,8 @@ import java.util.Map;
 /**
  * 为了增加 自定义投票者
  */
-@EnableGlobalMethodSecurity(prePostEnabled = true) // 开启 @PreAuthorize 权限注解
+@Configuration(proxyBeanMethods = false)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class MyGlobalMethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
 
     private AnnotationAttributes enableMethodSecurity;
