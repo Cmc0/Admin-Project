@@ -2,12 +2,18 @@ package com.cmc.common.exception;
 
 import cn.hutool.json.JSONUtil;
 import com.cmc.common.model.vo.ApiResultVO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class BaseException extends RuntimeException {
 
+    private ApiResultVO<?> apiResultVO;
+
     public <T> BaseException(ApiResultVO<T> apiResult) {
-        // 把信息封装成json格式
-        super(JSONUtil.toJsonStr(apiResult));
+        super(JSONUtil.toJsonStr(apiResult)); // 把信息封装成json格式
+        setApiResultVO(apiResult);
     }
 
 }

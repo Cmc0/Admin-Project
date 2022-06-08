@@ -1,7 +1,6 @@
 package com.cmc.common.exception;
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONUtil;
 import com.cmc.common.configuration.BaseConfiguration;
 import com.cmc.common.model.vo.ApiResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +79,7 @@ public class ExceptionHandlerAdvice {
     }
 
     private ApiResultVO<?> getBaseExceptionApiResult(BaseException e) {
-        return JSONUtil.toBean(e.getMessage(), ApiResultVO.class);
+        return e.getApiResultVO();
     }
 
 }
