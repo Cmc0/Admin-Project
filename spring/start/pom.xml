@@ -50,10 +50,6 @@
                         </exclude>
                         <exclude>
                             <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-starter-actuator</artifactId>
-                        </exclude>
-                        <exclude>
-                            <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
                         </exclude>
                     </excludes>
