@@ -82,7 +82,7 @@ public class UserUtil {
      * 获取当前 userId，注意：这里获取 userId之后需要做 非空判断
      * 这里只会返回实际的 userId或者 null
      */
-    public static Long getCurrentUserIdNoCheck() {
+    private static Long getCurrentUserIdNoCheck() {
         Long userId = null;
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             userId = (Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
