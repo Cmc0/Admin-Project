@@ -7,7 +7,7 @@ import lombok.Data;
 
 import java.util.Date;
 
-@TableName(value = "user_info")
+@TableName(value = "sys_user_info")
 @Data
 @ApiModel(description = "用户基本信息（user_id 子表）")
 public class BaseUserInfoDO {

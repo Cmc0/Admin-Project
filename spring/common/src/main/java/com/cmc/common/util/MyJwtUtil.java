@@ -11,8 +11,8 @@ import com.cmc.common.configuration.BaseConfiguration;
 import com.cmc.common.exception.BaseBizCodeEnum;
 import com.cmc.common.mapper.*;
 import com.cmc.common.model.constant.BaseConstant;
+import com.cmc.common.model.entity.BaseMenuDO;
 import com.cmc.common.model.entity.BaseUserSecurityDO;
-import com.cmc.common.model.entity.MenuDO;
 import com.cmc.common.model.enums.RequestCategoryEnum;
 import com.cmc.common.model.vo.ApiResultVO;
 import lombok.Data;
@@ -33,25 +33,25 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MyJwtUtil {
 
-    public static RoleRefUserMapper baseRoleUserMapper;
+    public static BaseRoleRefUserMapper baseRoleUserMapper;
 
     @Resource
-    private void setBaseRoleUserMapper(RoleRefUserMapper value) {
+    private void setBaseRoleUserMapper(BaseRoleRefUserMapper value) {
         baseRoleUserMapper = value;
     }
 
-    public static RoleRefMenuMapper baseRoleMenuMapper;
+    public static BaseRoleRefMenuMapper baseRoleMenuMapper;
 
     @Resource
-    private void setBaseRoleMenuMapper(RoleRefMenuMapper value) {
+    private void setBaseRoleMenuMapper(BaseRoleRefMenuMapper value) {
         baseRoleMenuMapper = value;
     }
 
-    public static MenuMapper menuMapper;
+    public static BaseMenuMapper baseMenuMapper;
 
     @Resource
-    private void setMenuMapper(MenuMapper value) {
-        menuMapper = value;
+    private void setBaseMenuMapper(BaseMenuMapper value) {
+        baseMenuMapper = value;
     }
 
     public static BaseUserMapper baseUserMapper;
@@ -369,13 +369,13 @@ public class MyJwtUtil {
 
         List<SimpleGrantedAuthority> result = new ArrayList<>(); // 本方法返回值
 
-        List<MenuDO> menuList = UserUtil.getMenuListByUserId(userId, 2); // 通过用户 id，获取 菜单集合
+        List<BaseMenuDO> menuList = UserUtil.getMenuListByUserId(userId, 2); // 通过用户 id，获取 菜单集合
 
         if (menuList.size() == 0) {
             return result;
         }
 
-        Set<String> authsSet = menuList.stream().map(MenuDO::getAuths).collect(Collectors.toSet());
+        Set<String> authsSet = menuList.stream().map(BaseMenuDO::getAuths).collect(Collectors.toSet());
 
         // 组装权限，并去重
         Set<String> hashSet = new HashSet<>();

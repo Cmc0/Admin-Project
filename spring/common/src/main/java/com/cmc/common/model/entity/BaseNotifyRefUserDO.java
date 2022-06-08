@@ -10,10 +10,10 @@ import lombok.Data;
 
 import java.util.Date;
 
-@TableName(value = "notify_ref_user")
+@TableName(value = "sys_notify_ref_user")
 @Data
 @ApiModel(description = "通知，用户关联表")
-public class NotifyRefUserDO {
+public class BaseNotifyRefUserDO {
 
     @TableId
     @ApiModelProperty(value = "通知主键 id")

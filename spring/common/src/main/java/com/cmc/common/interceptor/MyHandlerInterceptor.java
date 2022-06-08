@@ -3,10 +3,10 @@ package com.cmc.common.interceptor;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.cmc.common.mapper.UserIdMapper;
+import com.cmc.common.mapper.BaseUserIdMapper;
 import com.cmc.common.model.constant.BaseConstant;
-import com.cmc.common.model.entity.ParamDO;
-import com.cmc.common.model.entity.UserIdDO;
+import com.cmc.common.model.entity.BaseParamDO;
+import com.cmc.common.model.entity.BaseUserIdDO;
 import com.cmc.common.util.MyJwtUtil;
 import com.cmc.common.util.ParamUtil;
 import lombok.SneakyThrows;
@@ -27,7 +27,7 @@ import java.util.List;
 public class MyHandlerInterceptor implements HandlerInterceptor {
 
     @Resource
-    UserIdMapper userIdMapper;
+    BaseUserIdMapper baseUserIdMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -49,35 +49,35 @@ public class MyHandlerInterceptor implements HandlerInterceptor {
         // 获取请求body
         String bodyStr = IoUtil.readUtf8(request.getInputStream());
 
-        ParamDO paramDO = JSONUtil.toBean(bodyStr, ParamDO.class);
+        BaseParamDO baseParamDO = JSONUtil.toBean(bodyStr, BaseParamDO.class);
 
-        if (!BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID.equals(paramDO.getId())) {
+        if (!BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID.equals(baseParamDO.getId())) {
             return;
         }
 
-        if ("1".equals(paramDO.getValue())) {
+        if ("1".equals(baseParamDO.getValue())) {
             // 如果设置为都不互斥，则结束方法
             return;
         }
 
         String paramValue = ParamUtil.getValueById(BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID);
 
-        if (paramValue == null || paramValue.equals(paramDO.getValue())) {
+        if (paramValue == null || paramValue.equals(baseParamDO.getValue())) {
             return; // 如果value没有发生改变，则不处理
         }
 
         // 下线有互斥关系的账号
-        String value = paramDO.getValue();
+        String value = baseParamDO.getValue();
         if ("2".equals(value)) {
             // 2 相同端的互斥（H5/移动端/桌面程序）
-            List<UserIdDO> userIdDbList = ChainWrappers.lambdaQueryChain(userIdMapper).select(UserIdDO::getId).list();
-            for (UserIdDO item : userIdDbList) {
+            List<BaseUserIdDO> userIdDbList = ChainWrappers.lambdaQueryChain(baseUserIdMapper).select(BaseUserIdDO::getId).list();
+            for (BaseUserIdDO item : userIdDbList) {
                 MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(item.getId(), null, null, false);
             }
         } else if ("3".equals(value)) {
             // 3 所有端都互斥
-            List<UserIdDO> userIdDbList = ChainWrappers.lambdaQueryChain(userIdMapper).select(UserIdDO::getId).list();
-            for (UserIdDO item : userIdDbList) {
+            List<BaseUserIdDO> userIdDbList = ChainWrappers.lambdaQueryChain(baseUserIdMapper).select(BaseUserIdDO::getId).list();
+            for (BaseUserIdDO item : userIdDbList) {
                 MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(item.getId(), null, null, true);
             }
         }

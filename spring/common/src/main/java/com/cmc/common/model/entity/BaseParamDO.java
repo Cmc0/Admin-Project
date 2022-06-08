@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "param")
+@TableName(value = "sys_param")
 @Data
 @ApiModel(description = "系统参数设置主表")
-public class ParamDO extends BaseEntityThree {
+public class BaseParamDO extends BaseEntityThree {
 
     @ApiModelProperty(value = "配置名，以 id为不变值进行使用，不要用此属性")
     private String name;

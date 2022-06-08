@@ -1,10 +1,10 @@
 package com.cmc.common.util;
 
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.cmc.common.mapper.ParamMapper;
+import com.cmc.common.mapper.BaseParamMapper;
 import com.cmc.common.model.constant.BaseConstant;
 import com.cmc.common.model.entity.BaseEntityTwo;
-import com.cmc.common.model.entity.ParamDO;
+import com.cmc.common.model.entity.BaseParamDO;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 @Component
 public class ParamUtil {
 
-    private static ParamMapper paramMapper;
+    private static BaseParamMapper baseParamMapper;
 
     @Resource
-    private void setParamMapper(ParamMapper value) {
-        paramMapper = value;
+    private void setParamMapper(BaseParamMapper value) {
+        baseParamMapper = value;
     }
 
     private static RedisTemplate<String, Long> redisTemplate;
@@ -55,14 +55,14 @@ public class ParamUtil {
      */
     public static String updateRedisCache(Long id) {
 
-        List<ParamDO> paramRedisList =
-            ChainWrappers.lambdaQueryChain(paramMapper).select(BaseEntityTwo::getId, ParamDO::getValue).list();
+        List<BaseParamDO> paramRedisList =
+            ChainWrappers.lambdaQueryChain(baseParamMapper).select(BaseEntityTwo::getId, BaseParamDO::getValue).list();
 
         // 转换为 map，目的：提供速度
         // 注意：Collectors.toMap()方法，key不能重复，不然会报错
         // 可以用第三个参数，解决这个报错：(v1,v2) -> v2 不覆盖（留前值）(v1,v2) -> v1 覆盖（取后值）
         Map<Long, String> map =
-            paramRedisList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, ParamDO::getValue));
+            paramRedisList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, BaseParamDO::getValue));
 
         redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
 

@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "notify")
+@TableName(value = "sys_notify")
 @Data
 @ApiModel(description = "通知主表")
-public class NotifyDO extends BaseEntityThree {
+public class BaseNotifyDO extends BaseEntityThree {
 
     @ApiModelProperty(value = "通知类型（字典值）")
     private Byte type;

@@ -6,10 +6,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@TableName(value = "role_ref_user")
+@TableName(value = "sys_role_ref_user")
 @Data
 @ApiModel(description = "角色，用户关联表")
-public class RoleRefUserDO {
+public class BaseRoleRefUserDO {
 
     @TableId
     @ApiModelProperty(value = "角色id")

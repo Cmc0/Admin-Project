@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "role")
+@TableName(value = "sys_role")
 @Data
 @ApiModel(description = "角色主表")
-public class RoleDO extends BaseEntityThree {
+public class BaseRoleDO extends BaseEntityThree {
 
     @ApiModelProperty(value = "角色名（不能重复）")
     private String name;

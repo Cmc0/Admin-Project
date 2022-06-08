@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "user_security")
+@TableName(value = "sys_user_security")
 @Data
 @ApiModel(description = "用户安全以及状态相关（user_id 子表）")
 public class BaseUserSecurityDO extends BaseEntity {
