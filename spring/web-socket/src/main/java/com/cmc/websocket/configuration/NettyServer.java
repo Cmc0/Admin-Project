@@ -29,14 +29,16 @@ public class NettyServer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ThreadUtil.execute(this::start);
-        log.info(
-            "WebSocket 启动完成：" + BaseConfiguration.adminProperties.getSocketAddress() + ":" + (BaseConfiguration.port
-                + 1));
+
+        int port = BaseConfiguration.port + 1; // WebSocket端口
+
+        ThreadUtil.execute(() -> start(port));
+
+        log.info("WebSocket 启动完成：" + BaseConfiguration.adminProperties.getSocketAddress() + ":" + port);
     }
 
     @SneakyThrows
-    public void start() {
+    public void start(int port) {
         EventLoopGroup childGroup = new NioEventLoopGroup();
         EventLoopGroup parentGroup = new NioEventLoopGroup();
 
@@ -45,7 +47,7 @@ public class NettyServer implements CommandLineRunner {
             serverBootstrap.option(ChannelOption.SO_BACKLOG, 1024);
             serverBootstrap.group(parentGroup, childGroup) // 绑定线程池
                 .channel(NioServerSocketChannel.class) // 指定使用的channel
-                .localAddress(BaseConfiguration.port + 1) // 绑定监听端口
+                .localAddress(port) // 绑定监听端口
                 .childHandler(new ChannelInitializer<SocketChannel>() { // 绑定客户端连接时候触发操作
                     @Override
                     protected void initChannel(SocketChannel ch) { // 绑定客户端连接时候触发操作
