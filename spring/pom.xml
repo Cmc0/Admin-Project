@@ -87,13 +87,6 @@
                 <version>6.1.6</version>
             </dependency>
 
-            <!-- netty -->
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
-                <version>4.1.9.Final</version>
-            </dependency>
-
             <!-- 发送邮件 -->
             <dependency>
                 <groupId>com.sun.mail</groupId>
