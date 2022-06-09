@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.cmc.common.mapper.BaseMenuMapper">
+<mapper namespace="com.admin.common.mapper.BaseMenuMapper">
 
     <!-- 通过 menuIdSet，获取 userIdSet -->
     <select id="getUserIdSetByMenuIdSet" resultType="java.lang.Long">

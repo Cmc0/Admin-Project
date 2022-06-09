@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.cmc</groupId>
+        <groupId>com.admin</groupId>
         <artifactId>root</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -14,22 +14,22 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.cmc</groupId>
+            <groupId>com.admin</groupId>
             <artifactId>user</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.cmc</groupId>
+            <groupId>com.admin</groupId>
             <artifactId>web-socket</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.cmc</groupId>
+            <groupId>com.admin</groupId>
             <artifactId>xxl-job</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.cmc</groupId>
+            <groupId>com.admin</groupId>
             <artifactId>common</artifactId>
         </dependency>
 

@@ -11,7 +11,7 @@
     </parent>
 
     <packaging>pom</packaging>
-    <groupId>com.cmc</groupId>
+    <groupId>com.admin</groupId>
     <artifactId>root</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <description>项目顶级 pom.xml，目的：1 方便打包modules 2 依赖版本控制（所以不要在其他pom.xml里面，添加带有version标签的依赖）</description>
@@ -34,31 +34,31 @@
         <dependencies>
 
             <dependency>
-                <groupId>com.cmc</groupId>
+                <groupId>com.admin</groupId>
                 <artifactId>user</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.cmc</groupId>
+                <groupId>com.admin</groupId>
                 <artifactId>web-socket</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.cmc</groupId>
+                <groupId>com.admin</groupId>
                 <artifactId>xxl-job</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.cmc</groupId>
+                <groupId>com.admin</groupId>
                 <artifactId>common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.cmc</groupId>
+                <groupId>com.admin</groupId>
                 <artifactId>start</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.cmc.common.configuration.BaseConfiguration
+com.admin.common.configuration.BaseConfiguration
