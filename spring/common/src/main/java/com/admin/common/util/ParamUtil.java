@@ -40,22 +40,27 @@ public class ParamUtil {
      */
     public static String getValueById(Long id) {
 
+        String idStr = Convert.toStr(id);
+        if (idStr == null) {
+            return null;
+        }
+
         BoundHashOperations<String, String, String> ops =
             redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
 
         Long size = ops.size();
         if (size == null || size == 0) {
             // 更新 redis中【系统参数】的缓存，并返回 值，备注：值可能会为 null
-            return updateRedisCache(id);
+            return updateRedisCache(idStr);
         }
 
-        return ops.get(id);
+        return ops.get(idStr);
     }
 
     /**
      * 更新 redis中【系统参数】的缓存，并返回 值，备注：值可能会为 null
      */
-    public static String updateRedisCache(Long id) {
+    public static String updateRedisCache(String idStr) {
 
         List<BaseParamDO> paramRedisList =
             ChainWrappers.lambdaQueryChain(baseParamMapper).select(BaseEntityTwo::getId, BaseParamDO::getValue).list();
@@ -68,7 +73,7 @@ public class ParamUtil {
 
         redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 
-        return map.get(Convert.toStr(id));
+        return map.get(idStr);
 
     }
 
