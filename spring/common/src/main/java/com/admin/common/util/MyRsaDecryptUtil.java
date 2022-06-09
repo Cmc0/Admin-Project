@@ -27,7 +27,7 @@ public class MyRsaDecryptUtil {
     }
 
     /**
-     * 非对称加密：解密
+     * 非对称：解密
      */
     public static String rsaDecrypt(String str) {
 
@@ -37,7 +37,7 @@ public class MyRsaDecryptUtil {
     }
 
     /**
-     * 非对称加密：解密
+     * 非对称：解密
      */
     public static String rsaDecrypt(String str, String privateKey) {
 

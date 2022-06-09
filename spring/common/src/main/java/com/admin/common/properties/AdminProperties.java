@@ -18,10 +18,13 @@ public class AdminProperties {
     @ApiModelProperty(value = "是否允许 admin登录，为 false时 admin下的所有配置都不会生效")
     private boolean adminEnable;
 
-    @ApiModelProperty(value = "admin的用户名")
-    private String adminUsername = "admin";
+    @ApiModelProperty(value = "admin 的登录账号")
+    private String adminAccount = "admin";
 
-    @ApiModelProperty(value = "admin的密码，默认为 suancai，下面是 suancai经过 sha256加密之后的字符串，加密次数和前端需进行统一，输入 suancai 即可登录")
+    @ApiModelProperty(value = "admin 的昵称")
+    private String adminNickname = "admin";
+
+    @ApiModelProperty(value = "admin 的密码，默认为suancai，下面是suancai经过 sha256加密之后的字符串，加密次数和前端需进行统一，输入suancai即可登录")
     private String adminPassword = "0c57d37d81577a6a026979ca2e545ebb0aefee59a824fb28c24a14ec9f5a5a53";
 
     @ApiModelProperty(value = "返回 WebSocket 连接地址时，使用的 ip/域名")
