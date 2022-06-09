@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,12 +21,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // 生产环境，不需要 Security 处理的 url
     private static final List<String> PROD_IGNORING_LIST =
-        Arrays.asList("/forgotPassword/**", "/reg/**", "/login/**", FILE_PUBLIC_DOWNLOAD_URL, "/pay/notifyCallBack");
+        Arrays.asList("/userReg/**", "/userLogin/**", FILE_PUBLIC_DOWNLOAD_URL);
 
     // 其他环境，不需要 Security 处理的 url
-    private static final List<String> IGNORING_LIST = CollUtil.addAllIfNotContains(
-        new ArrayList<>(Arrays.asList("/swagger-resources/**", "/v3/api-docs", "/webjars/**", "/doc.html")),
-        PROD_IGNORING_LIST);
+    private static final List<String> IGNORING_LIST = CollUtil
+        .addAllIfNotContains(CollUtil.newArrayList("/swagger-resources/**", "/v3/api-docs", "/webjars/**", "/doc.html"),
+            PROD_IGNORING_LIST);
 
     @Override
     public void configure(WebSecurity web) {
