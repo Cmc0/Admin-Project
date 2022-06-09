@@ -17,7 +17,7 @@ export default function () {
                 isKeyPressSubmit
                 backgroundImageUrl={LoginBg}
                 logo={"/src/favicon.svg"}
-                title={`${CommonConstant.SYS_NAME}`}
+                title={CommonConstant.SYS_NAME}
                 subTitle="Will have the most powerful !"
                 onFinish={async (formData) => {
                     console.log(formData)
