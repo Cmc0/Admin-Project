@@ -14,10 +14,14 @@ export default function () {
     return (
         <div className={"vh100"}>
             <LoginFormPage
+                isKeyPressSubmit
                 backgroundImageUrl={LoginBg}
                 logo={"/src/favicon.svg"}
                 title={`${CommonConstant.SYS_NAME}`}
                 subTitle="Will have the most powerful !"
+                onFinish={async (formData) => {
+                    console.log(formData)
+                }}
             >
                 <Tabs activeKey={loginType} onChange={(activeKey) => setLoginType(activeKey as LoginType)}>
                     <Tabs.TabPane key={'password'} tab={'账号密码登录'}>
