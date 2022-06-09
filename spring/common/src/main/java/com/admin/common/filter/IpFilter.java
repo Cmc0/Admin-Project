@@ -11,7 +11,6 @@ import com.admin.common.util.ParamUtil;
 import com.admin.common.util.ResponseUtil;
 import lombok.SneakyThrows;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -61,7 +60,7 @@ public class IpFilter implements Filter {
 
     /**
      * ip 请求速率处理
-     * 返回 null，则表示不在黑名单，不为 null，则会返回剩余移除黑名单的倒计时时间（字符串）
+     * 返回 null，则表示不在黑名单，不为 null，则会返回剩余移除黑名单的时间（字符串）
      */
     private String ipCheckHandler(String ip) {
 
@@ -70,12 +69,11 @@ public class IpFilter implements Filter {
 
         String blackListIpKey = BaseConstant.PRE_REDIS_IP_BLACKLIST + ip;
 
-        RedisOperations<String, Object> operations = ops.getOperations();
+        Long expire = redisTemplate.getExpire(blackListIpKey, TimeUnit.MILLISECONDS); // 获取 key过期时间，-1 过期 -2 不存在
 
-        Long expire = operations.getExpire(blackListIpKey, TimeUnit.MILLISECONDS); // 获取 key过期时间，-1 过期 -2 不存在
         if (expire != null && expire > -1) {
-            // 如果在 黑名单里，则返回剩余时间
-            return DateUtil.formatBetween(expire, BetweenFormatter.Level.SECOND); // 剩余时间（字符串）
+            // 如果在 黑名单里，则返回剩余时间（字符串）
+            return DateUtil.formatBetween(expire, BetweenFormatter.Level.SECOND);
         }
 
         return setRedisTotal(ip, ops, blackListIpKey);
