@@ -1,7 +1,7 @@
 import {RequestData} from '@ant-design/pro-components'
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {ToastError} from './ToastUtil'
-import MyPageDTO from "../src/model/dto/MyPageDTO";
+import MyPageDTO from "@/model/dto/MyPageDTO";
 
 export interface IResVO<T = string> {
     code: number
@@ -10,12 +10,12 @@ export interface IResVO<T = string> {
     data: T
 }
 
-export const timeoutMsg = '请求超时，请重试 ٩(๑❛ᴗ❛๑)۶'
-export const baseErrorMsg = "请求错误 (灬ꈍ ꈍ灬)："
+export const timeoutMsg = '请求超时，请重试'
+export const baseErrorMsg = "请求错误："
 
 const config: AxiosRequestConfig = {
     baseURL: '/api',
-    timeout: 15 * 60 * 1000, // 默认 15分钟
+    timeout: 30 * 60 * 1000, // 默认 30分钟
 }
 
 const $http = axios.create(config) as MyAxiosInstance
@@ -47,14 +47,14 @@ $http.interceptors.response.use(
         // 所有的请求错误，例如 500 404 错误，只要不是 200，都会在这里
         let msg: string = err.message
         if (msg === 'Network Error') {
-            msg = '连接异常，请重试 ٩(๑>◡<๑)۶'
+            msg = '连接异常，请重试'
         } else if (msg.includes('timeout')) {
             msg = timeoutMsg
         } else if (msg.includes('Request failed with status code')) {
             msg =
                 '接口【' +
                 msg.substring(msg.length - 3) +
-                '】异常，请联系管理员 (๑´ㅂ`๑) '
+                '】异常，请联系管理员'
         }
 
         ToastError(msg || (baseErrorMsg + err.message), 5)

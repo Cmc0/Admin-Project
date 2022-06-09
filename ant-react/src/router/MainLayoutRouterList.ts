@@ -1,6 +1,7 @@
-interface IMainLayoutRouterList {
-    path: string
-    element: string
+import {MenuDataItem} from "@ant-design/pro-components"
+
+export interface IMainLayoutRouterList extends MenuDataItem {
+    element?: string
 }
 
 const MainLayoutRouterList: IMainLayoutRouterList[] = [
