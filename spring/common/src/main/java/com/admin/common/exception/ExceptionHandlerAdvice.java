@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -31,12 +31,10 @@ public class ExceptionHandlerAdvice {
         }
 
         // 返回详细的参数校验错误信息
-        HashMap<String, String> map = MapUtil.newHashMap();
+        Map<String, String> map = MapUtil.newHashMap();
         BindingResult bindingResult = e.getBindingResult();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            String message = fieldError.getDefaultMessage();
-            String field = fieldError.getField();
-            map.put(field, message);
+            map.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
         try {
