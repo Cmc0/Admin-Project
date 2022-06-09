@@ -1,6 +1,6 @@
 admin:
-  admin-enable: false
-  socket-address: 127.0.0.1
+  adminEnable: false
+  webSocketAddress: 127.0.0.1
 
 mybatis-plus:
   configuration:

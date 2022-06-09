@@ -10,7 +10,7 @@ import java.util.Set;
 public interface BaseConstant {
 
     // mq 相关 ↓
-    String MQ_SOCKET_TOPIC = "cmc-admin-socket-topic"; // socket的 topic
+    String MQ_WEB_SOCKET_TOPIC = "cmc-admin-web-socket-topic"; // WebSocket的 topic
     // mq 相关 ↑
 
     // 过期时间相关 ↓

@@ -1,4 +1,4 @@
-package com.cmc.websocket.model.enums.enums;
+package com.cmc.websocket.model.enums;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONObject;
@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 给 socket以及 kafka，推送消息的 枚举类
+ * 给 WebSocket以及 mq，推送消息的 枚举类
  */
 @AllArgsConstructor
 @Getter
