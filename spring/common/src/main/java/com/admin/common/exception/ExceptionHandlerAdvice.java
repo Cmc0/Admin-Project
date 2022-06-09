@@ -22,8 +22,6 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ApiResultVO<?> handleValidException(MethodArgumentNotValidException e) {
 
-        e.printStackTrace();
-
         if (BaseConfiguration.prodFlag) {
             try {
                 ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);  // 这里肯定会抛出 BaseException异常
@@ -55,8 +53,6 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(value = BaseException.class)
     public ApiResultVO<?> handleBaseException(BaseException e) {
-
-        e.printStackTrace();
 
         return getBaseExceptionApiResult(e);
     }
