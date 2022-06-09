@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/userLogin")
-@Api(tags = "用户登录")
+@Api(tags = "用户-登录")
 public class UserLoginController {
 
     @Resource
