@@ -67,7 +67,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         // 判断 jwt是否存在于 redis中
-        Boolean hasKey = MyJwtUtil.redisTemplate.hasKey(MyJwtUtil.generateRedisJwtHash(authorization));
+        Boolean hasKey = MyJwtUtil.jsonRedisTemplate.hasKey(MyJwtUtil.generateRedisJwtHash(authorization));
         if (hasKey == null || !hasKey) {
             return loginExpired(response); // 提示登录过期，请重新登录
         }

@@ -1,13 +1,13 @@
 package com.admin.common.util;
 
 import cn.hutool.core.convert.Convert;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.mapper.BaseParamMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.BaseParamDO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -28,11 +28,11 @@ public class ParamUtil {
         baseParamMapper = value;
     }
 
-    private static RedisTemplate<String, String> redisTemplate;
+    private static JsonRedisTemplate<String> jsonRedisTemplate;
 
     @Resource
-    private void setRedisTemplate(RedisTemplate<String, String> value) {
-        redisTemplate = value;
+    private void setJsonRedisTemplate(JsonRedisTemplate<String> value) {
+        jsonRedisTemplate = value;
     }
 
     /**
@@ -46,7 +46,7 @@ public class ParamUtil {
         }
 
         BoundHashOperations<String, String, String> ops =
-            redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
+            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
 
         Long size = ops.size();
         if (size == null || size == 0) {
@@ -71,7 +71,7 @@ public class ParamUtil {
         Map<String, String> map =
             paramRedisList.stream().collect(Collectors.toMap(it -> Convert.toStr(it.getId()), BaseParamDO::getValue));
 
-        redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
+        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 
         return map.get(idStr);
 
@@ -82,7 +82,7 @@ public class ParamUtil {
      */
     public static void deleteRedisCache() {
 
-        redisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
     }
 
 }

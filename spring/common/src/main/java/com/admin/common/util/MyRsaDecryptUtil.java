@@ -6,10 +6,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.CryptoException;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.vo.ApiResultVO;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,11 +19,11 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class MyRsaDecryptUtil {
 
-    private static RedisTemplate<String, String> redisTemplate;
+    private static JsonRedisTemplate<String> jsonRedisTemplate;
 
     @Resource
-    private void setRedisTemplate(RedisTemplate<String, String> value) {
-        redisTemplate = value;
+    private void setJsonRedisTemplate(JsonRedisTemplate<String> value) {
+        jsonRedisTemplate = value;
     }
 
     /**
@@ -74,13 +74,13 @@ public class MyRsaDecryptUtil {
         String redisKey = BaseConstant.PRE_REDIS_RSA_ENCRYPT + str;
 
         // 校验 是否存在
-        Boolean hasKey = redisTemplate.hasKey(redisKey);
+        Boolean hasKey = jsonRedisTemplate.hasKey(redisKey);
         if (hasKey != null && hasKey) {
             ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
         }
 
         // 这个 key存入 redis，不能再次使用了
-        redisTemplate.opsForValue().set(redisKey, "不能使用该非对称加密字符串", 1, TimeUnit.MINUTES);
+        jsonRedisTemplate.opsForValue().set(redisKey, "不能使用该非对称加密字符串", 1, TimeUnit.MINUTES);
 
         return split[0]; // 返回解密之后的 字符串
     }

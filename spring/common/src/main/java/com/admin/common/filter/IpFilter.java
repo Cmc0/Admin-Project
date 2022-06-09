@@ -6,12 +6,12 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.admin.common.configuration.BaseConfiguration;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.util.ParamUtil;
 import com.admin.common.util.ResponseUtil;
 import lombok.SneakyThrows;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class IpFilter implements Filter {
 
     @Resource
-    RedisTemplate<String, Object> redisTemplate;
+    JsonRedisTemplate<Object> jsonRedisTemplate;
 
     @SneakyThrows
     @Override
@@ -65,11 +65,11 @@ public class IpFilter implements Filter {
     private String ipCheckHandler(String ip) {
 
         // 判断是否在 黑名单里
-        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+        ValueOperations<String, Object> ops = jsonRedisTemplate.opsForValue();
 
         String blackListIpKey = BaseConstant.PRE_REDIS_IP_BLACKLIST + ip;
 
-        Long expire = redisTemplate.getExpire(blackListIpKey, TimeUnit.MILLISECONDS); // 获取 key过期时间，-1 过期 -2 不存在
+        Long expire = jsonRedisTemplate.getExpire(blackListIpKey, TimeUnit.MILLISECONDS); // 获取 key过期时间，-1 过期 -2 不存在
 
         if (expire != null && expire > -1) {
             // 如果在 黑名单里，则返回剩余时间（字符串）
@@ -112,7 +112,7 @@ public class IpFilter implements Filter {
 
         if (redisTotal != null) {
             if (redisTotal == 1) {
-                redisTemplate.expire(ipKey, timeInt, TimeUnit.SECONDS); // 等于 1表示，是第一次访问，则设置过期时间
+                jsonRedisTemplate.expire(ipKey, timeInt, TimeUnit.SECONDS); // 等于 1表示，是第一次访问，则设置过期时间
                 return null;
             }
             if (redisTotal > total) {

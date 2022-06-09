@@ -106,7 +106,7 @@ public class WebSocketListener {
         webSocketMessageEnum.setJson(null);
 
         if (channelList == null) {
-            MyNettyChannelGroupHelper.send2All(webSocketMessageEnum); // 发送给所有人
+            MyNettyChannelGroupHelper.sendToAll(webSocketMessageEnum); // 发送给所有人
         } else {
             channelList.forEach(it -> it.writeAndFlush(webSocketMessageEnum));
         }

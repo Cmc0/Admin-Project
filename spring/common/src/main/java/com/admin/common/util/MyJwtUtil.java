@@ -8,6 +8,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
 import com.admin.common.configuration.BaseConfiguration;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.*;
 import com.admin.common.model.constant.BaseConstant;
@@ -17,7 +18,6 @@ import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import lombok.Data;
 import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -70,11 +70,11 @@ public class MyJwtUtil {
     private static final String JWT_SECRET_SYS =
         "4283dde8cb54c0c68082ada1b1d9ce048195cd3090e07dfad3e1871b462a8b75fee46467b96f33dea6511869f1ea4867aed76243dfe7e1efb89338d3da6570d1";
 
-    public static RedisTemplate<String, String> redisTemplate;
+    public static JsonRedisTemplate<String> jsonRedisTemplate;
 
     @Resource
-    private void setRedisTemplate(RedisTemplate<String, String> value) {
-        redisTemplate = value;
+    private void setJsonRedisTemplate(JsonRedisTemplate<String> value) {
+        jsonRedisTemplate = value;
     }
 
     /**
@@ -128,11 +128,11 @@ public class MyJwtUtil {
         // 存储到 redis中
         expireTime = expireTime - BaseConstant.SECOND_30_EXPIRE_TIME;
         String redisJwtHash = generateRedisJwtHash(jwt);
-        redisTemplate.opsForValue().set(redisJwtHash, "jwt", expireTime, TimeUnit.MILLISECONDS);
+        jsonRedisTemplate.opsForValue().set(redisJwtHash, "jwt", expireTime, TimeUnit.MILLISECONDS);
 
         String jwtUserKey = generateRedisJwtUserKey(userId);
-        redisTemplate.boundSetOps(jwtUserKey).add(redisJwtHash); // 添加元素
-        redisTemplate.expire(jwtUserKey, BaseConstant.DAY_7_EXPIRE_TIME - BaseConstant.SECOND_30_EXPIRE_TIME,
+        jsonRedisTemplate.boundSetOps(jwtUserKey).add(redisJwtHash); // 添加元素
+        jsonRedisTemplate.expire(jwtUserKey, BaseConstant.DAY_7_EXPIRE_TIME - BaseConstant.SECOND_30_EXPIRE_TIME,
             TimeUnit.MILLISECONDS); // 备注：这里设置为 7天 - 30秒过期，因为最久的 jwt过期时间也是这个
 
         return jwt;
@@ -184,14 +184,14 @@ public class MyJwtUtil {
                 continue;
             }
             // 获取 jwtUser set里面所有的 jwtHash
-            BoundSetOperations<String, String> setOps = redisTemplate.boundSetOps(jwtUserKey);
+            BoundSetOperations<String, String> setOps = jsonRedisTemplate.boundSetOps(jwtUserKey);
             Set<String> jwtHashSet = setOps.members();
             if (CollUtil.isEmpty(jwtHashSet)) {
                 continue;
             }
             Set<String> removeSet = new HashSet<>(); // 需要移除：过期了，但是还是存在于 jwtUser set里面的 jwtHash
             for (String subItem : jwtHashSet) {
-                Boolean aBoolean = redisTemplate.hasKey(subItem);
+                Boolean aBoolean = jsonRedisTemplate.hasKey(subItem);
                 if (aBoolean == null || !aBoolean) {
                     // 如果这个 jwtHash不存在了，则移除 jwtUser set里面的 jwtHash
                     removeSet.add(subItem);
@@ -215,7 +215,7 @@ public class MyJwtUtil {
         jwtSet.addAll(jwtUserSet);
 
         if (jwtSet.size() != 0) {
-            redisTemplate.delete(jwtSet); // 移除 全部 jwt
+            jsonRedisTemplate.delete(jwtSet); // 移除 全部 jwt
         }
 
     }
@@ -232,7 +232,7 @@ public class MyJwtUtil {
 
         boolean jwtHashFlag = StrUtil.isNotBlank(jwtHash);
         if (jwtHashFlag) {
-            redisTemplate.delete(jwtHash); // 移除 jwtHash
+            jsonRedisTemplate.delete(jwtHash); // 移除 jwtHash
             requestCategoryEnum = null;
         }
         if (anyOneFlag != null) {
@@ -257,7 +257,7 @@ public class MyJwtUtil {
                 continue;
             }
             // 获取 jwtUser set里面所有的 jwtHash
-            BoundSetOperations<String, String> setOps = redisTemplate.boundSetOps(jwtUserKey);
+            BoundSetOperations<String, String> setOps = jsonRedisTemplate.boundSetOps(jwtUserKey);
 
             if (jwtHashFlag) {
                 Long remove = setOps.remove(jwtHash);
@@ -293,7 +293,7 @@ public class MyJwtUtil {
         }
 
         if (removeKeySet.size() != 0) {
-            redisTemplate.delete(removeKeySet); // 执行批量移除
+            jsonRedisTemplate.delete(removeKeySet); // 执行批量移除
         }
 
     }
@@ -330,7 +330,7 @@ public class MyJwtUtil {
 
         String jwtUserKey = jwtUserKeyPre + item.getCode();
 
-        Boolean hasKey = redisTemplate.hasKey(jwtUserKey);
+        Boolean hasKey = jsonRedisTemplate.hasKey(jwtUserKey);
         if (hasKey == null || !hasKey) {
             return null;
         }

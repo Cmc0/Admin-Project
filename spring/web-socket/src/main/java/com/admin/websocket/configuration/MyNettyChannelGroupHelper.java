@@ -41,7 +41,7 @@ public class MyNettyChannelGroupHelper {
     /**
      * 发送给所有人
      */
-    public static void send2All(WebSocketMessageEnum webSocketMessageEnum) {
+    public static void sendToAll(WebSocketMessageEnum webSocketMessageEnum) {
         CHANNEL_GROUP.writeAndFlush(webSocketMessageEnum);
     }
 }

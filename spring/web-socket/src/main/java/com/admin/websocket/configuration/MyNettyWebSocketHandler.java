@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.net.url.UrlQuery;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.enums.RequestCategoryEnum;
@@ -17,7 +18,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ import javax.annotation.Resource;
 public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSocketMessageEnum> {
 
     @Resource
-    RedisTemplate<String, WebSocketDO> redisTemplate;
+    JsonRedisTemplate<WebSocketDO> jsonRedisTemplate;
 
     @SneakyThrows
     @Override
@@ -55,7 +55,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
                 ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
             }
 
-            ValueOperations<String, WebSocketDO> ops = redisTemplate.opsForValue();
+            ValueOperations<String, WebSocketDO> ops = jsonRedisTemplate.opsForValue();
 
             String redisKey = NettyServer.webSocketRegCodePreLockKey + code;
 
@@ -65,7 +65,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             }
 
             // 删除 redis中该 key，目的：只能用一次
-            redisTemplate.delete(redisKey);
+            jsonRedisTemplate.delete(redisKey);
 
             // 由于 存在 redis中的是 数字，在给对象赋值的时候，是从 下标为 0开始进行匹配的，所以这里要 减 1
             webSocketDO.setType(WebSocketTypeEnum.getByCode((byte)(webSocketDO.getType().getCode() - 1)));
