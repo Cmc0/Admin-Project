@@ -1,5 +1,6 @@
 package com.admin.common.util;
 
+import cn.hutool.core.convert.Convert;
 import com.admin.common.mapper.BaseParamMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -27,10 +28,10 @@ public class ParamUtil {
         baseParamMapper = value;
     }
 
-    private static RedisTemplate<String, Long> redisTemplate;
+    private static RedisTemplate<String, String> redisTemplate;
 
     @Resource
-    private void setRedisTemplate(RedisTemplate<String, Long> value) {
+    private void setRedisTemplate(RedisTemplate<String, String> value) {
         redisTemplate = value;
     }
 
@@ -39,7 +40,8 @@ public class ParamUtil {
      */
     public static String getValueById(Long id) {
 
-        BoundHashOperations<String, Long, String> ops = redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
+        BoundHashOperations<String, String, String> ops =
+            redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
 
         Long size = ops.size();
         if (size == null || size == 0) {
@@ -61,12 +63,12 @@ public class ParamUtil {
         // 转换为 map，目的：提供速度
         // 注意：Collectors.toMap()方法，key不能重复，不然会报错
         // 可以用第三个参数，解决这个报错：(v1, v2) -> v2 不覆盖（留前值）(v1, v2) -> v1 覆盖（取后值）
-        Map<Long, String> map =
-            paramRedisList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, BaseParamDO::getValue));
+        Map<String, String> map =
+            paramRedisList.stream().collect(Collectors.toMap(it -> Convert.toStr(it.getId()), BaseParamDO::getValue));
 
         redisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 
-        return map.get(id);
+        return map.get(Convert.toStr(id));
 
     }
 

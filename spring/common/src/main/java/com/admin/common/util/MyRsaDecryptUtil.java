@@ -46,7 +46,7 @@ public class MyRsaDecryptUtil {
         }
 
         if (StrUtil.isBlank(privateKey)) {
-            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
+            ApiResultVO.sysError();
         }
 
         RSA rsa = new RSA(privateKey, null);
