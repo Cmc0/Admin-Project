@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * 通道组，管理所有 WebSocket连接
  */
-public class MyChannelGroupHelper {
+public class MyNettyChannelGroupHelper {
 
     public static final AttributeKey<Long> USER_ID_KEY = AttributeKey.valueOf("userId");
     // socket连接记录的 主键id

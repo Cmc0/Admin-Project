@@ -34,7 +34,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
 
-        Long socketId = ctx.channel().attr(MyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
+        Long socketId = ctx.channel().attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
 
         super.channelInactive(ctx);
     }
@@ -82,11 +82,11 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
     private void online(WebSocketDO webSocketDO, Channel channel) {
 
         // 绑定 userId
-        channel.attr(MyChannelGroupHelper.USER_ID_KEY).set(webSocketDO.getUserId());
+        channel.attr(MyNettyChannelGroupHelper.USER_ID_KEY).set(webSocketDO.getUserId());
         // 绑定 WebSocket 连接记录主表，主键id
-        channel.attr(MyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(webSocketDO.getId());
+        channel.attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(webSocketDO.getId());
 
-        MyChannelGroupHelper.CHANNEL_GROUP.add(channel);
+        MyNettyChannelGroupHelper.CHANNEL_GROUP.add(channel); // 备注：断开连接之后，ChannelGroup 会自动移除该通道
 
     }
 

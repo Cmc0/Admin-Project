@@ -1,11 +1,10 @@
 package com.cmc.websocket.listener;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cmc.common.model.constant.BaseConstant;
-import com.cmc.websocket.configuration.MyChannelGroupHelper;
+import com.cmc.websocket.configuration.MyNettyChannelGroupHelper;
 import com.cmc.websocket.model.enums.WebSocketMessageEnum;
 import io.netty.channel.Channel;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -25,9 +24,9 @@ public class WebSocketListener {
     @KafkaHandler
     public void receive(String jsonStr) {
 
-        JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+        JSONObject json = JSONUtil.parseObj(jsonStr);
 
-        Integer code = jsonObject.getInt("code");
+        Integer code = json.getInt("code");
         if (code == null) {
             return;
         }
@@ -37,7 +36,7 @@ public class WebSocketListener {
             return;
         }
 
-        BeanUtil.copyProperties(jsonObject, webSocketMessageEnum);
+        webSocketMessageEnum.setJson(json.getJSONObject("json"));
 
         handleWebSocketMessageEnum(webSocketMessageEnum);
     }
@@ -62,9 +61,10 @@ public class WebSocketListener {
 
             if (CollUtil.isEmpty(idSet)) {
                 idSet = json.get("socketIdSet", Set.class);
-                channelList = MyChannelGroupHelper.getChannelByIdSet(MyChannelGroupHelper.WEB_SOCKET_ID_KEY, idSet);
+                channelList =
+                    MyNettyChannelGroupHelper.getChannelByIdSet(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY, idSet);
             } else {
-                channelList = MyChannelGroupHelper.getChannelByIdSet(MyChannelGroupHelper.USER_ID_KEY, idSet);
+                channelList = MyNettyChannelGroupHelper.getChannelByIdSet(MyNettyChannelGroupHelper.USER_ID_KEY, idSet);
             }
 
             if (CollUtil.isNotEmpty(channelList)) {
@@ -76,7 +76,7 @@ public class WebSocketListener {
             // 5 有新的通知
             Set<Number> userIdSet = json.get("userIdSet", Set.class);
 
-            channelList = MyChannelGroupHelper.getChannelByIdSet(MyChannelGroupHelper.USER_ID_KEY, userIdSet);
+            channelList = MyNettyChannelGroupHelper.getChannelByIdSet(MyNettyChannelGroupHelper.USER_ID_KEY, userIdSet);
 
             if (CollUtil.isNotEmpty(channelList)) {
                 writeAndFlush(channelList, webSocketMessageEnum);
@@ -90,7 +90,8 @@ public class WebSocketListener {
             if (CollUtil.isEmpty(userIdSet)) {
                 writeAndFlush(null, webSocketMessageEnum);
             } else {
-                channelList = MyChannelGroupHelper.getChannelByIdSet(MyChannelGroupHelper.USER_ID_KEY, userIdSet);
+                channelList =
+                    MyNettyChannelGroupHelper.getChannelByIdSet(MyNettyChannelGroupHelper.USER_ID_KEY, userIdSet);
                 writeAndFlush(channelList, webSocketMessageEnum);
             }
 
@@ -105,7 +106,7 @@ public class WebSocketListener {
         webSocketMessageEnum.setJson(null);
 
         if (channelList == null) {
-            MyChannelGroupHelper.send2All(webSocketMessageEnum); // 发送给所有人
+            MyNettyChannelGroupHelper.send2All(webSocketMessageEnum); // 发送给所有人
         } else {
             channelList.forEach(it -> it.writeAndFlush(webSocketMessageEnum));
         }
