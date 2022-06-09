@@ -3,6 +3,7 @@ package com.cmc.websocket.configuration;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.cmc.common.configuration.BaseConfiguration;
+import com.cmc.common.model.constant.BaseConstant;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -27,14 +28,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class NettyServer implements CommandLineRunner {
 
+    public static String ipAndPort = ""; // ip:port
+    public static String webSocketRegCodePreLockKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE; // WebSocket 连接时的锁前缀
+
     @Override
     public void run(String... args) {
 
         int port = BaseConfiguration.port + 1; // WebSocket端口
 
+        ipAndPort = BaseConfiguration.adminProperties.getSocketAddress() + ":" + port;
+
+        webSocketRegCodePreLockKey = webSocketRegCodePreLockKey + ":" + ipAndPort + ":";
+
         ThreadUtil.execute(() -> start(port));
 
-        log.info("WebSocket 启动完成：" + BaseConfiguration.adminProperties.getSocketAddress() + ":" + port);
+        log.info("WebSocket 启动完成：" + ipAndPort);
     }
 
     @SneakyThrows

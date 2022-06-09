@@ -60,6 +60,9 @@ public interface BaseConstant {
     // redis 相关 ↓ 【PRE_REDIS】开头和 【PRE_LOCK】开头，以及【_CACHE】结尾
     String PRE_REDISSON = "PRE_REDISSON:"; // 锁前缀，所有的分布式锁，都要加这个前缀
 
+    // WebSocket连接时，存储到 redis分布式锁名前缀，锁：【ip + port + 返回的随机码】
+    String PRE_LOCK_WEB_SOCKET_REG_CODE = "PRE_LOCK_WEB_SOCKET_REG_CODE:";
+
     // jwt 相关 ↓
     String PRE_REDIS_JWT = "PRE_REDIS_JWT:"; // jwt在redis中存储的 锁前缀，备注：和 PRE_REDIS_JWT_USER 同时存在或者延迟不存在
     String PRE_REDIS_JWT_USER = "PRE_REDIS_JWT_USER:"; // jwt在redis中按照 userId存储的 锁前缀，备注：和 PRE_REDIS_JWT 同时存在或者延迟不存在
@@ -69,7 +72,6 @@ public interface BaseConstant {
 
     String PRE_REDIS_IP_BLACKLIST = "PRE_REDIS_IP_BLACKLIST:"; // ip黑名单，redis key前端
     String PRE_REDIS_IP_TOTAL_CHECK = "PRE_REDIS_IP_TOTAL_CHECK:"; // ip 请求速率，redis key前缀
-
     // redis 相关 ↑
 
 }
