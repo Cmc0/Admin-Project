@@ -1,3 +1,3 @@
 export default {
-    'SYS_NAME': 'ProjectUtil UI'
+    'SYS_NAME': 'Admin UI'
 }
