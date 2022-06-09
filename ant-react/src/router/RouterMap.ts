@@ -42,4 +42,6 @@ RouterMap['Jump'] = {
 
 export const RouterMapKeyList = Object.keys(RouterMap)
 
+console.log(RouterMap)
+
 export default RouterMap

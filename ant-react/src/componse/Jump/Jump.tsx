@@ -1,6 +1,7 @@
 import {Navigate} from "react-router-dom";
+import LocalStorageKey from "@/model/constant/LocalStorageKey";
 
 export default function () {
-    // return <Navigate to={MainLayoutRouterPathList[0]}/>
-    return <Navigate to={"/login"}/>
+    const jwt = localStorage.getItem(LocalStorageKey.JWT);
+    return <Navigate to={jwt ? "/main" : "/login"}/>
 }

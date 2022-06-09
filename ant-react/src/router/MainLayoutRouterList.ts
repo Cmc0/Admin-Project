@@ -6,8 +6,8 @@ export interface IMainLayoutRouterList extends MenuDataItem {
 
 const MainLayoutRouterList: IMainLayoutRouterList[] = [
     {
-        path: '/main/dbManage',
-        element: 'DbManageDbManage',
+        path: '/main/dashboard/workplace',
+        element: 'dashboardWorkplaceWorkplace',
     },
 ]
 
