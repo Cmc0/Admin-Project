@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
@@ -32,11 +33,15 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
      */
     @Override
     public ServletInputStream getInputStream() {
+
+        InputStream bodyStream = new ByteArrayInputStream(body);
+
         return new ServletInputStream() {
 
+            @SneakyThrows
             @Override
             public int read() {
-                return new ByteArrayInputStream(body).read();
+                return bodyStream.read();
             }
 
             /**
