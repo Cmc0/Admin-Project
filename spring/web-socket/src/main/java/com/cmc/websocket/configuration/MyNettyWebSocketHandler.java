@@ -32,6 +32,15 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
     @SneakyThrows
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+
+        Long socketId = ctx.channel().attr(MyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
+
+        super.channelInactive(ctx);
+    }
+
+    @SneakyThrows
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
         // 首次连接是 FullHttpRequest，处理参数
