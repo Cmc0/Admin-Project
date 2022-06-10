@@ -5,8 +5,9 @@ import MainLayoutRouterList, {IMainLayoutRouterList, MainLayoutRouterPathList} f
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
-import {UserOutlined} from "@ant-design/icons/lib";
+import {LogoutOutlined, UserOutlined} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
+import {InDev} from "../../../util/CommonUtil";
 
 export default function () {
 
@@ -53,9 +54,10 @@ export default function () {
                     <Dropdown overlay={<Menu items={[
                         {
                             key: 'personalCenter',
-                            label: <a>
+                            label: <a onClick={InDev}>
                                 个人中心
-                            </a>
+                            </a>,
+                            icon: <UserOutlined/>
                         },
                         {
                             key: 'logout',
@@ -65,7 +67,8 @@ export default function () {
                                 }}
                             >
                                 退出登录
-                            </a>
+                            </a>,
+                            icon: <LogoutOutlined/>
                         },
                     ]}>
 
