@@ -4,6 +4,9 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Tabs} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons/lib";
 import {useState} from "react";
+import {userLoginPassword, UserLoginPasswordDTO} from "@/api/UserLoginController";
+import {ToastSuccess} from "../../../util/ToastUtil";
+import LocalStorageKey from "@/model/constant/LocalStorageKey";
 
 type LoginType = 'password';
 
@@ -13,14 +16,17 @@ export default function () {
 
     return (
         <div className={"vh100"}>
-            <LoginFormPage
+            <LoginFormPage<UserLoginPasswordDTO>
                 isKeyPressSubmit
                 backgroundImageUrl={LoginBg}
                 logo={"/src/favicon.svg"}
                 title={CommonConstant.SYS_NAME}
                 subTitle="Will have the most powerful !"
                 onFinish={async (formData) => {
-                    console.log(formData)
+                    userLoginPassword(formData).then(res => {
+                        ToastSuccess(res.msg)
+                        localStorage.setItem(LocalStorageKey.JWT, res.data)
+                    })
                 }}
             >
                 <Tabs activeKey={loginType} onChange={(activeKey) => setLoginType(activeKey as LoginType)}>
