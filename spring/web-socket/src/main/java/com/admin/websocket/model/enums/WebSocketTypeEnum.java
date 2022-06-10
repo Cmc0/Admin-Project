@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 在线状态
+ * WebSocket 在线状态
  */
 @AllArgsConstructor
 @Getter

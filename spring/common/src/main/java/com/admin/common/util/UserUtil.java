@@ -57,6 +57,7 @@ public class UserUtil {
      * 这里只会返回实际的 userId，如果为 null，则会抛出异常
      */
     public static Long getCurrentUserId() {
+
         Long userId = getCurrentUserIdNoCheck();
 
         if (userId == null) {
@@ -70,7 +71,9 @@ public class UserUtil {
      * 这里只会返回实际的 userId 或者 -1，备注：-1表示没有 用户id，则是大多数情况下，表示的是 系统
      */
     public static Long getCurrentUserIdSafe() {
+
         Long userId = getCurrentUserIdNoCheck();
+
         if (userId == null) {
             userId = -1L;
         }
@@ -83,7 +86,9 @@ public class UserUtil {
      * 这里只会返回实际的 userId或者 null
      */
     private static Long getCurrentUserIdNoCheck() {
+
         Long userId = null;
+
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             userId = (Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         }

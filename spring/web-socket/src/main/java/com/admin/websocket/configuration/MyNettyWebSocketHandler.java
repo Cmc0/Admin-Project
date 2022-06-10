@@ -66,7 +66,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
             ValueOperations<String, WebSocketDO> ops = jsonRedisTemplate.opsForValue();
 
-            String redisKey = NettyServer.webSocketRegCodePreLockKey + code;
+            String redisKey = NettyServer.webSocketRegCodePreKey + code;
 
             WebSocketDO webSocketDO = ops.get(redisKey);
             if (webSocketDO == null) {

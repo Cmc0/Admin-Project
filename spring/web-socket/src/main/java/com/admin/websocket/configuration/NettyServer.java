@@ -33,7 +33,7 @@ import javax.annotation.Resource;
 public class NettyServer implements CommandLineRunner {
 
     public static String ipAndPort = null; // ip:port
-    public static String webSocketRegCodePreLockKey = null; // WebSocket 连接时的锁前缀
+    public static String webSocketRegCodePreKey = null; // WebSocket 连接时的 redisKey前缀
 
     @Resource
     WebSocketService webSocketService;
@@ -53,7 +53,7 @@ public class NettyServer implements CommandLineRunner {
 
         ipAndPort = BaseConfiguration.adminProperties.getWebSocketAddress() + ":" + port;
 
-        webSocketRegCodePreLockKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE + ":" + ipAndPort + ":";
+        webSocketRegCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE + ":" + ipAndPort + ":";
 
         webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 
