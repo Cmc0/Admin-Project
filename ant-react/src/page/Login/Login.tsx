@@ -9,6 +9,7 @@ import {ToastSuccess} from "../../../util/ToastUtil";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
 import {PasswordRSAEncrypt} from "../../../util/RsaUtil";
 import {Navigate} from "react-router-dom";
+import {getAppNav} from "@/App";
 
 type LoginType = 'password';
 
@@ -31,8 +32,11 @@ export default function () {
                 onFinish={async (formData) => {
 
                     userLoginPassword({...formData, password: PasswordRSAEncrypt(formData.password)!}).then(res => {
-                        ToastSuccess(res.msg)
+                        localStorage.clear()
+                        sessionStorage.clear()
+                        ToastSuccess('欢迎回来~')
                         localStorage.setItem(LocalStorageKey.JWT, res.data)
+                        getAppNav()(CommonConstant.MAIN_PATH)
                     })
                 }}
             >

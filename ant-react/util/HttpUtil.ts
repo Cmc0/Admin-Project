@@ -3,6 +3,7 @@ import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {ToastError} from './ToastUtil'
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
+import {logout} from "./UserUtil";
 
 export const timeoutMsg = '请求超时，请重试'
 export const baseErrorMsg = "请求错误："
@@ -52,6 +53,7 @@ $http.interceptors.response.use(
         if (res.code !== 200 || !res.success) {
             if (res.code === 100111) { // 这个代码需要跳转到：登录页面
                 if (localStorage.getItem(LocalStorageKey.JWT)) {
+                    logout()
                     ToastError(res.msg, 5)
                 }
             } else {

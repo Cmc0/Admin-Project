@@ -4,6 +4,9 @@ import {Navigate, Outlet} from "react-router-dom";
 import MainLayoutRouterList, {IMainLayoutRouterList, MainLayoutRouterPathList} from "@/router/MainLayoutRouterList";
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
+import {Avatar, Dropdown, Menu} from "antd";
+import {UserOutlined} from "@ant-design/icons/lib";
+import {logout} from "../../../util/UserUtil";
 
 export default function () {
 
@@ -44,6 +47,32 @@ export default function () {
                 >
                     {dom}
                 </a>
+            )}
+            rightContentRender={() => (
+                <>
+                    <Dropdown overlay={<Menu items={[
+                        {
+                            key: 'personalCenter',
+                            label: <a>
+                                个人中心
+                            </a>
+                        },
+                        {
+                            key: 'logout',
+                            label: <a
+                                onClick={() => {
+                                    logout('登出成功')
+                                }}
+                            >
+                                退出登录
+                            </a>
+                        },
+                    ]}>
+
+                    </Menu>}>
+                        <Avatar className={"hand"} size="small" icon={<UserOutlined/>}/>
+                    </Dropdown>
+                </>
             )}
         >
             <PageContainer>
