@@ -66,6 +66,9 @@ export function connectWebSocket(
       if (!webSocketUrl || !code) {
         return reject(new Error('连接 webSocket失败：暂无可用的服务器'))
       }
+      if (webSocket) {
+        return
+      }
       webSocket = new WebSocket(
           `${
               import.meta.env.DEV ? 'ws:' : 'ws:'
