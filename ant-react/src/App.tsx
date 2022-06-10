@@ -2,6 +2,7 @@ import {BrowserRouter, NavigateFunction, Route, Routes, useNavigate} from "react
 import NoLoginRouterList from "@/router/NoLoginRouterList";
 import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
 import MainLayoutRouterList from "@/router/MainLayoutRouterList";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 export default function () {
     return (
@@ -17,7 +18,7 @@ export default function () {
                     />
                 ))}
                 <Route
-                    path="/main"
+                    path={CommonConstant.MAIN_PATH}
                     element={<LoadElement element="MainLayout"/>}
                 >
                     {MainLayoutRouterList.map((item, index) => (

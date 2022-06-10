@@ -4,7 +4,7 @@ import cn.hutool.core.util.ReUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.model.constant.BaseRegexConstant;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.util.MyRsaDecryptUtil;
+import com.admin.common.util.MyRsaUtil;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.model.dto.UserLoginPasswordDTO;
 import com.admin.user.service.UserLoginService;
@@ -20,7 +20,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     public String password(UserLoginPasswordDTO dto) {
 
         // 密码，非对称，解密
-        dto.setPassword(MyRsaDecryptUtil.rsaDecrypt(dto.getPassword()));
+        dto.setPassword(MyRsaUtil.rsaDecrypt(dto.getPassword()));
 
         if (BaseConfiguration.adminProperties.getAdminAccount().equals(dto.getAccount())
             && BaseConfiguration.adminProperties.isAdminEnable()) {

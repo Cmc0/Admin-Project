@@ -6,6 +6,7 @@ export interface IMainLayoutRouterList extends MenuDataItem {
 
 const MainLayoutRouterList: IMainLayoutRouterList[] = [
     {
+        name: '仪表盘',
         path: '/main/dashboard/workplace',
         element: 'dashboardWorkplaceWorkplace',
     },

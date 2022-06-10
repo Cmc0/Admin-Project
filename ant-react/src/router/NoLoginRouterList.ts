@@ -1,3 +1,5 @@
+import CommonConstant from "@/model/constant/CommonConstant";
+
 interface INoLoginRouterList {
     path: string
     element: string
@@ -9,11 +11,9 @@ const NoLoginRouterList: INoLoginRouterList[] = [
         element: 'Jump',
     },
     {
-        path: '/login',
+        path: CommonConstant.LOGIN_PATH,
         element: 'LoginLogin',
     },
 ]
-
-export const NoLoginRouterPathList = NoLoginRouterList.map((item) => item.path)
 
 export default NoLoginRouterList

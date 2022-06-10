@@ -1,7 +1,7 @@
 import ProLayout, {PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
-import {Outlet} from "react-router-dom";
-import MainLayoutRouterList, {IMainLayoutRouterList} from "@/router/MainLayoutRouterList";
+import {Navigate, Outlet} from "react-router-dom";
+import MainLayoutRouterList, {IMainLayoutRouterList, MainLayoutRouterPathList} from "@/router/MainLayoutRouterList";
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 
@@ -12,6 +12,12 @@ export default function () {
     useEffect(() => {
         setPathname(window.location.pathname)
     }, [])
+
+    if (window.location.pathname === CommonConstant.MAIN_PATH) {
+        if (MainLayoutRouterPathList[0]) {
+            return <Navigate to={MainLayoutRouterPathList[0]}/>
+        }
+    }
 
     return (
         <ProLayout

@@ -7,12 +7,18 @@ import {useState} from "react";
 import {userLoginPassword, UserLoginPasswordDTO} from "@/api/UserLoginController";
 import {ToastSuccess} from "../../../util/ToastUtil";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
+import {PasswordRSAEncrypt} from "../../../util/RsaUtil";
+import {Navigate} from "react-router-dom";
 
 type LoginType = 'password';
 
 export default function () {
 
     const [loginType, setLoginType] = useState<LoginType>('password');
+
+    if (localStorage.getItem(LocalStorageKey.JWT)) {
+        return <Navigate to={"/"}/>
+    }
 
     return (
         <div className={"vh100"}>
@@ -23,7 +29,8 @@ export default function () {
                 title={CommonConstant.SYS_NAME}
                 subTitle="Will have the most powerful !"
                 onFinish={async (formData) => {
-                    userLoginPassword(formData).then(res => {
+
+                    userLoginPassword({...formData, password: PasswordRSAEncrypt(formData.password)!}).then(res => {
                         ToastSuccess(res.msg)
                         localStorage.setItem(LocalStorageKey.JWT, res.data)
                     })

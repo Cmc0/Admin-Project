@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class MyRsaDecryptUtil {
+public class MyRsaUtil {
 
     private static JsonRedisTemplate<String> jsonRedisTemplate;
 
