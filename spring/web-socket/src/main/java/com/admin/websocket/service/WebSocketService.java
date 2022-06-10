@@ -15,10 +15,10 @@ import java.util.Set;
 
 public interface WebSocketService extends IService<WebSocketDO> {
 
-    void offlineAndNoticeBySocketIdSetAndUserId(Set<Long> socketIdSet, Long userId,
+    void offlineAndNoticeBySocketIdSetAndUserId(Set<Long> webSocketIdSet, Long userId,
         RequestCategoryEnum requestCategoryEnum);
 
-    void offlineBySocketIdSet(Set<Long> socketIdSet);
+    void offlineByWebSocketIdSet(Set<Long> webSocketIdSet);
 
     void offlineByUserIdSet(Set<Long> userIdSet);
 

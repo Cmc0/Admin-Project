@@ -3,21 +3,33 @@ import LoginBg from "@/asset/img/LoginBg.png"
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Tabs} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons/lib";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {userLoginPassword, UserLoginPasswordDTO} from "@/api/UserLoginController";
 import {ToastSuccess} from "../../../util/ToastUtil";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
 import {PasswordRSAEncrypt} from "../../../util/RsaUtil";
 import {Navigate} from "react-router-dom";
 import {getAppNav} from "@/App";
+import {closeWebSocket} from "../../../util/WebSocketUtil";
+import {useAppDispatch} from "@/redux";
+import {setLoadMenuFlag} from "@/redux/commonSlice";
 
 type LoginType = 'password';
 
 export default function () {
 
     const [loginType, setLoginType] = useState<LoginType>('password');
+    const jwt = localStorage.getItem(LocalStorageKey.JWT)
+    const appDispatch = useAppDispatch()
 
-    if (localStorage.getItem(LocalStorageKey.JWT)) {
+    useEffect(() => {
+        if (!jwt) {
+            appDispatch(setLoadMenuFlag(false)) // 设置：是否加载过菜单为 false
+            closeWebSocket() // 关闭 webSocket
+        }
+    }, [])
+
+    if (jwt) {
         return <Navigate to={"/"}/>
     }
 

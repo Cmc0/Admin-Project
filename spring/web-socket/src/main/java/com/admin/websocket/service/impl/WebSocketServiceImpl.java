@@ -56,30 +56,30 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
      * 离线用户：通过 socketId，并且进行 socket通知
      */
     @Override
-    public void offlineAndNoticeBySocketIdSetAndUserId(Set<Long> socketIdSet, Long userId,
+    public void offlineAndNoticeBySocketIdSetAndUserId(Set<Long> webSocketIdSet, Long userId,
         RequestCategoryEnum requestCategoryEnum) {
 
-        offlineBySocketIdSet(socketIdSet); // 先操作数据库
+        offlineByWebSocketIdSet(webSocketIdSet); // 先操作数据库
 
         // 移除 redis中的 jwtHash
         MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(userId, requestCategoryEnum, null, null);
 
         // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.forcedOffline(socketIdSet, null);
+        KafkaUtil.forcedOffline(webSocketIdSet, null);
 
     }
 
     /**
-     * 离线用户：通过 socketId
+     * 离线用户：通过 webSocketIdSet
      */
     @Override
-    public void offlineBySocketIdSet(Set<Long> socketIdSet) {
+    public void offlineByWebSocketIdSet(Set<Long> webSocketIdSet) {
 
-        if (CollUtil.isEmpty(socketIdSet)) {
+        if (CollUtil.isEmpty(webSocketIdSet)) {
             return;
         }
 
-        lambdaUpdate().in(WebSocketDO::getId, socketIdSet).eq(BaseEntityThree::getEnableFlag, true)
+        lambdaUpdate().in(WebSocketDO::getId, webSocketIdSet).eq(BaseEntityThree::getEnableFlag, true)
             .set(BaseEntityThree::getEnableFlag, false).set(BaseEntityTwo::getUpdateTime, new Date()).update();
 
     }
@@ -137,7 +137,7 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
     @Transactional
     public String offlineAndNoticeByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
-        offlineBySocketIdSet(notEmptyIdSet.getIdSet());
+        offlineByWebSocketIdSet(notEmptyIdSet.getIdSet());
 
         List<WebSocketDO> socketDbList = lambdaQuery().in(BaseEntityTwo::getId, notEmptyIdSet.getIdSet())
             .select(WebSocketDO::getJwtHash, WebSocketDO::getUserId).groupBy(WebSocketDO::getJwtHash).list();
@@ -164,12 +164,12 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
 
         MyJwtUtil.removeAllJwtHash();
 
-        List<WebSocketDO> socketDbList =
+        List<WebSocketDO> webSocketDOList =
             lambdaQuery().eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).list();
 
-        Set<Long> socketIdSet = socketDbList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
+        Set<Long> webSocketIdSet = webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
 
-        if (socketIdSet.size() == 0) {
+        if (webSocketIdSet.size() == 0) {
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         }
 
@@ -177,7 +177,7 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
             .set(BaseEntityTwo::getUpdateTime, new Date()).update();
 
         // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.loginExpired(socketIdSet);
+        KafkaUtil.loginExpired(webSocketIdSet);
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -223,7 +223,7 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
             TimeUnit.MILLISECONDS); // key：PRE_LOCK_WEB_SOCKET_REG_CODE:ip:port:uuid
 
         WebSocketRegVO webSocketRegVO = new WebSocketRegVO();
-        webSocketRegVO.setSocketUrl(NettyServer.ipAndPort);
+        webSocketRegVO.setWebSocketUrl(NettyServer.ipAndPort);
         webSocketRegVO.setCode(uuid);
 
         return webSocketRegVO;

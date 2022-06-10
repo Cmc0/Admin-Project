@@ -49,7 +49,7 @@ public interface BaseConstant {
     Long RSA_PRIVATE_KEY_ID = 3L; // 非对称加密，密钥 主键id
     Long IP_REQUESTS_PER_SECOND_ID = 2L; // ip请求速率 主键id
 
-    // 改变系统配置参数的 value的路径，作用：给 socket拦截器，进行识别，如果是 USER_MUTUALLY_EXCLUSIVE_ID 进行了修改，则需要下线全部用户
+    // 改变系统配置参数的 value的路径，作用：拦截器进行识别，如果是 USER_MUTUALLY_EXCLUSIVE_ID 进行了修改，则需要下线全部用户
     Set<String> PARAM_CHANGE_VALUE_URI_SET = CollUtil.newHashSet("/param/insertOrUpdate");
     // 参数配置相关 ↑
 

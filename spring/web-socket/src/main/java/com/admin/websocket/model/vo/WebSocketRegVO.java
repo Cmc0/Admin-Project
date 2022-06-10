@@ -7,7 +7,7 @@ import lombok.Data;
 public class WebSocketRegVO {
 
     @ApiModelProperty(value = "WebSocket 连接地址，ip:port")
-    private String socketUrl;
+    private String webSocketUrl;
 
     @ApiModelProperty(value = "WebSocket 连接码，备注：只能使用一次")
     private String code;

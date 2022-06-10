@@ -37,7 +37,7 @@ public class WebSocketListener {
         List<Channel> channelList;
 
         if (code == 1) {
-            // 1 socket连接记录主键id
+            // 1 webSocket连接记录主键id
         } else if (code >= 2 && code <= 4) {
 
             // 2 账号已在其他地方登录，您被迫下线
@@ -46,7 +46,7 @@ public class WebSocketListener {
             Set<Number> idSet = json.get("userIdSet", Set.class);
 
             if (CollUtil.isEmpty(idSet)) {
-                idSet = json.get("socketIdSet", Set.class);
+                idSet = json.get("webSocketIdSet", Set.class);
                 channelList =
                     MyNettyChannelGroupHelper.getChannelByIdSet(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY, idSet);
             } else {

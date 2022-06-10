@@ -43,7 +43,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
         Long socketId = ctx.channel().attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
 
-        webSocketService.offlineBySocketIdSet(Collections.singleton(socketId)); // 调用离线方法
+        webSocketService.offlineByWebSocketIdSet(Collections.singleton(socketId)); // 调用离线方法
 
         super.channelInactive(ctx);
     }

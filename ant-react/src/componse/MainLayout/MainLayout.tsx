@@ -10,13 +10,34 @@ import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastSuccess} from "../../../util/ToastUtil";
 import {userLogout} from "@/api/UserController";
+import {useAppDispatch, useAppSelector} from "@/redux";
+import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
+import {setWebSocketMessage, setWebSocketStatus} from '@/redux/commonSlice';
+import SessionStorageKey from "@/model/constant/SessionStorageKey";
 
 export default function () {
 
-    const [pathname, setPathname] = useState<string>()
+    const appDispatch = useAppDispatch()
+    const loadMenuFlag = useAppSelector((state) => state.common.loadMenuFlag) // 是否获取过菜单
+
+    // 更新 redux里面 webSocket的值
+    function doSetSocketMessage(param: IWebSocketMessage) {
+        appDispatch(setWebSocketMessage(param))
+    }
+
+    // 更新 redux里面 webSocket的状态
+    function doSetSocketStatus(param: boolean) {
+        appDispatch(setWebSocketStatus(param))
+    }
 
     useEffect(() => {
-        setPathname(window.location.pathname)
+        if (!loadMenuFlag) {
+
+            sessionStorage.setItem(SessionStorageKey.LOAD_MENU_FLAG, String(false))
+
+            connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
+
+        }
     }, [])
 
     if (window.location.pathname === CommonConstant.MAIN_PATH) {
@@ -24,6 +45,17 @@ export default function () {
             return <Navigate to={MainLayoutRouterPathList[0]}/>
         }
     }
+
+}
+
+// MainLayout组件页面
+function MainLayoutElement() {
+
+    const [pathname, setPathname] = useState<string>()
+
+    useEffect(() => {
+        setPathname(window.location.pathname)
+    }, [])
 
     return (
         <ProLayout

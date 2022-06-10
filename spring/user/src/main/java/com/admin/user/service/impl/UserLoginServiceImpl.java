@@ -105,13 +105,13 @@ public class UserLoginServiceImpl implements UserLoginService {
 
             if ("2".equals(exclusionSetting)) {
 
-                List<WebSocketDO> socketDbList = webSocketService.lambdaQuery().eq(WebSocketDO::getUserId, userId)
+                List<WebSocketDO> webSocketDOList = webSocketService.lambdaQuery().eq(WebSocketDO::getUserId, userId)
                     .eq(BaseEntityThree::getEnableFlag, true).eq(WebSocketDO::getCategory, requestCategoryEnum)
                     .select(BaseEntityTwo::getId).list();
 
                 // 下线该类型的用户
-                Set<Long> socketIdSet = socketDbList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
-                webSocketService.offlineAndNoticeBySocketIdSetAndUserId(socketIdSet, userId, requestCategoryEnum);
+                Set<Long> webSocketIdSet = webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
+                webSocketService.offlineAndNoticeBySocketIdSetAndUserId(webSocketIdSet, userId, requestCategoryEnum);
 
             } else if ("3".equals(exclusionSetting)) {
                 // 下线其他

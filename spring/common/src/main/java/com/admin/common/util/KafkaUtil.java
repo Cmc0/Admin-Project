@@ -24,7 +24,7 @@ public class KafkaUtil {
     }
 
     /**
-     * 给【socket】发送消息：通过 消息中间件
+     * 给【webSocket】发送消息：通过 消息中间件
      * {@link com.admin.websocket.listener.WebSocketListener}
      */
     private static void sendWebSocketMessageByKafka(WebSocketMessageEnum webSocketMessageEnum) {
@@ -60,14 +60,14 @@ public class KafkaUtil {
     /**
      * 消息推送：账号在其他地方登录，您被迫下线
      */
-    public static void forcedOffline(Set<Long> socketIdSet, Set<Long> userIdSet) {
+    public static void forcedOffline(Set<Long> webSocketIdSet, Set<Long> userIdSet) {
 
-        if (CollUtil.isEmpty(socketIdSet) && CollUtil.isEmpty(userIdSet)) {
+        if (CollUtil.isEmpty(webSocketIdSet) && CollUtil.isEmpty(userIdSet)) {
             return;
         }
 
         WebSocketMessageEnum forcedOffline = WebSocketMessageEnum.FORCED_OFFLINE;
-        forcedOffline.setJson(JSONUtil.createObj().set("socketIdSet", socketIdSet).set("userIdSet", userIdSet));
+        forcedOffline.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet).set("userIdSet", userIdSet));
         sendWebSocketMessageByKafka(forcedOffline);
 
     }
@@ -75,14 +75,14 @@ public class KafkaUtil {
     /**
      * 消息推送：登录过期，请重新登录
      */
-    public static void loginExpired(Set<Long> socketIdSet) {
+    public static void loginExpired(Set<Long> webSocketIdSet) {
 
-        if (CollUtil.isEmpty(socketIdSet)) {
+        if (CollUtil.isEmpty(webSocketIdSet)) {
             return;
         }
 
         WebSocketMessageEnum loginExpired = WebSocketMessageEnum.LOGIN_EXPIRED;
-        loginExpired.setJson(JSONUtil.createObj().set("socketIdSet", socketIdSet));
+        loginExpired.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet));
         sendWebSocketMessageByKafka(loginExpired);
 
     }

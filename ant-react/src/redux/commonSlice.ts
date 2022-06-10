@@ -1,23 +1,39 @@
-import {createSlice} from '@reduxjs/toolkit'
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import SessionStorageKey from "@/model/constant/SessionStorageKey";
+import {IWebSocketMessage} from "../../util/WebSocketUtil";
 
 interface ICommonSlice {
-    // leftMenuCollapsed: boolean // 左侧菜单是否收起
+    loadMenuFlag: boolean // 是否加载过菜单
+    webSocketMessage: IWebSocketMessage // webSocket消息模板
+    webSocketStatus: boolean // webSocket连接状态
 }
 
 const initialState: ICommonSlice = {
-    // leftMenuCollapsed: false
+    loadMenuFlag: false,
+    webSocketMessage: {} as IWebSocketMessage,
+    webSocketStatus: false,
 }
 
 export const commonSlice = createSlice({
     name: 'commonSlice',
     initialState,
     reducers: {
-        // setLeftMenuCollapsed(state, action: PayloadAction<boolean>) {
-        //     state.leftMenuCollapsed = action.payload
-        // },
+        setLoadMenuFlag(state, action: PayloadAction<boolean>) {
+            state.loadMenuFlag = action.payload
+            sessionStorage.setItem(
+                SessionStorageKey.LOAD_MENU_FLAG,
+                String(action.payload)
+            )
+        },
+        setWebSocketMessage(state, action: PayloadAction<IWebSocketMessage>) {
+            state.webSocketMessage = action.payload
+        },
+        setWebSocketStatus(state, action: PayloadAction<boolean>) {
+            state.webSocketStatus = action.payload
+        },
     },
 })
 
-export const {} = commonSlice.actions
+export const {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} = commonSlice.actions
 
 export default commonSlice.reducer
