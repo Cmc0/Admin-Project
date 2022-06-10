@@ -4,6 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.websocket.service.WebSocketService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -21,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+
 /**
  * netty服务器
  */
@@ -31,6 +35,17 @@ public class NettyServer implements CommandLineRunner {
     public static String ipAndPort = null; // ip:port
     public static String webSocketRegCodePreLockKey = null; // WebSocket 连接时的锁前缀
 
+    @Resource
+    WebSocketService webSocketService;
+
+    @PreDestroy
+    public void destroy() {
+
+        webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
+
+        log.info("WebSocket 离线成功");
+    }
+
     @Override
     public void run(String... args) {
 
@@ -39,6 +54,8 @@ public class NettyServer implements CommandLineRunner {
         ipAndPort = BaseConfiguration.adminProperties.getWebSocketAddress() + ":" + port;
 
         webSocketRegCodePreLockKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE + ":" + ipAndPort + ":";
+
+        webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 
         ThreadUtil.execute(() -> start(port));
 

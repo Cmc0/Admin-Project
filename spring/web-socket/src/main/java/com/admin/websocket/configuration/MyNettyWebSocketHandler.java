@@ -26,6 +26,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 
 @Component
 @Scope("prototype") // 多例
@@ -41,6 +42,8 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
     public void channelInactive(ChannelHandlerContext ctx) {
 
         Long socketId = ctx.channel().attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
+
+        webSocketService.offlineBySocketIdSet(Collections.singleton(socketId)); // 调用离线方法
 
         super.channelInactive(ctx);
     }
@@ -92,14 +95,16 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
         // 绑定 WebSocket 连接记录 主键id
         channel.attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(webSocketDO.getId());
 
-        MyNettyChannelGroupHelper.CHANNEL_GROUP.add(channel); // 备注：断开连接之后，ChannelGroup 会自动移除该通道
+        boolean add = MyNettyChannelGroupHelper.CHANNEL_GROUP.add(channel);// 备注：断开连接之后，ChannelGroup 会自动移除该通道
 
-        ThreadUtil.execute(() -> {
-            WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.SOCKET_ID;
-            webSocketMessageEnum.setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, webSocketDO.getIp()));
-            channel.writeAndFlush(webSocketMessageEnum);
-        });
-
+        if (add) {
+            ThreadUtil.execute(() -> {
+                WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.SOCKET_ID;
+                webSocketMessageEnum
+                    .setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, webSocketDO.getIp()));
+                channel.writeAndFlush(webSocketMessageEnum); // 给前端发送 socketId
+            });
+        }
     }
 
     /**
