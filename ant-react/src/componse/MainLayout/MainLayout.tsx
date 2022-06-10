@@ -1,8 +1,8 @@
 import ProLayout, {PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
-import {Navigate, Outlet} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import MainLayoutRouterList, {IMainLayoutRouterList, MainLayoutRouterPathList} from "@/router/MainLayoutRouterList";
-import React, {useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons/lib";
@@ -12,15 +12,17 @@ import {execConfirm, ToastSuccess} from "../../../util/ToastUtil";
 import {userLogout} from "@/api/UserController";
 import {useAppDispatch, useAppSelector} from "@/redux";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
-import {setWebSocketMessage, setWebSocketStatus} from '@/redux/commonSlice';
+import {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} from '@/redux/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 
 export default function () {
 
     const appDispatch = useAppDispatch()
     const loadMenuFlag = useAppSelector((state) => state.common.loadMenuFlag) // 是否获取过菜单
+    const [element, setElement] = useState<React.ReactNode>(null);
+    const [pathname, setPathname] = useState<string>('')
 
-    // 更新 redux里面 webSocket的值
+    // 更新 redux里面 webSocket消息模板的值
     function doSetSocketMessage(param: IWebSocketMessage) {
         appDispatch(setWebSocketMessage(param))
     }
@@ -30,39 +32,56 @@ export default function () {
         appDispatch(setWebSocketStatus(param))
     }
 
+    // 设置 element
+    function doSetElement() {
+        setElement(MainLayoutElement({pathname, setPathname}))
+    }
+
     useEffect(() => {
+
+        setPathname(window.location.pathname)
+
         if (!loadMenuFlag) {
 
             sessionStorage.setItem(SessionStorageKey.LOAD_MENU_FLAG, String(false))
 
             connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
+            // 加载菜单
+
+            appDispatch(setLoadMenuFlag(true))
+
+            doSetElement()
+
+        } else {
+
+            doSetElement()
+
+            if (window.location.pathname === CommonConstant.MAIN_PATH) {
+                if (MainLayoutRouterPathList[0]) {
+                    getAppNav()(MainLayoutRouterPathList[0])
+                }
+            }
         }
     }, [])
 
-    if (window.location.pathname === CommonConstant.MAIN_PATH) {
-        if (MainLayoutRouterPathList[0]) {
-            return <Navigate to={MainLayoutRouterPathList[0]}/>
-        }
-    }
+    return element
+}
 
+interface IMainLayoutElement {
+    pathname: string
+    setPathname: Dispatch<SetStateAction<string>>
 }
 
 // MainLayout组件页面
-function MainLayoutElement() {
-
-    const [pathname, setPathname] = useState<string>()
-
-    useEffect(() => {
-        setPathname(window.location.pathname)
-    }, [])
+function MainLayoutElement(props: IMainLayoutElement) {
 
     return (
         <ProLayout
             className={"vh100"}
             title={CommonConstant.SYS_NAME}
             location={{
-                pathname
+                pathname: props.pathname
             }}
             menu={{
                 request: async () => {
@@ -75,7 +94,7 @@ function MainLayoutElement() {
                 <a
                     onClick={() => {
                         if (item.path && item.element) {
-                            setPathname(item.path)
+                            props.setPathname(item.path)
                             getAppNav()(item.path)
                         }
                     }}
