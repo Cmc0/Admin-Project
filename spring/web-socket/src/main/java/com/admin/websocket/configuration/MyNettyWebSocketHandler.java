@@ -84,11 +84,8 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             // 上线操作
             online(webSocketDO, ctx.channel());
 
-            // 如果url包含参数，需要处理
-            if (request.uri().contains("?")) {
-                String newUri = request.uri().substring(0, request.uri().indexOf("?"));
-                request.setUri(newUri);
-            }
+            // url包含参数，需要处理
+            request.setUri(request.uri().substring(0, request.uri().indexOf("?")));
         }
 
         super.channelRead(ctx, msg);
