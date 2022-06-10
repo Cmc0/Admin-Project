@@ -2,8 +2,8 @@ package com.admin.websocket.configuration;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.websocket.model.constant.CommonConstant;
-import com.admin.websocket.model.enums.WebSocketMessageEnum;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;

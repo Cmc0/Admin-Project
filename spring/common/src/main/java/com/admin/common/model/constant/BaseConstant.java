@@ -60,6 +60,8 @@ public interface BaseConstant {
     // redis 相关 ↓ 【PRE_REDIS】开头和 【PRE_LOCK】开头，以及【_CACHE】结尾
     String PRE_REDISSON = "PRE_REDISSON:"; // 锁前缀，所有的分布式锁，都要加这个前缀
 
+    String PRE_LOCK_LOGIN = "PRE_LOCK_LOGIN:"; // 用户如果互斥，则需要登录时加锁，锁 用户id
+
     String PRE_REDIS_RSA_ENCRYPT = "PRE_REDIS_RSA_ENCRYPT:"; // 非对称加密存入 redis中 key前缀
 
     // WebSocket连接时，存储到 redis分布式锁名前缀，锁：【ip + port + 返回的随机码】

@@ -97,7 +97,7 @@ public class MyJwtUtil {
             jwtSecretSuf = getUserJwtSecretSufByUserId(userId);
         }
 
-        if (StrUtil.isBlank(jwtSecretSuf) && !BaseConstant.ADMIN_ID.equals(userId)) {
+        if (!BaseConstant.ADMIN_ID.equals(userId) && StrUtil.isBlank(jwtSecretSuf)) {
             return null;
         }
 

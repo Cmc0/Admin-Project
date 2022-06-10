@@ -2,16 +2,20 @@ package com.admin.websocket.configuration;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.net.url.UrlQuery;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.enums.RequestCategoryEnum;
+import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.common.model.vo.ApiResultVO;
+import com.admin.websocket.model.constant.CommonConstant;
 import com.admin.websocket.model.entity.WebSocketDO;
-import com.admin.websocket.model.enums.WebSocketMessageEnum;
 import com.admin.websocket.model.enums.WebSocketTypeEnum;
+import com.admin.websocket.service.WebSocketService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -29,6 +33,8 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
     @Resource
     JsonRedisTemplate<WebSocketDO> jsonRedisTemplate;
+    @Resource
+    WebSocketService webSocketService;
 
     @SneakyThrows
     @Override
@@ -70,7 +76,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             // 由于 存在 redis中的是 数字，在给对象赋值的时候，是从 下标为 0开始进行匹配的，所以这里要 减 1
             webSocketDO.setType(WebSocketTypeEnum.getByCode((byte)(webSocketDO.getType().getCode() - 1)));
             webSocketDO.setCategory(RequestCategoryEnum.getByCode(category)); // 类别
-            // 保存到数据库
+            webSocketService.save(webSocketDO); // 保存到数据库
 
             // 上线操作
             online(webSocketDO, ctx.channel());
@@ -83,10 +89,16 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
         // 绑定 userId
         channel.attr(MyNettyChannelGroupHelper.USER_ID_KEY).set(webSocketDO.getUserId());
-        // 绑定 WebSocket 连接记录主表，主键id
+        // 绑定 WebSocket 连接记录 主键id
         channel.attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(webSocketDO.getId());
 
         MyNettyChannelGroupHelper.CHANNEL_GROUP.add(channel); // 备注：断开连接之后，ChannelGroup 会自动移除该通道
+
+        ThreadUtil.execute(() -> {
+            WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.SOCKET_ID;
+            webSocketMessageEnum.setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, webSocketDO.getIp()));
+            channel.writeAndFlush(webSocketMessageEnum);
+        });
 
     }
 

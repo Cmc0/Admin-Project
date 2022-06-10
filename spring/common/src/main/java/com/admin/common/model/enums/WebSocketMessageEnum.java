@@ -1,4 +1,4 @@
-package com.admin.websocket.model.enums;
+package com.admin.common.model.enums;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONObject;
