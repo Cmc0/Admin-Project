@@ -8,6 +8,8 @@ import {Avatar, Dropdown, Menu} from "antd";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
+import {execConfirm, ToastSuccess} from "../../../util/ToastUtil";
+import {userLogout} from "@/api/UserController";
 
 export default function () {
 
@@ -63,7 +65,12 @@ export default function () {
                             key: 'logout',
                             label: <a
                                 onClick={() => {
-                                    logout('登出成功')
+                                    execConfirm(() => {
+                                        return userLogout().then((res) => {
+                                            ToastSuccess(res.msg)
+                                            logout()
+                                        })
+                                    }, undefined, "确定退出登录吗？")
                                 }}
                             >
                                 退出登录
