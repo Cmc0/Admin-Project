@@ -128,7 +128,7 @@ public class MyJwtUtil {
         // 存储到 redis中
         expireTime = expireTime - BaseConstant.SECOND_30_EXPIRE_TIME;
         String redisJwtHash = generateRedisJwtHash(jwt);
-        jsonRedisTemplate.opsForValue().set(redisJwtHash, "jwt", expireTime, TimeUnit.MILLISECONDS);
+        jsonRedisTemplate.opsForValue().set(redisJwtHash, "jwtHash", expireTime, TimeUnit.MILLISECONDS);
 
         String jwtUserKey = generateRedisJwtUserKey(userId);
         jsonRedisTemplate.boundSetOps(jwtUserKey).add(redisJwtHash); // 添加元素

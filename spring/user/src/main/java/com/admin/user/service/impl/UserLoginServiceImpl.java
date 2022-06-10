@@ -54,7 +54,7 @@ public class UserLoginServiceImpl implements UserLoginService {
 
         boolean isEmail = ReUtil.isMatch(BaseRegexConstant.EMAIL, dto.getAccount());
         if (isEmail) {
-            return loginByAccount(dto);
+            return passwordByAccount(dto);
         }
 
         ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
@@ -77,7 +77,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     /**
      * 账号密码登录
      */
-    private String loginByAccount(UserLoginPasswordDTO dto) {
+    private String passwordByAccount(UserLoginPasswordDTO dto) {
 
         return "jwt";
     }
@@ -109,11 +109,9 @@ public class UserLoginServiceImpl implements UserLoginService {
                     .eq(BaseEntityThree::getEnableFlag, true).eq(WebSocketDO::getCategory, requestCategoryEnum)
                     .select(BaseEntityTwo::getId).list();
 
-                if (socketDbList.size() != 0) {
-                    // 下线该类型的用户
-                    Set<Long> socketIdSet = socketDbList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
-                    webSocketService.offlineAndNoticeBySocketIdSetAndUserId(socketIdSet, userId, requestCategoryEnum);
-                }
+                // 下线该类型的用户
+                Set<Long> socketIdSet = socketDbList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
+                webSocketService.offlineAndNoticeBySocketIdSetAndUserId(socketIdSet, userId, requestCategoryEnum);
 
             } else if ("3".equals(exclusionSetting)) {
                 // 下线其他

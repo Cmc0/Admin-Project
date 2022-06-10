@@ -45,7 +45,7 @@ public interface BaseConstant {
     // id 相关 ↑
 
     // 参数配置相关 ↓
-    Long USER_MUTUALLY_EXCLUSIVE_ID = 1L; // 用户互斥配置的的主键 id，用于查询配置情况
+    Long USER_MUTUALLY_EXCLUSIVE_ID = 1L; // 用户互斥配置的的主键 id
     Long RSA_PRIVATE_KEY_ID = 3L; // 非对称加密，密钥 主键id
     Long IP_REQUESTS_PER_SECOND_ID = 2L; // ip请求速率 主键id
 
