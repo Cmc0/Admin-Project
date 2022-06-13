@@ -15,6 +15,16 @@
 
         <dependency>
             <groupId>com.admin</groupId>
+            <artifactId>role</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
+            <artifactId>menu</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
             <artifactId>user</artifactId>
         </dependency>
 
