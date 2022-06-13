@@ -1,3 +1,4 @@
+import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
@@ -5,17 +6,17 @@ import $http from "../../util/HttpUtil";
 
 // 菜单-管理 通过主键 idSet，加减排序号
 export function menuAddOrderNo(form: AddOrderNoDTO) {
-    return $http.myPost('/menu/addOrderNo', form)
+    return $http.myPost<string>('/menu/addOrderNo', form)
 }
 
 // 菜单-管理 批量删除
 export function menuDeleteByIdSet(form: NotEmptyIdSet) {
-    return $http.myPost('/menu/deleteByIdSet', form)
+    return $http.myPost<string>('/menu/deleteByIdSet', form)
 }
 
-export interface ApiResultVO«MenuInfoByIdVO» {
+export interface MenuInfoByIdVO {
     code?: number // 响应代码，成功返回：200
-    data?: object // 数据
+    data?: MenuInfoByIdVO // 数据
     msg?: string // 响应描述
     service?: string // 服务名
     success?: boolean // 服务器是否收到请求，只会返回 true
@@ -23,7 +24,7 @@ export interface ApiResultVO«MenuInfoByIdVO» {
 
 // 菜单-管理 通过主键id，查看详情
 export function menuInfoById(form: NotNullId) {
-    return $http.myPost('/menu/infoById', form)
+    return $http.myPost<MenuInfoByIdVO>('/menu/infoById', form)
 }
 
 export interface MenuInsertOrUpdateDTO {
@@ -47,7 +48,7 @@ export interface MenuInsertOrUpdateDTO {
 
 // 菜单-管理 新增/修改
 export function menuInsertOrUpdate(form: MenuInsertOrUpdateDTO) {
-    return $http.myPost('/menu/insertOrUpdate', form)
+    return $http.myPost<string>('/menu/insertOrUpdate', form)
 }
 
 export interface MenuPageDTO {
@@ -69,9 +70,9 @@ export interface MenuPageDTO {
     showFlag?: boolean // 是否显示在 左侧的菜单栏里面，如果为 false，也可以通过 $router.push()访问到
 }
 
-export interface ApiResultVO«Page«BaseMenuDO»» {
+export interface Page«BaseMenuDO» {
     code?: number // 响应代码，成功返回：200
-    data?: object // 数据
+    data?: Page«BaseMenuDO» // 数据
     msg?: string // 响应描述
     service?: string // 服务名
     success?: boolean // 服务器是否收到请求，只会返回 true
@@ -79,7 +80,7 @@ export interface ApiResultVO«Page«BaseMenuDO»» {
 
 // 菜单-管理 分页排序查询
 export function menuPage(form: MenuPageDTO) {
-    return $http.myPost('/menu/page', form)
+    return $http.myPost<Page«BaseMenuDO»>('/menu/page', form)
 }
 
 export interface MenuPageDTO {
@@ -101,9 +102,9 @@ export interface MenuPageDTO {
     showFlag?: boolean // 是否显示在 左侧的菜单栏里面，如果为 false，也可以通过 $router.push()访问到
 }
 
-export interface ApiResultVO«List«BaseMenuDO»» {
+export interface List«BaseMenuDO» {
     code?: number // 响应代码，成功返回：200
-    data?: object // 数据
+    data?: array // 数据
     msg?: string // 响应描述
     service?: string // 服务名
     success?: boolean // 服务器是否收到请求，只会返回 true
@@ -111,12 +112,12 @@ export interface ApiResultVO«List«BaseMenuDO»» {
 
 // 菜单-管理 查询：树结构
 export function menuTree(form: MenuPageDTO) {
-    return $http.myPost('/menu/tree', form)
+    return $http.myPost<List«BaseMenuDO»>('/menu/tree', form)
 }
 
-export interface ApiResultVO«List«BaseMenuDO»» {
+export interface List«BaseMenuDO» {
     code?: number // 响应代码，成功返回：200
-    data?: object // 数据
+    data?: array // 数据
     msg?: string // 响应描述
     service?: string // 服务名
     success?: boolean // 服务器是否收到请求，只会返回 true
@@ -124,6 +125,6 @@ export interface ApiResultVO«List«BaseMenuDO»» {
 
 // 菜单-管理 获取当前用户绑定的菜单
 export function menuUser() {
-    return $http.myPost('/menu/user')
+    return $http.myPost<List«BaseMenuDO»>('/menu/user')
 }
 

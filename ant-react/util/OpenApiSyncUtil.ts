@@ -41,8 +41,10 @@ interface IOpenApiTag { // 例如：{ name: "用户-登录", description: "User 
     description: string
 }
 
+const typeList = ['string', 'integer', 'boolean', 'array'] as const
+
 type IOpenApiComponentSchemaPropertyFormat = 'byte' | 'int64' | 'date-time' | 'int32'
-type IOpenApiComponentSchemaPropertyType = 'string' | 'integer' | 'boolean' | 'array'
+type IOpenApiComponentSchemaPropertyType = typeof typeList[number]
 
 interface IOpenApiComponentSchemaProperty { // 例如：{ AddOrderNoDTO: { title: '', description: '', ... }}
     $ref?: string // $ref 有值时，type 和 format没值
@@ -108,6 +110,9 @@ function writeInterface(componentName: string, fileData: string, component: Reco
         } else if (component[item].$ref) {
             const refSplitList = component[item].$ref!.split('/');
             type = refSplitList[refSplitList.length - 1];
+            if (dtoNameList.includes(type)) {
+                fileData = `import ${type} from "@/model/dto/${type}";\n` + fileData
+            }
         }
 
         fileData += `    ${item}?: ${type} // ${component[item].description}\n`
@@ -180,8 +185,13 @@ function start() {
                 if (subItem.responses) {
                     const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
                     responsesName = getComponentNameByFullName(responsesFullName)
+                    const matchList = responsesName.match(/«(.*)»/);
+                    if (matchList && matchList.length) {
+                        responsesName = matchList[1]
+                    }
                     const responses = componentMap[responsesFullName]
-                    responsesFlag = responses && !responsesName.includes('ApiResultVO«string»')
+                    // @ts-ignore
+                    responsesFlag = responses && !typeList.includes(responsesName)
                     if (responsesFlag) {
                         fileData = writeInterface(responsesName, fileData, responses)
                     }
@@ -199,7 +209,13 @@ function start() {
 
                 fileData += `) {\n`
 
-                fileData += `    return $http.myPost('${subItem.uri}'`
+                fileData += `    return $http.myPost`
+
+                if (responsesName) {
+                    fileData += `<${responsesName}>`
+                }
+
+                fileData += `('${subItem.uri}'`
 
                 if (requestBodyName) {
                     fileData += ', form'
