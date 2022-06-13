@@ -113,7 +113,16 @@ function start() {
                 fileData += `export interface ${dtoName} {\n`
 
                 Object.keys(requestBody).forEach(deepNode => {
-                    const type = requestBody[deepNode].type
+                    let type = requestBody[deepNode].type
+                    if (type === 'integer') {
+                        type = 'number'
+                    } else if (type === 'array') {
+                        type = requestBody[deepNode].items!.type
+                        if (type === 'integer') {
+                            type = 'number'
+                        }
+                        type += '[]'
+                    }
                     fileData += `    ${deepNode}?: ${type} // ${requestBody[deepNode].description}\n`
                 })
 
