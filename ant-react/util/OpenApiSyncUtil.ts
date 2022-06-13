@@ -9,23 +9,35 @@ interface IOpenApiPathResRequestBody {
     }
 }
 
+interface IOpenApiPathResResponses {
+    200: {
+        content: {
+            "*/*": {
+                schema: {
+                    $ref: string // 例如：#/components/schemas/ApiResultVO«string»
+                }
+            }
+        }
+    }
+}
+
 interface IOpenApiPathRes {
-    tags: IOpenApiTag[]
+    tags: string[] // 分组/所属文件
     summary: string // 接口描述
-    operationId: string // 入参
-    requestBody: IOpenApiPathResRequestBody
+    requestBody?: IOpenApiPathResRequestBody // 入参
+    responses: IOpenApiPathResResponses // 返回值
 }
 
 interface IOpenApiPath {
     post: IOpenApiPathRes
 }
 
-interface IOpenApiTag { // 例如：{ name": "用户-登录", description": "User Login Controller" }
+interface IOpenApiTag { // 例如：{ name: "用户-登录", description: "User Login Controller" }
     name: string
     description: string
 }
 
-interface IOpenApiComponentSchemaProperty {
+interface IOpenApiComponentSchemaProperty { // 例如：{ AddOrderNoDTO: { title: '', description: '', ... }}
     type: string // 字段类型：string integer boolean array
     description: string // 字段描述
     example?: boolean // 默认值，目前只有 boolean 有默认值
@@ -34,7 +46,7 @@ interface IOpenApiComponentSchemaProperty {
 
 interface IOpenApi {
     tags: IOpenApiTag[]
-    paths: IOpenApiPath[]
+    paths: Record<string, IOpenApiPath>
     components: {
         schemas: Record<string, Record<'properties', IOpenApiComponentSchemaProperty>>
     }
@@ -47,6 +59,24 @@ const axios = require('axios')
 function start() {
     // @ts-ignore
     axios.get<IOpenApi>("http://localhost:9527/v3/api-docs").then(({data}: { data: IOpenApi }) => {
+
+        const tagNameAndPathResMap: Record<string, IOpenApiPathRes[]> = {}
+
+        Object.keys(data.paths).forEach(item => {
+            const tagName = data.paths[item].post.tags[0]
+            if (tagNameAndPathResMap[tagName]) {
+                tagNameAndPathResMap[tagName] = [...tagNameAndPathResMap[tagName], data.paths[item].post]
+            } else {
+                tagNameAndPathResMap[tagName] = [data.paths[item].post]
+            }
+        })
+
+        const componentMap: Record<string, IOpenApiComponentSchemaProperty> = {}
+
+        Object.keys(data.components.schemas).forEach(item => {
+            componentMap["#/components/schemas/" + item] = data.components.schemas[item].properties
+        })
+
         data.tags.forEach(item => {
 
             // User Login Controller -> UserLoginController
@@ -57,8 +87,43 @@ function start() {
                 return
             }
 
+            let fileData = 'import $http from "../../util/HttpUtil";\n\n'
+
+            const pathList = tagNameAndPathResMap[item.name]
+
+            if (!pathList) {
+                return;
+            }
+
+            pathList.forEach(subItem => {
+                if (!subItem.requestBody) {
+                    // TODO：如果没有入参
+                    return
+                }
+                const requestBodyName = subItem.requestBody.content["application/json"].schema.$ref
+                const requestBody = componentMap[requestBodyName];
+                if (!requestBody) {
+                    return
+                }
+                // 如果有入参
+                const splitList = requestBodyName.split('/');
+                const dtoName = splitList[splitList.length - 1];
+
+                fileData += `// ${item.name} ${'接口描述'}\n`
+                fileData += `export interface ${dtoName} {\n`
+
+                Object.keys(requestBody).forEach(deepNode => {
+                    // @ts-ignore
+                    const type = requestBody[deepNode].type
+                    // @ts-ignore
+                    fileData += `    ${deepNode}?: ${type} // ${requestBody[deepNode].description}\n`
+                })
+
+                fileData += "}\n\n"
+            })
+
             // 写入文件
-            fs.writeFile('./src/api/' + controllerName + '.ts', "export default {}", (err: any) => {
+            fs.writeFile('./src/api/' + controllerName + '.ts', fileData, (err: any) => {
                 if (err) {
                     throw err
                 }
