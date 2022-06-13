@@ -48,7 +48,7 @@ interface IOpenApi {
     tags: IOpenApiTag[]
     paths: Record<string, IOpenApiPath>
     components: {
-        schemas: Record<string, Record<'properties', IOpenApiComponentSchemaProperty>>
+        schemas: Record<string, Record<'properties', Record<string, IOpenApiComponentSchemaProperty>>>
     }
 }
 
@@ -71,7 +71,7 @@ function start() {
             }
         })
 
-        const componentMap: Record<string, IOpenApiComponentSchemaProperty> = {}
+        const componentMap: Record<string, Record<string, IOpenApiComponentSchemaProperty>> = {}
 
         Object.keys(data.components.schemas).forEach(item => {
             componentMap["#/components/schemas/" + item] = data.components.schemas[item].properties
@@ -109,13 +109,11 @@ function start() {
                 const splitList = requestBodyName.split('/');
                 const dtoName = splitList[splitList.length - 1];
 
-                fileData += `// ${item.name} ${'接口描述'}\n`
+                fileData += `// ${item.name} ${subItem.summary || '暂无接口描述'}\n`
                 fileData += `export interface ${dtoName} {\n`
 
                 Object.keys(requestBody).forEach(deepNode => {
-                    // @ts-ignore
                     const type = requestBody[deepNode].type
-                    // @ts-ignore
                     fileData += `    ${deepNode}?: ${type} // ${requestBody[deepNode].description}\n`
                 })
 
