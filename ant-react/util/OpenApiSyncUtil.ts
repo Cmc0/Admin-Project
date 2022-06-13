@@ -1,4 +1,7 @@
 // @ts-ignore
+const fs = require('fs')
+const axios = require('axios')
+
 interface IOpenApiPathResRequestBody {
     content: {
         "application/json": {
@@ -62,8 +65,9 @@ interface IOpenApi {
     }
 }
 
-const fs = require('fs')
-const axios = require('axios')
+// 获取：model/dto下面的 ts文件名
+let dtoNameList: string[] = fs.readdirSync("./src/model/dto")
+dtoNameList = dtoNameList.map(item => item.split('.ts')[0])
 
 function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyFormat, componentProperty: IOpenApiComponentSchemaProperty) {
 
@@ -85,6 +89,11 @@ function writeInterface(componentFullName: string, fileData: string, component: 
 
     const splitList = componentFullName.split('/');
     const componentName = splitList[splitList.length - 1];
+
+    if (dtoNameList.includes(componentName)) {
+        fileData = `import ${componentName} from "@/model/dto/${componentName}";\n` + fileData
+        return fileData
+    }
 
     fileData += `export interface ${componentName} {\n`
 
@@ -109,6 +118,7 @@ function writeInterface(componentFullName: string, fileData: string, component: 
 
 // 同步 openApi到 api文件夹
 function start() {
+
     // @ts-ignore
     axios.get<IOpenApi>("http://localhost:9527/v3/api-docs").then(({data}: { data: IOpenApi }) => {
 
@@ -180,13 +190,7 @@ function start() {
             })
 
             // 写入文件
-            fs.writeFile('./src/api/' + controllerName + '.ts', fileData, (err: any) => {
-                if (err) {
-                    throw err
-                }
-                console.log("操作成功 :>> " + controllerName + ".ts")
-            })
-
+            fs.writeFileSync('./src/api/' + controllerName + '.ts', fileData)
         })
     })
 }

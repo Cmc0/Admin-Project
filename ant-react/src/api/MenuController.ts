@@ -1,22 +1,9 @@
-export interface AddOrderNoDTO {
-    idSet?: number[] // 主键 idSet
-    number?: number // 统一加减的数值
-}
-
 // 菜单-管理 通过主键 idSet，加减排序号
 export function menuAddOrderNo() {
 }
 
-export interface NotEmptyIdSet {
-    idSet?: number[] // 主键 idSet
-}
-
 // 菜单-管理 批量删除
 export function menuDeleteByIdSet() {
-}
-
-export interface NotNullId {
-    id?: number // 主键id
 }
 
 export interface ApiResultVO«MenuInfoByIdVO» {
