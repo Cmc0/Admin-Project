@@ -78,8 +78,13 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
     } else if (type === 'string' && format === 'byte') {
         type = 'boolean'
     } else if (type === 'array') {
-        if (componentProperty.items && componentProperty.items.type) {
-            type = getInterfaceType(componentProperty.items.type, componentProperty.items.format!, componentProperty) + '[]'
+        if (componentProperty.items) {
+            if (componentProperty.items.type) {
+                type = getInterfaceType(componentProperty.items.type, componentProperty.items.format!, componentProperty) + '[]'
+            } else {
+                const refSplitList = componentProperty.items.$ref!.split('/');
+                type = refSplitList[refSplitList.length - 1];
+            }
         }
     }
 
@@ -144,7 +149,7 @@ function start() {
         const componentMap: Record<string, Record<string, IOpenApiComponentSchemaProperty>> = {}
 
         Object.keys(data.components.schemas).forEach(item => {
-            componentMap["#/components/schemas/" + item] = data.components.schemas[item].properties
+            componentMap[item] = data.components.schemas[item].properties
         })
 
         data.tags.forEach(item => {
@@ -175,7 +180,7 @@ function start() {
                 if (subItem.requestBody) {
                     const requestBodyFullName = subItem.requestBody.content["application/json"].schema.$ref
                     requestBodyName = getComponentNameByFullName(requestBodyFullName)
-                    const requestBody = componentMap[requestBodyFullName]
+                    const requestBody = componentMap[requestBodyName]
                     requestBodyFlag = Boolean(requestBody)
                     if (requestBodyFlag) {
                         fileData = writeInterface(requestBodyName, fileData, requestBody)
@@ -189,7 +194,7 @@ function start() {
                     if (matchList && matchList.length) {
                         responsesName = matchList[1]
                     }
-                    const responses = componentMap[responsesFullName]
+                    const responses = componentMap[responsesName]
                     // @ts-ignore
                     responsesFlag = responses && !typeList.includes(responsesName)
                     if (responsesFlag) {
