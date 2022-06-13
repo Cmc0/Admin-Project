@@ -71,7 +71,11 @@ interface IOpenApi {
 let dtoNameList: string[] = fs.readdirSync("./src/model/dto")
 dtoNameList = dtoNameList.map(item => item.split('.ts')[0])
 
-function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyFormat, componentProperty: IOpenApiComponentSchemaProperty) {
+// 获取：model/entity下面的 ts文件名
+let entityNameList: string[] = fs.readdirSync("./src/model/entity")
+entityNameList = entityNameList.map(item => item.split('.ts')[0])
+
+function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyFormat, componentProperty: IOpenApiComponentSchemaProperty, fileData: string) {
 
     if (type === 'integer') {
         type = 'number'
@@ -80,9 +84,9 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
     } else if (type === 'array') {
         if (componentProperty.items) {
             if (componentProperty.items.type) {
-                type = getInterfaceType(componentProperty.items.type, componentProperty.items.format!, componentProperty) + '[]'
-            } else {
-                const refSplitList = componentProperty.items.$ref!.split('/');
+                type = getInterfaceType(componentProperty.items.type, componentProperty.items.format!, componentProperty, fileData) + '[]'
+            } else if (componentProperty.items.$ref) {
+                const refSplitList = componentProperty.items.$ref.split('/');
                 type = refSplitList[refSplitList.length - 1];
             }
         }
@@ -96,11 +100,28 @@ function getComponentNameByFullName(componentFullName: string) {
     return splitList[splitList.length - 1]
 }
 
+function getFileDataFromModelDir(type: string, fileData: string) {
+
+    if (dtoNameList.includes(type)) {
+
+        fileData = `import ${type} from "@/model/dto/${type}";\n` + fileData
+
+    } else if (entityNameList.includes(type)) {
+
+        fileData = `import ${type} from "@/model/entity/${type}";\n` + fileData
+    }
+
+    return fileData;
+}
+
 // 写：interface
 function writeInterface(componentName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
     if (dtoNameList.includes(componentName)) {
         fileData = `import ${componentName} from "@/model/dto/${componentName}";\n` + fileData
+        return fileData
+    } else if (entityNameList.includes(componentName)) {
+        fileData = `import ${componentName} from "@/model/entity/${componentName}";\n` + fileData
         return fileData
     }
 
@@ -110,14 +131,16 @@ function writeInterface(componentName: string, fileData: string, component: Reco
 
         let type = 'error'
         if (component[item].type) {
+
             let format = component[item].format!
-            type = getInterfaceType(component[item].type!, format, component[item])
+            type = getInterfaceType(component[item].type!, format, component[item], fileData)
+            fileData = getFileDataFromModelDir(type, fileData)
+
         } else if (component[item].$ref) {
+
             const refSplitList = component[item].$ref!.split('/');
             type = refSplitList[refSplitList.length - 1];
-            if (dtoNameList.includes(type)) {
-                fileData = `import ${type} from "@/model/dto/${type}";\n` + fileData
-            }
+            fileData = getFileDataFromModelDir(type, fileData);
         }
 
         fileData += `    ${item}?: ${type} // ${component[item].description}\n`

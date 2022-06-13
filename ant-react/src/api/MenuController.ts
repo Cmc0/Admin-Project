@@ -1,4 +1,5 @@
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
+import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
