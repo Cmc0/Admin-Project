@@ -1,7 +1,4 @@
-// 通过 openApi，覆盖 /src/api 下的文件
-import $http from "./HttpUtil";
-import CommonConstant from "@/model/constant/CommonConstant";
-
+// @ts-ignore
 interface IOpenApiPathResRequestBody {
     content: {
         "application/json": {
@@ -43,11 +40,33 @@ interface IOpenApi {
     }
 }
 
-export default function () {
-    $http.get<IOpenApi>(CommonConstant.OPEN_API_URL).then(({data}) => {
+const fs = require('fs')
+const axios = require('axios')
+
+// 同步 openApi到 api文件夹
+function start() {
+    // @ts-ignore
+    axios.get<IOpenApi>("http://localhost:9527/v3/api-docs").then(({data}: { data: IOpenApi }) => {
         data.tags.forEach(item => {
-            const controllerName = item.description.replaceAll(' ', '');
+
+            // User Login Controller -> UserLoginController
+            const controllerName = item.description.replace(new RegExp(' ', 'g'), '')
+
+            // TODO：del
+            if (controllerName !== 'MenuController') {
+                return
+            }
+
+            // 写入文件
+            fs.writeFile('./src/api/' + controllerName + '.ts', "export default {}", (err: any) => {
+                if (err) {
+                    throw err
+                }
+                console.log("操作成功 :>> " + controllerName + ".ts")
+            })
 
         })
     })
 }
+
+start()
