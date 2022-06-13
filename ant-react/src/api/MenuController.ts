@@ -1,9 +1,16 @@
+import NotNullId from "@/model/dto/NotNullId";
+import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
+import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
+import $http from "../../util/HttpUtil";
+
 // 菜单-管理 通过主键 idSet，加减排序号
-export function menuAddOrderNo() {
+export function menuAddOrderNo(form: AddOrderNoDTO) {
+    return $http.myPost('/menu/addOrderNo', form)
 }
 
 // 菜单-管理 批量删除
-export function menuDeleteByIdSet() {
+export function menuDeleteByIdSet(form: NotEmptyIdSet) {
+    return $http.myPost('/menu/deleteByIdSet', form)
 }
 
 export interface ApiResultVO«MenuInfoByIdVO» {
@@ -15,7 +22,8 @@ export interface ApiResultVO«MenuInfoByIdVO» {
 }
 
 // 菜单-管理 通过主键id，查看详情
-export function menuInfoById() {
+export function menuInfoById(form: NotNullId) {
+    return $http.myPost('/menu/infoById', form)
 }
 
 export interface MenuInsertOrUpdateDTO {
@@ -38,7 +46,8 @@ export interface MenuInsertOrUpdateDTO {
 }
 
 // 菜单-管理 新增/修改
-export function menuInsertOrUpdate() {
+export function menuInsertOrUpdate(form: MenuInsertOrUpdateDTO) {
+    return $http.myPost('/menu/insertOrUpdate', form)
 }
 
 export interface MenuPageDTO {
@@ -69,7 +78,8 @@ export interface ApiResultVO«Page«BaseMenuDO»» {
 }
 
 // 菜单-管理 分页排序查询
-export function menuPage() {
+export function menuPage(form: MenuPageDTO) {
+    return $http.myPost('/menu/page', form)
 }
 
 export interface MenuPageDTO {
@@ -100,7 +110,8 @@ export interface ApiResultVO«List«BaseMenuDO»» {
 }
 
 // 菜单-管理 查询：树结构
-export function menuTree() {
+export function menuTree(form: MenuPageDTO) {
+    return $http.myPost('/menu/tree', form)
 }
 
 export interface ApiResultVO«List«BaseMenuDO»» {
@@ -113,5 +124,6 @@ export interface ApiResultVO«List«BaseMenuDO»» {
 
 // 菜单-管理 获取当前用户绑定的菜单
 export function menuUser() {
+    return $http.myPost('/menu/user')
 }
 

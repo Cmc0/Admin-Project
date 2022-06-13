@@ -84,11 +84,13 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
     return type
 }
 
-// 写：interface
-function writeInterface(componentFullName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
+function getComponentNameByFullName(componentFullName: string) {
+    const splitList = componentFullName.split('/')
+    return splitList[splitList.length - 1]
+}
 
-    const splitList = componentFullName.split('/');
-    const componentName = splitList[splitList.length - 1];
+// 写：interface
+function writeInterface(componentName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
     if (dtoNameList.includes(componentName)) {
         fileData = `import ${componentName} from "@/model/dto/${componentName}";\n` + fileData
@@ -150,7 +152,7 @@ function start() {
                 return
             }
 
-            let fileData = 'import $http from "../../util/HttpUtil";\n\n'
+            let fileData = 'import $http, {ApiResultVO} from "../../util/HttpUtil";\n\n'
 
             const pathList = tagNameAndPathResMap[item.name]
 
@@ -160,24 +162,28 @@ function start() {
 
             pathList.forEach(subItem => {
 
-                let responsesFlag = true // 是否有返回值
                 let requestBodyFlag = true // 是否有入参
+                let responsesFlag = true // 是否有返回值
+                let requestBodyName = '' // 入参 bean的名称
+                let responsesName = '' // 返回值 bean的名称
 
                 if (subItem.requestBody) {
                     const requestBodyFullName = subItem.requestBody.content["application/json"].schema.$ref
+                    requestBodyName = getComponentNameByFullName(requestBodyFullName)
                     const requestBody = componentMap[requestBodyFullName]
                     requestBodyFlag = Boolean(requestBody)
                     if (requestBodyFlag) {
-                        fileData = writeInterface(requestBodyFullName, fileData, requestBody)
+                        fileData = writeInterface(requestBodyName, fileData, requestBody)
                     }
                 }
 
                 if (subItem.responses) {
                     const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
+                    responsesName = getComponentNameByFullName(responsesFullName)
                     const responses = componentMap[responsesFullName]
-                    responsesFlag = responses && !responsesFullName.includes('ApiResultVO«string»')
+                    responsesFlag = responses && !responsesName.includes('ApiResultVO«string»')
                     if (responsesFlag) {
-                        fileData = writeInterface(responsesFullName, fileData, responses)
+                        fileData = writeInterface(responsesName, fileData, responses)
                     }
                 }
 
@@ -185,8 +191,21 @@ function start() {
 
                 const apiName = toHump(subItem.uri.slice(1), /\/(\w)/g)
 
-                fileData += `export function ${apiName}() {\n}\n\n`
+                fileData += `export function ${apiName}(`
 
+                if (requestBodyName) {
+                    fileData += 'form: ' + requestBodyName
+                }
+
+                fileData += `) {\n`
+
+                fileData += `    return $http.myPost('${subItem.uri}'`
+
+                if (requestBodyName) {
+                    fileData += ', form'
+                }
+
+                fileData += ')\n}\n\n'
             })
 
             // 写入文件

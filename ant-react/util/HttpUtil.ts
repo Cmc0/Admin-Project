@@ -36,7 +36,7 @@ $http.interceptors.request.use(
 
 // 响应拦截器
 $http.interceptors.response.use(
-    (response: AxiosResponse<IResVO>) => {
+    (response: AxiosResponse<ApiResultVO>) => {
 
         const config = response.config
 
@@ -83,7 +83,7 @@ $http.interceptors.response.use(
     }
 )
 
-export interface IResVO<T = string> {
+export interface ApiResultVO<T = string> {
     code: number
     success: boolean
     msg: string
@@ -91,7 +91,7 @@ export interface IResVO<T = string> {
 }
 
 interface MyAxiosInstance extends AxiosInstance {
-    myPost<T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IResVO<T>>
+    myPost<T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<ApiResultVO<T>>
 
     myTreePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]>
 
@@ -110,9 +110,9 @@ export interface IPageVO<T> {
 }
 
 
-$http.myPost = <T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IResVO<T>> => {
+$http.myPost = <T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<ApiResultVO<T>> => {
     return new Promise((resolve, reject) => {
-        return $http.post<IResVO, AxiosResponse<IResVO<T>>, D>(url, data, config).then(({data}) => {
+        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T>>, D>(url, data, config).then(({data}) => {
             resolve(data)
         }).catch(err => {
             reject(err)
@@ -123,7 +123,7 @@ $http.myPost = <T = string, D = any>(url: string, data?: D, config?: AxiosReques
 $http.myTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]> => {
     return new Promise((resolve, reject) => {
         handleData(data)
-        return $http.post<IResVO, AxiosResponse<IResVO<T[]>>, D>(url, data, config).then(({data}) => {
+        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T[]>>, D>(url, data, config).then(({data}) => {
             resolve(data.data)
         }).catch(err => {
             reject(err)
@@ -134,7 +134,7 @@ $http.myTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: Axio
 $http.myProTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>> => {
     return new Promise((resolve, reject) => {
         handleData(data)
-        return $http.post<IResVO, AxiosResponse<IResVO<T[]>>, D>(url, data, config).then(({data}) => {
+        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T[]>>, D>(url, data, config).then(({data}) => {
             resolve({
                 success: true,
                 data: data.data
@@ -148,7 +148,7 @@ $http.myProTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: A
 $http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>> => {
     return new Promise((resolve, reject) => {
         handleData(data)
-        return $http.post<IResVO, AxiosResponse<IResVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
+        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
             resolve(data.data)
         }).catch(err => {
             reject(err)
