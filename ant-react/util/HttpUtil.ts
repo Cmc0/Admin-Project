@@ -4,6 +4,7 @@ import {ToastError} from './ToastUtil'
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
 import {logout} from "./UserUtil";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 export const timeoutMsg = '请求超时，请重试'
 export const baseErrorMsg = "请求错误："
@@ -41,10 +42,13 @@ $http.interceptors.response.use(
         const config = response.config
 
         if (config.url?.startsWith('http')) {
-            return response // 如果是 http请求，则直接返回 response
+            return response // 如果是 http请求
         }
         if (config.responseType === 'blob') {
-            return response // 如果请求的是文件，则直接返回 response
+            return response // 如果请求的是文件
+        }
+        if (config.url === CommonConstant.OPEN_API_URL) {
+            return response // 如果是 openApi请求
         }
 
         const hiddenErrorMsg = config.headers?.hiddenErrorMsg // 是否隐藏错误提示

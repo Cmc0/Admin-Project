@@ -12,8 +12,13 @@ import 'moment/dist/locale/zh-cn';
 
 import {Provider} from 'react-redux'
 import redux from './redux'
+import ApiSyncUtil from "../util/ApiSyncUtil";
 
 moment.locale('zh-cn');
+
+if (import.meta.env.DEV) {
+    window.ApiSyncUtil = ApiSyncUtil
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
