@@ -1,9 +1,9 @@
 import MainLayout from "@/componse/MainLayout/MainLayout";
 import Jump from "@/componse/Jump/Jump";
 
-// 下划线转换驼峰
-export function toHump(name: string) {
-    return name.replace(/\_(\w)/g, (all, letter) => {
+// 正则表达式 转换驼峰
+export function toHump(name: string, searchValue: string | RegExp = /\_(\w)/g) {
+    return name.replace(searchValue, (all, letter) => {
         return letter.toUpperCase()
     })
 }
@@ -24,9 +24,8 @@ Object.keys(fileObj).forEach((item: string) => {
     if ((split[split.length - 2] + '.tsx') !== split[split.length - 1]) {
         return // 只要：/src/page/home/home.tsx
     }
-    const fileName = toHump(
-        item.split('/src/page/')[1].split('.tsx')[0].replaceAll('/', '_')
-    ) // 例如：/src/page/home/home -> homeHome
+    // 例如：/src/page/home/home -> homeHome
+    const fileName = toHump(item.split('/src/page/')[1].split('.tsx')[0], /\/(\w)/g)
     RouterMap[fileName] = {
         element: fileObj[item].default,
     }

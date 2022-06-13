@@ -26,6 +26,7 @@ interface IOpenApiPathRes {
     summary: string // 接口描述
     requestBody?: IOpenApiPathResRequestBody // 入参
     responses: IOpenApiPathResResponses // 返回值
+    uri: string // 例如：/menu/addOrderNo
 }
 
 interface IOpenApiPath {
@@ -80,7 +81,7 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
 }
 
 // 写：interface
-function interfaceWrite(componentFullName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
+function writeInterface(componentFullName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
     const splitList = componentFullName.split('/');
     const componentName = splitList[splitList.length - 1];
@@ -95,8 +96,7 @@ function interfaceWrite(componentFullName: string, fileData: string, component: 
             type = getInterfaceType(component[item].type!, format, component[item])
         } else if (component[item].$ref) {
             const refSplitList = component[item].$ref!.split('/');
-            const refComponentName = refSplitList[refSplitList.length - 1];
-            type = refComponentName
+            type = refSplitList[refSplitList.length - 1];
         }
 
         fileData += `    ${item}?: ${type} // ${component[item].description}\n`
@@ -116,6 +116,7 @@ function start() {
 
         Object.keys(data.paths).forEach(item => {
             const tagName = data.paths[item].post.tags[0]
+            data.paths[item].post.uri = item // 这里赋值：uri
             if (tagNameAndPathResMap[tagName]) {
                 tagNameAndPathResMap[tagName] = [...tagNameAndPathResMap[tagName], data.paths[item].post]
             } else {
@@ -149,22 +150,33 @@ function start() {
 
             pathList.forEach(subItem => {
 
+                let responsesFlag = true // 是否有返回值
+                let requestBodyFlag = true // 是否有入参
+
+                if (subItem.requestBody) {
+                    const requestBodyFullName = subItem.requestBody.content["application/json"].schema.$ref
+                    const requestBody = componentMap[requestBodyFullName]
+                    requestBodyFlag = Boolean(requestBody)
+                    if (requestBodyFlag) {
+                        fileData = writeInterface(requestBodyFullName, fileData, requestBody)
+                    }
+                }
+
                 if (subItem.responses) {
-                    const responsesName = subItem.responses["200"].content["*/*"].schema.$ref;
-
+                    const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
+                    const responses = componentMap[responsesFullName]
+                    responsesFlag = responses && !responsesFullName.includes('ApiResultVO«string»')
+                    if (responsesFlag) {
+                        fileData = writeInterface(responsesFullName, fileData, responses)
+                    }
                 }
 
-                if (!subItem.requestBody) {
-                    // TODO：如果没有入参
-                    return
-                }
-                const requestBodyName = subItem.requestBody.content["application/json"].schema.$ref
-                const requestBody = componentMap[requestBodyName];
-                if (!requestBody) {
-                    return
-                }
-                // 如果有入参
-                fileData = interfaceWrite(requestBodyName, fileData, requestBody);
+                fileData += `// ${item.name} ${subItem.summary}\n`
+
+                const apiName = toHump(subItem.uri.slice(1), /\/(\w)/g)
+
+                fileData += `export function ${apiName}() {\n}\n\n`
+
             })
 
             // 写入文件
@@ -176,6 +188,13 @@ function start() {
             })
 
         })
+    })
+}
+
+// 正则表达式 转换驼峰
+function toHump(name: string, searchValue: string | RegExp = /\_(\w)/g) {
+    return name.replace(searchValue, (all, letter) => {
+        return letter.toUpperCase()
     })
 }
 
