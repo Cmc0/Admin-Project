@@ -29,6 +29,11 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
     {
+        title: '起始页面',
+        dataIndex: 'firstFlag',
+        valueEnum: YesNoEnum,
+    },
+    {
         title: '权限菜单',
         dataIndex: 'authFlag',
         valueEnum: YesNoEnum,
@@ -54,6 +59,7 @@ export default function () {
 
     const [columnsStateMap, setColumnsStateMap] = useState<Record<string, ColumnsState>>(
         {
+            firstFlag: {show: false,},
             authFlag: {show: false,},
             linkFlag: {show: false,},
         });
