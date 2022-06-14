@@ -36,9 +36,9 @@ public class KafkaUtil {
      */
     public static void bulletinPush(Set<Long> userIdSet) {
 
-        WebSocketMessageEnum newNotify = WebSocketMessageEnum.NEW_BULLETIN;
-        newNotify.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
-        sendWebSocketMessageByKafka(newNotify);
+        WebSocketMessageEnum newBulletin = WebSocketMessageEnum.NEW_BULLETIN;
+        newBulletin.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(newBulletin);
 
     }
 

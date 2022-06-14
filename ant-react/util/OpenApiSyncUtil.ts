@@ -263,9 +263,9 @@ function start() {
                 fileData += `) {\n`
 
                 if (pageFlag) {
-                    fileData += `    return $http.myPagePost`
+                    fileData += `    return $http.myProPagePost`
                 } else if (treeFlag) {
-                    fileData += `    return $http.myTreePost`
+                    fileData += `    return $http.myProTreePost`
                 } else {
                     fileData += `    return $http.myPost`
                 }

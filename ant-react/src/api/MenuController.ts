@@ -71,7 +71,7 @@ export function menuInsertOrUpdate(form: MenuInsertOrUpdateDTO) {
 
 // 菜单-管理 获取当前用户绑定的菜单
 export function menuListForUser() {
-    return $http.myTreePost<BaseMenuDO>('/menu/listForUser')
+    return $http.myProTreePost<BaseMenuDO>('/menu/listForUser')
 }
 
 export interface MenuPageDTO {
@@ -94,10 +94,10 @@ export interface MenuPageDTO {
 
 // 菜单-管理 分页排序查询
 export function menuPage(form: MenuPageDTO) {
-    return $http.myPagePost<BaseMenuDO>('/menu/page', form)
+    return $http.myProPagePost<BaseMenuDO>('/menu/page', form)
 }
 
 // 菜单-管理 查询：树结构
 export function menuTree(form: MenuPageDTO) {
-    return $http.myTreePost<BaseMenuDO>('/menu/tree', form)
+    return $http.myProTreePost<BaseMenuDO>('/menu/tree', form)
 }

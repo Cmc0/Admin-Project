@@ -60,7 +60,7 @@ export interface WebSocketPageVO {
 
 // webSocket 分页排序查询
 export function webSocketPage(form: WebSocketPageDTO) {
-    return $http.myPagePost<WebSocketPageVO>('/webSocket/page', form)
+    return $http.myProPagePost<WebSocketPageVO>('/webSocket/page', form)
 }
 
 export interface WebSocketRegVO {

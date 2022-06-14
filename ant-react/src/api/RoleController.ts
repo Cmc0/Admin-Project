@@ -69,5 +69,5 @@ export interface BaseRoleDO {
 
 // 角色-管理 分页排序查询
 export function rolePage(form: RolePageDTO) {
-    return $http.myPagePost<BaseRoleDO>('/role/page', form)
+    return $http.myProPagePost<BaseRoleDO>('/role/page', form)
 }
