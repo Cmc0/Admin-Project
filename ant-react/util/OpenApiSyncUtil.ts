@@ -223,6 +223,8 @@ function start() {
                 let responsesFlag = true // 是否有返回值
                 let requestBodyName = '' // 入参 bean的名称
                 let responsesName = '' // 返回值 bean的名称
+                let pageFlag = false // 是否是 page请求
+                let treeFlag = false // 是否是 tree请求
 
                 if (subItem.requestBody) {
                     const requestBodyFullName = subItem.requestBody.content["application/json"].schema.$ref
@@ -240,6 +242,10 @@ function start() {
                     responsesName = getMatchStr(responsesName);
                     if (responsesName.startsWith("Page«")) {
                         responsesName = getMatchStr(responsesName);
+                        pageFlag = true
+                    } else if (responsesName.startsWith("List«")) {
+                        responsesName = getMatchStr(responsesName);
+                        treeFlag = true
                     }
                     const responses = componentMap[responsesName]
                     // @ts-ignore
@@ -261,7 +267,13 @@ function start() {
 
                 fileData += `) {\n`
 
-                fileData += `    return $http.myPost`
+                if (pageFlag) {
+                    fileData += `    return $http.myPagePost`
+                } else if (treeFlag) {
+                    fileData += `    return $http.myTreePost`
+                } else {
+                    fileData += `    return $http.myPost`
+                }
 
                 if (responsesName) {
                     fileData += `<${responsesName}>`
