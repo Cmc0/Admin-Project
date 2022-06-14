@@ -120,9 +120,6 @@ function getFileDataFromModelDir(componentName: string, fileData: string) {
     return fileData;
 }
 
-// page对象需要忽略的字段
-const pageIgnoreFieldList = ['countId', 'current', 'maxLimit', 'optimizeCountSql', 'orders', 'pages', 'searchCount', 'size', 'total', 'records']
-
 // 写：interface
 function writeInterface(componentName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
