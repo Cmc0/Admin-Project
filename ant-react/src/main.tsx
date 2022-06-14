@@ -4,7 +4,7 @@ import App from './App'
 import './index.less'
 
 import {ConfigProvider} from 'antd'
-import zhCN from 'antd/lib/locale/zh_CN'
+import zhCN from 'antd/es/locale/zh_CN'
 import "antd/dist/antd.css"
 
 import moment from 'moment';

@@ -1,9 +1,10 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ProColumns, ProTable} from "@ant-design/pro-components";
-import {Badge, Button, Space} from "antd";
+import {Button, Space} from "antd";
 import {MenuPageDTO, menuTree} from "@/api/MenuController";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
+import {YesNoEnum} from "../../../../util/DictUtil";
 
 const columnList: ProColumns<BaseMenuDO>[] = [
     {
@@ -21,31 +22,27 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     },
     {title: '路径', dataIndex: 'path'},
     {title: '权限', dataIndex: 'auths'},
-    {title: '路由', dataIndex: 'router'},
+    {
+        title: '路由',
+        dataIndex: 'router',
+        // valueType: 'select',
+        // request: async () => {
+        //     return RouterMapKeyList
+        // }
+        // fieldProps: {
+        //     options: RouterMapKeyList
+        // },
+    },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
     {
         title: '显示',
         dataIndex: 'showFlag',
-        render: (text, record, index, action) => {
-            return (
-                <Badge
-                    title={record.showFlag ? '显示中' : '隐藏中'}
-                    status={record.showFlag ? 'success' : 'error'}
-                />
-            )
-        },
+        valueEnum: YesNoEnum
     },
     {
         title: '启用',
         dataIndex: 'enableFlag',
-        render: (text, record, index, action) => {
-            return (
-                <Badge
-                    title={record.enableFlag ? '启用中' : '禁用中'}
-                    status={record.enableFlag ? 'success' : 'error'}
-                />
-            )
-        },
+        valueEnum: YesNoEnum
     },
 ];
 

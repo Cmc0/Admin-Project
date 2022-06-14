@@ -1,4 +1,4 @@
-import {SortOrder} from "antd/lib/table/interface";
+import {SortOrder} from "antd/es/table/interface";
 
 export default interface MyOrderDTO {
     name: string // 排序的字段名

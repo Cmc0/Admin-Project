@@ -1,4 +1,4 @@
-import {SortOrder} from "antd/lib/table/interface";
+import {SortOrder} from "antd/es/table/interface";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 
 export default interface MyPageDTO {
