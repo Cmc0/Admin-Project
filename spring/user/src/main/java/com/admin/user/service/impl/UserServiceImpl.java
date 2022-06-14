@@ -7,7 +7,7 @@ import com.admin.common.model.entity.BaseUserInfoDO;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.user.mapper.UserInfoMapper;
-import com.admin.user.model.vo.UserCenterBaseInfoVO;
+import com.admin.user.model.vo.UserBaseInfoVO;
 import com.admin.user.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -40,29 +40,29 @@ public class UserServiceImpl extends ServiceImpl<UserInfoMapper, BaseUserInfoDO>
      * 用户基本信息
      */
     @Override
-    public UserCenterBaseInfoVO baseInfo() {
+    public UserBaseInfoVO baseInfo() {
 
         Long userId = UserUtil.getCurrentUserId();
 
         if (BaseConstant.ADMIN_ID.equals(userId)) {
-            UserCenterBaseInfoVO userCenterBaseInfoVO = new UserCenterBaseInfoVO();
-            userCenterBaseInfoVO.setAvatarUrl("");
-            userCenterBaseInfoVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
-            userCenterBaseInfoVO.setPersonalStatement("");
-            userCenterBaseInfoVO.setEmail("");
-            userCenterBaseInfoVO.setPhone("");
-            userCenterBaseInfoVO.setPasswordFlag(true);
-            return userCenterBaseInfoVO;
+            UserBaseInfoVO userBaseInfoVO = new UserBaseInfoVO();
+            userBaseInfoVO.setAvatarUrl("");
+            userBaseInfoVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
+            userBaseInfoVO.setPersonalStatement("");
+            userBaseInfoVO.setEmail("");
+            userBaseInfoVO.setPhone("");
+            userBaseInfoVO.setPasswordFlag(true);
+            return userBaseInfoVO;
         }
 
-        UserCenterBaseInfoVO userCenterBaseInfoVO = baseMapper.baseInfo(userId);
+        UserBaseInfoVO userBaseInfoVO = baseMapper.baseInfo(userId);
 
-        if (userCenterBaseInfoVO != null) {
-            userCenterBaseInfoVO.setEmail(DesensitizedUtil.email(userCenterBaseInfoVO.getEmail())); // 脱敏
-            userCenterBaseInfoVO.setPhone(DesensitizedUtil.mobilePhone(userCenterBaseInfoVO.getPhone())); // 脱敏
+        if (userBaseInfoVO != null) {
+            userBaseInfoVO.setEmail(DesensitizedUtil.email(userBaseInfoVO.getEmail())); // 脱敏
+            userBaseInfoVO.setPhone(DesensitizedUtil.mobilePhone(userBaseInfoVO.getPhone())); // 脱敏
         }
 
-        return userCenterBaseInfoVO;
+        return userBaseInfoVO;
     }
 
 }

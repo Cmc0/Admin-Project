@@ -11,8 +11,8 @@ import {PasswordRSAEncrypt} from "../../../util/RsaUtil";
 import {Navigate} from "react-router-dom";
 import {getAppNav} from "@/App";
 import {closeWebSocket} from "../../../util/WebSocketUtil";
-import {useAppDispatch} from "@/redux";
-import {setLoadMenuFlag} from "@/redux/commonSlice";
+import {useAppDispatch} from "@/store";
+import {setLoadMenuFlag} from "@/store/commonSlice";
 
 type LoginType = 'password';
 

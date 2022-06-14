@@ -8,13 +8,14 @@ import {Avatar, Dropdown, Menu} from "antd";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
-import {execConfirm, ToastSuccess} from "../../../util/ToastUtil";
+import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
 import {userLogout} from "@/api/UserController";
-import {useAppDispatch, useAppSelector} from "@/redux";
+import {useAppDispatch, useAppSelector} from "@/store";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
-import {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} from '@/redux/commonSlice';
+import {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {menuListForUser} from "@/api/MenuController";
+import {setUserMenuList} from '@/store/userSlice';
 
 export default function () {
 
@@ -50,6 +51,12 @@ export default function () {
 
             // 加载菜单
             menuListForUser().then(res => {
+                if (res.length === 0) {
+                    ToastError('暂未配置菜单，请联系管理员', 5)
+                    logout()
+                    return
+                }
+                appDispatch(setUserMenuList(res))
                 appDispatch(setLoadMenuFlag(true))
                 doSetElement()
             })

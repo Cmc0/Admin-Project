@@ -11,13 +11,13 @@ import moment from 'moment';
 import 'moment/dist/locale/zh-cn';
 
 import {Provider} from 'react-redux'
-import redux from './redux'
+import store from './store'
 
 moment.locale('zh-cn');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <Provider store={redux}>
+        <Provider store={store}>
             <ConfigProvider locale={zhCN}>
                 <App/>
             </ConfigProvider>

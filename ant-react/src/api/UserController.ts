@@ -1,6 +1,6 @@
 import $http from "../../util/HttpUtil";
 
-export interface UserCenterBaseInfoVO {
+export interface UserBaseInfoVO {
     avatarUrl?: string // 头像url
     email?: string // 邮箱，会被脱敏
     nickname?: string // 昵称
@@ -11,7 +11,7 @@ export interface UserCenterBaseInfoVO {
 
 // 用户-管理 用户基本信息
 export function userBaseInfo() {
-    return $http.myPost<UserCenterBaseInfoVO>('/user/baseInfo')
+    return $http.myPost<UserBaseInfoVO>('/user/baseInfo')
 }
 
 // 用户-管理 退出登录

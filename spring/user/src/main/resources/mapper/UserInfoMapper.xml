@@ -3,7 +3,7 @@
 <mapper namespace="com.admin.user.mapper.UserInfoMapper">
 
     <!-- 用户基本信息 -->
-    <select id="baseInfo" resultType="com.admin.user.model.vo.UserCenterBaseInfoVO">
+    <select id="baseInfo" resultType="com.admin.user.model.vo.UserBaseInfoVO">
         SELECT a.avatar_url,
                a.nickname,
                a.personal_statement,
