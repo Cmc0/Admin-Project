@@ -111,7 +111,7 @@ export function connectWebSocket(
       webSocket.onopen = (event) => {
         console.log(`webSocket连接 :>> ${webSocketUrl}`)
         doSetSocketStatus(true)
-        if (sessionStorage.getItem(SessionStorageKey.LOAD_MENU_FLAG) !== 'true') {
+        if (sessionStorage.getItem(SessionStorageKey.LOAD_MENU_FLAG) === 'false') {
           getAppNav()(CommonConstant.MAIN_PATH) // 如果此时，还没有加载完菜单，则再加载一次
         }
       }
