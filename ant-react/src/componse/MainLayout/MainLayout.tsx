@@ -14,6 +14,7 @@ import {useAppDispatch, useAppSelector} from "@/redux";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
 import {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} from '@/redux/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
+import {menuListForUser} from "@/api/MenuController";
 
 export default function () {
 
@@ -48,10 +49,10 @@ export default function () {
             connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
             // 加载菜单
-
-            appDispatch(setLoadMenuFlag(true))
-
-            doSetElement()
+            menuListForUser().then(res => {
+                appDispatch(setLoadMenuFlag(true))
+                doSetElement()
+            })
 
         } else {
 

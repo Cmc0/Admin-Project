@@ -1,12 +1,8 @@
 import NotNullByte from "@/model/dto/NotNullByte";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
+import NotNullByteAndId from "@/model/dto/NotNullByteAndId";
 import $http from "../../util/HttpUtil";
-
-export interface NotNullByteAndId {
-    id?: number // 主键id
-    value?: boolean // 值
-}
 
 // webSocket 更改在线状态
 export function webSocketChangeType(form: NotNullByteAndId) {
