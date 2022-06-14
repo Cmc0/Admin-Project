@@ -61,13 +61,7 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     {
         title: '修改时间',
         dataIndex: 'updateTime',
-        valueType: 'dateTimeRange',
-        render: (dom, entity) => {
-            return entity.updateTime
-        },
-        search: {
-            transform: (value: string) => ({startTime: value[0], endTime: value[1]}),
-        },
+        hideInSearch: true
     },
 ];
 
@@ -78,6 +72,7 @@ export default function () {
             firstFlag: {show: false,},
             authFlag: {show: false,},
             linkFlag: {show: false,},
+            updateTime: {show: false,},
         });
 
     return <ProTable<BaseMenuDO, MenuPageDTO>
