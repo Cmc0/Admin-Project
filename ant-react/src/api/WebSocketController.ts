@@ -60,7 +60,6 @@ export interface WebSocketPageVO {
     updateTime?: string // 修改时间
     userId?: number // 用户id
     userName?: string // 用户名
-    version?: number // 乐观锁
 }
 
 // webSocket 分页排序查询

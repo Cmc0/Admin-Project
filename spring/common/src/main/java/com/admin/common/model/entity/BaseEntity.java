@@ -31,7 +31,7 @@ public class BaseEntity {
 
     @Version
     @TableField(fill = FieldFill.INSERT)
-    @ApiModelProperty(value = "乐观锁")
+    @ApiModelProperty(value = "乐观锁", hidden = true)
     private Integer version;
 
 }

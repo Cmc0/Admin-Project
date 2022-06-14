@@ -38,7 +38,6 @@ export interface MenuInfoByIdVO {
     showFlag?: boolean // 是否显示在 左侧的菜单栏里面，如果为 false，也可以通过 $router.push()访问到
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
-    version?: number // 乐观锁
 }
 
 // 菜单-管理 通过主键id，查看详情
