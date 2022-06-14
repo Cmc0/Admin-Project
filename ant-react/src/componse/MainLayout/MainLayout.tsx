@@ -35,14 +35,22 @@ export default function () {
         appDispatch(setWebSocketStatus(param))
     }
 
+    // 设置：userMenuList
+    function doSetUserMenuList(userMenuList: BaseMenuDO[]) {
+        appDispatch(setUserMenuList(userMenuList))
+        appDispatch(setLoadMenuFlag(true))
+    }
+
     // 设置 element
     function doSetElement() {
-        setElement(MainLayoutElement({pathname, setPathname, userMenuList}))
+        setElement(MainLayoutElement({pathname, setPathname, doSetUserMenuList}))
     }
 
     useEffect(() => {
 
         setPathname(window.location.pathname)
+
+        doSetElement()
 
         if (!loadMenuFlag) {
 
@@ -54,28 +62,7 @@ export default function () {
                 appDispatch(setUserBaseInfo(res.data))
             })
 
-            // 加载菜单
-            menuListForUser().then(res => {
-                if (!res.data || !res.data.length) {
-                    ToastError('暂未配置菜单，请联系管理员', 5)
-                    logout()
-                    return
-                }
-                appDispatch(setUserMenuList(res.data))
-                appDispatch(setLoadMenuFlag(true))
-                doSetElement()
-                res.data.some((item) => {
-                    if (item.firstFlag && item.path) {
-                        getAppNav()(item.path)
-                    }
-                    return item.firstFlag
-                })
-            })
-
         } else {
-
-            doSetElement()
-
             if (window.location.pathname === CommonConstant.MAIN_PATH) {
                 userMenuList.some((item) => {
                     if (item.firstFlag && item.path) {
@@ -93,7 +80,7 @@ export default function () {
 interface IMainLayoutElement {
     pathname: string
     setPathname: Dispatch<SetStateAction<string>>
-    userMenuList: BaseMenuDO[]
+    doSetUserMenuList: (data: BaseMenuDO[]) => void
 }
 
 // MainLayout组件页面
@@ -108,7 +95,24 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    return props.userMenuList;
+                    let menuList
+                    // 加载菜单
+                    await menuListForUser().then(res => {
+                        if (!res.data || !res.data.length) {
+                            ToastError('暂未配置菜单，请联系管理员', 5)
+                            logout()
+                            return
+                        }
+                        menuList = res.data
+                        props.doSetUserMenuList(res.data)
+                        res.data.some((item) => {
+                            if (item.firstFlag && item.path) {
+                                getAppNav()(item.path)
+                            }
+                            return item.firstFlag
+                        })
+                    })
+                    return menuList;
                 },
             }}
             fixSiderbar={true}

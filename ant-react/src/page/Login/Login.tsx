@@ -72,7 +72,7 @@ export default function () {
                                 name="password"
                                 fieldProps={{
                                     size: 'large',
-                                    prefix: <LockOutlined className={'prefixIcon'}/>,
+                                    prefix: <LockOutlined/>,
                                 }}
                                 placeholder={'密码'}
                                 rules={[
