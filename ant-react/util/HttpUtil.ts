@@ -93,16 +93,16 @@ export interface ApiResultVO<T = string> {
 interface MyAxiosInstance extends AxiosInstance {
     myPost<T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<ApiResultVO<T>>
 
-    myTreePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]>
+    myTreePost<T, D extends MyPageDTO = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]>
 
-    myProTreePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
+    myProTreePost<T, D extends MyPageDTO = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
 
-    myPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>>
+    myPagePost<T, D extends MyPageDTO = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<Page<T>>
 
-    myProPagePost<T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
+    myProPagePost<T, D extends MyPageDTO = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
 }
 
-export interface IPageVO<T> {
+export interface Page<T> {
     total: number // 总数
     size: number // 每页显示条数，默认 10
     current: number // 当前页
@@ -145,10 +145,10 @@ $http.myProTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: A
     })
 }
 
-$http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<IPageVO<T>> => {
+$http.myPagePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<Page<T>> => {
     return new Promise((resolve, reject) => {
         handleData(data)
-        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<IPageVO<T>>>, D>(url, data, config).then(({data}) => {
+        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<Page<T>>>, D>(url, data, config).then(({data}) => {
             resolve(data.data)
         }).catch(err => {
             reject(err)

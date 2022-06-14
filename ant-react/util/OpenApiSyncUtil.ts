@@ -120,6 +120,9 @@ function getFileDataFromModelDir(componentName: string, fileData: string) {
     return fileData;
 }
 
+// page对象需要忽略的字段
+const pageIgnoreFieldList = ['countId', 'current', 'maxLimit', 'optimizeCountSql', 'orders', 'pages', 'searchCount', 'size', 'total', 'records']
+
 // 写：interface
 function writeInterface(componentName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
@@ -188,7 +191,7 @@ function start() {
                 return
             }
 
-            let fileData = 'import $http, {ApiResultVO} from "../../util/HttpUtil";\n\n'
+            let fileData = 'import $http, {ApiResultVO, Page} from "../../util/HttpUtil";\n\n'
 
             const pathList = tagNameAndPathResMap[item.name]
 

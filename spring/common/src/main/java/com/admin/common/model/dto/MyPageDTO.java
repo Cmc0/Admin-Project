@@ -17,9 +17,6 @@ public class MyPageDTO {
     @ApiModelProperty(value = "每页显示条数")
     private long pageSize = 10;
 
-    @ApiModelProperty(value = "关键字")
-    private String keyword;
-
     @ApiModelProperty(value = "排序字段")
     private MyOrderDTO order;
 

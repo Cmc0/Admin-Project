@@ -89,22 +89,22 @@ export interface MenuPageDTO {
     showFlag?: boolean // 是否显示在 左侧的菜单栏里面，如果为 false，也可以通过 $router.push()访问到
 }
 
-export interface Page«BaseMenuDO» {
-    countId?: string // undefined
-    current?: number // undefined
-    maxLimit?: number // undefined
-    optimizeCountSql?: boolean // undefined
-    orders?: OrderItem // undefined
-    pages?: number // undefined
-    records?: BaseMenuDO // undefined
-    searchCount?: boolean // undefined
-    size?: number // undefined
-    total?: number // undefined
-}
+// export interface Page«BaseMenuDO» {
+//     countId?: string // undefined
+//     current?: number // undefined
+//     maxLimit?: number // undefined
+//     optimizeCountSql?: boolean // undefined
+//     orders?: OrderItem // undefined
+//     pages?: number // undefined
+//     records?: BaseMenuDO // undefined
+//     searchCount?: boolean // undefined
+//     size?: number // undefined
+//     total?: number // undefined
+// }
 
 // 菜单-管理 分页排序查询
 export function menuPage(form: MenuPageDTO) {
-    return $http.myPost<Page«BaseMenuDO»>('/menu/page', form)
+    return $http.myPagePost<BaseMenuDO>('/menu/page', form)
 }
 
 export interface MenuPageDTO {

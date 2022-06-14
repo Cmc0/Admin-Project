@@ -1,5 +1,5 @@
 import {SortOrder} from "antd/lib/table/interface";
-import {MyOrderDTO} from "@/model/dto/MyOrderDTO";
+import MyOrderDTO from "@/model/dto/MyOrderDTO";
 
 export default interface MyPageDTO {
     current?: number // 第几页
