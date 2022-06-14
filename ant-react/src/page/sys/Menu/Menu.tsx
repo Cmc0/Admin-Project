@@ -32,13 +32,11 @@ const columnList: ProColumns<BaseMenuDO>[] = [
         title: '权限菜单',
         dataIndex: 'authFlag',
         valueEnum: YesNoEnum,
-        hideInSearch: true,
     },
     {
         title: '外链',
         dataIndex: 'linkFlag',
         valueEnum: YesNoEnum,
-        hideInSearch: true,
     },
     {
         title: '显示',
