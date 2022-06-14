@@ -1,5 +1,6 @@
 import MainLayout from "@/componse/MainLayout/MainLayout";
 import Jump from "@/componse/Jump/Jump";
+import {RequestOptionsType} from "@ant-design/pro-components";
 
 // 正则表达式 转换驼峰
 export function toHump(name: string, searchValue: string | RegExp = /\_(\w)/g) {
@@ -44,5 +45,10 @@ export const RouterMapKeyList = Object.keys(RouterMap)
 if (import.meta.env.DEV) {
     window.RouterMapKeyList = RouterMapKeyList
 }
+
+export const RouterDict: RequestOptionsType[] = RouterMapKeyList.map(item => ({
+    label: item,
+    value: item
+}))
 
 export default RouterMap

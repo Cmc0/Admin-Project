@@ -6,6 +6,7 @@ import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {YesNoEnum} from "../../../../util/DictUtil";
 import {useState} from "react";
+import {RouterDict} from "@/router/RouterMap";
 
 const columnList: ProColumns<BaseMenuDO>[] = [
     {
@@ -26,6 +27,10 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     {
         title: '路由',
         dataIndex: 'router',
+        valueType: 'select',
+        request: async () => {
+            return RouterDict
+        }
     },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
     {
