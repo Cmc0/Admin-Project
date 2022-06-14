@@ -1,12 +1,13 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ColumnsState, ProColumns, ProTable} from "@ant-design/pro-components";
-import {Button, Space} from "antd";
+import {Button, Dropdown, Menu, Space} from "antd";
 import {MenuPageDTO, menuTree} from "@/api/MenuController";
-import {HomeFilled} from "@ant-design/icons/lib";
+import {ColumnHeightOutlined, EllipsisOutlined, HomeFilled, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {YesNoEnum} from "../../../../util/DictUtil";
-import {useState} from "react";
+import React, {useRef, useState} from "react";
 import {RouterDict} from "@/router/RouterMap";
+import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 
 const columnList: ProColumns<BaseMenuDO>[] = [
     {
@@ -75,15 +76,21 @@ export default function () {
             updateTime: {show: false,},
         });
 
+    const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
+
+    const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
+
     return <ProTable<BaseMenuDO, MenuPageDTO>
         rowKey={"id"}
         pagination={{
             showQuickJumper: true,
         }}
+        columnEmptyText={false}
         columnsState={{
             value: columnsStateMap,
             onChange: setColumnsStateMap,
         }}
+        expandable={{expandedRowKeys}}
         revalidateOnFocus={false}
         rowSelection={{}}
         columns={columnList}
@@ -92,6 +99,42 @@ export default function () {
         }}
         request={(params, sort, filter) => {
             return menuTree({...params, sort})
+        }}
+        postData={(data) => {
+            hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
+            return data
+        }}
+        toolbar={{
+            title:
+                <Dropdown
+                    overlay={<Menu items={[
+                        {
+                            key: '1',
+                            label: <a onClick={() => {
+                                setExpandedRowKeys(hasChildrenIdList.current)
+                            }}>
+                                展开全部
+                            </a>,
+                            icon: <ColumnHeightOutlined/>
+                        },
+                        {
+                            key: '2',
+                            label: <a onClick={() => {
+                                setExpandedRowKeys([])
+                            }}>
+                                收起全部
+                            </a>,
+                            icon: <VerticalAlignMiddleOutlined/>
+                        },
+                    ]}/>}
+                >
+                    <Button size={"small"} icon={<EllipsisOutlined/>}/>
+                </Dropdown>,
+            actions: [
+                <Button type="primary">
+                    新建应用
+                </Button>,
+            ],
         }}
         tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
             <>
