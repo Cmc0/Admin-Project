@@ -4,7 +4,7 @@ import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
-import {LogoutOutlined, UserOutlined, WarningOutlined} from "@ant-design/icons/lib";
+import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
@@ -136,7 +136,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <>
                         {dom}
                         {(item.router && !RouterMapKeyList.includes(item.router)) &&
-                        <WarningOutlined className={"warning2 m-l-5"}/>
+                        <WarningFilled className={"warning2 m-l-5"}/>
                         }
                     </>
                 </a>
