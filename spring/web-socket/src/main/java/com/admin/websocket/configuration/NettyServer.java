@@ -32,6 +32,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class NettyServer implements CommandLineRunner {
 
+    public static final String WS = "/ws";
     public static String ipAndPort = null; // ip:port
     public static String webSocketRegCodePreKey = null; // WebSocket 连接时的 redisKey前缀
 
@@ -82,7 +83,7 @@ public class NettyServer implements CommandLineRunner {
                         ch.pipeline().addLast(new ChunkedWriteHandler());
                         ch.pipeline().addLast(new HttpObjectAggregator(8192));
                         ch.pipeline().addLast(SpringUtil.getBean(MyNettyWebSocketHandler.class));
-                        ch.pipeline().addLast(new WebSocketServerProtocolHandler("/ws", null, true, 65536 * 10));
+                        ch.pipeline().addLast(new WebSocketServerProtocolHandler(WS, null, true, 65536 * 10));
                     }
                 });
             ChannelFuture channelFuture = serverBootstrap.bind().sync(); // 服务器同步创建绑定

@@ -100,15 +100,21 @@ function getComponentNameByFullName(componentFullName: string) {
     return splitList[splitList.length - 1]
 }
 
-function getFileDataFromModelDir(type: string, fileData: string) {
+function getFileDataFromModelDir(componentName: string, fileData: string) {
 
-    if (dtoNameList.includes(type)) {
+    let value = ''
 
-        fileData = `import ${type} from "@/model/dto/${type}";\n` + fileData
+    if (dtoNameList.includes(componentName)) {
 
-    } else if (entityNameList.includes(type)) {
+        value = `import ${componentName} from "@/model/dto/${componentName}";\n`
 
-        fileData = `import ${type} from "@/model/entity/${type}";\n` + fileData
+    } else if (entityNameList.includes(componentName)) {
+
+        value = `import ${componentName} from "@/model/entity/${componentName}";\n`
+    }
+
+    if (value && !fileData.includes(value)) {
+        fileData = value + fileData
     }
 
     return fileData;
@@ -117,11 +123,8 @@ function getFileDataFromModelDir(type: string, fileData: string) {
 // 写：interface
 function writeInterface(componentName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
-    if (dtoNameList.includes(componentName)) {
-        fileData = `import ${componentName} from "@/model/dto/${componentName}";\n` + fileData
-        return fileData
-    } else if (entityNameList.includes(componentName)) {
-        fileData = `import ${componentName} from "@/model/entity/${componentName}";\n` + fileData
+    if (dtoNameList.includes(componentName) || entityNameList.includes(componentName)) {
+        fileData = getFileDataFromModelDir(componentName, fileData)
         return fileData
     }
 
@@ -266,3 +269,5 @@ function toHump(name: string, searchValue: string | RegExp = /\_(\w)/g) {
 }
 
 start()
+
+console.log('执行成功')
