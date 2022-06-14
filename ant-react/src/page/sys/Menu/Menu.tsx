@@ -29,7 +29,7 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
     {
-        title: '权限',
+        title: '权限菜单',
         dataIndex: 'authFlag',
         valueEnum: YesNoEnum,
         hideInSearch: true,
