@@ -12,12 +12,12 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     {
         title: '菜单名',
         dataIndex: 'name',
-        render: (text, record, index, action) => {
+        render: (dom, entity) => {
             return (
                 <Space className="ai-c">
-                    {record.firstFlag && <HomeFilled className="cyan1" title="起始页面"/>}
-                    {record.icon && <MyIcon icon={record.icon}/>}
-                    {record.parentId + '' === '0' ? <strong>{text}</strong> : text}
+                    {entity.firstFlag && <HomeFilled className="cyan1" title="起始页面"/>}
+                    {entity.icon && <MyIcon icon={entity.icon}/>}
+                    {entity.parentId + '' === '0' ? <strong>{dom}</strong> : dom}
                 </Space>
             )
         },
@@ -57,6 +57,17 @@ const columnList: ProColumns<BaseMenuDO>[] = [
         title: '启用',
         dataIndex: 'enableFlag',
         valueEnum: YesNoEnum
+    },
+    {
+        title: '修改时间',
+        dataIndex: 'updateTime',
+        valueType: 'dateTimeRange',
+        render: (dom, entity) => {
+            return entity.updateTime
+        },
+        search: {
+            transform: (value: string) => ({startTime: value[0], endTime: value[1]}),
+        },
     },
 ];
 
