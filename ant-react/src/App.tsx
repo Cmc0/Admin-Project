@@ -3,6 +3,7 @@ import NoLoginRouterList from "@/router/NoLoginRouterList";
 import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {useAppSelector} from "@/store";
+import React from "react";
 
 export default function () {
 
@@ -59,8 +60,7 @@ interface ILoadElement {
 function LoadElement(props: ILoadElement) {
     AppNav = useNavigate()
     if (props.element && RouterMapKeyList.includes(props.element)) {
-        const Element = RouterMap[props.element].element
-        return <Element/>
+        return React.createElement(RouterMap[props.element].element)
     }
     return null
 }

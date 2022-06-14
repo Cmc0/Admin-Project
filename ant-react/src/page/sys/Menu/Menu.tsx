@@ -1,18 +1,23 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ProColumns, ProTable} from "@ant-design/pro-components";
-import {Button} from "antd";
+import {Button, Space} from "antd";
 import {MenuPageDTO, menuTree} from "@/api/MenuController";
+import {HomeFilled} from "@ant-design/icons/lib";
+import MyIcon from "@/componse/MyIcon/MyIcon";
 
 const columnList: ProColumns<BaseMenuDO>[] = [
     {
-        title: '#',
-        dataIndex: 'index',
-        valueType: 'index',
-        width: 48,
-    },
-    {
         title: '菜单名',
         dataIndex: 'name',
+        render: (text, record, index, action) => {
+            return (
+                <Space className="ai-c">
+                    {record.firstFlag && <HomeFilled className="cyan-5" title="起始页面"/>}
+                    {record.icon && <MyIcon icon={record.icon}/>}
+                    {record.parentId + '' === '0' ? <strong>{text}</strong> : text}
+                </Space>
+            )
+        },
     },
     {
         title: '路径',
