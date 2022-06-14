@@ -131,7 +131,13 @@ function writeInterface(componentName: string, fileData: string, component: Reco
         return fileData
     }
 
-    fileData += `export interface ${componentName} {\n`
+    const value = `export interface ${componentName} {\n`
+
+    if (fileData.includes(value)) {
+        return fileData
+    }
+
+    fileData += value
 
     Object.keys(component).forEach(item => {
 
@@ -155,6 +161,18 @@ function writeInterface(componentName: string, fileData: string, component: Reco
     fileData += "}\n\n"
 
     return fileData
+}
+
+// 获取 正则匹配的字符串
+function getMatchStr(responsesName: string, regexp: string | RegExp = /«(.*)»/) {
+
+    const matchList = responsesName.match(regexp);
+
+    if (matchList && matchList.length) {
+        responsesName = matchList[1]
+    }
+
+    return responsesName;
 }
 
 // 同步 openApi到 api文件夹
@@ -191,7 +209,7 @@ function start() {
                 return
             }
 
-            let fileData = 'import $http, {ApiResultVO, Page} from "../../util/HttpUtil";\n\n'
+            let fileData = 'import $http from "../../util/HttpUtil";\n\n'
 
             const pathList = tagNameAndPathResMap[item.name]
 
@@ -219,9 +237,9 @@ function start() {
                 if (subItem.responses) {
                     const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
                     responsesName = getComponentNameByFullName(responsesFullName)
-                    const matchList = responsesName.match(/«(.*)»/);
-                    if (matchList && matchList.length) {
-                        responsesName = matchList[1]
+                    responsesName = getMatchStr(responsesName);
+                    if (responsesName.startsWith("Page«")) {
+                        responsesName = getMatchStr(responsesName);
                     }
                     const responses = componentMap[responsesName]
                     // @ts-ignore
