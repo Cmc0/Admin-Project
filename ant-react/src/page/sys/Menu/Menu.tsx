@@ -22,7 +22,7 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     {title: '路径', dataIndex: 'path'},
     {title: '权限', dataIndex: 'auths'},
     {title: '路由', dataIndex: 'router'},
-    {title: '排序号', dataIndex: 'orderNo'},
+    {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
     {
         title: '显示',
         dataIndex: 'showFlag',
@@ -30,7 +30,7 @@ const columnList: ProColumns<BaseMenuDO>[] = [
             return (
                 <Badge
                     title={record.showFlag ? '显示中' : '隐藏中'}
-                    status={record.showFlag ? 'success' : 'default'}
+                    status={record.showFlag ? 'success' : 'error'}
                 />
             )
         },
@@ -42,7 +42,7 @@ const columnList: ProColumns<BaseMenuDO>[] = [
             return (
                 <Badge
                     title={record.enableFlag ? '启用中' : '禁用中'}
-                    status={record.enableFlag ? 'success' : 'default'}
+                    status={record.enableFlag ? 'success' : 'error'}
                 />
             )
         },
