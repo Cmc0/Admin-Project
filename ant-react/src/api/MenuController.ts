@@ -95,11 +95,11 @@ export function menuPage(form: MenuPageDTO) {
 
 // 菜单-管理 查询：树结构
 export function menuTree(form: MenuPageDTO) {
-    return $http.myPost<BaseMenuDO>('/menu/tree', form)
+    return $http.myTreePost<BaseMenuDO>('/menu/tree', form)
 }
 
 // 菜单-管理 获取当前用户绑定的菜单
 export function menuUser() {
-    return $http.myPost<BaseMenuDO>('/menu/user')
+    return $http.myTreePost<BaseMenuDO>('/menu/user')
 }
 
