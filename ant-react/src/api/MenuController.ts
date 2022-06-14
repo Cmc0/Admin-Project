@@ -102,4 +102,3 @@ export function menuTree(form: MenuPageDTO) {
 export function menuUser() {
     return $http.myTreePost<BaseMenuDO>('/menu/user')
 }
-

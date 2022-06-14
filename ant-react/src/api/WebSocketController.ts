@@ -77,4 +77,3 @@ export interface WebSocketRegVO {
 export function webSocketReg(form: NotNullByte) {
     return $http.myPost<WebSocketRegVO>('/webSocket/reg', form)
 }
-

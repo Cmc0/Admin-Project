@@ -10,4 +10,3 @@ export interface UserLoginPasswordDTO {
 export function userLoginPassword(form: UserLoginPasswordDTO) {
     return $http.myPost<string>('/userLogin/password', form)
 }
-

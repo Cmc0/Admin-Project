@@ -212,7 +212,7 @@ function start() {
                 return;
             }
 
-            pathList.forEach(subItem => {
+            pathList.forEach((subItem, subIndex) => {
 
                 let requestBodyFlag = true // 是否有入参
                 let responsesFlag = true // 是否有返回值
@@ -280,7 +280,11 @@ function start() {
                     fileData += ', form'
                 }
 
-                fileData += ')\n}\n\n'
+                if (subIndex === pathList.length - 1) {
+                    fileData += ')\n}\n'
+                } else {
+                    fileData += ')\n}\n\n'
+                }
             })
 
             // 写入文件

@@ -73,4 +73,3 @@ export interface BaseRoleDO {
 export function rolePage(form: RolePageDTO) {
     return $http.myPagePost<BaseRoleDO>('/role/page', form)
 }
-
