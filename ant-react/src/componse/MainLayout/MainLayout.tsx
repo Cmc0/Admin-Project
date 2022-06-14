@@ -17,6 +17,16 @@ import {menuListForUser} from "@/api/MenuController";
 import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 
+// 前往：第一个页面
+function goFirstPage(menuList: BaseMenuDO[]) {
+    menuList.some((item) => {
+        if (item.firstFlag && item.path) {
+            getAppNav()(item.path)
+        }
+        return item.firstFlag
+    })
+}
+
 export default function () {
 
     const appDispatch = useAppDispatch()
@@ -70,25 +80,13 @@ export default function () {
                 appDispatch(setUserMenuList(res.data))
                 appDispatch(setLoadMenuFlag(true))
                 doSetElement(res.data)
-                res.data.some((item) => {
-                    if (item.firstFlag && item.path) {
-                        getAppNav()(item.path)
-                    }
-                    return item.firstFlag
-                })
+                goFirstPage(res.data)
             })
 
         } else {
-
             doSetElement(userMenuList)
-
             if (window.location.pathname === CommonConstant.MAIN_PATH) {
-                userMenuList.some((item) => {
-                    if (item.firstFlag && item.path) {
-                        getAppNav()(item.path)
-                    }
-                    return item.firstFlag
-                })
+                goFirstPage(userMenuList)
             }
         }
     }, [])
