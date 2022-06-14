@@ -1,7 +1,7 @@
 import ProLayout, {PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
-import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons/lib";
@@ -25,6 +25,8 @@ export default function () {
     const [element, setElement] = useState<React.ReactNode>(null);
     const [pathname, setPathname] = useState<string>('')
 
+    const initFlag = useRef(false) // 是否初始化
+
     // 更新 redux里面 webSocket消息模板的值
     function doSetSocketMessage(param: IWebSocketMessage) {
         appDispatch(setWebSocketMessage(param))
@@ -41,6 +43,10 @@ export default function () {
     }
 
     useEffect(() => {
+        if (!initFlag.current) {
+            initFlag.current = true
+            return
+        }
 
         setPathname(window.location.pathname)
 

@@ -6,8 +6,8 @@ import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {logout} from "./UserUtil";
 
-let webSocketUrl = ''
-let code = ''
+let webSocketUrl: string | undefined = ''
+let code: string | undefined = ''
 let webSocket: WebSocket | null = null
 
 function getWebSocketRegData() {
