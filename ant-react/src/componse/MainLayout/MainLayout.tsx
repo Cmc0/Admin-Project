@@ -1,7 +1,6 @@
 import ProLayout, {PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
-import MainLayoutRouterList, {IMainLayoutRouterList, MainLayoutRouterPathList} from "@/router/MainLayoutRouterList";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
@@ -16,11 +15,13 @@ import {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} from '@/store/
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {menuListForUser} from "@/api/MenuController";
 import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
+import BaseMenuDO from "@/model/entity/BaseMenuDO";
 
 export default function () {
 
     const appDispatch = useAppDispatch()
     const loadMenuFlag = useAppSelector((state) => state.common.loadMenuFlag) // 是否获取过菜单
+    const userMenuList = useAppSelector((state) => state.user.userMenuList) // 用户菜单
     const [element, setElement] = useState<React.ReactNode>(null);
     const [pathname, setPathname] = useState<string>('')
 
@@ -36,7 +37,7 @@ export default function () {
 
     // 设置 element
     function doSetElement() {
-        setElement(MainLayoutElement({pathname, setPathname}))
+        setElement(MainLayoutElement({pathname, setPathname, userMenuList}))
     }
 
     useEffect(() => {
@@ -76,9 +77,12 @@ export default function () {
             doSetElement()
 
             if (window.location.pathname === CommonConstant.MAIN_PATH) {
-                if (MainLayoutRouterPathList[0]) {
-                    getAppNav()(MainLayoutRouterPathList[0])
-                }
+                userMenuList.some((item) => {
+                    if (item.firstFlag && item.path) {
+                        getAppNav()(item.path)
+                    }
+                    return item.firstFlag
+                })
             }
         }
     }, [])
@@ -89,6 +93,7 @@ export default function () {
 interface IMainLayoutElement {
     pathname: string
     setPathname: Dispatch<SetStateAction<string>>
+    userMenuList: BaseMenuDO[]
 }
 
 // MainLayout组件页面
@@ -103,15 +108,15 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    return MainLayoutRouterList;
+                    return props.userMenuList;
                 },
             }}
             fixSiderbar={true}
             fixedHeader={true}
-            menuItemRender={(item: IMainLayoutRouterList, dom: React.ReactNode) => (
+            menuItemRender={(item: BaseMenuDO, dom: React.ReactNode) => (
                 <a
                     onClick={() => {
-                        if (item.path && item.element) {
+                        if (item.path) {
                             props.setPathname(item.path)
                             getAppNav()(item.path)
                         }

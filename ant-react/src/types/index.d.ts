@@ -1,3 +1,3 @@
 interface Window {
-    ApiSyncUtil: () => void;
+    RouterMapKeyList: string[];
 }

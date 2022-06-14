@@ -1,10 +1,15 @@
 import {BrowserRouter, NavigateFunction, Route, Routes, useNavigate} from "react-router-dom";
 import NoLoginRouterList from "@/router/NoLoginRouterList";
 import RouterMap, {RouterMapKeyList} from "./router/RouterMap";
-import MainLayoutRouterList from "@/router/MainLayoutRouterList";
 import CommonConstant from "@/model/constant/CommonConstant";
+import {useAppSelector} from "@/store";
 
 export default function () {
+
+    const userMenuList = useAppSelector(
+        (state) => state.user.userMenuList
+    ).filter((item) => !item.linkFlag && item.router)
+
     return (
         <BrowserRouter>
             <Routes>
@@ -21,12 +26,12 @@ export default function () {
                     path={CommonConstant.MAIN_PATH}
                     element={<LoadElement element="MainLayout"/>}
                 >
-                    {MainLayoutRouterList.map((item, index) => (
+                    {userMenuList.map((item, index) => (
                         <Route
                             key={index}
                             path={item.path}
                             element={
-                                <LoadElement element={item.element}/>
+                                <LoadElement element={item.router}/>
                             }
                         />
                     ))}

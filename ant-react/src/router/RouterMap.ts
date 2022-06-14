@@ -41,4 +41,8 @@ RouterMap['Jump'] = {
 
 export const RouterMapKeyList = Object.keys(RouterMap)
 
+if (import.meta.env.DEV) {
+    window.RouterMapKeyList = RouterMapKeyList
+}
+
 export default RouterMap
