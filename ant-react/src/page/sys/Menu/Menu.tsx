@@ -1,10 +1,11 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {ProColumns, ProTable} from "@ant-design/pro-components";
+import {ColumnsState, ProColumns, ProTable} from "@ant-design/pro-components";
 import {Button, Space} from "antd";
 import {MenuPageDTO, menuTree} from "@/api/MenuController";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {YesNoEnum} from "../../../../util/DictUtil";
+import {useState} from "react";
 
 const columnList: ProColumns<BaseMenuDO>[] = [
     {
@@ -25,15 +26,20 @@ const columnList: ProColumns<BaseMenuDO>[] = [
     {
         title: '路由',
         dataIndex: 'router',
-        // valueType: 'select',
-        // request: async () => {
-        //     return RouterMapKeyList
-        // }
-        // fieldProps: {
-        //     options: RouterMapKeyList
-        // },
     },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
+    {
+        title: '权限',
+        dataIndex: 'authFlag',
+        valueEnum: YesNoEnum,
+        hideInSearch: true,
+    },
+    {
+        title: '外链',
+        dataIndex: 'linkFlag',
+        valueEnum: YesNoEnum,
+        hideInSearch: true,
+    },
     {
         title: '显示',
         dataIndex: 'showFlag',
@@ -48,16 +54,25 @@ const columnList: ProColumns<BaseMenuDO>[] = [
 
 export default function () {
 
+    const [columnsStateMap, setColumnsStateMap] = useState<Record<string, ColumnsState>>(
+        {
+            authFlag: {show: false,},
+            linkFlag: {show: false,},
+        });
+
     return <ProTable<BaseMenuDO, MenuPageDTO>
         rowKey={"id"}
         pagination={{
             showQuickJumper: true,
         }}
+        columnsState={{
+            value: columnsStateMap,
+            onChange: setColumnsStateMap,
+        }}
         revalidateOnFocus={false}
         rowSelection={{}}
         columns={columnList}
         options={{
-            density: false,
             fullScreen: true,
         }}
         request={(params, sort, filter) => {
