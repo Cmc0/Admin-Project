@@ -204,11 +204,6 @@ function start() {
             // User Login Controller -> UserLoginController
             const controllerName = item.description.replace(new RegExp(' ', 'g'), '')
 
-            // TODO：del
-            if (controllerName !== 'MenuController') {
-                return
-            }
-
             let fileData = 'import $http from "../../util/HttpUtil";\n\n'
 
             const pathList = tagNameAndPathResMap[item.name]
