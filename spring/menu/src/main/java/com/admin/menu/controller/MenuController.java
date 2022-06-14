@@ -65,10 +65,10 @@ public class MenuController {
         return ApiResultVO.ok(baseService.infoById(notNullId));
     }
 
-    @PostMapping("/user")
+    @PostMapping("/listForUser")
     @ApiOperation(value = "获取当前用户绑定的菜单")
-    public ApiResultVO<List<BaseMenuDO>> userMenuList() {
-        return ApiResultVO.ok(baseService.userMenuList());
+    public ApiResultVO<List<BaseMenuDO>> menuListForUser() {
+        return ApiResultVO.ok(baseService.menuListForUser());
     }
 
     @ApiOperation(value = "通过主键 idSet，加减排序号")

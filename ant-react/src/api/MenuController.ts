@@ -70,6 +70,11 @@ export function menuInsertOrUpdate(form: MenuInsertOrUpdateDTO) {
     return $http.myPost<string>('/menu/insertOrUpdate', form)
 }
 
+// 菜单-管理 获取当前用户绑定的菜单
+export function menuListForUser() {
+    return $http.myTreePost<BaseMenuDO>('/menu/listForUser')
+}
+
 export interface MenuPageDTO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
@@ -96,9 +101,4 @@ export function menuPage(form: MenuPageDTO) {
 // 菜单-管理 查询：树结构
 export function menuTree(form: MenuPageDTO) {
     return $http.myTreePost<BaseMenuDO>('/menu/tree', form)
-}
-
-// 菜单-管理 获取当前用户绑定的菜单
-export function menuUser() {
-    return $http.myTreePost<BaseMenuDO>('/menu/user')
 }

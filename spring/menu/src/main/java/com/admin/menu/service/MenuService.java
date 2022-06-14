@@ -22,7 +22,7 @@ public interface MenuService extends IService<BaseMenuDO> {
 
     String deleteByIdSet(NotEmptyIdSet notEmptyIdSet);
 
-    List<BaseMenuDO> userMenuList();
+    List<BaseMenuDO> menuListForUser();
 
     MenuInfoByIdVO infoById(NotNullId notNullId);
 

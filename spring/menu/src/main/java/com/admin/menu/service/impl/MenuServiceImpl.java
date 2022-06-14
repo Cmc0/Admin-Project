@@ -227,7 +227,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
      * 获取当前用户绑定的菜单
      */
     @Override
-    public List<BaseMenuDO> userMenuList() {
+    public List<BaseMenuDO> menuListForUser() {
         Long userId = UserUtil.getCurrentUserId();
 
         if (BaseConstant.ADMIN_ID.equals(userId)) {
