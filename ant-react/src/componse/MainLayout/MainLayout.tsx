@@ -4,7 +4,7 @@ import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
-import {LogoutOutlined, UserOutlined} from "@ant-design/icons/lib";
+import {LogoutOutlined, UserOutlined, WarningOutlined} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
@@ -16,6 +16,8 @@ import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {menuListForUser} from "@/api/MenuController";
 import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
+import {ListToTree} from "../../../util/TreeUtil";
+import {RouterMapKeyList} from "@/router/RouterMap";
 
 // 前往：第一个页面
 function goFirstPage(menuList: BaseMenuDO[]) {
@@ -112,7 +114,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    return props.userMenuList;
+                    const userMenuListTemp: BaseMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
+                    return ListToTree(userMenuListTemp, true, 0, 'routes');
                 },
             }}
             fixSiderbar={true}
@@ -120,13 +123,22 @@ function MainLayoutElement(props: IMainLayoutElement) {
             menuItemRender={(item: BaseMenuDO, dom: React.ReactNode) => (
                 <a
                     onClick={() => {
-                        if (item.path) {
-                            props.setPathname(item.path)
-                            getAppNav()(item.path)
+                        if (item.path && item.router) {
+                            if (RouterMapKeyList.includes(item.router)) {
+                                props.setPathname(item.path)
+                                getAppNav()(item.path)
+                            } else {
+                                InDev()
+                            }
                         }
                     }}
                 >
-                    {dom}
+                    <>
+                        {dom}
+                        {(item.router && !RouterMapKeyList.includes(item.router)) &&
+                        <WarningOutlined className={"warning2 m-l-5"}/>
+                        }
+                    </>
                 </a>
             )}
             rightContentRender={() => (
