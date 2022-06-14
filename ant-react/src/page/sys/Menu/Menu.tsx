@@ -88,7 +88,5 @@ export default function () {
             </>
         )}
     >
-
     </ProTable>
-
 }
