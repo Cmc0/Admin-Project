@@ -90,7 +90,12 @@ export default function () {
             value: columnsStateMap,
             onChange: setColumnsStateMap,
         }}
-        expandable={{expandedRowKeys}}
+        expandable={{
+            expandedRowKeys,
+            onExpandedRowsChange: (expandedRows) => {
+                setExpandedRowKeys(expandedRows as number[])
+            }
+        }}
         revalidateOnFocus={false}
         rowSelection={{}}
         columns={columnList}
