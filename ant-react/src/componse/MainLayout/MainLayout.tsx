@@ -1,7 +1,7 @@
 import ProLayout, {PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
-import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Dropdown, Menu} from "antd";
 import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
@@ -11,7 +11,7 @@ import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
 import {userBaseInfo, userLogout} from "@/api/UserController";
 import {useAppDispatch, useAppSelector} from "@/store";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
-import {setLoadMenuFlag, setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
+import {setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {menuListForUser} from "@/api/MenuController";
 import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
@@ -32,12 +32,8 @@ function goFirstPage(menuList: BaseMenuDO[]) {
 export default function () {
 
     const appDispatch = useAppDispatch()
-    const loadMenuFlag = useAppSelector((state) => state.common.loadMenuFlag) // 是否获取过菜单
-    const userMenuList = useAppSelector((state) => state.user.userMenuList) // 用户菜单
+    const loadMenuFlag = useAppSelector((state) => state.user.loadMenuFlag) // 是否获取过菜单
     const [element, setElement] = useState<React.ReactNode>(null);
-    const [pathname, setPathname] = useState<string>('')
-
-    const initFlag = useRef(false) // 是否初始化
 
     // 更新 redux里面 webSocket消息模板的值
     function doSetSocketMessage(param: IWebSocketMessage) {
@@ -51,66 +47,59 @@ export default function () {
 
     // 设置 element
     function doSetElement(userMenuList: BaseMenuDO[]) {
-        setElement(MainLayoutElement({pathname, setPathname, userMenuList}))
+        setElement(<MainLayoutElement userMenuList={userMenuList}/>)
     }
 
     useEffect(() => {
-        if (!initFlag.current) {
-            initFlag.current = true
+
+        if (loadMenuFlag) {
             return
         }
 
-        setPathname(window.location.pathname)
+        sessionStorage.setItem(SessionStorageKey.LOAD_MENU_FLAG, String(false))
 
-        if (!loadMenuFlag) {
+        connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
-            sessionStorage.setItem(SessionStorageKey.LOAD_MENU_FLAG, String(false))
+        userBaseInfo().then(res => {
+            appDispatch(setUserBaseInfo(res.data))
+        })
 
-            connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
-
-            userBaseInfo().then(res => {
-                appDispatch(setUserBaseInfo(res.data))
-            })
-
-            // 加载菜单
-            menuListForUser().then(res => {
-                if (!res.data || !res.data.length) {
-                    ToastError('暂未配置菜单，请联系管理员', 5)
-                    logout()
-                    return
-                }
-                appDispatch(setUserMenuList(res.data))
-                appDispatch(setLoadMenuFlag(true))
-                doSetElement(res.data)
-                goFirstPage(res.data)
-            })
-
-        } else {
-            doSetElement(userMenuList)
-            if (window.location.pathname === CommonConstant.MAIN_PATH) {
-                goFirstPage(userMenuList)
+        // 加载菜单
+        menuListForUser().then(res => {
+            if (!res.data || !res.data.length) {
+                ToastError('暂未配置菜单，请联系管理员', 5)
+                logout()
+                return
             }
-        }
+            appDispatch(setUserMenuList(res.data))
+            doSetElement(res.data)
+            goFirstPage(res.data)
+        })
+
     }, [])
 
     return element
 }
 
 interface IMainLayoutElement {
-    pathname: string
-    setPathname: Dispatch<SetStateAction<string>>
     userMenuList: BaseMenuDO[]
 }
 
 // MainLayout组件页面
 function MainLayoutElement(props: IMainLayoutElement) {
 
+    const [pathname, setPathname] = useState<string>('')
+
+    useEffect(() => {
+        setPathname(window.location.pathname)
+    }, [])
+
     return (
         <ProLayout
             className={"vh100"}
             title={CommonConstant.SYS_NAME}
             location={{
-                pathname: props.pathname
+                pathname
             }}
             menu={{
                 request: async () => {
@@ -125,7 +114,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     onClick={() => {
                         if (item.path && item.router) {
                             if (RouterMapKeyList.includes(item.router)) {
-                                props.setPathname(item.path)
+                                setPathname(item.path)
                                 getAppNav()(item.path)
                             } else {
                                 InDev()

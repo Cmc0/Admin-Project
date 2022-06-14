@@ -12,7 +12,7 @@ import {Navigate} from "react-router-dom";
 import {getAppNav} from "@/App";
 import {closeWebSocket} from "../../../util/WebSocketUtil";
 import {useAppDispatch} from "@/store";
-import {setLoadMenuFlag} from "@/store/commonSlice";
+import {setLoadMenuFlag} from "@/store/userSlice";
 
 type LoginType = 'password';
 
