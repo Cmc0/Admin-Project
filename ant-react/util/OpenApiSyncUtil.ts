@@ -128,7 +128,15 @@ function writeInterface(componentName: string, fileData: string, component: Reco
         return fileData
     }
 
-    const value = `export interface ${componentName} {\n`
+    let value = `export interface ${componentName}`
+
+    const orderFlag = Object.keys(component).some(item => item === 'order'); // 是否包含 order字段
+
+    if (orderFlag) {
+        fileData = getFileDataFromModelDir('MyPageDTO', fileData)
+        value += ' extends MyPageDTO'
+    }
+    value += ' {\n'
 
     if (fileData.includes(value)) {
         return fileData

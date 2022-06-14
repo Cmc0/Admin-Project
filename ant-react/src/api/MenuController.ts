@@ -1,4 +1,5 @@
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
+import MyPageDTO from "@/model/dto/MyPageDTO";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
@@ -74,7 +75,7 @@ export function menuListForUser() {
     return $http.myProTreePost<BaseMenuDO>('/menu/listForUser')
 }
 
-export interface MenuPageDTO {
+export interface MenuPageDTO extends MyPageDTO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
     current?: number // 第几页

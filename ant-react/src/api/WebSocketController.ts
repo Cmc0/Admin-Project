@@ -1,5 +1,6 @@
 import NotNullByte from "@/model/dto/NotNullByte";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
+import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import NotNullByteAndId from "@/model/dto/NotNullByteAndId";
 import $http from "../../util/HttpUtil";
@@ -19,7 +20,7 @@ export function webSocketOfflineByIdSet(form: NotEmptyIdSet) {
     return $http.myPost<string>('/webSocket/offlineByIdSet', form)
 }
 
-export interface WebSocketPageDTO {
+export interface WebSocketPageDTO extends MyPageDTO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
     category?: boolean // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     current?: number // 第几页

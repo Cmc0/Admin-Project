@@ -1,4 +1,5 @@
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
+import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import $http from "../../util/HttpUtil";
@@ -43,7 +44,7 @@ export function roleInsertOrUpdate(form: RoleInsertOrUpdateDTO) {
     return $http.myPost<string>('/role/insertOrUpdate', form)
 }
 
-export interface RolePageDTO {
+export interface RolePageDTO extends MyPageDTO {
     current?: number // 第几页
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
     enableFlag?: boolean // 启用/禁用
