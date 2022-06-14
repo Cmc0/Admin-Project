@@ -1,9 +1,8 @@
-import ProLayout, {PageContainer} from '@ant-design/pro-layout';
+import ProLayout from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
-import {Outlet} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Dropdown, Menu} from "antd";
+import {Menu} from "antd";
 import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
@@ -18,6 +17,7 @@ import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
+import MyIcon from "@/componse/MyIcon/MyIcon";
 
 // 前往：第一个页面
 function goFirstPage(menuList: BaseMenuDO[]) {
@@ -104,6 +104,12 @@ function MainLayoutElement(props: IMainLayoutElement) {
             menu={{
                 request: async () => {
                     const userMenuListTemp: BaseMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
+                    userMenuListTemp.filter(item => item.showFlag).forEach(item => {
+                        if (item.icon) {
+                            // @ts-ignore
+                            item.icon = <MyIcon icon={item.icon}/>
+                        }
+                    })
                     return ListToTree(userMenuListTemp, true, 0, 'routes');
                 },
             }}

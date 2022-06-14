@@ -1,6 +1,6 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ProColumns, ProTable} from "@ant-design/pro-components";
-import {Button, Space} from "antd";
+import {Badge, Button, Space} from "antd";
 import {MenuPageDTO, menuTree} from "@/api/MenuController";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
@@ -12,17 +12,41 @@ const columnList: ProColumns<BaseMenuDO>[] = [
         render: (text, record, index, action) => {
             return (
                 <Space className="ai-c">
-                    {record.firstFlag && <HomeFilled className="cyan-5" title="起始页面"/>}
+                    {record.firstFlag && <HomeFilled className="cyan1" title="起始页面"/>}
                     {record.icon && <MyIcon icon={record.icon}/>}
                     {record.parentId + '' === '0' ? <strong>{text}</strong> : text}
                 </Space>
             )
         },
     },
+    {title: '路径', dataIndex: 'path'},
+    {title: '权限', dataIndex: 'auths'},
+    {title: '路由', dataIndex: 'router'},
+    {title: '排序号', dataIndex: 'orderNo'},
     {
-        title: '路径',
-        dataIndex: 'path',
-    }
+        title: '显示',
+        dataIndex: 'showFlag',
+        render: (text, record, index, action) => {
+            return (
+                <Badge
+                    title={record.showFlag ? '显示中' : '隐藏中'}
+                    status={record.showFlag ? 'success' : 'default'}
+                />
+            )
+        },
+    },
+    {
+        title: '启用',
+        dataIndex: 'enableFlag',
+        render: (text, record, index, action) => {
+            return (
+                <Badge
+                    title={record.enableFlag ? '启用中' : '禁用中'}
+                    status={record.enableFlag ? 'success' : 'default'}
+                />
+            )
+        },
+    },
 ];
 
 export default function () {
