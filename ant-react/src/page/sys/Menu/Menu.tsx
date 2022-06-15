@@ -41,6 +41,8 @@ export default function () {
 
     const actionRef = useRef<ActionType>(null)
 
+    const currentForm = useRef<MenuInsertOrUpdateDTO>({})
+
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
             actionRef={actionRef}
@@ -146,9 +148,9 @@ export default function () {
                 }
             }}
             submitter={{
-                render: (props, defaultDoms) => {
+                render: (props, dom) => {
                     return [
-                        ...defaultDoms,
+                        ...dom,
                         <Button
                             key="extra-reset"
                             onClick={() => {
@@ -164,9 +166,11 @@ export default function () {
             onVisibleChange={async (visible) => {
                 if (visible) {
                     useForm.resetFields()
+                    currentForm.current = {}
                     if (id.current !== -1) {
                         await menuInfoById({id: id.current}).then(res => {
-                            useForm.setFieldsValue(res)
+                            currentForm.current = res
+                            useForm.setFieldsValue(res) // 组件会深度克隆 res
                         })
                     }
                 }
@@ -174,7 +178,7 @@ export default function () {
             }}
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
-                await menuInsertOrUpdate(form)
+                await menuInsertOrUpdate({...currentForm.current, ...form})
                 await actionRef.current?.reload()
                 return true
             }}
