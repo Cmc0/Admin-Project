@@ -22,6 +22,11 @@ import MyIcon from "@/componse/MyIcon/MyIcon";
 
 // 前往：第一个页面
 function goFirstPage(menuList: BaseMenuDO[]) {
+
+    if (window.location.pathname !== CommonConstant.MAIN_PATH) {
+        return
+    }
+
     menuList.some((item) => {
         if (item.firstFlag && item.path) {
             getAppNav()(item.path)
@@ -33,6 +38,7 @@ function goFirstPage(menuList: BaseMenuDO[]) {
 export default function () {
 
     const appDispatch = useAppDispatch()
+    const userMenuList = useAppSelector((state) => state.user.userMenuList) // 用户菜单
     const loadMenuFlag = useAppSelector((state) => state.user.loadMenuFlag) // 是否获取过菜单
     const [element, setElement] = useState<React.ReactNode>(null);
 
@@ -48,12 +54,18 @@ export default function () {
 
     // 设置 element
     function doSetElement(userMenuList: BaseMenuDO[]) {
-        setElement(<MainLayoutElement userMenuList={userMenuList}/>)
+        if (element == null) {
+            setElement(<MainLayoutElement userMenuList={userMenuList}/>)
+        }
     }
 
     useEffect(() => {
 
         if (loadMenuFlag) {
+            // 开发时才会用到 ↓
+            doSetElement(userMenuList)
+            goFirstPage(userMenuList)
+            // 开发时才会用到 ↑
             return
         }
 
