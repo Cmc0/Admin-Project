@@ -13,7 +13,7 @@ import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddl
 import React, {useRef, useState} from "react";
 import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
-import SchemaFormColumnList from "@/page/sys/Menu/SchemaFormColumnList";
+import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 
@@ -190,10 +190,7 @@ export default function () {
                         useForm.setFieldsValue(res) // 组件会深度克隆 res
                     })
                 }
-                return {
-                    enableFlag: true,
-                    showFlag: true,
-                }
+                return InitForm
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}

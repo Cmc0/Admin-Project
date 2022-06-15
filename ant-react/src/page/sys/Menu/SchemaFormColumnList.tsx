@@ -7,6 +7,11 @@ import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 
+export const InitForm = {
+    enableFlag: true,
+    showFlag: true,
+}
+
 const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
