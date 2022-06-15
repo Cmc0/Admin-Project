@@ -137,6 +137,7 @@ export default function () {
             modalProps={{
                 keyboard: false,
                 maskClosable: false,
+                forceRender: true,
             }}
             form={useForm}
             autoFocusFirstInput={false}
