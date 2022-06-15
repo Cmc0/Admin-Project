@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.less'
 
-import {ConfigProvider} from 'antd'
+import {BackTop, ConfigProvider} from 'antd'
 import zhCN from 'antd/es/locale/zh_CN'
 import "antd/dist/antd.css"
 
@@ -20,6 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Provider store={store}>
             <ConfigProvider locale={zhCN}>
                 <App/>
+                <BackTop/>
             </ConfigProvider>
         </Provider>
     </React.StrictMode>
