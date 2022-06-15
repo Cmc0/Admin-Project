@@ -25,11 +25,6 @@ export default function () {
 
     const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
 
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
             rowKey={"id"}
