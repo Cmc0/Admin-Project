@@ -25,7 +25,7 @@ export default function () {
 
     const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
 
-    const formRef = useRef<ProFormInstance<MenuInsertOrUpdateDTO>>();
+    const formRef = useRef<ProFormInstance<MenuInsertOrUpdateDTO>>(null);
 
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
