@@ -1,6 +1,6 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {BetaSchemaForm, ColumnsState, ProFormInstance, ProTable} from "@ant-design/pro-components";
-import {Button, Dropdown, Menu} from "antd";
+import {BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
+import {Button, Dropdown, Form, Menu} from "antd";
 import {menuInfoById, MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useRef, useState} from "react";
@@ -27,7 +27,7 @@ export default function () {
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
-    const formRef = useRef<ProFormInstance<MenuInsertOrUpdateDTO>>(null);
+    const [useForm] = Form.useForm<MenuInsertOrUpdateDTO>();
 
     const id = useRef<number>(-1);
 
@@ -113,6 +113,7 @@ export default function () {
             colProps={{
                 span: 12
             }}
+            form={useForm}
             autoFocusFirstInput={false}
             shouldUpdate={false}
             isKeyPressSubmit
@@ -130,12 +131,14 @@ export default function () {
                         resData = res
                     })
                 }
+
+                useForm.setFieldsValue(resData)
+
                 return resData
             }}
-            formRef={formRef}
             onValuesChange={(changedValues, allValues) => {
                 if (allValues.path && allValues.path.startsWith("http")) {
-                    formRef.current?.setFieldsValue({linkFlag: true})
+                    useForm.setFieldsValue({linkFlag: true})
                 }
             }}
             submitter={{
@@ -155,7 +158,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(treeList, formRef)}
+            columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
                 console.log(form);
 

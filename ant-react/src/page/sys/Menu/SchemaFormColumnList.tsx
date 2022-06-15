@@ -4,10 +4,10 @@ import React from "react";
 import {MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
-import {ProFormInstance} from "@ant-design/pro-components";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
+import {FormInstance} from "antd/es";
 
-const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<ProFormInstance<MenuInsertOrUpdateDTO>>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(
@@ -73,7 +73,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                             title: (props, type, dom) => <>
                                 <span>权限</span>
                                 <a className={"m-l-4"} onClick={() => {
-                                    formRef.current?.setFieldsValue({auths: 'menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById'})
+                                    useForm.setFieldsValue({auths: 'menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById'})
                                 }}>生成示例</a>
                             </>
                         }
@@ -84,7 +84,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                             title: (props, type, dom) => <>
                                 <span>路径</span>
                                 <a className={"m-l-4"} onClick={() => {
-                                    formRef.current?.setFieldsValue({path: '/main/sys/menu'})
+                                    useForm.setFieldsValue({path: '/main/sys/menu'})
                                 }}>生成示例</a>
                             </>,
                         },
