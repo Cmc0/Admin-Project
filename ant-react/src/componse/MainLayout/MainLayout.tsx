@@ -165,14 +165,14 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 <>
                     <Dropdown overlay={<Menu items={[
                         {
-                            key: 'personalCenter',
+                            key: '1',
                             label: <a onClick={InDev}>
                                 个人中心
                             </a>,
                             icon: <UserOutlined/>
                         },
                         {
-                            key: 'logout',
+                            key: '2',
                             label: <a
                                 onClick={() => {
                                     execConfirm(() => {
