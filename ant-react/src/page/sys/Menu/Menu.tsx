@@ -1,5 +1,5 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
+import {BetaSchemaForm, ColumnsState, ProFormInstance, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Menu} from "antd";
 import {MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
@@ -24,6 +24,8 @@ export default function () {
     const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
 
     const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
+
+    const formRef = useRef<ProFormInstance<MenuInsertOrUpdateDTO>>();
 
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
@@ -105,7 +107,8 @@ export default function () {
                                 firstFlag: false
                             }
                         }}
-                        columns={SchemaFormColumnList(treeList)}
+                        formRef={formRef}
+                        columns={SchemaFormColumnList(treeList, formRef)}
                         onFinish={async (values) => {
                             console.log(values);
                         }}

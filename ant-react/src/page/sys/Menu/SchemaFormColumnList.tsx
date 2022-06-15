@@ -2,11 +2,12 @@ import {RouterDict} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {MenuInsertOrUpdateDTO} from "@/api/MenuController";
-import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
+import {ProFormInstance} from "@ant-design/pro-components";
+import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 
-const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFormColumnsType<MenuInsertOrUpdateDTO>[] = (treeList: BaseMenuDO[], ignoreId?: number) => {
+const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.MutableRefObject<ProFormInstance<MenuInsertOrUpdateDTO> | undefined>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(
@@ -58,7 +59,7 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
                             title: (props, type, dom) => <>
                                 <span>权限</span>
                                 <a className={"m-l-4"} onClick={() => {
-                                    props.initialValue = '111'
+                                    formRef.current!.setFieldsValue({auths: 'menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById'})
                                 }}>生成示例</a>
                             </>
                         }
