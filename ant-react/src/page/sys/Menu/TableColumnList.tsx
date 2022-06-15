@@ -7,6 +7,7 @@ import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {menuDeleteByIdSet} from "@/api/MenuController";
+import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
 const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
@@ -72,23 +73,22 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Rea
         render: (dom, entity) => [
             <a key="view">查看</a>,
             <a key="edit" onClick={() => {
-                if (entity.id) {
-                    id.current = entity.id
-                    setFormVisible(true)
-                }
+                id.current = entity.id!
+                setFormVisible(true)
             }}>编辑</a>,
             <TableDropdown
                 key="actionGroup"
                 menus={[
                     {key: 'del', name: '删除'},
                 ]}
-                onSelect={async (key) => {
-                    if (!entity.id) {
-                        return
-                    }
+                onSelect={(key) => {
                     if (key === 'del') {
-                        await menuDeleteByIdSet({idSet: [entity.id]})
-                        await actionRef.current?.reload()
+                        execConfirm(() => {
+                            return menuDeleteByIdSet({idSet: [entity.id]}).then(res => {
+                                ToastSuccess(res.msg)
+                                actionRef.current?.reload()
+                            })
+                        }, undefined, `确定删除【${entity.name}】吗？`)
                     }
                 }}
             />,

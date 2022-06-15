@@ -1,12 +1,20 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
-import {Button, Dropdown, Form, Menu} from "antd";
-import {menuInfoById, menuInsertOrUpdate, MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
+import {Button, Dropdown, Form, Menu, Space} from "antd";
+import {
+    menuDeleteByIdSet,
+    menuInfoById,
+    menuInsertOrUpdate,
+    MenuInsertOrUpdateDTO,
+    MenuPageDTO,
+    menuTree
+} from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useRef, useState} from "react";
 import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList from "@/page/sys/Menu/SchemaFormColumnList";
+import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
 
 export default function () {
@@ -99,9 +107,17 @@ export default function () {
                 ],
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
-                <>
-                    <Button type="link" onClick={onCleanSelected}>取消选择</Button>
-                </>
+                <Space size={16}>
+                    <a onClick={() => {
+                        execConfirm(() => {
+                            return menuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
+                                ToastSuccess(res.msg)
+                                actionRef.current?.reload()
+                            })
+                        }, undefined, `确定删除选中的【${selectedRowKeys.length}】项吗？`)
+                    }}>批量删除</a>
+                    <a onClick={onCleanSelected}>取消选择</a>
+                </Space>
             )}
         >
         </ProTable>
@@ -159,7 +175,7 @@ export default function () {
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
                 await menuInsertOrUpdate(form)
-                actionRef.current?.reload()
+                await actionRef.current?.reload()
                 return true
             }}
         />
