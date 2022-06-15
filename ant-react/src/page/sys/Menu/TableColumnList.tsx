@@ -84,7 +84,7 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Rea
                 onSelect={(key) => {
                     if (key === 'del') {
                         execConfirm(() => {
-                            return menuDeleteByIdSet({idSet: [entity.id]}).then(res => {
+                            return menuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
                                 ToastSuccess(res.msg)
                                 actionRef.current?.reload()
                             })
