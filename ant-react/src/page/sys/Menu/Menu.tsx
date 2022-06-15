@@ -200,9 +200,11 @@ export default function () {
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
                 await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
-                    ToastSuccess(res.msg)
-                    actionRef.current?.reload()
-                    id.current = CommonConstant["-1"]
+                    setTimeout(() => {
+                        ToastSuccess(res.msg)
+                        actionRef.current?.reload()
+                        id.current = CommonConstant["-1"]
+                    })
                 })
                 return true
             }}
