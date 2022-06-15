@@ -108,6 +108,11 @@ export default function () {
                             }
                         }}
                         formRef={formRef}
+                        onValuesChange={(changedValues, allValues) => {
+                            if (allValues.path && allValues.path.startsWith("http")) {
+                                formRef.current?.setFieldsValue({linkFlag: true})
+                            }
+                        }}
                         columns={SchemaFormColumnList(treeList, formRef)}
                         onFinish={async (values) => {
                             console.log(values);

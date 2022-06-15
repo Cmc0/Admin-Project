@@ -2,8 +2,6 @@ package com.admin.menu.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.RegexPool;
-import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.BaseMenuMapper;
@@ -70,9 +68,8 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
                 .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
         }
 
-        // 如果：path包含 http:// 或者 https:// 等
-        boolean isLinkFlag = ReUtil.isMatch(RegexPool.URL_HTTP, dto.getPath());
-        dto.setLinkFlag(isLinkFlag);
+        // 判断：path是否以 http开头
+        dto.setLinkFlag(StrUtil.startWith(dto.getPath(), "http", true));
 
         // 如果是外链，则清空 一些属性
         if (dto.isLinkFlag()) {

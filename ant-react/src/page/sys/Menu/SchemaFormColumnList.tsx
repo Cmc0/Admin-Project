@@ -42,9 +42,9 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
         {
             valueType: 'dependency',
             fieldProps: {
-                name: ['authFlag'],
+                name: ['authFlag', 'path'],
             },
-            columns: ({authFlag}) => {
+            columns: ({authFlag, path}: MenuInsertOrUpdateDTO) => {
                 return authFlag
                     ? [
                         {
@@ -72,7 +72,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                                 <a className={"m-l-4"} onClick={() => {
                                     formRef.current?.setFieldsValue({path: '/main/sys/menu'})
                                 }}>生成示例</a>
-                            </>
+                            </>,
                         },
                         {
                             title: '路由',
@@ -93,7 +93,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                             title: '外链',
                             dataIndex: 'linkFlag',
                             valueEnum: YesNoDict,
-                            fieldProps: {allowClear: false},
+                            fieldProps: {allowClear: false, disabled: path?.startsWith("http")},
                             tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router',
                         },
                         {
