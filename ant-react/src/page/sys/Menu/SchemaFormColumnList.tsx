@@ -102,6 +102,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                             valueEnum: YesNoDict,
                             fieldProps: {allowClear: false},
                             tooltip: '是否为默认打开的页面',
+                            valueType: 'switch',
                         },
                         {
                             valueType: 'dependency',
@@ -116,6 +117,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                                         valueEnum: YesNoDict,
                                         fieldProps: {allowClear: false, disabled: path?.startsWith("http")},
                                         tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router',
+                                        valueType: 'switch',
                                     },
                                 ]
                             }
@@ -126,6 +128,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                             valueEnum: YesNoDict,
                             fieldProps: {allowClear: false},
                             tooltip: '是否在左侧菜单栏显示',
+                            valueType: 'switch',
                         },
                     ];
             },
@@ -136,12 +139,14 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
             valueEnum: YesNoDict,
             fieldProps: {allowClear: false},
             tooltip: '不显示，只代表菜单权限',
+            valueType: 'switch',
         },
         {
             title: '启用',
             dataIndex: 'enableFlag',
             valueEnum: YesNoDict,
             fieldProps: {allowClear: false},
+            valueType: 'switch',
         },
         {
             title: '备注',
