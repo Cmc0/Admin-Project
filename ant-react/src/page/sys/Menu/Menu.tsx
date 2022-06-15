@@ -1,7 +1,7 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu} from "antd";
-import {menuInfoById, MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
+import {menuInfoById, menuInsertOrUpdate, MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useRef, useState} from "react";
 import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
@@ -117,26 +117,9 @@ export default function () {
             autoFocusFirstInput={false}
             shouldUpdate={false}
             isKeyPressSubmit
-            params={{id: id.current}}
-            request={async (params) => {
-
-                let resData: MenuInsertOrUpdateDTO = {
-                    authFlag: false,
-                    enableFlag: true,
-                    showFlag: true,
-                    linkFlag: false,
-                    firstFlag: false
-                }
-
-                if (params.id !== -1) {
-                    await menuInfoById({id: params.id}).then(res => {
-                        resData = res
-                    })
-                }
-
-                useForm.setFieldsValue(resData)
-
-                return resData
+            initialValues={{
+                enableFlag: true,
+                showFlag: true,
             }}
             onValuesChange={(changedValues, allValues) => {
                 if (allValues.path && allValues.path.startsWith("http")) {
@@ -159,11 +142,20 @@ export default function () {
                 },
             }}
             visible={formVisible}
-            onVisibleChange={setFormVisible}
+            onVisibleChange={async (visible) => {
+                if (visible) {
+                    useForm.resetFields()
+                    if (id.current !== -1) {
+                        await menuInfoById({id: id.current}).then(res => {
+                            useForm.setFieldsValue(res)
+                        })
+                    }
+                }
+                setFormVisible(visible)
+            }}
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
-                console.log(form);
-
+                await menuInsertOrUpdate(form)
                 return true
             }}
         />
