@@ -97,7 +97,13 @@ export default function () {
                         shouldUpdate={false}
                         isKeyPressSubmit
                         request={async () => {
-                            return {authFlag: 'false'}
+                            return {
+                                authFlag: 'false',
+                                enableFlag: 'true',
+                                showFlag: 'true',
+                                linkFlag: 'false',
+                                firstFlag: 'false'
+                            }
                         }}
                         columns={SchemaFormColumnList(treeList)}
                         onFinish={async (values) => {
