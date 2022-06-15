@@ -93,6 +93,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                             fieldProps: {
                                 showSearch: true,
                                 options: RouterDict,
+                                optionFilterProp: "label"
                             }
                         },
                         {
