@@ -65,14 +65,22 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                         }
                     ]
                     : [
-                        {title: '路径', dataIndex: 'path'},
+                        {
+                            dataIndex: 'path',
+                            title: (props, type, dom) => <>
+                                <span>路径</span>
+                                <a className={"m-l-4"} onClick={() => {
+                                    formRef.current?.setFieldsValue({path: '/main/sys/menu'})
+                                }}>生成示例</a>
+                            </>
+                        },
                         {
                             title: '路由',
                             dataIndex: 'router',
                             valueType: 'select',
                             request: async () => {
                                 return RouterDict
-                            }
+                            },
                         },
                         {
                             title: '起始页面',
