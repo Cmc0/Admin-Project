@@ -21,6 +21,7 @@ export default function () {
     const [loginType, setLoginType] = useState<LoginType>('password');
     const jwt = localStorage.getItem(LocalStorageKey.JWT)
     const appDispatch = useAppDispatch()
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!jwt) {
@@ -38,17 +39,25 @@ export default function () {
             <LoginFormPage<UserLoginPasswordDTO>
                 isKeyPressSubmit
                 backgroundImageUrl={LoginBg}
+                submitter={{submitButtonProps: {loading: submitLoading}}}
                 logo={"/src/favicon.svg"}
                 title={CommonConstant.SYS_NAME}
                 subTitle="Will have the most powerful !"
-                onFinish={async (formData) => {
+                onFinish={(formData) => {
 
-                    userLoginPassword({...formData, password: PasswordRSAEncrypt(formData.password)!}).then(res => {
+                    setSubmitLoading(true)
+
+                    return userLoginPassword({
+                        ...formData,
+                        password: PasswordRSAEncrypt(formData.password)!
+                    }).then(res => {
                         localStorage.clear()
                         sessionStorage.clear()
                         ToastSuccess('欢迎回来~')
                         localStorage.setItem(LocalStorageKey.JWT, res.data)
                         getAppNav()(CommonConstant.MAIN_PATH)
+                    }).catch(() => {
+                        setSubmitLoading(false)
                     })
                 }}
             >
