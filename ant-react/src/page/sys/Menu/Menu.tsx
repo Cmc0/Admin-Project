@@ -25,6 +25,11 @@ export default function () {
 
     const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
 
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
             rowKey={"id"}
@@ -97,7 +102,7 @@ export default function () {
                         shouldUpdate={false}
                         isKeyPressSubmit
                         request={async () => {
-                            return {}
+                            return {authFlag: 'false'}
                         }}
                         columns={SchemaFormColumnList(treeList)}
                         onFinish={async (values) => {

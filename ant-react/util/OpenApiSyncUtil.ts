@@ -51,7 +51,6 @@ interface IOpenApiComponentSchemaProperty { // 例如：{ AddOrderNoDTO: { title
     type?: IOpenApiComponentSchemaPropertyType // 字段类型
     format?: IOpenApiComponentSchemaPropertyFormat
     description: string // 字段描述
-    example?: boolean // 默认值，目前只有 boolean 有默认值
     items?: {
         $ref?: string // $ref 有值时，type 和 format没值
         type?: string
@@ -79,8 +78,8 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
 
     if (type === 'integer') {
         type = 'number'
-    } else if (type === 'string' && format === 'byte') {
-        type = 'boolean'
+    } else if ((type === 'string' && format === 'byte') || type === 'boolean') {
+        type = `'true' | 'false'`
     } else if (type === 'array') {
         if (componentProperty.items) {
             if (componentProperty.items.type) {

@@ -22,18 +22,18 @@ export function webSocketOfflineByIdSet(form: NotEmptyIdSet) {
 
 export interface WebSocketPageDTO extends MyPageDTO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
-    category?: boolean // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    category?: 'true' | 'false' // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     current?: number // 第几页
-    enableFlag?: boolean // 连接中/断开连接
+    enableFlag?: 'true' | 'false' // 连接中/断开连接
     id?: number // 主键id
     ip?: string // ip
-    mobileFlag?: boolean // 是否是移动端网页，true：是 false 否
+    mobileFlag?: 'true' | 'false' // 是否是移动端网页，true：是 false 否
     order?: MyOrderDTO // 排序字段
     os?: string // 操作系统
     pageSize?: number // 每页显示条数
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     server?: string // 本次 Websocket连接的服务器的 ip:port
-    type?: boolean // 状态：1 在线 2 隐身
+    type?: 'true' | 'false' // 状态：1 在线 2 隐身
     userId?: number // 用户id
 }
 
@@ -42,12 +42,12 @@ export interface WebSocketPageVO {
     category?: string // 类别
     createId?: number // 创建人id
     createTime?: string // 创建时间
-    delFlag?: boolean // 是否逻辑删除
-    enableFlag?: boolean // 连接中/断开连接
+    delFlag?: 'true' | 'false' // 是否逻辑删除
+    enableFlag?: 'true' | 'false' // 连接中/断开连接
     id?: number // 主键id
     ip?: string // ip
     jwtHash?: string // jwtHash，用于匹配 redis中存储的 jwtHash
-    mobileFlag?: boolean // 是否是移动端网页，true：是 false 否
+    mobileFlag?: 'true' | 'false' // 是否是移动端网页，true：是 false 否
     os?: string // 操作系统
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     remark?: string // 描述/备注
