@@ -43,7 +43,15 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                 return {field: value}
             }
         },
-        {title: '菜单名', dataIndex: 'name', formItemProps: {required: true}},
+        {
+            title: '菜单名', dataIndex: 'name', formItemProps: {
+                rules: [
+                    {
+                        required: true,
+                    },
+                ],
+            }
+        },
         {title: '排序号', dataIndex: 'orderNo', valueType: 'digit', fieldProps: {className: 'w100'}},
         {
             valueType: 'dependency',
