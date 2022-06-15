@@ -141,8 +141,12 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     onClick={() => {
                         if (item.path && item.router) {
                             if (RouterMapKeyList.includes(item.router)) {
-                                setPathname(item.path)
-                                getAppNav()(item.path)
+                                if (item.linkFlag) {
+                                    window.open(item.path, '_blank')
+                                } else {
+                                    setPathname(item.path)
+                                    getAppNav()(item.path)
+                                }
                             } else {
                                 InDev()
                             }

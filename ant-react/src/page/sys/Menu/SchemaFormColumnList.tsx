@@ -46,6 +46,7 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
             title: '起始页面',
             dataIndex: 'firstFlag',
             valueEnum: YesNoEnum,
+            tooltip: '是否为默认打开的页面'
         },
         {
             title: '权限菜单',
@@ -56,11 +57,13 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
             title: '外链',
             dataIndex: 'linkFlag',
             valueEnum: YesNoEnum,
+            tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面'
         },
         {
             title: '显示',
             dataIndex: 'showFlag',
-            valueEnum: YesNoEnum
+            valueEnum: YesNoEnum,
+            tooltip: '是否在左侧菜单栏显示'
         },
         {
             title: '启用',
