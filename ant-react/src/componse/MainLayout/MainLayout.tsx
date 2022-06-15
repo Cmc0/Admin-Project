@@ -27,6 +27,13 @@ function goFirstPage(menuList: BaseMenuDO[]) {
         return
     }
 
+    const adminRedirectPath = sessionStorage.getItem(SessionStorageKey.ADMIN_REDIRECT_PATH);
+    if (adminRedirectPath) {
+        if (menuList.some(item => item.path === adminRedirectPath)) {
+            return getAppNav()(adminRedirectPath)
+        }
+    }
+
     menuList.some((item) => {
         if (item.firstFlag && item.path) {
             getAppNav()(item.path)
