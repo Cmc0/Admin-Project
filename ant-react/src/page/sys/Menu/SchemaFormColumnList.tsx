@@ -64,22 +64,22 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
                             title: '起始页面',
                             dataIndex: 'firstFlag',
                             valueEnum: YesNoEnum,
+                            fieldProps: {allowClear: false},
                             tooltip: '是否为默认打开的页面',
-                            valueType: 'switch'
                         },
                         {
                             title: '外链',
                             dataIndex: 'linkFlag',
                             valueEnum: YesNoEnum,
+                            fieldProps: {allowClear: false},
                             tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router',
-                            valueType: 'switch'
                         },
                         {
                             title: '显示',
                             dataIndex: 'showFlag',
                             valueEnum: YesNoEnum,
+                            fieldProps: {allowClear: false},
                             tooltip: '是否在左侧菜单栏显示',
-                            valueType: "switch",
                         },
                     ];
             },
@@ -88,13 +88,13 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
             title: '权限菜单',
             dataIndex: 'authFlag',
             valueEnum: YesNoEnum,
-            valueType: "switch",
+            fieldProps: {allowClear: false},
         },
         {
             title: '启用',
             dataIndex: 'enableFlag',
             valueEnum: YesNoEnum,
-            valueType: "switch",
+            fieldProps: {allowClear: false},
         },
         {
             title: '备注',
