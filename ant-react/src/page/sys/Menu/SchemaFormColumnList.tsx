@@ -50,7 +50,12 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                 ],
             }
         },
-        {title: '排序号', dataIndex: 'orderNo', valueType: 'digit', fieldProps: {className: 'w100'}},
+        {
+            title: '排序号',
+            dataIndex: 'orderNo',
+            valueType: 'digit',
+            fieldProps: {className: 'w100', min: Number.MIN_SAFE_INTEGER}
+        },
         {
             valueType: 'dependency',
             fieldProps: {
