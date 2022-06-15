@@ -27,14 +27,12 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
     return [
         {
             title: '上级菜单', dataIndex: 'parentId', valueType: "treeSelect",
-            request: async () => {
-                return newTreeList
-            },
             fieldProps: {
                 placeholder: '为空则表示顶级菜单',
                 allowClear: true,
                 showSearch: true,
-                treeNodeFilterProp: 'title'
+                treeNodeFilterProp: 'title',
+                options: newTreeList
             },
             convertValue: (value, field) => {
                 if (value === 0) {
@@ -92,9 +90,10 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                             title: '路由',
                             dataIndex: 'router',
                             valueType: 'select',
-                            request: async () => {
-                                return RouterDict
-                            },
+                            fieldProps: {
+                                showSearch: true,
+                                options: RouterDict,
+                            }
                         },
                         {
                             title: '起始页面',
