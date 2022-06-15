@@ -31,11 +31,13 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
             },
             fieldProps: {
                 placeholder: '为空则表示顶级菜单',
-                allowClear: true
+                allowClear: true,
+                showSearch: true,
+                treeNodeFilterProp: 'title'
             }
         },
         {title: '菜单名', dataIndex: 'name', formItemProps: {required: true}},
-        {title: '排序号', dataIndex: 'orderNo', valueType: 'digit', fieldProps: {className: 'w100', allowClear: true}},
+        {title: '排序号', dataIndex: 'orderNo', valueType: 'digit', fieldProps: {className: 'w100'}},
         {
             valueType: 'dependency',
             fieldProps: {
@@ -89,6 +91,7 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
             dataIndex: 'authFlag',
             valueEnum: YesNoEnum,
             fieldProps: {allowClear: false},
+            tooltip: '不显示，只代表菜单权限',
         },
         {
             title: '启用',
@@ -99,7 +102,12 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
         {
             title: '备注',
             dataIndex: 'remark',
-            valueType: 'textarea'
+            valueType: 'textarea',
+            fieldProps: {
+                showCount: true,
+                maxLength: 300,
+                allowClear: true,
+            }
         }
     ]
 }
