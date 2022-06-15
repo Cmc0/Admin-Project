@@ -33,13 +33,13 @@ public class MenuPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "启用/禁用")
     private Boolean enableFlag;
 
-    @ApiModelProperty(value = "是否外链，即，打开页面会在一个新的窗口打开")
+    @ApiModelProperty(value = "是否外链，即，打开页面会在一个新的窗口打开，可以配合 router")
     private Boolean linkFlag;
 
-    @ApiModelProperty(value = "路由：linkFlag === false 时使用，不必填")
+    @ApiModelProperty(value = "路由")
     private String router;
 
-    @ApiModelProperty(value = "重定向：linkFlag === false 时使用，不必填")
+    @ApiModelProperty(value = "重定向：linkFlag === false 时使用，不必填，暂时未使用")
     private String redirect;
 
     @ApiModelProperty(value = "是否是起始页面，备注：只能存在一个 firstFlag === true 的菜单")
