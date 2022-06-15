@@ -57,7 +57,7 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
             title: '外链',
             dataIndex: 'linkFlag',
             valueEnum: YesNoEnum,
-            tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面'
+            tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router'
         },
         {
             title: '显示',

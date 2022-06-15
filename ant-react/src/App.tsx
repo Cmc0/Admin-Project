@@ -9,7 +9,7 @@ export default function () {
 
     const userMenuList = useAppSelector(
         (state) => state.user.userMenuList
-    ).filter((item) => !item.linkFlag && item.router)
+    ).filter((item) => item.router)
 
     return (
         <BrowserRouter>
