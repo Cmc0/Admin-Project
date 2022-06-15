@@ -138,6 +138,21 @@ export default function () {
                     formRef.current?.setFieldsValue({linkFlag: true})
                 }
             }}
+            submitter={{
+                render: (props, defaultDoms) => {
+                    return [
+                        ...defaultDoms,
+                        <Button
+                            key="extra-reset"
+                            onClick={() => {
+                                props.reset();
+                            }}
+                        >
+                            重置
+                        </Button>,
+                    ];
+                },
+            }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
             columns={SchemaFormColumnList(treeList, formRef)}
