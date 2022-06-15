@@ -23,6 +23,8 @@ export default function () {
 
     const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
 
+    const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
+
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
             rowKey={"id"}
@@ -50,6 +52,7 @@ export default function () {
                 return menuTree({...params, sort})
             }}
             postData={(data) => {
+                setTreeList(data)
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
                 return data
             }}
@@ -83,11 +86,18 @@ export default function () {
                     <BetaSchemaForm<MenuInsertOrUpdateDTO>
                         trigger={<Button type="primary">新建菜单</Button>}
                         title={"新建菜单"}
-                        layoutType={"DrawerForm"}
+                        layoutType={"ModalForm"}
+                        grid
+                        rowProps={{
+                            gutter: 16,
+                        }}
+                        colProps={{
+                            span: 12
+                        }}
+                        columns={SchemaFormColumnList(treeList)}
                         onFinish={async (values) => {
                             console.log(values);
                         }}
-                        columns={SchemaFormColumnList}
                     />
                 ],
             }}
