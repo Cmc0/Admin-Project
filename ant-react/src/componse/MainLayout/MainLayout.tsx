@@ -156,7 +156,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <>
                         {dom}
                         {(item.router && !RouterMapKeyList.includes(item.router)) &&
-                        <WarningFilled className={"warning2 m-l-5"}/>
+                        <WarningFilled className={"warning2 m-l-4"}/>
                         }
                     </>
                 </a>

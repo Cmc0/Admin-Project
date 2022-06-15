@@ -12,9 +12,9 @@ export function roleDeleteByIdSet(form: NotEmptyIdSet) {
 export interface RolePageVO {
     createId?: number // 创建人id
     createTime?: string // 创建时间
-    defaultFlag?: 'true' | 'false' // 是否是默认角色，备注：只会有一个默认角色
-    delFlag?: 'true' | 'false' // 是否逻辑删除
-    enableFlag?: 'true' | 'false' // 启用/禁用
+    defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
+    delFlag?: boolean // 是否逻辑删除
+    enableFlag?: boolean // 启用/禁用
     id?: number // 主键id
     menuIdSet?: number[] // 菜单 idSet
     name?: string // 角色名（不能重复）
@@ -30,8 +30,8 @@ export function roleInfoById(form: NotNullId) {
 }
 
 export interface RoleInsertOrUpdateDTO {
-    defaultFlag?: 'true' | 'false' // 是否是默认角色，备注：只会有一个默认角色
-    enableFlag?: 'true' | 'false' // 启用/禁用
+    defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
+    enableFlag?: boolean // 启用/禁用
     id?: number // 主键id
     menuIdSet?: number[] // 菜单 idSet
     name?: string // 角色名，不能重复
@@ -46,8 +46,8 @@ export function roleInsertOrUpdate(form: RoleInsertOrUpdateDTO) {
 
 export interface RolePageDTO extends MyPageDTO {
     current?: number // 第几页
-    defaultFlag?: 'true' | 'false' // 是否是默认角色，备注：只会有一个默认角色
-    enableFlag?: 'true' | 'false' // 启用/禁用
+    defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
+    enableFlag?: boolean // 启用/禁用
     id?: number // 主键id
     name?: string // 角色名（不能重复）
     order?: MyOrderDTO // 排序字段
@@ -58,9 +58,9 @@ export interface RolePageDTO extends MyPageDTO {
 export interface BaseRoleDO {
     createId?: number // 创建人id
     createTime?: string // 创建时间
-    defaultFlag?: 'true' | 'false' // 是否是默认角色，备注：只会有一个默认角色
-    delFlag?: 'true' | 'false' // 是否逻辑删除
-    enableFlag?: 'true' | 'false' // 启用/禁用
+    defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
+    delFlag?: boolean // 是否逻辑删除
+    enableFlag?: boolean // 启用/禁用
     id?: number // 主键id
     name?: string // 角色名（不能重复）
     remark?: string // 描述/备注

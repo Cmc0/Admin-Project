@@ -1,5 +1,5 @@
 import {RouterDict} from "@/router/RouterMap";
-import {YesNoEnum} from "../../../../util/DictUtil";
+import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
@@ -44,12 +44,23 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
                 name: ['authFlag'],
             },
             columns: ({authFlag}) => {
-                return authFlag === 'true'
+                return authFlag
                     ? [
                         {
-                            title: '权限', dataIndex: 'auths',
+                            dataIndex: 'auths',
                             formItemProps: {required: true},
-                            valueType: 'textarea'
+                            valueType: 'textarea',
+                            fieldProps: {
+                                showCount: true,
+                                maxLength: 255,
+                                allowClear: true,
+                            },
+                            title: (props, type, dom) => <>
+                                <span>权限</span>
+                                <a className={"m-l-4"} onClick={() => {
+                                    props.initialValue = '111'
+                                }}>生成示例</a>
+                            </>
                         }
                     ]
                     : [
@@ -65,21 +76,21 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
                         {
                             title: '起始页面',
                             dataIndex: 'firstFlag',
-                            valueEnum: YesNoEnum,
+                            valueEnum: YesNoDict,
                             fieldProps: {allowClear: false},
                             tooltip: '是否为默认打开的页面',
                         },
                         {
                             title: '外链',
                             dataIndex: 'linkFlag',
-                            valueEnum: YesNoEnum,
+                            valueEnum: YesNoDict,
                             fieldProps: {allowClear: false},
                             tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router',
                         },
                         {
                             title: '显示',
                             dataIndex: 'showFlag',
-                            valueEnum: YesNoEnum,
+                            valueEnum: YesNoDict,
                             fieldProps: {allowClear: false},
                             tooltip: '是否在左侧菜单栏显示',
                         },
@@ -89,14 +100,14 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
         {
             title: '权限菜单',
             dataIndex: 'authFlag',
-            valueEnum: YesNoEnum,
+            valueEnum: YesNoDict,
             fieldProps: {allowClear: false},
             tooltip: '不显示，只代表菜单权限',
         },
         {
             title: '启用',
             dataIndex: 'enableFlag',
-            valueEnum: YesNoEnum,
+            valueEnum: YesNoDict,
             fieldProps: {allowClear: false},
         },
         {

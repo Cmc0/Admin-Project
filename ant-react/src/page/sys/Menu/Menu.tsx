@@ -98,11 +98,11 @@ export default function () {
                         isKeyPressSubmit
                         request={async () => {
                             return {
-                                authFlag: 'false',
-                                enableFlag: 'true',
-                                showFlag: 'true',
-                                linkFlag: 'false',
-                                firstFlag: 'false'
+                                authFlag: false,
+                                enableFlag: true,
+                                showFlag: true,
+                                linkFlag: false,
+                                firstFlag: false
                             }
                         }}
                         columns={SchemaFormColumnList(treeList)}

@@ -1,6 +1,3 @@
-import {ProSchemaValueEnumType} from "@ant-design/pro-utils/lib/typing";
-
-export const YesNoEnum: Record<any, ProSchemaValueEnumType> = {
-    'true': {text: '是', status: 'success'},
-    'false': {text: '否', status: 'error'}
-}
+export const YesNoDict = new Map();
+YesNoDict.set(true, {text: '是', status: 'success'})
+YesNoDict.set(false, {text: '否', status: 'error'})

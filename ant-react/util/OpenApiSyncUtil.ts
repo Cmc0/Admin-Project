@@ -78,8 +78,8 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
 
     if (type === 'integer') {
         type = 'number'
-    } else if ((type === 'string' && format === 'byte') || type === 'boolean') {
-        type = `'true' | 'false'`
+    } else if ((type === 'string' && format === 'byte')) {
+        type = 'boolean'
     } else if (type === 'array') {
         if (componentProperty.items) {
             if (componentProperty.items.type) {

@@ -4,7 +4,7 @@ import {Space} from "antd";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterDict} from "@/router/RouterMap";
-import {YesNoEnum} from "../../../../util/DictUtil";
+import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 
 const TableColumnList: ProColumns<BaseMenuDO>[] = [
@@ -35,27 +35,27 @@ const TableColumnList: ProColumns<BaseMenuDO>[] = [
     {
         title: '起始页面',
         dataIndex: 'firstFlag',
-        valueEnum: YesNoEnum,
-    },
-    {
-        title: '权限菜单',
-        dataIndex: 'authFlag',
-        valueEnum: YesNoEnum,
+        valueEnum: YesNoDict,
     },
     {
         title: '外链',
         dataIndex: 'linkFlag',
-        valueEnum: YesNoEnum,
+        valueEnum: YesNoDict,
     },
     {
         title: '显示',
         dataIndex: 'showFlag',
-        valueEnum: YesNoEnum
+        valueEnum: YesNoDict
+    },
+    {
+        title: '权限菜单',
+        dataIndex: 'authFlag',
+        valueEnum: YesNoDict,
     },
     {
         title: '启用',
         dataIndex: 'enableFlag',
-        valueEnum: YesNoEnum
+        valueEnum: YesNoDict
     },
     {
         title: '修改时间',
