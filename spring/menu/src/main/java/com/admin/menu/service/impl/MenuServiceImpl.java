@@ -164,7 +164,8 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
             .eq(dto.getLinkFlag() != null, BaseMenuDO::getLinkFlag, dto.getLinkFlag())
             .eq(dto.getFirstFlag() != null, BaseMenuDO::getFirstFlag, dto.getFirstFlag())
             .eq(dto.getAuthFlag() != null, BaseMenuDO::getAuthFlag, dto.getAuthFlag())
-            .eq(dto.getShowFlag() != null, BaseMenuDO::getShowFlag, dto.getShowFlag()).page(dto.getPage());
+            .eq(dto.getShowFlag() != null, BaseMenuDO::getShowFlag, dto.getShowFlag())
+            .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
 
     }
 
@@ -239,7 +240,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, BaseMenuDO::getPath, BaseMenuDO::getIcon,
                     BaseMenuDO::getRouter, BaseMenuDO::getName, BaseMenuDO::getFirstFlag, BaseMenuDO::getLinkFlag,
                     BaseMenuDO::getShowFlag, BaseMenuDO::getAuthFlag).eq(BaseEntityThree::getEnableFlag, 1)
-                .orderByDesc(BaseMenuDO::getOrderNo).orderByDesc(BaseEntityTwo::getUpdateTime).list();
+                .orderByDesc(BaseMenuDO::getOrderNo).list();
         }
 
         // 获取当前用户绑定的菜单

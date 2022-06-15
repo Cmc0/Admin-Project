@@ -217,7 +217,7 @@ public class UserUtil {
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, BaseMenuDO::getPath, BaseMenuDO::getIcon,
                     BaseMenuDO::getRouter, BaseMenuDO::getName, BaseMenuDO::getFirstFlag, BaseMenuDO::getLinkFlag, BaseMenuDO::getShowFlag,
                     BaseMenuDO::getAuths, BaseMenuDO::getAuthFlag).eq(BaseEntityThree::getEnableFlag, true)
-                .orderByDesc(BaseEntityFour::getOrderNo).orderByDesc(BaseEntityTwo::getUpdateTime).list();
+                .orderByDesc(BaseEntityFour::getOrderNo).list();
         }
         if (allMenuDbList.size() == 0) {
             return resList; // 结束方法
