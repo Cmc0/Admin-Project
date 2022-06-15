@@ -35,6 +35,12 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                 allowClear: true,
                 showSearch: true,
                 treeNodeFilterProp: 'title'
+            },
+            convertValue: (value, field) => {
+                if (value === 0) {
+                    return {field: ''}
+                }
+                return {field: value}
             }
         },
         {title: '菜单名', dataIndex: 'name', formItemProps: {required: true}},

@@ -1,8 +1,8 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {BetaSchemaForm, ColumnsState, ProFormInstance, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Menu} from "antd";
-import {MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
-import {ColumnHeightOutlined, EllipsisOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
+import {menuInfoById, MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
+import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useRef, useState} from "react";
 import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
@@ -25,7 +25,11 @@ export default function () {
 
     const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
 
+    const [formVisible, setFormVisible] = useState<boolean>(false);
+
     const formRef = useRef<ProFormInstance<MenuInsertOrUpdateDTO>>(null);
+
+    const id = useRef<number>(-1);
 
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
@@ -46,7 +50,7 @@ export default function () {
             }}
             revalidateOnFocus={false}
             rowSelection={{}}
-            columns={TableColumnList}
+            columns={TableColumnList(id, setFormVisible)}
             options={{
                 fullScreen: true,
             }}
@@ -85,39 +89,10 @@ export default function () {
                         <Button size={"small"} icon={<EllipsisOutlined/>}/>
                     </Dropdown>,
                 actions: [
-                    <BetaSchemaForm<MenuInsertOrUpdateDTO>
-                        trigger={<Button type="primary">新建菜单</Button>}
-                        title={"新建菜单"}
-                        layoutType={"ModalForm"}
-                        grid
-                        rowProps={{
-                            gutter: 16,
-                        }}
-                        colProps={{
-                            span: 12
-                        }}
-                        shouldUpdate={false}
-                        isKeyPressSubmit
-                        request={async () => {
-                            return {
-                                authFlag: false,
-                                enableFlag: true,
-                                showFlag: true,
-                                linkFlag: false,
-                                firstFlag: false
-                            }
-                        }}
-                        formRef={formRef}
-                        onValuesChange={(changedValues, allValues) => {
-                            if (allValues.path && allValues.path.startsWith("http")) {
-                                formRef.current?.setFieldsValue({linkFlag: true})
-                            }
-                        }}
-                        columns={SchemaFormColumnList(treeList, formRef)}
-                        onFinish={async (values) => {
-                            console.log(values);
-                        }}
-                    />
+                    <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
+                        id.current = -1
+                        setFormVisible(true)
+                    }}>新建</Button>
                 ],
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
@@ -127,6 +102,51 @@ export default function () {
             )}
         >
         </ProTable>
+
+        <BetaSchemaForm<MenuInsertOrUpdateDTO>
+            title={"新建菜单"}
+            layoutType={"ModalForm"}
+            grid
+            rowProps={{
+                gutter: 16,
+            }}
+            colProps={{
+                span: 12
+            }}
+            autoFocusFirstInput={false}
+            shouldUpdate={false}
+            isKeyPressSubmit
+            params={{id: id.current}}
+            request={async (params) => {
+                let resData: MenuInsertOrUpdateDTO = {
+                    authFlag: false,
+                    enableFlag: true,
+                    showFlag: true,
+                    linkFlag: false,
+                    firstFlag: false
+                }
+                if (params.id !== -1) {
+                    await menuInfoById({id: params.id}).then(res => {
+                        resData = res
+                    })
+                }
+                return resData
+            }}
+            formRef={formRef}
+            onValuesChange={(changedValues, allValues) => {
+                if (allValues.path && allValues.path.startsWith("http")) {
+                    formRef.current?.setFieldsValue({linkFlag: true})
+                }
+            }}
+            visible={formVisible}
+            onVisibleChange={setFormVisible}
+            columns={SchemaFormColumnList(treeList, formRef)}
+            onFinish={async (form) => {
+                console.log(form);
+
+                return true
+            }}
+        />
     </>
 
 }

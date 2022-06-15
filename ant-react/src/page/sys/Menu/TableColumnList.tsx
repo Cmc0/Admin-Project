@@ -1,13 +1,13 @@
-import {ProColumns} from "@ant-design/pro-components";
+import {ProColumns, TableDropdown} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {Space} from "antd";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterDict} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
-import React from "react";
+import React, {Dispatch, SetStateAction} from "react";
 
-const TableColumnList: ProColumns<BaseMenuDO>[] = [
+const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Dispatch<SetStateAction<boolean>>): ProColumns<BaseMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -61,6 +61,30 @@ const TableColumnList: ProColumns<BaseMenuDO>[] = [
         title: '修改时间',
         dataIndex: 'updateTime',
         hideInSearch: true
+    },
+    {
+        title: '操作',
+        width: 160,
+        dataIndex: 'option',
+        valueType: 'option',
+        render: (dom, entity) => [
+            <a key="view">查看</a>,
+            <a key="edit" onClick={() => {
+                if (entity.id) {
+                    id.current = entity.id
+                    setFormVisible(true)
+                }
+            }}>编辑</a>,
+            <TableDropdown
+                key="actionGroup"
+                menus={[
+                    {key: 'del', name: '删除'},
+                ]}
+                onSelect={(key) => {
+                    console.log(key)
+                }}
+            />,
+        ],
     },
 ];
 
