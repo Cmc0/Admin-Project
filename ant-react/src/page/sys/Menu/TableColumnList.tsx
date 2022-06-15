@@ -8,6 +8,7 @@ import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {menuDeleteByIdSet} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import {InDev} from "../../../../util/CommonUtil";
 
 const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
@@ -71,23 +72,26 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Rea
         dataIndex: 'option',
         valueType: 'option',
         render: (dom, entity) => [
-            <a key="edit" onClick={() => {
+            <a key="1" onClick={() => {
                 id.current = entity.id!
                 setFormVisible(true)
             }}>编辑</a>,
+            <a key="2" onClick={() => {
+                execConfirm(() => {
+                    return menuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
+                        ToastSuccess(res.msg)
+                        actionRef.current?.reload()
+                    })
+                }, undefined, `确定删除【${entity.name}】吗？`)
+            }}>删除</a>,
             <TableDropdown
                 key="actionGroup"
                 menus={[
-                    {key: 'del', name: '删除'},
+                    {key: 'addChildren', name: '添加下级'},
                 ]}
                 onSelect={(key) => {
-                    if (key === 'del') {
-                        execConfirm(() => {
-                            return menuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
-                                ToastSuccess(res.msg)
-                                actionRef.current?.reload()
-                            })
-                        }, undefined, `确定删除【${entity.name}】吗？`)
+                    if (key === 'addChildren') {
+                        InDev()
                     }
                 }}
             />,

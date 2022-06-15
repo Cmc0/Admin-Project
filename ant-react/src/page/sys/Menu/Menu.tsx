@@ -161,12 +161,14 @@ export default function () {
                         >
                             重置
                         </Button>,
-                        currentForm.current.id !== CommonConstant["-1"] ? <Button
+                        currentForm.current.id ? <Button
+                            type="primary"
                             danger
                             onClick={() => {
                                 execConfirm(() => {
                                     return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         ToastSuccess(res.msg)
+                                        setFormVisible(false)
                                         actionRef.current?.reload()
                                     })
                                 }, undefined, `确定删除【${currentForm.current.name}】吗？`)
@@ -174,7 +176,6 @@ export default function () {
                             删除
                         </Button> : null
                     ]
-                        ;
                 },
             }}
             params={{id: id.current}}
@@ -198,8 +199,11 @@ export default function () {
             onVisibleChange={setFormVisible}
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
-                await menuInsertOrUpdate({...currentForm.current, ...form})
-                await actionRef.current?.reload()
+                await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+                    ToastSuccess(res.msg)
+                    actionRef.current?.reload()
+                    id.current = CommonConstant["-1"]
+                })
                 return true
             }}
         />
