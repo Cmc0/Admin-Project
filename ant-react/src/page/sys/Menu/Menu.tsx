@@ -134,6 +134,10 @@ export default function () {
             colProps={{
                 span: 12
             }}
+            modalProps={{
+                keyboard: false,
+                maskClosable: false,
+            }}
             form={useForm}
             autoFocusFirstInput={false}
             shouldUpdate={false}
