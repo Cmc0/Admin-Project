@@ -3,7 +3,7 @@ import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {Space} from "antd";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
-import {RouterDict} from "@/router/RouterMap";
+import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React, {Dispatch, SetStateAction} from "react";
 
@@ -27,8 +27,9 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Dis
         title: '路由',
         dataIndex: 'router',
         valueType: 'select',
-        request: async () => {
-            return RouterDict
+        fieldProps: {
+            showSearch: true,
+            options: RouterMapKeyList,
         }
     },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},

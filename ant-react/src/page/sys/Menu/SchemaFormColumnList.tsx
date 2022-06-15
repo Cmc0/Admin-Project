@@ -1,4 +1,4 @@
-import {RouterDict} from "@/router/RouterMap";
+import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {MenuInsertOrUpdateDTO} from "@/api/MenuController";
@@ -92,8 +92,7 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                             valueType: 'select',
                             fieldProps: {
                                 showSearch: true,
-                                options: RouterDict,
-                                optionFilterProp: "label"
+                                options: RouterMapKeyList,
                             }
                         },
                         {
