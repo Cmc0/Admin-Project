@@ -142,10 +142,6 @@ export default function () {
             autoFocusFirstInput={false}
             shouldUpdate={false}
             isKeyPressSubmit
-            initialValues={{
-                enableFlag: true,
-                showFlag: true,
-            }}
             onValuesChange={(changedValues, allValues) => {
                 if (allValues.path && allValues.path.startsWith("http")) {
                     useForm.setFieldsValue({linkFlag: true})
@@ -166,20 +162,26 @@ export default function () {
                     ];
                 },
             }}
-            visible={formVisible}
-            onVisibleChange={async (visible) => {
-                if (visible) {
-                    useForm.resetFields()
-                    currentForm.current = {}
-                    if (id.current !== -1) {
-                        await menuInfoById({id: id.current}).then(res => {
-                            currentForm.current = res
-                            useForm.setFieldsValue(res) // 组件会深度克隆 res
-                        })
-                    }
+            params={{id: id.current}}
+            request={async (params) => {
+
+                useForm.resetFields()
+                currentForm.current = {}
+
+                if (params.id !== -1) {
+                    await menuInfoById({id: params.id}).then(res => {
+                        currentForm.current = res
+                        useForm.setFieldsValue(res) // 组件会深度克隆 res
+                    })
                 }
-                setFormVisible(visible)
+
+                return {
+                    enableFlag: true,
+                    showFlag: true,
+                }
             }}
+            visible={formVisible}
+            onVisibleChange={setFormVisible}
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
                 await menuInsertOrUpdate({...currentForm.current, ...form})
