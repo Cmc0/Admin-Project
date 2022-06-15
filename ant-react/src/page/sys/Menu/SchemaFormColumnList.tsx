@@ -42,9 +42,9 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
         {
             valueType: 'dependency',
             fieldProps: {
-                name: ['authFlag', 'path'],
+                name: ['authFlag'],
             },
-            columns: ({authFlag, path}: MenuInsertOrUpdateDTO) => {
+            columns: ({authFlag}: MenuInsertOrUpdateDTO): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
                 return authFlag
                     ? [
                         {
@@ -90,11 +90,21 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], formRef: React.RefObject<P
                             tooltip: '是否为默认打开的页面',
                         },
                         {
-                            title: '外链',
-                            dataIndex: 'linkFlag',
-                            valueEnum: YesNoDict,
-                            fieldProps: {allowClear: false, disabled: path?.startsWith("http")},
-                            tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router',
+                            valueType: 'dependency',
+                            fieldProps: {
+                                name: ['path'],
+                            },
+                            columns: ({path}: MenuInsertOrUpdateDTO): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+                                return [
+                                    {
+                                        title: '外链',
+                                        dataIndex: 'linkFlag',
+                                        valueEnum: YesNoDict,
+                                        fieldProps: {allowClear: false, disabled: path?.startsWith("http")},
+                                        tooltip: '如果开启，打开页面时，会在一个新的窗口打开此页面，可以配合 router',
+                                    },
+                                ]
+                            }
                         },
                         {
                             title: '显示',
