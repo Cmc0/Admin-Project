@@ -161,7 +161,7 @@ export default function () {
                         >
                             重置
                         </Button>,
-                        currentForm.current.id ? <Button
+                        id.current !== CommonConstant["-1"] ? <Button
                             type="primary"
                             danger
                             onClick={() => {
