@@ -119,6 +119,7 @@ export default function () {
             isKeyPressSubmit
             params={{id: id.current}}
             request={async (params) => {
+
                 let resData: MenuInsertOrUpdateDTO = {
                     authFlag: false,
                     enableFlag: true,
@@ -126,6 +127,7 @@ export default function () {
                     linkFlag: false,
                     firstFlag: false
                 }
+
                 if (params.id !== -1) {
                     await menuInfoById({id: params.id}).then(res => {
                         resData = res
