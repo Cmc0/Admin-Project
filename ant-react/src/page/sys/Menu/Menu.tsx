@@ -1,5 +1,5 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
+import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu} from "antd";
 import {menuInfoById, menuInsertOrUpdate, MenuInsertOrUpdateDTO, MenuPageDTO, menuTree} from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
@@ -31,8 +31,11 @@ export default function () {
 
     const id = useRef<number>(-1);
 
+    const actionRef = useRef<ActionType>(null)
+
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
+            actionRef={actionRef}
             rowKey={"id"}
             pagination={{
                 showQuickJumper: true,
@@ -50,7 +53,7 @@ export default function () {
             }}
             revalidateOnFocus={false}
             rowSelection={{}}
-            columns={TableColumnList(id, setFormVisible)}
+            columns={TableColumnList(id, setFormVisible, actionRef)}
             options={{
                 fullScreen: true,
             }}
@@ -156,6 +159,7 @@ export default function () {
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
                 await menuInsertOrUpdate(form)
+                actionRef.current?.reload()
                 return true
             }}
         />

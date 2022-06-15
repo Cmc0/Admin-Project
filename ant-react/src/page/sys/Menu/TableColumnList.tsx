@@ -1,13 +1,14 @@
-import {ProColumns, TableDropdown} from "@ant-design/pro-components";
+import {ActionType, ProColumns, TableDropdown} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {Space} from "antd";
 import {HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
-import React, {Dispatch, SetStateAction} from "react";
+import React from "react";
+import {menuDeleteByIdSet} from "@/api/MenuController";
 
-const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Dispatch<SetStateAction<boolean>>): ProColumns<BaseMenuDO>[] => [
+const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -81,8 +82,14 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Dis
                 menus={[
                     {key: 'del', name: '删除'},
                 ]}
-                onSelect={(key) => {
-                    console.log(key)
+                onSelect={async (key) => {
+                    if (!entity.id) {
+                        return
+                    }
+                    if (key === 'del') {
+                        await menuDeleteByIdSet({idSet: [entity.id]})
+                        await actionRef.current?.reload()
+                    }
                 }}
             />,
         ],
