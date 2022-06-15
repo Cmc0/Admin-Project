@@ -43,7 +43,7 @@ export interface MenuInfoByIdVO {
 
 // 菜单-管理 通过主键id，查看详情
 export function menuInfoById(form: NotNullId) {
-    return $http.myPost<MenuInfoByIdVO>('/menu/infoById', form)
+    return $http.myProPost<MenuInfoByIdVO>('/menu/infoById', form)
 }
 
 export interface MenuInsertOrUpdateDTO {

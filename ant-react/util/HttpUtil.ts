@@ -93,6 +93,8 @@ export interface ApiResultVO<T = string> {
 interface MyAxiosInstance extends AxiosInstance {
     myPost<T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<ApiResultVO<T>>
 
+    myProPost<T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>
+
     myTreePost<T, D extends MyPageDTO = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T[]>
 
     myProTreePost<T, D extends MyPageDTO = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<RequestData<T>>
@@ -114,6 +116,16 @@ $http.myPost = <T = string, D = any>(url: string, data?: D, config?: AxiosReques
     return new Promise((resolve, reject) => {
         return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T>>, D>(url, data, config).then(({data}) => {
             resolve(data)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+$http.myProPost = <T = string, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T> => {
+    return new Promise((resolve, reject) => {
+        return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T>>, D>(url, data, config).then(({data}) => {
+            resolve(data.data)
         }).catch(err => {
             reject(err)
         })

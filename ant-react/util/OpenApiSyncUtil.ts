@@ -225,10 +225,16 @@ function start() {
                 let responsesName = '' // 返回值 bean的名称
                 let pageFlag = false // 是否是 page请求
                 let treeFlag = false // 是否是 tree请求
+                let infoByIdFlag = false // 是否是 infoById请求
+
+                const apiName = toHump(subItem.uri.slice(1), /\/(\w)/g)
 
                 if (subItem.requestBody) {
                     const requestBodyFullName = subItem.requestBody.content["application/json"].schema.$ref
                     requestBodyName = getComponentNameByFullName(requestBodyFullName)
+                    if (requestBodyName === 'NotNullId' && apiName.includes("InfoById")) {
+                        infoByIdFlag = true
+                    }
                     const requestBody = componentMap[requestBodyName]
                     requestBodyFlag = Boolean(requestBody)
                     if (requestBodyFlag) {
@@ -257,8 +263,6 @@ function start() {
 
                 fileData += `// ${item.name} ${subItem.summary}\n`
 
-                const apiName = toHump(subItem.uri.slice(1), /\/(\w)/g)
-
                 fileData += `export function ${apiName}(`
 
                 if (requestBodyName) {
@@ -271,6 +275,8 @@ function start() {
                     fileData += `    return $http.myProPagePost`
                 } else if (treeFlag) {
                     fileData += `    return $http.myProTreePost`
+                } else if (infoByIdFlag) {
+                    fileData += `    return $http.myProPost`
                 } else {
                     fileData += `    return $http.myPost`
                 }

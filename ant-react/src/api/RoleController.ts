@@ -26,7 +26,7 @@ export interface RolePageVO {
 
 // 角色-管理 通过主键id，查看详情
 export function roleInfoById(form: NotNullId) {
-    return $http.myPost<RolePageVO>('/role/infoById', form)
+    return $http.myProPost<RolePageVO>('/role/infoById', form)
 }
 
 export interface RoleInsertOrUpdateDTO {

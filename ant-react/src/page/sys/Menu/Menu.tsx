@@ -94,6 +94,11 @@ export default function () {
                         colProps={{
                             span: 12
                         }}
+                        shouldUpdate={false}
+                        isKeyPressSubmit
+                        request={async () => {
+                            return {}
+                        }}
                         columns={SchemaFormColumnList(treeList)}
                         onFinish={async (values) => {
                             console.log(values);
