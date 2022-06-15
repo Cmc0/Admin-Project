@@ -161,7 +161,20 @@ export default function () {
                         >
                             重置
                         </Button>,
-                    ];
+                        currentForm.current.id !== CommonConstant["-1"] ? <Button
+                            danger
+                            onClick={() => {
+                                execConfirm(() => {
+                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                        ToastSuccess(res.msg)
+                                        actionRef.current?.reload()
+                                    })
+                                }, undefined, `确定删除【${currentForm.current.name}】吗？`)
+                            }}>
+                            删除
+                        </Button> : null
+                    ]
+                        ;
                 },
             }}
             params={{id: id.current}}

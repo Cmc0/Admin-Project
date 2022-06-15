@@ -71,7 +71,6 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Rea
         dataIndex: 'option',
         valueType: 'option',
         render: (dom, entity) => [
-            <a key="view">查看</a>,
             <a key="edit" onClick={() => {
                 id.current = entity.id!
                 setFormVisible(true)
