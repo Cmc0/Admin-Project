@@ -15,6 +15,7 @@ import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList from "@/page/sys/Menu/SchemaFormColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 
 export default function () {
@@ -37,7 +38,7 @@ export default function () {
 
     const [useForm] = Form.useForm<MenuInsertOrUpdateDTO>();
 
-    const id = useRef<number>(-1);
+    const id = useRef<number>(CommonConstant["-1"]);
 
     const actionRef = useRef<ActionType>(null)
 
@@ -103,7 +104,7 @@ export default function () {
                     </Dropdown>,
                 actions: [
                     <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
-                        id.current = -1
+                        id.current = CommonConstant["-1"]
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -169,7 +170,7 @@ export default function () {
                 useForm.resetFields()
                 currentForm.current = {}
 
-                if (params.id !== -1) {
+                if (params.id !== CommonConstant["-1"]) {
                     await menuInfoById({id: params.id}).then(res => {
                         currentForm.current = res
                         useForm.setFieldsValue(res) // 组件会深度克隆 res
