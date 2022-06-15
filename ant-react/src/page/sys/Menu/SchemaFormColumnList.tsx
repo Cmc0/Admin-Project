@@ -21,11 +21,13 @@ const SchemaFormColumnList: (treeList: BaseMenuDO[], ignoreId?: number) => ProFo
         parentId: item.parentId,
     }))
 
+    const newTreeList = ListToTree(list);
+
     return [
         {
             title: '上级菜单', dataIndex: 'parentId', valueType: "treeSelect",
             request: async () => {
-                return ListToTree(list)
+                return newTreeList
             }
         },
         {title: '菜单名', dataIndex: 'name'},
