@@ -179,7 +179,7 @@ export default function () {
                     ]
                 },
             }}
-            params={currentForm.current}
+            params={new Date()} // 目的：为了打开页面时，执行 request方法
             request={async () => {
 
                 useForm.resetFields()
