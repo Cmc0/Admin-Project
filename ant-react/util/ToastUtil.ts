@@ -26,6 +26,7 @@ export function execConfirm(
         title: '提示',
         content: msg || '确定执行操作？',
         maskClosable: false,
+        closable: true,
         onOk: () => {
             return new Promise(async (resolve, reject) => {
                 if (confirmFun) {

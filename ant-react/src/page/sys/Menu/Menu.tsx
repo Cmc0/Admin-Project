@@ -179,11 +179,7 @@ export default function () {
                     ]
                 },
             }}
-            params={{
-                id: currentForm.current?.id,
-                parentId: currentForm.current?.parentId,
-                orderNO: currentForm.current?.orderNo
-            }}
+            params={currentForm.current!}
             request={async () => {
 
                 useForm.resetFields()
