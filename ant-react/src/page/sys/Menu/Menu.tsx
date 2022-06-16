@@ -136,7 +136,7 @@ export default function () {
             modalProps={{
                 keyboard: false,
                 maskClosable: false,
-                forceRender: true,
+                // forceRender: true,
             }}
             form={useForm}
             autoFocusFirstInput={false}
@@ -168,12 +168,12 @@ export default function () {
                                     return new Promise((resolve) => {
                                         menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(async res => {
                                             currentForm.current = {}
-                                            await actionRef.current?.reload()
+                                            ToastSuccess(res.msg)
+                                            setFormVisible(false)
+                                            resolve()
                                             setTimeout(() => {
-                                                ToastSuccess(res.msg)
-                                                setFormVisible(false)
-                                                resolve()
-                                            }, 600)
+                                                actionRef.current?.reload()
+                                            }, 800)
                                         })
                                     })
                                 }, undefined, `确定删除【${currentForm.current.name}】吗？`)
@@ -211,11 +211,11 @@ export default function () {
                 return new Promise<boolean>((resolve) => {
                     menuInsertOrUpdate({...currentForm.current, ...form}).then(async res => {
                         currentForm.current = {}
-                        await actionRef.current?.reload()
+                        ToastSuccess(res.msg)
+                        resolve(true)
                         setTimeout(() => {
-                            ToastSuccess(res.msg)
-                            resolve(true)
-                        }, 600)
+                            actionRef.current?.reload()
+                        }, 800)
                     })
                 })
             }}
