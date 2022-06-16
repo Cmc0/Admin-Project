@@ -123,7 +123,7 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
     @Override
     public void offlineAllForCurrent() {
 
-        log.info("下线数据库的 webSocket 连接，条件：server = {}", NettyServer.ipAndPort);
+        log.info("下线数据库的 WebSocket 连接，条件：server = {}", NettyServer.ipAndPort);
 
         lambdaUpdate().eq(WebSocketDO::getServer, NettyServer.ipAndPort).eq(BaseEntityThree::getEnableFlag, true)
             .set(BaseEntityThree::getEnableFlag, false).update();
