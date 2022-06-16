@@ -166,7 +166,7 @@ export default function () {
                             onClick={() => {
                                 execConfirm(() => {
                                     return new Promise((resolve) => {
-                                        menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(async res => {
+                                        menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                             currentForm.current = {}
                                             ToastSuccess(res.msg)
                                             setFormVisible(false)
@@ -209,7 +209,7 @@ export default function () {
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={(form) => {
                 return new Promise<boolean>((resolve) => {
-                    menuInsertOrUpdate({...currentForm.current, ...form}).then(async res => {
+                    menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                         currentForm.current = {}
                         ToastSuccess(res.msg)
                         resolve(true)
