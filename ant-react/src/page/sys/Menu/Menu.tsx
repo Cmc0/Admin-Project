@@ -15,6 +15,7 @@ import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 
 export default function () {
@@ -171,7 +172,7 @@ export default function () {
                                         setFormVisible(false)
                                         setTimeout(() => {
                                             actionRef.current?.reload()
-                                        }, 500) // 要等 modal关闭动画完成
+                                        }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
                                 }, undefined, `确定删除【${currentForm.current.name}】吗？`)
                             }}>
@@ -210,7 +211,7 @@ export default function () {
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
-                    }, 500) // 要等 modal关闭动画完成
+                    }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                 })
                 return true
             }}
