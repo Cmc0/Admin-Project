@@ -176,18 +176,23 @@ export default function () {
                     ]
                 },
             }}
-            params={{id: currentForm.current.id}}
-            request={async (params) => {
+            params={{id: currentForm.current.id, parentId: currentForm.current.parentId}}
+            request={async () => {
 
                 useForm.resetFields()
 
                 if (currentForm.current.id) {
-                    await menuInfoById({id: params.id}).then(res => {
+                    await menuInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res
                         useForm.setFieldsValue(res) // 组件会深度克隆 res
                     })
                 } else {
-                    currentForm.current = {}
+                    if (currentForm.current.parentId) {
+                        currentForm.current = {parentId: currentForm.current.parentId}
+                        useForm.setFieldsValue(currentForm.current)
+                    } else {
+                        currentForm.current = {}
+                    }
                 }
 
                 return InitForm
