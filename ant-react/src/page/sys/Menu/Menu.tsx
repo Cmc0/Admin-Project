@@ -172,6 +172,7 @@ export default function () {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
+                                            currentForm.current = {}
                                             actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
