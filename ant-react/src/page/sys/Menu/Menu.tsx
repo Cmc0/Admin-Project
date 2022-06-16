@@ -167,9 +167,9 @@ export default function () {
                                 execConfirm(async () => {
                                     return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         setFormVisible(false)
-                                        currentForm.current = {}
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
+                                            currentForm.current = {}
                                             actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
@@ -207,7 +207,6 @@ export default function () {
             onFinish={async (form) => {
                 await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     setFormVisible(false)
-                    currentForm.current = {}
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
