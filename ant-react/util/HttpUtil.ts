@@ -68,7 +68,7 @@ $http.interceptors.response.use(
         }
     },
     (err) => {
-        // 所有的请求错误，例如 500 404 错误，只要不是 200，都会在这里
+        // 所有的请求错误，例如 500 404 错误，超出 2xx 范围的状态码都会触发该函数。
         let msg: string = err.message
         if (msg === 'Network Error') {
             msg = '连接异常，请重试'
