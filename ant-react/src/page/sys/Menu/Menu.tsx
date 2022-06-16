@@ -137,7 +137,6 @@ export default function () {
             }}
             modalProps={{
                 maskClosable: false,
-                forceRender: true, // 不加 useForm会报警告
             }}
             form={useForm}
             autoFocusFirstInput={false}
@@ -170,9 +169,7 @@ export default function () {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
-                                            actionRef.current?.reload().then(() => {
-                                                currentForm.current = {}
-                                            })
+                                            actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
                                 }, undefined, `确定删除【${currentForm.current!.name}】吗？`)
