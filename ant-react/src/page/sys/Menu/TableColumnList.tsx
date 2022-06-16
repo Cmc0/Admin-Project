@@ -75,7 +75,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 currentForm.current.id = entity.id!
                 setFormVisible(true)
             }}>编辑</a>,
-            <a key="2" onClick={() => {
+            <a className={"red3"} key="2" onClick={() => {
                 execConfirm(() => {
                     return menuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
                         ToastSuccess(res.msg)
