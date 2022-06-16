@@ -166,9 +166,9 @@ export default function () {
                             onClick={() => {
                                 execConfirm(async () => {
                                     return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                        setFormVisible(false)
                                         currentForm.current = {}
                                         ToastSuccess(res.msg)
-                                        setFormVisible(false)
                                         setTimeout(() => {
                                             actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
@@ -206,13 +206,13 @@ export default function () {
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
                 await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+                    setFormVisible(false)
                     currentForm.current = {}
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
                     }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                 })
-                return true
             }}
         />
     </>
