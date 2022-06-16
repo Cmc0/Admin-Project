@@ -135,7 +135,6 @@ export default function () {
                 span: 12
             }}
             modalProps={{
-                keyboard: false,
                 maskClosable: false,
                 forceRender: true, // 不加 useForm会报警告
             }}
