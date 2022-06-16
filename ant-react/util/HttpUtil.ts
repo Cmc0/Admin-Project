@@ -147,11 +147,13 @@ $http.myProTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: A
     return new Promise((resolve, reject) => {
         handleData(data)
         return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T[]>>, D>(url, data, config).then(({data}) => {
+            console.log(111)
             resolve({
                 success: true,
                 data: data.data
             })
         }).catch(err => {
+            console.log(222)
             reject(err)
         })
     })

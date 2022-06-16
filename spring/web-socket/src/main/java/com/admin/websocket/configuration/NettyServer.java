@@ -54,7 +54,7 @@ public class NettyServer implements CommandLineRunner {
 
         ipAndPort = BaseConfiguration.adminProperties.getWebSocketAddress() + ":" + port;
 
-        webSocketRegCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE + ":" + ipAndPort + ":";
+        webSocketRegCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE + ipAndPort + ":";
 
         webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 
