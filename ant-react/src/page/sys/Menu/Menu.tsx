@@ -168,8 +168,8 @@ export default function () {
                                     return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
+                                        currentForm.current = {}
                                         setTimeout(() => {
-                                            currentForm.current = {}
                                             actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })

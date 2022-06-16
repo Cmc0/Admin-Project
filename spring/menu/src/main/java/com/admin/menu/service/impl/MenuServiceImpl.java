@@ -126,9 +126,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
         baseMenuDO.setRedirect(MyEntityUtil.getNotNullStr(dto.getRedirect()));
         baseMenuDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
         baseMenuDO.setFirstFlag(dto.isFirstFlag());
-        if (dto.getId() == null) {
-            baseMenuDO.setAuthFlag(dto.isAuthFlag()); // 当新增时，才允许设置 authFlag的值
-        }
+        baseMenuDO.setAuthFlag(dto.isAuthFlag()); // 当新增时，才允许设置 authFlag的值
         if (dto.isAuthFlag()) {
             baseMenuDO.setAuths(dto.getAuths()); // 只有权限菜单，才可以设置 auths
             baseMenuDO.setShowFlag(false);
