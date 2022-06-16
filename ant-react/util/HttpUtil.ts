@@ -60,9 +60,8 @@ $http.interceptors.response.use(
                 if (!hiddenErrorMsg) {
                     ToastError(res.msg, 5)
                 }
-                // 这里会 触发 catch，意思是：只要 code 不等于 200 或者 res.success === false，都不会走 then，而去走 catch
-                return Promise.reject(new Error(res.msg || 'Error'))
             }
+            return Promise.reject(new Error(res.msg || 'Error')) // 这里会 触发 catch
         } else {
             return response
         }
@@ -147,13 +146,11 @@ $http.myProTreePost = <T, D extends MyPageDTO>(url: string, data?: D, config?: A
     return new Promise((resolve, reject) => {
         handleData(data)
         return $http.post<ApiResultVO, AxiosResponse<ApiResultVO<T[]>>, D>(url, data, config).then(({data}) => {
-            console.log(111)
             resolve({
                 success: true,
                 data: data.data
             })
         }).catch(err => {
-            console.log(222)
             reject(err)
         })
     })
