@@ -40,7 +40,7 @@ export default function () {
 
     const actionRef = useRef<ActionType>(null)
 
-    const currentForm = useRef<MenuInsertOrUpdateDTO | null>({})
+    const currentForm = useRef<MenuInsertOrUpdateDTO>({})
 
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
@@ -159,37 +159,37 @@ export default function () {
                         >
                             重置
                         </Button>,
-                        currentForm.current?.id ? <Button
+                        currentForm.current.id ? <Button
                             key="extra-del"
                             type="primary"
                             danger
                             onClick={() => {
                                 execConfirm(async () => {
-                                    return menuDeleteByIdSet({idSet: [currentForm.current!.id!]}).then(res => {
+                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
                                             actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
-                                }, undefined, `确定删除【${currentForm.current!.name}】吗？`)
+                                }, undefined, `确定删除【${currentForm.current.name}】吗？`)
                             }}>
                             删除
                         </Button> : null
                     ]
                 },
             }}
-            params={currentForm.current!}
+            params={currentForm.current}
             request={async () => {
 
                 useForm.resetFields()
 
-                if (currentForm.current!.id) {
-                    await menuInfoById({id: currentForm.current!.id}).then(res => {
+                if (currentForm.current.id) {
+                    await menuInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res
                     })
                 }
-                useForm.setFieldsValue(currentForm.current!) // 组件会深度克隆 currentForm.current
+                useForm.setFieldsValue(currentForm.current) // 组件会深度克隆 currentForm.current
 
                 return InitForm
             }}
