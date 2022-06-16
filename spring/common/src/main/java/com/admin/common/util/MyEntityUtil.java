@@ -2,6 +2,7 @@ package com.admin.common.util;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.admin.common.model.entity.BaseEntityFour;
 import com.admin.common.model.vo.ApiResultVO;
 
 import java.math.BigDecimal;
@@ -19,8 +20,17 @@ public class MyEntityUtil {
     /**
      * 获取不为 null对象的 ParentId字符串
      */
-    public static Long getNullParentId(Long aLong) {
+    public static Long getNotNullParentId(Long aLong) {
         return aLong == null ? 0L : aLong;
+    }
+
+    /**
+     * 如果 parentId为 0，则设置为 null
+     */
+    public static void handleParentId(BaseEntityFour<?> baseEntityFour) {
+        if (baseEntityFour.getParentId() == 0L) {
+            baseEntityFour.setParentId(null);
+        }
     }
 
     /**

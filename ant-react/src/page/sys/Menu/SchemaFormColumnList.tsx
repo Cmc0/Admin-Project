@@ -39,12 +39,6 @@ const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<Menu
                 treeNodeFilterProp: 'title',
                 options: newTreeList
             },
-            convertValue: (value, field) => {
-                if (value === 0) {
-                    return {field: ''}
-                }
-                return {field: value}
-            }
         },
         {
             title: '菜单名', dataIndex: 'name', formItemProps: {
