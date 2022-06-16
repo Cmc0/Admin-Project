@@ -15,7 +15,6 @@ import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
-import CommonConstant from "@/model/constant/CommonConstant";
 
 
 export default function () {
@@ -37,8 +36,6 @@ export default function () {
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
     const [useForm] = Form.useForm<MenuInsertOrUpdateDTO>();
-
-    const id = useRef<number>(CommonConstant["-1"]);
 
     const actionRef = useRef<ActionType>(null)
 
@@ -64,7 +61,7 @@ export default function () {
             }}
             revalidateOnFocus={false}
             rowSelection={{}}
-            columns={TableColumnList(id, setFormVisible, actionRef)}
+            columns={TableColumnList(currentForm, setFormVisible, actionRef)}
             options={{
                 fullScreen: true,
             }}
@@ -104,7 +101,7 @@ export default function () {
                     </Dropdown>,
                 actions: [
                     <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
-                        id.current = CommonConstant["-1"]
+                        currentForm.current.id = undefined
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -161,7 +158,8 @@ export default function () {
                         >
                             重置
                         </Button>,
-                        id.current !== CommonConstant["-1"] ? <Button
+                        currentForm.current.id ? <Button
+                            key="extra-del"
                             type="primary"
                             danger
                             onClick={() => {
@@ -178,18 +176,20 @@ export default function () {
                     ]
                 },
             }}
-            params={{id: id.current}}
+            params={{id: currentForm.current.id}}
             request={async (params) => {
 
                 useForm.resetFields()
-                currentForm.current = {}
 
-                if (params.id !== CommonConstant["-1"]) {
+                if (currentForm.current.id) {
                     await menuInfoById({id: params.id}).then(res => {
                         currentForm.current = res
                         useForm.setFieldsValue(res) // 组件会深度克隆 res
                     })
+                } else {
+                    currentForm.current = {}
                 }
+
                 return InitForm
             }}
             visible={formVisible}
@@ -200,7 +200,7 @@ export default function () {
                     setTimeout(() => {
                         ToastSuccess(res.msg)
                         actionRef.current?.reload()
-                        id.current = CommonConstant["-1"]
+                        currentForm.current = {}
                     })
                 })
                 return true

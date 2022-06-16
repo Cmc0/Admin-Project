@@ -6,11 +6,11 @@ import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {menuDeleteByIdSet} from "@/api/MenuController";
+import {menuDeleteByIdSet, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {InDev} from "../../../../util/CommonUtil";
 
-const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -73,7 +73,7 @@ const TableColumnList = (id: React.MutableRefObject<number>, setFormVisible: Rea
         valueType: 'option',
         render: (dom, entity) => [
             <a key="1" onClick={() => {
-                id.current = entity.id!
+                currentForm.current.id = entity.id!
                 setFormVisible(true)
             }}>编辑</a>,
             <a key="2" onClick={() => {
