@@ -39,7 +39,7 @@ export default function () {
 
     const actionRef = useRef<ActionType>(null)
 
-    const currentForm = useRef<MenuInsertOrUpdateDTO>({})
+    const currentForm = useRef<MenuInsertOrUpdateDTO | null>(null)
 
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
@@ -101,7 +101,7 @@ export default function () {
                     </Dropdown>,
                 actions: [
                     <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
-                        currentForm.current.id = undefined
+                        currentForm.current!.id = undefined
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -158,36 +158,36 @@ export default function () {
                         >
                             重置
                         </Button>,
-                        currentForm.current.id ? <Button
+                        currentForm.current?.id ? <Button
                             key="extra-del"
                             type="primary"
                             danger
                             onClick={() => {
                                 execConfirm(() => {
-                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                    return menuDeleteByIdSet({idSet: [currentForm.current?.id!]}).then(res => {
                                         ToastSuccess(res.msg)
                                         setFormVisible(false)
                                         actionRef.current?.reload()
                                     })
-                                }, undefined, `确定删除【${currentForm.current.name}】吗？`)
+                                }, undefined, `确定删除【${currentForm.current?.name}】吗？`)
                             }}>
                             删除
                         </Button> : null
                     ]
                 },
             }}
-            params={{id: currentForm.current.id, parentId: currentForm.current.parentId}}
+            params={{id: currentForm.current?.id, parentId: currentForm.current?.parentId}}
             request={async () => {
 
                 useForm.resetFields()
 
-                if (currentForm.current.id) {
+                if (currentForm.current?.id) {
                     await menuInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res
                         useForm.setFieldsValue(res) // 组件会深度克隆 res
                     })
                 } else {
-                    if (currentForm.current.parentId) {
+                    if (currentForm.current?.parentId) {
                         currentForm.current = {parentId: currentForm.current.parentId}
                         useForm.setFieldsValue(currentForm.current)
                     } else {

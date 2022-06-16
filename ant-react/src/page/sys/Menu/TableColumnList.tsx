@@ -9,7 +9,7 @@ import React from "react";
 import {menuDeleteByIdSet, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
-const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -72,7 +72,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
         valueType: 'option',
         render: (dom, entity) => [
             <a key="1" onClick={() => {
-                currentForm.current.id = entity.id!
+                currentForm.current!.id = entity.id!
                 setFormVisible(true)
             }}>编辑</a>,
             <a key="2" onClick={() => {
@@ -90,8 +90,8 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 ]}
                 onSelect={(key) => {
                     if (key === 'addChildren') {
-                        currentForm.current.id = undefined
-                        currentForm.current.parentId = entity.id!
+                        currentForm.current!.id = undefined
+                        currentForm.current!.parentId = entity.id!
                         setFormVisible(true)
                     }
                 }}
