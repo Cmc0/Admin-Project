@@ -172,8 +172,9 @@ export default function () {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
-                                            currentForm.current = {}
-                                            actionRef.current?.reload()
+                                            actionRef.current?.reload().then(() => {
+                                                currentForm.current = {}
+                                            })
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
                                 }, undefined, `确定删除【${currentForm.current!.name}】吗？`)
