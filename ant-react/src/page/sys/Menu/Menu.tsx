@@ -136,7 +136,7 @@ export default function () {
             modalProps={{
                 keyboard: false,
                 maskClosable: false,
-                // forceRender: true,
+                forceRender: true, // 不加 useForm会报警告
             }}
             form={useForm}
             autoFocusFirstInput={false}
@@ -164,17 +164,14 @@ export default function () {
                             type="primary"
                             danger
                             onClick={() => {
-                                execConfirm(() => {
-                                    return new Promise((resolve) => {
-                                        menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
-                                            currentForm.current = {}
-                                            ToastSuccess(res.msg)
-                                            setFormVisible(false)
-                                            resolve()
-                                            setTimeout(() => {
-                                                actionRef.current?.reload()
-                                            }, 800)
-                                        })
+                                execConfirm(async () => {
+                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                        currentForm.current = {}
+                                        ToastSuccess(res.msg)
+                                        setFormVisible(false)
+                                        setTimeout(() => {
+                                            actionRef.current?.reload()
+                                        }, 500) // 要等 modal关闭动画完成
                                     })
                                 }, undefined, `确定删除【${currentForm.current.name}】吗？`)
                             }}>
@@ -207,17 +204,15 @@ export default function () {
             visible={formVisible}
             onVisibleChange={setFormVisible}
             columns={SchemaFormColumnList(treeList, useForm)}
-            onFinish={(form) => {
-                return new Promise<boolean>((resolve) => {
-                    menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
-                        currentForm.current = {}
-                        ToastSuccess(res.msg)
-                        resolve(true)
-                        setTimeout(() => {
-                            actionRef.current?.reload()
-                        }, 800)
-                    })
+            onFinish={async (form) => {
+                await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+                    currentForm.current = {}
+                    ToastSuccess(res.msg)
+                    setTimeout(() => {
+                        actionRef.current?.reload()
+                    }, 500) // 要等 modal关闭动画完成
                 })
+                return true
             }}
         />
     </>
