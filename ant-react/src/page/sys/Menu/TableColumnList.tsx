@@ -74,6 +74,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
         valueType: 'option',
         render: (dom, entity) => [
             <a key="1" onClick={() => {
+                currentForm.current = {}
                 currentForm.current = {id: entity.id}
                 setFormVisible(true)
             }}>编辑</a>,
