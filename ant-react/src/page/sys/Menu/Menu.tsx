@@ -113,6 +113,7 @@ export default function () {
                             return menuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
                                 ToastSuccess(res.msg)
                                 actionRef.current?.reload()
+                                onCleanSelected()
                             })
                         }, undefined, `确定删除选中的【${selectedRowKeys.length}】项吗？`)
                     }}>批量删除</a>
@@ -164,12 +165,15 @@ export default function () {
                             danger
                             onClick={() => {
                                 execConfirm(() => {
-                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
-                                        setTimeout(() => {
-                                            ToastSuccess(res.msg)
+                                    return new Promise((resolve) => {
+                                        menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(async res => {
                                             currentForm.current = {}
-                                            setFormVisible(false)
-                                            actionRef.current?.reload()
+                                            await actionRef.current?.reload()
+                                            setTimeout(() => {
+                                                ToastSuccess(res.msg)
+                                                setFormVisible(false)
+                                                resolve()
+                                            }, 600)
                                         })
                                     })
                                 }, undefined, `确定删除【${currentForm.current.name}】吗？`)
@@ -203,15 +207,17 @@ export default function () {
             visible={formVisible}
             onVisibleChange={setFormVisible}
             columns={SchemaFormColumnList(treeList, useForm)}
-            onFinish={async (form) => {
-                await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
-                    setTimeout(() => {
-                        ToastSuccess(res.msg)
-                        actionRef.current?.reload()
+            onFinish={(form) => {
+                return new Promise<boolean>((resolve) => {
+                    menuInsertOrUpdate({...currentForm.current, ...form}).then(async res => {
                         currentForm.current = {}
+                        await actionRef.current?.reload()
+                        setTimeout(() => {
+                            ToastSuccess(res.msg)
+                            resolve(true)
+                        }, 600)
                     })
                 })
-                return true
             }}
         />
     </>
