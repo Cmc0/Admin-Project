@@ -1,6 +1,6 @@
 package com.admin.menu.model.dto;
 
-import com.admin.common.model.dto.MyId;
+import com.admin.common.model.dto.BaseInsertOrUpdateDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuInsertOrUpdateDTO extends MyId {
+public class MenuInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
 
     @NotBlank
     @ApiModelProperty(value = "菜单名")

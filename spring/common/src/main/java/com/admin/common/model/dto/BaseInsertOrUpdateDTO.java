@@ -10,7 +10,7 @@ import javax.validation.constraints.Min;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MyId {
+public class BaseInsertOrUpdateDTO {
 
     @Min(1)
     @ApiModelProperty(value = "主键id")

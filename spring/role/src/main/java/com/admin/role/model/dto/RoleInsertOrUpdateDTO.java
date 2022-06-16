@@ -1,6 +1,6 @@
 package com.admin.role.model.dto;
 
-import com.admin.common.model.dto.MyId;
+import com.admin.common.model.dto.BaseInsertOrUpdateDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class RoleInsertOrUpdateDTO extends MyId {
+public class RoleInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
 
     @NotBlank
     @ApiModelProperty(value = "角色名，不能重复")
