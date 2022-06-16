@@ -11,7 +11,7 @@ import {
 } from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useRef, useState} from "react";
-import {GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
+import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
@@ -102,10 +102,8 @@ export default function () {
                     </Dropdown>,
                 actions: [
                     <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
-                        if (!currentForm.current) {
-                            currentForm.current = {}
-                        }
-                        currentForm.current.id = undefined
+                        currentForm.current = {}
+                        CalcOrderNo(currentForm.current, {children: treeList});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -184,7 +182,11 @@ export default function () {
                     ]
                 },
             }}
-            params={{id: currentForm.current?.id, parentId: currentForm.current?.parentId}}
+            params={{
+                id: currentForm.current?.id,
+                parentId: currentForm.current?.parentId,
+                orderNO: currentForm.current?.orderNo
+            }}
             request={async () => {
 
                 useForm.resetFields()
@@ -192,16 +194,9 @@ export default function () {
                 if (currentForm.current!.id) {
                     await menuInfoById({id: currentForm.current!.id}).then(res => {
                         currentForm.current = res
-                        useForm.setFieldsValue(currentForm.current) // 组件会深度克隆 currentForm.current
                     })
-                } else {
-                    if (currentForm.current!.parentId) {
-                        currentForm.current = {parentId: currentForm.current!.parentId}
-                        useForm.setFieldsValue(currentForm.current)
-                    } else {
-                        currentForm.current = {}
-                    }
                 }
+                useForm.setFieldsValue(currentForm.current!) // 组件会深度克隆 currentForm.current
 
                 return InitForm
             }}
@@ -214,7 +209,7 @@ export default function () {
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
-                    }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+                    }, CommonConstant.MODAL_ANIM_TIME - 100) // 要等 modal关闭动画完成
                 })
             }}
         />

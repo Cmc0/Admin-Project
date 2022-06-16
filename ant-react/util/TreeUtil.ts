@@ -98,3 +98,55 @@ export function ListToTree<T extends IListToTree>(
 
     return resList
 }
+
+interface ICalcOrderNoForm {
+    orderNo?: number
+}
+
+interface ICalcOrderNoRecord {
+    children?: ICalcOrderNoForm[]
+}
+
+export const defaultOrderNo = 10000 // 默认 orderNo为 10000
+
+// 计算 orderNo
+export function CalcOrderNo<T extends ICalcOrderNoForm, D extends ICalcOrderNoRecord>(
+    form: T,
+    record: D,
+    calcFun?: ({
+                   item,
+                   form,
+                   record,
+               }:
+                   {
+                       item: ICalcOrderNoForm
+                       form: T
+                       record: D
+                   }) => void
+) {
+    if (record.children && record.children.length) {
+        let orderNo = Number(record.children[0].orderNo) - 10 // 默认为第一个子节点元素减去 10
+        form.orderNo = orderNo < 0 ? 0 : orderNo
+
+        // 如果存在子节点，那么取最小的 orderNo - 10，如果 减完之后小于零，则为 0
+        record.children.forEach((item) => {
+            if (calcFun) {
+                calcFun({item, form, record}) // 计算其他属性
+            }
+            // orderNo <= 0 的不进行计算
+            if (
+                item.orderNo &&
+                form.orderNo &&
+                item.orderNo > 0 &&
+                item.orderNo <= form.orderNo
+            ) {
+                orderNo = item.orderNo - 10
+                form.orderNo = orderNo < 0 ? 0 : orderNo
+            }
+        })
+    } else {
+        if (form.orderNo === undefined || form.orderNo === null) {
+            form.orderNo = defaultOrderNo
+        }
+    }
+}

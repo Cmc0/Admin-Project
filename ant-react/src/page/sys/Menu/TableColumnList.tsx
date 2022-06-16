@@ -8,6 +8,7 @@ import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {menuDeleteByIdSet, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import {InDev} from "../../../../util/CommonUtil";
 
 const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
@@ -72,7 +73,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
         valueType: 'option',
         render: (dom, entity) => [
             <a key="1" onClick={() => {
-                currentForm.current!.id = entity.id
+                currentForm.current = {id: entity.id}
                 setFormVisible(true)
             }}>编辑</a>,
             <a className={"red3"} key="2" onClick={() => {
@@ -87,12 +88,14 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 key="actionGroup"
                 menus={[
                     {key: 'addChildren', name: '添加下级'},
+                    {key: 'quicklyAddAuth', name: '快速添加权限'},
                 ]}
                 onSelect={(key) => {
                     if (key === 'addChildren') {
-                        currentForm.current!.id = undefined
-                        currentForm.current!.parentId = entity.id
+                        currentForm.current = {parentId: entity.id}
                         setFormVisible(true)
+                    } else if (key === 'quicklyAddAuth') {
+                        InDev()
                     }
                 }}
             />,
