@@ -40,7 +40,7 @@ export default function () {
 
     const actionRef = useRef<ActionType>(null)
 
-    const currentForm = useRef<MenuInsertOrUpdateDTO>({})
+    const currentForm = useRef<MenuInsertOrUpdateDTO | null>({})
 
     return <>
         <ProTable<BaseMenuDO, MenuPageDTO>
@@ -102,6 +102,9 @@ export default function () {
                     </Dropdown>,
                 actions: [
                     <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
+                        if (!currentForm.current) {
+                            currentForm.current = {}
+                        }
                         currentForm.current.id = undefined
                         setFormVisible(true)
                     }}>新建</Button>
@@ -159,40 +162,40 @@ export default function () {
                         >
                             重置
                         </Button>,
-                        currentForm.current.id ? <Button
+                        currentForm.current?.id ? <Button
                             key="extra-del"
                             type="primary"
                             danger
                             onClick={() => {
                                 execConfirm(async () => {
-                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                    return menuDeleteByIdSet({idSet: [currentForm.current!.id!]}).then(res => {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
-                                        currentForm.current = {}
                                         setTimeout(() => {
+                                            currentForm.current = {}
                                             actionRef.current?.reload()
                                         }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                     })
-                                }, undefined, `确定删除【${currentForm.current.name}】吗？`)
+                                }, undefined, `确定删除【${currentForm.current!.name}】吗？`)
                             }}>
                             删除
                         </Button> : null
                     ]
                 },
             }}
-            params={{id: currentForm.current.id, parentId: currentForm.current.parentId}}
+            params={{id: currentForm.current!.id, parentId: currentForm.current!.parentId}}
             request={async () => {
 
                 useForm.resetFields()
 
-                if (currentForm.current.id) {
-                    await menuInfoById({id: currentForm.current.id}).then(res => {
+                if (currentForm.current!.id) {
+                    await menuInfoById({id: currentForm.current!.id}).then(res => {
                         currentForm.current = res
-                        useForm.setFieldsValue(res) // 组件会深度克隆 res
+                        useForm.setFieldsValue(currentForm.current) // 组件会深度克隆 currentForm.current
                     })
                 } else {
-                    if (currentForm.current.parentId) {
-                        currentForm.current = {parentId: currentForm.current.parentId}
+                    if (currentForm.current!.parentId) {
+                        currentForm.current = {parentId: currentForm.current!.parentId}
                         useForm.setFieldsValue(currentForm.current)
                     } else {
                         currentForm.current = {}
