@@ -9,6 +9,7 @@ import React from "react";
 import {menuDeleteByIdSet, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {InDev} from "../../../../util/CommonUtil";
+import {CalcOrderNo} from "../../../../util/TreeUtil";
 
 const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
@@ -93,6 +94,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 onSelect={(key) => {
                     if (key === 'addChildren') {
                         currentForm.current = {parentId: entity.id}
+                        CalcOrderNo(currentForm.current, entity)
                         setFormVisible(true)
                     } else if (key === 'quicklyAddAuth') {
                         InDev()
