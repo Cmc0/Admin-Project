@@ -7,6 +7,7 @@ import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.mapper.SyncEntityFromDbMapper;
+import com.admin.common.model.enums.ColumnTypeRefEnum;
 import com.admin.common.model.vo.SyncEntityFromDbVO;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -61,6 +62,8 @@ public class SyncEntityFromDb {
 
         String apiModelPropertyTemp = "@ApiModelProperty(value = \"{}\")";
 
+        String fieldTypeTemp = "private {} {};";
+
         File userDirFile = FileUtil.file(userDir);
 
         File[] fileArr = userDirFile.listFiles(File::isDirectory);
@@ -114,6 +117,15 @@ public class SyncEntityFromDb {
                 if (!apiModelPropertyValue.equals(syncEntityFromDbVO.getColumnComment())) {
                     String oldVal = StrUtil.format(apiModelPropertyTemp, apiModelPropertyValue);
                     String newVal = StrUtil.format(apiModelPropertyTemp, syncEntityFromDbVO.getColumnComment());
+                    updateMap.put(oldVal, newVal);
+                }
+                ColumnTypeRefEnum columnTypeRefEnum = ColumnTypeRefEnum.getByColumnType(syncEntityFromDbVO);
+                if (columnTypeRefEnum == null) {
+                    continue;
+                }
+                if (!columnTypeRefEnum.getJavaType().equals(subItem.getType().getSimpleName())) {
+                    String oldVal = StrUtil.format(fieldTypeTemp, subItem.getType().getSimpleName(), subItem.getName());
+                    String newVal = StrUtil.format(fieldTypeTemp, columnTypeRefEnum.getJavaType(), subItem.getName());
                     updateMap.put(oldVal, newVal);
                 }
             }
