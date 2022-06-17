@@ -6,9 +6,9 @@ import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {menuDeleteByIdSet, MenuInsertOrUpdateDTO} from "@/api/MenuController";
+import {menuDeleteByIdSet, menuInsertOrUpdate, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
-import {CalcOrderNo} from "../../../../util/TreeUtil";
+import {CalcOrderNo, defaultOrderNo} from "../../../../util/TreeUtil";
 
 const QuicklyAddAuth = "快速添加权限"
 
@@ -101,11 +101,44 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                     key: '2',
                     label:
                         <ModalForm<MenuInsertOrUpdateDTO>
+                            modalProps={{
+                                maskClosable: false,
+                            }}
                             title={QuicklyAddAuth}
                             trigger={<a>{QuicklyAddAuth}</a>}
-                            onFinish={async (form) => console.log(form)}
+                            onFinish={async (form) => {
+                                const formTemp = {parentId: entity.id, authFlag: true, enableFlag: true}
+                                menuInsertOrUpdate({
+                                    ...formTemp,
+                                    name: '新增修改',
+                                    auths: form.auths + ":insertOrUpdate",
+                                    orderNo: defaultOrderNo
+                                })
+                                menuInsertOrUpdate({
+                                    ...formTemp,
+                                    name: '列表查询',
+                                    auths: form.auths + ":page",
+                                    orderNo: defaultOrderNo - 10
+                                })
+                                menuInsertOrUpdate({
+                                    ...formTemp,
+                                    name: '删除',
+                                    auths: form.auths + ":deleteByIdSet",
+                                    orderNo: defaultOrderNo - 20
+                                })
+                                await menuInsertOrUpdate({
+                                    ...formTemp,
+                                    name: '查看详情',
+                                    auths: form.auths + ":infoById",
+                                    orderNo: defaultOrderNo - 30
+                                }).then(res => {
+                                    ToastSuccess(res.msg)
+                                    actionRef.current?.reload()
+                                })
+                                return true
+                            }}
                         >
-                            <ProFormText name={"name"} label={"权限前缀"} rules={[{required: true}]}/>
+                            <ProFormText name={"auths"} label={"权限前缀"} rules={[{required: true}]}/>
                         </ModalForm>,
                 },
             ]}>
