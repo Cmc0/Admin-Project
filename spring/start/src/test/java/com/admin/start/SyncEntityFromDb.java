@@ -142,6 +142,12 @@ public class SyncEntityFromDb {
 
             String fileStr = FileUtil.readUtf8String(file);
 
+            delSet.forEach(it -> StrUtil.replace(fileStr, it, ""));
+
+            updateMap.forEach((key, value) -> StrUtil.replace(fileStr, key, value));
+
+            FileUtil.writeUtf8String(fileStr, file);
+
         }
 
     }
