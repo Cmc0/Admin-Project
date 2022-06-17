@@ -2,6 +2,7 @@ package com.admin.start;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,13 +29,13 @@ class StartApplicationTests {
 
     public static void main(String[] args) {
 
-        String userDir = System.getProperty("user.dir");
-
         String slash = "/";
 
         String java = ".java";
 
         String basePath = "/src/main/java/";
+
+        String userDir = System.getProperty("user.dir");
 
         File userDirFile = FileUtil.file(userDir);
 
@@ -45,6 +46,8 @@ class StartApplicationTests {
         Map<String, String> map = fileList.stream().collect(Collectors
             .toMap(it -> slash + StrUtil.toCamelCase(it.getName(), '-').toLowerCase() + slash, File::getName));
 
+        StrBuilder strBuilder = StrBuilder.create();
+
         Set<Class<?>> classSet = ClassUtil.scanPackageByAnnotation("com.admin", TableName.class);
 
         for (Class<?> item : classSet) {
@@ -52,16 +55,19 @@ class StartApplicationTests {
             String replace = basePath + StrUtil.replace(item.getName(), ".", slash);
 
             AtomicReference<String> name = new AtomicReference<>();
-            map.entrySet().stream().filter(it -> replace.contains(it.getKey())).findFirst().ifPresent(it -> {
-                name.set(it.getValue());
-            });
+            map.entrySet().stream().filter(it -> replace.contains(it.getKey())).findFirst()
+                .ifPresent(it -> name.set(it.getValue()));
 
-            String fullPath = userDir + slash + name.get() + replace + java;
+            if (name.get() == null) {
+                return;
+            }
 
-            System.out.println(fullPath);
+            String fullPath = strBuilder.append(userDir).append(slash).append(name.get()).append(replace).append(java)
+                .toStringAndReset();
 
             File file = FileUtil.file(fullPath);
 
+            System.out.println(file.getPath());
             System.out.println(FileUtil.exist(file));
 
             System.out.println("================================");
