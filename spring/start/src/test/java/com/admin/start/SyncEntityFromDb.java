@@ -57,7 +57,7 @@ public class SyncEntityFromDb {
 
         String basePath = "/src/main/java/";
 
-        String userDir = System.getProperty("user.dir");
+        String userDir = StrUtil.subBefore(System.getProperty("user.dir"), "\\", true);
 
         String apiModelPropertyTemp = "@ApiModelProperty(value = \"{}\")";
 
@@ -118,6 +118,10 @@ public class SyncEntityFromDb {
                 }
             }
 
+            if (delSet.size() == 0 && updateMap.size() == 0) {
+                continue;
+            }
+
             String replace = StrUtil.replace(item.getName(), ".", slash);
 
             AtomicReference<String> name = new AtomicReference<>();
@@ -140,15 +144,17 @@ public class SyncEntityFromDb {
                 continue;
             }
 
-            String fileStr = FileUtil.readUtf8String(file);
+            AtomicReference<String> fileStr = new AtomicReference<>(FileUtil.readUtf8String(file));
 
-            delSet.forEach(it -> StrUtil.replace(fileStr, it, ""));
+            delSet.forEach(it -> fileStr.set(StrUtil.replace(fileStr.get(), it, "")));
 
-            updateMap.forEach((key, value) -> StrUtil.replace(fileStr, key, value));
+            updateMap.forEach((key, value) -> fileStr.set(StrUtil.replace(fileStr.get(), key, value)));
 
-            FileUtil.writeUtf8String(fileStr, file);
+            FileUtil.writeUtf8String(fileStr.get(), file);
 
         }
+
+        System.out.println("同步完成");
 
     }
 
