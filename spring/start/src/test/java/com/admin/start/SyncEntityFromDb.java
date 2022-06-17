@@ -119,6 +119,9 @@ public class SyncEntityFromDb {
                     String newVal = StrUtil.format(apiModelPropertyTemp, syncEntityFromDbVO.getColumnComment());
                     updateMap.put(oldVal, newVal);
                 }
+                if (ColumnTypeRefEnum.getByJavaType(subItem.getType().getSimpleName()) == null) {
+                    continue;
+                }
                 ColumnTypeRefEnum columnTypeRefEnum = ColumnTypeRefEnum.getByColumnType(syncEntityFromDbVO);
                 if (columnTypeRefEnum == null) {
                     continue;
