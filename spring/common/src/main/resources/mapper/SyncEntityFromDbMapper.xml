@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.admin.common.mapper.SyncEntityFromDbMapper">
+
+    <!-- 获取：所有字段信息 -->
+    <select id="getAllColumnList" resultType="com.admin.common.model.vo.SyncEntityFromDbVO">
+        SELECT a.TABLE_NAME     AS tableName,
+               b.TABLE_COMMENT  AS tableComment,
+               a.COLUMN_NAME    AS columnName,
+               a.COLUMN_TYPE    AS columnType,
+               a.COLUMN_COMMENT AS columnComment
+        FROM information_schema.`COLUMNS` a
+                 LEFT JOIN (
+            SELECT a.TABLE_NAME,
+                   a.TABLE_COMMENT
+            FROM information_schema.TABLES a
+            WHERE a.TABLE_SCHEMA = (
+                SELECT DATABASE
+                           ())) b ON b.table_name = a.table_name
+        WHERE a.TABLE_SCHEMA = (
+            SELECT DATABASE
+                       ())
+    </select>
+
+</mapper>
