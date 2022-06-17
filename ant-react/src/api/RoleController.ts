@@ -22,6 +22,7 @@ export interface RolePageVO {
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     userIdSet?: number[] // 用户 idSet
+    version?: number // 乐观锁
 }
 
 // 角色-管理 通过主键id，查看详情
@@ -66,6 +67,7 @@ export interface BaseRoleDO {
     remark?: string // 描述/备注
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
+    version?: number // 乐观锁
 }
 
 // 角色-管理 分页排序查询

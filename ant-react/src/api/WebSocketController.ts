@@ -39,7 +39,7 @@ export interface WebSocketPageDTO extends MyPageDTO {
 
 export interface WebSocketPageVO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
-    category?: string // 类别
+    category?: string // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
@@ -47,16 +47,17 @@ export interface WebSocketPageVO {
     id?: number // 主键id
     ip?: string // ip
     jwtHash?: string // jwtHash，用于匹配 redis中存储的 jwtHash
-    mobileFlag?: boolean // 是否是移动端网页，true：是 false 否
+    mobileFlag?: boolean // 是否是移动端网页，true 是 false 否
     os?: string // 操作系统
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     remark?: string // 描述/备注
-    server?: string // 本次 Websocket连接的服务器的 ip:port
-    type?: string // 在线状态
+    server?: string // 本次 WebSocket 连接的服务器的 ip:port
+    type?: string // 状态：1 在线 2 隐身
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     userId?: number // 用户id
     userName?: string // 用户名
+    version?: number // 乐观锁
 }
 
 // webSocket 分页排序查询
