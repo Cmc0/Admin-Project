@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class StartApplicationTests {
         List<File> fileList = CollUtil.newArrayList(fileArr);
 
         Map<String, String> map = fileList.stream().collect(Collectors
-            .toMap(it -> slash + StrUtil.toCamelCase(it.getName(), '-').toLowerCase() + slash, File::getName));
+            .toMap(it -> slash + StrUtil.replace(it.getName(), "-", "").toLowerCase() + slash, File::getName));
 
         StrBuilder strBuilder = StrBuilder.create();
 
@@ -68,7 +69,23 @@ class StartApplicationTests {
             File file = FileUtil.file(fullPath);
 
             System.out.println(file.getPath());
-            System.out.println(FileUtil.exist(file));
+            if (!FileUtil.exist(file)) {
+                System.out.println("文件不存在");
+                continue;
+            }
+
+            String fileStr = FileUtil.readUtf8String(file);
+
+            ReUtil.findAllGroup1("", fileStr);
+
+            //            for (String subItem : lineList) {
+            //
+            //                String group1 = ReUtil.getGroup1("    private .* (.*);", subItem);
+            //                if (StrUtil.isBlank(group1)) {
+            //                    continue;
+            //                }
+            //                System.out.println(group1);
+            //            }
 
             System.out.println("================================");
 
