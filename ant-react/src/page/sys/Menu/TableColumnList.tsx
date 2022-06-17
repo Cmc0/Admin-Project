@@ -1,7 +1,7 @@
-import {ActionType, ProColumns, TableDropdown} from "@ant-design/pro-components";
+import {ActionType, ProColumns} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {Space} from "antd";
-import {HomeFilled} from "@ant-design/icons/lib";
+import {Dropdown, Menu, Space} from "antd";
+import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
@@ -69,7 +69,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
     },
     {
         title: '操作',
-        width: 160,
+        width: 180,
         dataIndex: 'option',
         valueType: 'option',
         render: (dom, entity) => [
@@ -85,22 +85,31 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                     })
                 }, undefined, `确定删除【${entity.name}】吗？`)
             }}>删除</a>,
-            <TableDropdown
-                key="actionGroup"
-                menus={[
-                    {key: 'addChildren', name: '添加下级'},
-                    {key: 'quicklyAddAuth', name: '快速添加权限'},
-                ]}
-                onSelect={(key) => {
-                    if (key === 'addChildren') {
+            <Dropdown overlay={<Menu items={[
+                {
+                    key: '1',
+                    label: <a onClick={() => {
                         currentForm.current = {parentId: entity.id}
                         CalcOrderNo(currentForm.current, entity)
                         setFormVisible(true)
-                    } else if (key === 'quicklyAddAuth') {
-                        InDev()
-                    }
-                }}
-            />,
+                    }}>
+                        添加下级
+                    </a>,
+                },
+                {
+                    key: '2',
+                    label: <a
+                        onClick={() => {
+                            InDev()
+                        }}
+                    >
+                        快速添加权限
+                    </a>,
+                },
+            ]}>
+            </Menu>}>
+                <a><EllipsisOutlined/></a>
+            </Dropdown>,
         ],
     },
 ];
