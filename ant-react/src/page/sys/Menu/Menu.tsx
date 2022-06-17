@@ -2,6 +2,7 @@ import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {
+    menuAddOrderNo,
     menuDeleteByIdSet,
     menuInfoById,
     menuInsertOrUpdate,
@@ -17,6 +18,7 @@ import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnLi
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 
+const AddOrderNo = "累加排序号"
 
 export default function () {
 
@@ -110,6 +112,46 @@ export default function () {
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                 <Space size={16}>
+                    <a onClick={() => {
+                    }}>累加排序号</a>
+                    <BetaSchemaForm<MenuInsertOrUpdateDTO>
+                        layoutType={"ModalForm"}
+                        modalProps={{
+                            maskClosable: false
+                        }}
+                        isKeyPressSubmit
+                        width={450}
+                        title={AddOrderNo}
+                        trigger={<a>{AddOrderNo}</a>}
+                        onFinish={async (form) => {
+                            await menuAddOrderNo({
+                                idSet: selectedRowKeys,
+                                number: form.orderNo!
+                            }).then(res => {
+                                ToastSuccess(res.msg)
+                                setTimeout(() => {
+                                    actionRef.current?.reload()
+                                }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+                            })
+                            return true
+                        }}
+                        columns={
+                            [
+                                {
+                                    dataIndex: "orderNo", title: '排序号', formItemProps: {
+                                        rules: [
+                                            {
+                                                required: true,
+                                            },
+                                        ],
+                                    },
+                                    valueType: 'digit',
+                                    fieldProps: {className: 'w100', min: Number.MIN_SAFE_INTEGER}
+                                }
+                            ]
+                        }
+                    >
+                    </BetaSchemaForm>
                     <a onClick={() => {
                         execConfirm(() => {
                             return menuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
