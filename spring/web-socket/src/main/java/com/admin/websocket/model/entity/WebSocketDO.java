@@ -36,16 +36,16 @@ public class WebSocketDO extends BaseEntityThree {
     @ApiModelProperty(value = "操作系统")
     private String os;
 
-    @ApiModelProperty(value = "是否是移动端网页，true：是 false 否")
+    @ApiModelProperty(value = "是否是移动端网页，true 是 false 否")
     private Boolean mobileFlag;
 
-    @ApiModelProperty(value = "在线状态")
+    @ApiModelProperty(value = "状态：1 在线 2 隐身")
     private WebSocketTypeEnum type;
 
-    @ApiModelProperty(value = "本次 Websocket连接的服务器的 ip:port")
+    @ApiModelProperty(value = "本次 WebSocket 连接的服务器的 ip:port")
     private String server;
 
-    @ApiModelProperty(value = "类别")
+    @ApiModelProperty(value = "类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
     private RequestCategoryEnum category;
 
     @TableField(fill = FieldFill.INSERT)

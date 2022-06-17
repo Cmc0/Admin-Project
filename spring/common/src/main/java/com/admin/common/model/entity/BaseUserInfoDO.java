@@ -20,10 +20,8 @@ public class BaseUserInfoDO {
     private String nickname;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    @ApiModelProperty(value = "修改人id")
     private Long updateId;
 
-    @ApiModelProperty(value = "修改时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 

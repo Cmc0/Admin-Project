@@ -13,7 +13,7 @@ import lombok.Data;
 public class BaseUserIdDO {
 
     @TableId(type = IdType.AUTO)
-    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "用户主键id")
     private Long id;
 
     @ApiModelProperty(value = "该用户的 uuid")

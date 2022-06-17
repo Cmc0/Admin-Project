@@ -21,7 +21,7 @@ public class BaseDictDO extends BaseEntityThree {
     @ApiModelProperty(value = "字典/字典项 名")
     private String name;
 
-    @ApiModelProperty(value = "类型")
+    @ApiModelProperty(value = "类型：1 字典 2 字典项")
     private DictTypeEnum type;
 
     @ApiModelProperty(value = "字典项 value（数字 123...）备注：字典为 -1")

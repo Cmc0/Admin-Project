@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel(description = "菜单主表")
 public class BaseMenuDO extends BaseEntityFour<BaseMenuDO> {
 
-    @ApiModelProperty(value = "页面的 path，备注：path不能重复")
+    @ApiModelProperty(value = "页面的 path，备注：相同父菜单下，子菜单 path不能重复")
     private String path;
 
     @ApiModelProperty(value = "权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById")

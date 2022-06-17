@@ -13,10 +13,10 @@ import lombok.EqualsAndHashCode;
 public class BaseUserSecurityDO extends BaseEntity {
 
     @TableId
-    @ApiModelProperty(value = "用户主键id（外键）")
+    @ApiModelProperty(value = "用户主键 id")
     private Long userId;
 
-    @ApiModelProperty(value = "用户 jwt私钥后缀")
+    @ApiModelProperty(value = "用户 jwt私钥后缀（simple uuid）")
     private String jwtSecretSuf;
 
     @TableField(fill = FieldFill.INSERT)
