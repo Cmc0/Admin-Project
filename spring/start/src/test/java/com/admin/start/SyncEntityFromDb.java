@@ -1,6 +1,8 @@
 package com.admin.start;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.BetweenFormatter;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.StrBuilder;
@@ -36,6 +38,8 @@ public class SyncEntityFromDb {
      */
     @Test
     void syncEntityFromDb() {
+
+        long beginTime = System.currentTimeMillis();
 
         Set<Class<?>> classSet = ClassUtil.scanPackageByAnnotation("com.admin", TableName.class);
 
@@ -169,7 +173,11 @@ public class SyncEntityFromDb {
 
         }
 
-        System.out.println("同步完成");
+        long endTime = System.currentTimeMillis();
+
+        String spentTime = DateUtil.formatBetween(endTime - beginTime, BetweenFormatter.Level.MILLISECOND);
+
+        System.out.println("同步完成，耗时：" + spentTime);
 
     }
 
