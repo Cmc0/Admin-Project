@@ -1,6 +1,6 @@
-import {ActionType, ModalForm, ProColumns, ProForm, ProFormText} from "@ant-design/pro-components";
+import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {Dropdown, Menu, Modal, Space} from "antd";
+import {Dropdown, Menu, Space} from "antd";
 import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
@@ -8,12 +8,11 @@ import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {menuDeleteByIdSet, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
-import {InDev} from "../../../../util/CommonUtil";
 import {CalcOrderNo} from "../../../../util/TreeUtil";
 
 const QuicklyAddAuth = "快速添加权限"
 
-const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ({ dataIndex: string; title: string; render: (dom, entity) => any } | { dataIndex: string; title: string } | { dataIndex: string; title: string } | { dataIndex: string; valueType: string; fieldProps: { showSearch: boolean; options: string[] }; title: string } | { hideInSearch: boolean; dataIndex: string; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { hideInSearch: boolean; dataIndex: string; title: string } | { dataIndex: string; valueType: string; width: number; title: string; render: (dom, entity) => any[] })[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -102,12 +101,11 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                     key: '2',
                     label:
                         <ModalForm<MenuInsertOrUpdateDTO>
+                            title={QuicklyAddAuth}
                             trigger={<a>{QuicklyAddAuth}</a>}
                             onFinish={async (form) => console.log(form)}
                         >
-                            <ProFormText required name={"name"}>
-
-                            </ProFormText>
+                            <ProFormText name={"name"} label={"权限前缀"} rules={[{required: true}]}/>
                         </ModalForm>,
                 },
             ]}>
