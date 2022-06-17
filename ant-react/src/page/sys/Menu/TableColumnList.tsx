@@ -1,4 +1,4 @@
-import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
+import {ActionType, BetaSchemaForm, ProColumns} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {Dropdown, Menu, Space} from "antd";
 import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
@@ -100,14 +100,21 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 {
                     key: '2',
                     label:
-                        <ModalForm<MenuInsertOrUpdateDTO>
+                        <BetaSchemaForm<MenuInsertOrUpdateDTO>
+                            layoutType={"ModalForm"}
                             modalProps={{
                                 maskClosable: false,
                             }}
+                            isKeyPressSubmit
+                            width={450}
                             title={QuicklyAddAuth}
                             trigger={<a>{QuicklyAddAuth}</a>}
                             onFinish={async (form) => {
-                                const formTemp = {parentId: entity.id, authFlag: true, enableFlag: true}
+                                const formTemp: MenuInsertOrUpdateDTO = {
+                                    parentId: entity.id,
+                                    authFlag: true,
+                                    enableFlag: true
+                                }
                                 menuInsertOrUpdate({
                                     ...formTemp,
                                     name: '新增修改',
@@ -137,9 +144,21 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                                 })
                                 return true
                             }}
+                            columns={
+                                [
+                                    {
+                                        dataIndex: "auths", title: '权限前缀', formItemProps: {
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                },
+                                            ],
+                                        }
+                                    }
+                                ]
+                            }
                         >
-                            <ProFormText name={"auths"} label={"权限前缀"} rules={[{required: true}]}/>
-                        </ModalForm>,
+                        </BetaSchemaForm>,
                 },
             ]}>
             </Menu>}>
