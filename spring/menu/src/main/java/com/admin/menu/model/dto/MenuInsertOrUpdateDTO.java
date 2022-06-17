@@ -19,7 +19,7 @@ public class MenuInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     @ApiModelProperty(value = "菜单名")
     private String name;
 
-    @ApiModelProperty(value = "页面的 path，备注：path不能重复")
+    @ApiModelProperty(value = "页面的 path，备注：相同父菜单下，子菜单 path不能重复")
     private String path;
 
     @ApiModelProperty(value = "图标")
