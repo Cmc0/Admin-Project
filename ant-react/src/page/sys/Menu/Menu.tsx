@@ -181,8 +181,6 @@ export default function () {
             params={new Date()} // 目的：为了打开页面时，执行 request方法
             request={async () => {
 
-                // useForm.resetFields()
-
                 if (currentForm.current.id) {
                     await menuInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res

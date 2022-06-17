@@ -9,6 +9,7 @@ import React from "react";
 import {menuDeleteByIdSet, menuInsertOrUpdate, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {CalcOrderNo, defaultOrderNo} from "../../../../util/TreeUtil";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 const QuicklyAddAuth = "快速添加权限"
 
@@ -142,7 +143,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                                     orderNo: defaultOrderNo - 30
                                 }).then(res => {
                                     ToastSuccess(res.msg)
-                                    actionRef.current?.reload()
+                                    setTimeout(() => {
+                                        actionRef.current?.reload()
+                                    }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                 })
                                 return true
                             }}
