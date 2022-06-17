@@ -140,7 +140,6 @@ export default function () {
             }}
             form={useForm}
             autoFocusFirstInput={false}
-            shouldUpdate={false}
             isKeyPressSubmit
             onValuesChange={(changedValues, allValues) => {
                 if (allValues.path && allValues.path.startsWith("http")) {

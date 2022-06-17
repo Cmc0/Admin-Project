@@ -1,6 +1,6 @@
-import {ActionType, ProColumns} from "@ant-design/pro-components";
+import {ActionType, ModalForm, ProColumns, ProForm, ProFormText} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {Dropdown, Menu, Space} from "antd";
+import {Dropdown, Menu, Modal, Space} from "antd";
 import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
@@ -11,7 +11,9 @@ import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {InDev} from "../../../../util/CommonUtil";
 import {CalcOrderNo} from "../../../../util/TreeUtil";
 
-const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
+const QuicklyAddAuth = "快速添加权限"
+
+const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ({ dataIndex: string; title: string; render: (dom, entity) => any } | { dataIndex: string; title: string } | { dataIndex: string; title: string } | { dataIndex: string; valueType: string; fieldProps: { showSearch: boolean; options: string[] }; title: string } | { hideInSearch: boolean; dataIndex: string; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { dataIndex: string; valueEnum: Map<any, any>; title: string } | { hideInSearch: boolean; dataIndex: string; title: string } | { dataIndex: string; valueType: string; width: number; title: string; render: (dom, entity) => any[] })[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -98,13 +100,15 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 },
                 {
                     key: '2',
-                    label: <a
-                        onClick={() => {
-                            InDev()
-                        }}
-                    >
-                        快速添加权限
-                    </a>,
+                    label:
+                        <ModalForm<MenuInsertOrUpdateDTO>
+                            trigger={<a>{QuicklyAddAuth}</a>}
+                            onFinish={async (form) => console.log(form)}
+                        >
+                            <ProFormText required name={"name"}>
+
+                            </ProFormText>
+                        </ModalForm>,
                 },
             ]}>
             </Menu>}>
