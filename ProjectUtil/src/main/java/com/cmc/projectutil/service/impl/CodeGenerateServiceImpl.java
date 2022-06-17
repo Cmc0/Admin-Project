@@ -35,18 +35,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         String rootFileName = System.getProperty("user.dir") + "/src/main/java/generate/spring";
 
-        File rootFile = FileUtil.file(rootFileName);
-        FileUtil.mkdir(rootFile); // 不存在则会创建，存在了则不进行操作
-
-        FileUtil.mkdir(rootFileName + "/controller");
-        FileUtil.mkdir(rootFileName + "/model");
-        FileUtil.mkdir(rootFileName + "/model/dto");
-        FileUtil.mkdir(rootFileName + "/model/vo");
-        FileUtil.mkdir(rootFileName + "/model/entity");
-        FileUtil.mkdir(rootFileName + "/service");
-        FileUtil.mkdir(rootFileName + "/service/impl");
-        FileUtil.mkdir(rootFileName + "/mapper");
-
         TemplateEngine engine =
             TemplateUtil.createEngine(new TemplateConfig("ftl/spring", TemplateConfig.ResourceMode.CLASSPATH));
 
