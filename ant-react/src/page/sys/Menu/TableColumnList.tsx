@@ -104,14 +104,12 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                         <BetaSchemaForm<MenuInsertOrUpdateDTO>
                             layoutType={"ModalForm"}
                             modalProps={{
-                                maskClosable: false,
+                                maskClosable: false
                             }}
                             isKeyPressSubmit
                             width={450}
                             title={QuicklyAddAuth}
                             trigger={<a>{QuicklyAddAuth}</a>}
-                            params={new Date()} // 目的：为了打开页面时，执行 request方法
-                            request={async () => ({})}
                             onFinish={async (form) => {
                                 const formTemp: MenuInsertOrUpdateDTO = {
                                     parentId: entity.id,
