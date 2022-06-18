@@ -98,7 +98,7 @@ public class UserLoginServiceImpl extends ServiceImpl<BaseUserLoginMapper, BaseU
         }
 
         // 校验密码
-        if (!PasswordConverterUtil.match(baseUserLoginDO.getPassword(), dto.getPassword())) {
+        if (!PasswordConvertUtil.match(baseUserLoginDO.getPassword(), dto.getPassword())) {
             ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
         }
 

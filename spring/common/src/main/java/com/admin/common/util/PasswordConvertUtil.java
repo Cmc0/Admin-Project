@@ -10,7 +10,7 @@ import com.admin.common.model.vo.ApiResultVO;
 /**
  * 密码加密类
  */
-public class PasswordConverterUtil {
+public class PasswordConvertUtil {
 
     // 盐和加密后密码的分割符
     private static final String REGEX = "/";
