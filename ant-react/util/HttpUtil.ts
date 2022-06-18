@@ -8,6 +8,8 @@ import {logout} from "./UserUtil";
 export const timeoutMsg = '请求超时，请重试'
 export const baseErrorMsg = "请求错误："
 
+let hiddenErrorMsgFlag = false
+
 const config: AxiosRequestConfig = {
     baseURL: '/api',
     timeout: 30 * 60 * 1000, // 默认 30分钟
@@ -24,6 +26,10 @@ $http.interceptors.request.use(
             config.headers!['Authorization'] =
                 localStorage.getItem(LocalStorageKey.JWT) || ''
             config.headers!['category'] = 1 // 类别：1 H5（网页） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+        }
+
+        if (config.headers?.hiddenErrorMsg) {
+            hiddenErrorMsgFlag = true
         }
 
         return config
@@ -49,6 +55,11 @@ $http.interceptors.response.use(
 
         const hiddenErrorMsg = config.headers?.hiddenErrorMsg // 是否隐藏错误提示
 
+        // 接口请求报错，是否隐藏错误信息：关闭
+        if (hiddenErrorMsg) {
+            hiddenErrorMsgFlag = false
+        }
+
         const res = response.data
         if (res.code !== 200 || !res.success) {
             if (res.code === 100111) { // 这个代码需要跳转到：登录页面
@@ -67,6 +78,11 @@ $http.interceptors.response.use(
         }
     },
     (err) => {
+        if (hiddenErrorMsgFlag) {
+            hiddenErrorMsgFlag = false
+            return Promise.reject(err) // 这里会触发 catch
+        }
+
         // 所有的请求错误，例如 500 404 错误，超出 2xx 范围的状态码都会触发该函数。
         let msg: string = err.message
         if (msg === 'Network Error') {
