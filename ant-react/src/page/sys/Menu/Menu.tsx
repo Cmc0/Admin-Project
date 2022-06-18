@@ -81,7 +81,7 @@ export default function () {
                     <Dropdown
                         overlay={<Menu items={[
                             {
-                                key: '1',
+                                key: 'expandAll',
                                 label: <a onClick={() => {
                                     setExpandedRowKeys(hasChildrenIdList.current)
                                 }}>
@@ -90,7 +90,7 @@ export default function () {
                                 icon: <ColumnHeightOutlined/>
                             },
                             {
-                                key: '2',
+                                key: 'collapseAll',
                                 label: <a onClick={() => {
                                     setExpandedRowKeys([])
                                 }}>
@@ -103,7 +103,7 @@ export default function () {
                         <Button size={"small"} icon={<EllipsisOutlined/>}/>
                     </Dropdown>,
                 actions: [
-                    <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
+                    <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
                         CalcOrderNo(currentForm.current, {children: treeList});
                         setFormVisible(true)

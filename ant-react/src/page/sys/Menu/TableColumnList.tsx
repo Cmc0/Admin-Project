@@ -75,11 +75,11 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
         dataIndex: 'option',
         valueType: 'option',
         render: (dom, entity) => [
-            <a key="1" onClick={() => {
+            <a key="edit" onClick={() => {
                 currentForm.current = {id: entity.id}
                 setFormVisible(true)
             }}>编辑</a>,
-            <a className={"red3"} key="2" onClick={() => {
+            <a key="del" className={"red3"} onClick={() => {
                 execConfirm(() => {
                     return menuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
                         ToastSuccess(res.msg)
@@ -87,9 +87,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                     })
                 }, undefined, `确定删除【${entity.name}】吗？`)
             }}>删除</a>,
-            <Dropdown overlay={<Menu items={[
+            <Dropdown key="more" overlay={<Menu items={[
                 {
-                    key: '1',
+                    key: 'addChildren',
                     label: <a onClick={() => {
                         currentForm.current = {parentId: entity.id}
                         CalcOrderNo(currentForm.current, entity)
@@ -99,7 +99,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                     </a>,
                 },
                 {
-                    key: '2',
+                    key: 'quicklyAddAuth',
                     label:
                         <ModalForm<MenuInsertOrUpdateDTO>
                             modalProps={{
