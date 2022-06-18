@@ -1,5 +1,6 @@
 import {LoginFormPage, ProFormCheckbox, ProFormText} from "@ant-design/pro-components";
-import LoginBg from "@/asset/img/LoginBg.png"
+import LoginBg from "@/asset/img/LoginBg.png";
+import Logo from "@/favicon.svg";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Tabs} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons/lib";
@@ -38,7 +39,7 @@ export default function () {
             <LoginFormPage<UserLoginPasswordDTO>
                 isKeyPressSubmit
                 backgroundImageUrl={LoginBg}
-                logo={"/src/favicon.svg"}
+                logo={Logo}
                 title={CommonConstant.SYS_NAME}
                 subTitle="Will have the most powerful !"
                 onFinish={async (formData) => {
