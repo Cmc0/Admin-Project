@@ -1,4 +1,4 @@
-import {ActionType, BetaSchemaForm, ProColumns} from "@ant-design/pro-components";
+import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
 import {Dropdown, Menu, Space} from "antd";
 import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
@@ -101,8 +101,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 {
                     key: '2',
                     label:
-                        <BetaSchemaForm<MenuInsertOrUpdateDTO>
-                            layoutType={"ModalForm"}
+                        <ModalForm<MenuInsertOrUpdateDTO>
                             modalProps={{
                                 maskClosable: false
                             }}
@@ -147,21 +146,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                                 })
                                 return true
                             }}
-                            columns={
-                                [
-                                    {
-                                        dataIndex: "auths", title: '权限前缀', formItemProps: {
-                                            rules: [
-                                                {
-                                                    required: true,
-                                                },
-                                            ],
-                                        }
-                                    }
-                                ]
-                            }
                         >
-                        </BetaSchemaForm>,
+                            <ProFormText name={"auths"} label={"权限前缀"} rules={[{required: true}]}/>
+                        </ModalForm>,
                 },
             ]}>
             </Menu>}>

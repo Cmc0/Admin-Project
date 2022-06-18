@@ -1,5 +1,5 @@
 import BaseMenuDO from "@/model/entity/BaseMenuDO";
-import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
+import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {
     menuAddOrderNo,
@@ -112,10 +112,7 @@ export default function () {
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                 <Space size={16}>
-                    <a onClick={() => {
-                    }}>累加排序号</a>
-                    <BetaSchemaForm<MenuInsertOrUpdateDTO>
-                        layoutType={"ModalForm"}
+                    <ModalForm<MenuInsertOrUpdateDTO>
                         modalProps={{
                             maskClosable: false
                         }}
@@ -135,23 +132,10 @@ export default function () {
                             })
                             return true
                         }}
-                        columns={
-                            [
-                                {
-                                    dataIndex: "orderNo", title: '排序号', formItemProps: {
-                                        rules: [
-                                            {
-                                                required: true,
-                                            },
-                                        ],
-                                    },
-                                    valueType: 'digit',
-                                    fieldProps: {className: 'w100', min: Number.MIN_SAFE_INTEGER}
-                                }
-                            ]
-                        }
                     >
-                    </BetaSchemaForm>
+                        <ProFormDigit label="排序号" name="orderNo" min={Number.MIN_SAFE_INTEGER} className={"w100"}
+                                      rules={[{required: true}]}/>
+                    </ModalForm>
                     <a onClick={() => {
                         execConfirm(() => {
                             return menuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
@@ -181,7 +165,6 @@ export default function () {
                 maskClosable: false,
             }}
             form={useForm}
-            autoFocusFirstInput={false}
             isKeyPressSubmit
             onValuesChange={(changedValues, allValues) => {
                 if (allValues.path && allValues.path.startsWith("http")) {
