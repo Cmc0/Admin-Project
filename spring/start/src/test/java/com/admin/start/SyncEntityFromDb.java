@@ -13,6 +13,7 @@ import com.admin.common.model.enums.ColumnTypeRefEnum;
 import com.admin.common.model.vo.SyncEntityFromDbVO;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,6 +69,8 @@ public class SyncEntityFromDb {
 
         String fieldTypeTemp = "private {} {};";
 
+        String apiModelTemp = "@ApiModel(description = \"{}\")";
+
         File userDirFile = FileUtil.file(userDir);
 
         File[] fileArr = userDirFile.listFiles(File::isDirectory);
@@ -106,6 +109,14 @@ public class SyncEntityFromDb {
 
             Set<String> delSet = new HashSet<>();
             Map<String, String> updateMap = MapUtil.newHashMap();
+
+            ApiModel apiModel = item.getAnnotation(ApiModel.class);
+            String tableComment = syncEntityFromDbVOList.get(0).getTableComment();
+            if (apiModel != null && !apiModel.description().equals(tableComment)) {
+                String oldVal = StrUtil.format(apiModelTemp, apiModel.description());
+                String newVal = StrUtil.format(apiModelTemp, tableComment);
+                updateMap.put(oldVal, newVal);
+            }
 
             for (Field subItem : declaredFieldList) {
                 SyncEntityFromDbVO syncEntityFromDbVO = dbGroupMap.get(subItem.getName());

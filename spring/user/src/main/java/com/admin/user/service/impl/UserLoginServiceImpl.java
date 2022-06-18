@@ -1,22 +1,26 @@
 package com.admin.user.service.impl;
 
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.BaseConfiguration;
+import com.admin.common.mapper.BaseUserLoginMapper;
+import com.admin.common.mapper.BaseUserSecurityMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
+import com.admin.common.model.entity.BaseUserLoginDO;
+import com.admin.common.model.entity.BaseUserSecurityDO;
 import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.util.MyJwtUtil;
-import com.admin.common.util.MyRsaUtil;
-import com.admin.common.util.ParamUtil;
-import com.admin.common.util.RequestUtil;
+import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.model.dto.UserLoginPasswordDTO;
 import com.admin.user.service.UserLoginService;
 import com.admin.websocket.model.entity.WebSocketDO;
 import com.admin.websocket.service.WebSocketService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -29,7 +33,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserLoginServiceImpl implements UserLoginService {
+public class UserLoginServiceImpl extends ServiceImpl<BaseUserLoginMapper, BaseUserLoginDO>
+    implements UserLoginService {
 
     @Resource
     RedissonClient redissonClient;
@@ -37,6 +42,8 @@ public class UserLoginServiceImpl implements UserLoginService {
     HttpServletRequest httpServletRequest;
     @Resource
     WebSocketService webSocketService;
+    @Resource
+    BaseUserSecurityMapper baseUserSecurityMapper;
 
     /**
      * 账号密码登录
@@ -79,7 +86,42 @@ public class UserLoginServiceImpl implements UserLoginService {
      */
     private String passwordByAccount(UserLoginPasswordDTO dto) {
 
-        return "jwt";
+        BaseUserLoginDO baseUserLoginDO = baseMapper.getByEmail(dto.getAccount());
+
+        // 账户是否存在
+        if (baseUserLoginDO == null) {
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+        }
+
+        if (StrUtil.isBlank(baseUserLoginDO.getPassword())) {
+            ApiResultVO.error(BizCodeEnum.NO_PASSWORD_SET); // 未设置密码，请点击忘记密码，进行密码设置
+        }
+
+        // 校验密码
+        if (!PasswordConverterUtil.match(baseUserLoginDO.getPassword(), dto.getPassword())) {
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+        }
+
+        // 校验成功之后，再判断是否被冻结，免得透露用户被封号的信息
+        BaseUserSecurityDO baseUserSecurityDO = ChainWrappers.lambdaQueryChain(baseUserSecurityMapper)
+            .eq(BaseUserSecurityDO::getUserId, baseUserLoginDO.getUserId())
+            .select(BaseUserSecurityDO::getDelFlag, BaseUserSecurityDO::getEnableFlag,
+                BaseUserSecurityDO::getJwtSecretSuf).one();
+
+        if (baseUserSecurityDO == null) {
+            ApiResultVO.error(BizCodeEnum.LOSS_OF_ACCOUNT_INTEGRITY);
+        }
+
+        // 如果被注销了
+        if (baseUserSecurityDO.getDelFlag()) {
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+        }
+
+        if (!baseUserSecurityDO.getEnableFlag()) {
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_IS_DISABLED);
+        }
+
+        return getLoginResult(baseUserLoginDO.getUserId(), dto.isRememberMe(), baseUserSecurityDO.getJwtSecretSuf());
     }
 
     // 登录成功之后，返回给前端的数据
@@ -110,7 +152,8 @@ public class UserLoginServiceImpl implements UserLoginService {
                     .select(BaseEntityTwo::getId).list();
 
                 // 下线该类型的用户
-                Set<Long> webSocketIdSet = webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
+                Set<Long> webSocketIdSet =
+                    webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
                 webSocketService.offlineAndNoticeBySocketIdSetAndUserId(webSocketIdSet, userId, requestCategoryEnum);
 
             } else if ("3".equals(exclusionSetting)) {
