@@ -12,11 +12,11 @@ export const InitForm = {
     showFlag: true,
 }
 
-const SchemaFormColumnList = (treeList: React.MutableRefObject<BaseMenuDO[]>, useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(
-        treeList.current,
+        treeList,
         true,
         (item) => item.id !== ignoreId // 不要本节点
     ).map((item) => ({
