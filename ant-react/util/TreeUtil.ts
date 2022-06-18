@@ -21,13 +21,13 @@ export function FlatTree<T extends IFlatTree>(
             const hasChildren = item.children && item.children.length
             if (hasChildren) {
                 if (hasParentFlag) {
-                    resList.push(JSON.parse(JSON.stringify({...item, children: null}))) // 添加到返回值里
+                    resList.push(JSON.parse(JSON.stringify({...item, children: null}))) // 添加
                 }
                 resList = resList.concat(
                     FlatTree(item.children, hasParentFlag, checkFun)
                 )
             } else {
-                resList.push(JSON.parse(JSON.stringify({...item, children: null}))) // 添加到返回值里
+                resList.push(JSON.parse(JSON.stringify({...item, children: null}))) // 添加
             }
         }
     })

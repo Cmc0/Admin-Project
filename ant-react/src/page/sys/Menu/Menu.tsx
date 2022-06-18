@@ -34,7 +34,7 @@ export default function () {
 
     const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
 
-    const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
+    const treeList = useRef<BaseMenuDO[]>([]);
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
@@ -72,7 +72,7 @@ export default function () {
                 return menuTree({...params, sort})
             }}
             postData={(data) => {
-                setTreeList(data)
+                treeList.current = data
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
                 return data
             }}
@@ -105,7 +105,7 @@ export default function () {
                 actions: [
                     <Button icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: treeList});
+                        CalcOrderNo(currentForm.current, {children: treeList.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -152,7 +152,7 @@ export default function () {
         </ProTable>
 
         <BetaSchemaForm<MenuInsertOrUpdateDTO>
-            title={"新建菜单"}
+            title={currentForm.current.id ? "新建菜单" : "编辑菜单"}
             layoutType={"ModalForm"}
             grid
             rowProps={{
