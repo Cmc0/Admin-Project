@@ -9,7 +9,7 @@ import lombok.Data;
 @TableName(value = "sys_role_ref_menu")
 @Data
 @ApiModel(description = "角色，菜单关联表")
-public class BaseRoleRefMenuDO {
+public class SysRoleRefMenuDO {
 
     @TableId
     @ApiModelProperty(value = "角色id")

@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.mapper.BaseMenuMapper;
+import com.admin.common.mapper.SysMenuMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.dto.AddOrderNoDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> implements MenuService {
+public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> implements MenuService {
 
     @Resource
     RoleRefMenuService roleRefMenuService;
@@ -55,7 +55,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
 
         // path不能重复
         if (StrUtil.isNotBlank(dto.getPath())) {
-            Long count = lambdaQuery().eq(BaseMenuDO::getPath, dto.getPath())
+            Long count = lambdaQuery().eq(SysMenuDO::getPath, dto.getPath())
                 .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
             if (count != 0) {
                 ApiResultVO.error(BizCodeEnum.MENU_URI_IS_EXIST);
@@ -64,7 +64,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
 
         // 如果是起始页面，则取消之前的起始页面
         if (dto.isFirstFlag()) {
-            lambdaUpdate().set(BaseMenuDO::getFirstFlag, false).eq(BaseMenuDO::getFirstFlag, true)
+            lambdaUpdate().set(SysMenuDO::getFirstFlag, false).eq(SysMenuDO::getFirstFlag, true)
                 .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
         }
 
@@ -80,10 +80,10 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
             deleteByIdSetSub(Collections.singleton(dto.getId())); // 先删除 子表数据
         }
 
-        BaseMenuDO baseMenuDO = getEntityByDTO(dto);
-        saveOrUpdate(baseMenuDO);
+        SysMenuDO sysMenuDO = getEntityByDTO(dto);
+        saveOrUpdate(sysMenuDO);
 
-        insertOrUpdateSub(baseMenuDO.getId(), dto); // 新增 子表数据
+        insertOrUpdateSub(sysMenuDO.getId(), dto); // 新增 子表数据
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -95,12 +95,12 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
 
         // 新增：菜单角色 关联表数据
         if (CollUtil.isNotEmpty(dto.getRoleIdSet())) {
-            List<BaseRoleRefMenuDO> insertList = new ArrayList<>();
+            List<SysRoleRefMenuDO> insertList = new ArrayList<>();
             for (Long item : dto.getRoleIdSet()) {
-                BaseRoleRefMenuDO baseRoleRefMenuDO = new BaseRoleRefMenuDO();
-                baseRoleRefMenuDO.setRoleId(item);
-                baseRoleRefMenuDO.setMenuId(id);
-                insertList.add(baseRoleRefMenuDO);
+                SysRoleRefMenuDO sysRoleRefMenuDO = new SysRoleRefMenuDO();
+                sysRoleRefMenuDO.setRoleId(item);
+                sysRoleRefMenuDO.setMenuId(id);
+                insertList.add(sysRoleRefMenuDO);
             }
             roleRefMenuService.saveBatch(insertList);
         }
@@ -110,59 +110,59 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
     /**
      * 通过 dto，获取 实体类
      */
-    private BaseMenuDO getEntityByDTO(MenuInsertOrUpdateDTO dto) {
+    private SysMenuDO getEntityByDTO(MenuInsertOrUpdateDTO dto) {
 
-        BaseMenuDO baseMenuDO = new BaseMenuDO();
+        SysMenuDO sysMenuDO = new SysMenuDO();
 
-        baseMenuDO.setName(dto.getName());
-        baseMenuDO.setPath(MyEntityUtil.getNotNullStr(dto.getPath()));
-        baseMenuDO.setIcon(MyEntityUtil.getNotNullStr(dto.getIcon()));
-        baseMenuDO.setParentId(MyEntityUtil.getNotNullParentId(dto.getParentId()));
-        baseMenuDO.setId(dto.getId());
-        baseMenuDO.setOrderNo(dto.getOrderNo());
-        baseMenuDO.setEnableFlag(dto.isEnableFlag());
-        baseMenuDO.setLinkFlag(dto.isLinkFlag());
-        baseMenuDO.setRouter(MyEntityUtil.getNotNullStr(dto.getRouter()));
-        baseMenuDO.setRedirect(MyEntityUtil.getNotNullStr(dto.getRedirect()));
-        baseMenuDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
-        baseMenuDO.setFirstFlag(dto.isFirstFlag());
-        baseMenuDO.setAuthFlag(dto.isAuthFlag()); // 当新增时，才允许设置 authFlag的值
+        sysMenuDO.setName(dto.getName());
+        sysMenuDO.setPath(MyEntityUtil.getNotNullStr(dto.getPath()));
+        sysMenuDO.setIcon(MyEntityUtil.getNotNullStr(dto.getIcon()));
+        sysMenuDO.setParentId(MyEntityUtil.getNotNullParentId(dto.getParentId()));
+        sysMenuDO.setId(dto.getId());
+        sysMenuDO.setOrderNo(dto.getOrderNo());
+        sysMenuDO.setEnableFlag(dto.isEnableFlag());
+        sysMenuDO.setLinkFlag(dto.isLinkFlag());
+        sysMenuDO.setRouter(MyEntityUtil.getNotNullStr(dto.getRouter()));
+        sysMenuDO.setRedirect(MyEntityUtil.getNotNullStr(dto.getRedirect()));
+        sysMenuDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+        sysMenuDO.setFirstFlag(dto.isFirstFlag());
+        sysMenuDO.setAuthFlag(dto.isAuthFlag()); // 当新增时，才允许设置 authFlag的值
         if (dto.isAuthFlag()) {
-            baseMenuDO.setAuths(dto.getAuths()); // 只有权限菜单，才可以设置 auths
-            baseMenuDO.setShowFlag(false);
+            sysMenuDO.setAuths(dto.getAuths()); // 只有权限菜单，才可以设置 auths
+            sysMenuDO.setShowFlag(false);
         } else {
-            baseMenuDO.setAuths("");
-            baseMenuDO.setShowFlag(dto.isShowFlag());
+            sysMenuDO.setAuths("");
+            sysMenuDO.setShowFlag(dto.isShowFlag());
         }
 
-        return baseMenuDO;
+        return sysMenuDO;
     }
 
     /**
      * 分页排序查询
      */
     @Override
-    public Page<BaseMenuDO> myPage(MenuPageDTO dto) {
+    public Page<SysMenuDO> myPage(MenuPageDTO dto) {
         return doMyPage(dto);
     }
 
     /**
      * 执行：分页排序查询
      */
-    private Page<BaseMenuDO> doMyPage(MenuPageDTO dto) {
+    private Page<SysMenuDO> doMyPage(MenuPageDTO dto) {
 
-        return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), BaseMenuDO::getName, dto.getName())
-            .like(StrUtil.isNotBlank(dto.getPath()), BaseMenuDO::getPath, dto.getPath())
-            .like(StrUtil.isNotBlank(dto.getAuths()), BaseMenuDO::getAuths, dto.getAuths())
-            .like(StrUtil.isNotBlank(dto.getRedirect()), BaseMenuDO::getRedirect, dto.getRedirect())
+        return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysMenuDO::getName, dto.getName())
+            .like(StrUtil.isNotBlank(dto.getPath()), SysMenuDO::getPath, dto.getPath())
+            .like(StrUtil.isNotBlank(dto.getAuths()), SysMenuDO::getAuths, dto.getAuths())
+            .like(StrUtil.isNotBlank(dto.getRedirect()), SysMenuDO::getRedirect, dto.getRedirect())
             .eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
-            .eq(StrUtil.isNotBlank(dto.getRouter()), BaseMenuDO::getRouter, dto.getRouter())
-            .eq(dto.getParentId() != null, BaseMenuDO::getParentId, dto.getParentId())
+            .eq(StrUtil.isNotBlank(dto.getRouter()), SysMenuDO::getRouter, dto.getRouter())
+            .eq(dto.getParentId() != null, SysMenuDO::getParentId, dto.getParentId())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
-            .eq(dto.getLinkFlag() != null, BaseMenuDO::getLinkFlag, dto.getLinkFlag())
-            .eq(dto.getFirstFlag() != null, BaseMenuDO::getFirstFlag, dto.getFirstFlag())
-            .eq(dto.getAuthFlag() != null, BaseMenuDO::getAuthFlag, dto.getAuthFlag())
-            .eq(dto.getShowFlag() != null, BaseMenuDO::getShowFlag, dto.getShowFlag())
+            .eq(dto.getLinkFlag() != null, SysMenuDO::getLinkFlag, dto.getLinkFlag())
+            .eq(dto.getFirstFlag() != null, SysMenuDO::getFirstFlag, dto.getFirstFlag())
+            .eq(dto.getAuthFlag() != null, SysMenuDO::getAuthFlag, dto.getAuthFlag())
+            .eq(dto.getShowFlag() != null, SysMenuDO::getShowFlag, dto.getShowFlag())
             .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
 
     }
@@ -171,20 +171,20 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
      * 查询：树结构
      */
     @Override
-    public List<BaseMenuDO> tree(MenuPageDTO dto) {
+    public List<SysMenuDO> tree(MenuPageDTO dto) {
 
-        List<BaseMenuDO> resList = new ArrayList<>(); // 本接口返回值
+        List<SysMenuDO> resList = new ArrayList<>(); // 本接口返回值
 
         // 根据条件进行筛选，得到符合条件的数据，然后再逆向生成整棵树，并返回这个树结构
         dto.setPageSize(-1); // 不分页
-        List<BaseMenuDO> dbList = doMyPage(dto).getRecords();
+        List<SysMenuDO> dbList = doMyPage(dto).getRecords();
 
         if (dbList.size() == 0) {
             return resList;
         }
 
         // 查询出所有的菜单
-        List<BaseMenuDO> allList = list();
+        List<SysMenuDO> allList = list();
 
         if (allList.size() == 0) {
             return resList;
@@ -201,7 +201,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         // 如果存在下级，则无法删除
-        Long selectCount = lambdaQuery().in(BaseMenuDO::getParentId, notEmptyIdSet.getIdSet()).count();
+        Long selectCount = lambdaQuery().in(SysMenuDO::getParentId, notEmptyIdSet.getIdSet()).count();
         if (selectCount != 0) {
             ApiResultVO.error(BaseBizCodeEnum.PLEASE_DELETE_THE_CHILD_NODE_FIRST);
         }
@@ -220,7 +220,7 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
     private void deleteByIdSetSub(Set<Long> idSet) {
 
         // 删除 角色菜单关联表
-        roleRefMenuService.lambdaUpdate().in(BaseRoleRefMenuDO::getMenuId, idSet).remove();
+        roleRefMenuService.lambdaUpdate().in(SysRoleRefMenuDO::getMenuId, idSet).remove();
 
     }
 
@@ -228,17 +228,17 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
      * 获取当前用户绑定的菜单
      */
     @Override
-    public List<BaseMenuDO> menuListForUser() {
+    public List<SysMenuDO> menuListForUser() {
         Long userId = UserUtil.getCurrentUserId();
 
         if (BaseConstant.ADMIN_ID.equals(userId)) {
             // 如果是 admin账号，则查询所有【不是被禁用了的】菜单
             /** 这里和{@link UserUtil#getMenuListByUserId}需要进行同步修改 */
             return lambdaQuery()
-                .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, BaseMenuDO::getPath, BaseMenuDO::getIcon,
-                    BaseMenuDO::getRouter, BaseMenuDO::getName, BaseMenuDO::getFirstFlag, BaseMenuDO::getLinkFlag,
-                    BaseMenuDO::getShowFlag, BaseMenuDO::getAuthFlag).eq(BaseEntityThree::getEnableFlag, 1)
-                .orderByDesc(BaseMenuDO::getOrderNo).list();
+                .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
+                    SysMenuDO::getRouter, SysMenuDO::getName, SysMenuDO::getFirstFlag, SysMenuDO::getLinkFlag,
+                    SysMenuDO::getShowFlag, SysMenuDO::getAuthFlag).eq(BaseEntityThree::getEnableFlag, 1)
+                .orderByDesc(SysMenuDO::getOrderNo).list();
         }
 
         // 获取当前用户绑定的菜单
@@ -258,11 +258,11 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
         }
 
         // 设置 角色 idSet
-        List<BaseRoleRefMenuDO> baseRoleRefMenuDOList =
-            roleRefMenuService.lambdaQuery().eq(BaseRoleRefMenuDO::getMenuId, notNullId.getId())
-                .select(BaseRoleRefMenuDO::getRoleId).list();
+        List<SysRoleRefMenuDO> sysRoleRefMenuDOList =
+            roleRefMenuService.lambdaQuery().eq(SysRoleRefMenuDO::getMenuId, notNullId.getId())
+                .select(SysRoleRefMenuDO::getRoleId).list();
         menuInfoByIdVO
-            .setRoleIdSet(baseRoleRefMenuDOList.stream().map(BaseRoleRefMenuDO::getRoleId).collect(Collectors.toSet()));
+            .setRoleIdSet(sysRoleRefMenuDOList.stream().map(SysRoleRefMenuDO::getRoleId).collect(Collectors.toSet()));
 
         MyEntityUtil.handleParentId(menuInfoByIdVO);
 
@@ -280,9 +280,9 @@ public class MenuServiceImpl extends ServiceImpl<BaseMenuMapper, BaseMenuDO> imp
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         }
 
-        List<BaseMenuDO> listByIds = listByIds(dto.getIdSet());
+        List<SysMenuDO> listByIds = listByIds(dto.getIdSet());
 
-        for (BaseMenuDO item : listByIds) {
+        for (SysMenuDO item : listByIds) {
             item.setOrderNo(item.getOrderNo() + dto.getNumber());
         }
 

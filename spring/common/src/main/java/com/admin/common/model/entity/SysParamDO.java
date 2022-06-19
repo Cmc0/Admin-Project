@@ -7,15 +7,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_role")
+@TableName(value = "sys_param")
 @Data
-@ApiModel(description = "角色主表")
-public class BaseRoleDO extends BaseEntityThree {
+@ApiModel(description = "系统参数设置主表")
+public class SysParamDO extends BaseEntityThree {
 
-    @ApiModelProperty(value = "角色名（不能重复）")
+    @ApiModelProperty(value = "配置名，以 id为不变值进行使用，不要用此属性")
     private String name;
 
-    @ApiModelProperty(value = "是否是默认角色，备注：只会有一个默认角色")
-    private Boolean defaultFlag;
+    @ApiModelProperty(value = "值")
+    private String value;
 
 }

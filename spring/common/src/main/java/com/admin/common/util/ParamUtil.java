@@ -2,10 +2,10 @@ package com.admin.common.util;
 
 import cn.hutool.core.convert.Convert;
 import com.admin.common.configuration.JsonRedisTemplate;
-import com.admin.common.mapper.BaseParamMapper;
+import com.admin.common.mapper.SysParamMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
-import com.admin.common.model.entity.BaseParamDO;
+import com.admin.common.model.entity.SysParamDO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.stereotype.Component;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 @Component
 public class ParamUtil {
 
-    private static BaseParamMapper baseParamMapper;
+    private static SysParamMapper sysParamMapper;
 
     @Resource
-    private void setParamMapper(BaseParamMapper value) {
-        baseParamMapper = value;
+    private void setParamMapper(SysParamMapper value) {
+        sysParamMapper = value;
     }
 
     private static JsonRedisTemplate<String> jsonRedisTemplate;
@@ -62,14 +62,14 @@ public class ParamUtil {
      */
     public static String updateRedisCache(String idStr) {
 
-        List<BaseParamDO> paramRedisList =
-            ChainWrappers.lambdaQueryChain(baseParamMapper).select(BaseEntityTwo::getId, BaseParamDO::getValue).list();
+        List<SysParamDO> paramRedisList =
+            ChainWrappers.lambdaQueryChain(sysParamMapper).select(BaseEntityTwo::getId, SysParamDO::getValue).list();
 
         // 转换为 map，目的：提供速度
         // 注意：Collectors.toMap()方法，key不能重复，不然会报错
         // 可以用第三个参数，解决这个报错：(v1, v2) -> v2 不覆盖（留前值）(v1, v2) -> v1 覆盖（取后值）
         Map<String, String> map =
-            paramRedisList.stream().collect(Collectors.toMap(it -> Convert.toStr(it.getId()), BaseParamDO::getValue));
+            paramRedisList.stream().collect(Collectors.toMap(it -> Convert.toStr(it.getId()), SysParamDO::getValue));
 
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 

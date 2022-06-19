@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.mapper.BaseRoleMapper;
+import com.admin.common.mapper.SysRoleMapper;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.*;
@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class RoleServiceImpl extends ServiceImpl<BaseRoleMapper, BaseRoleDO> implements RoleService {
+public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> implements RoleService {
 
     @Resource
     RoleRefMenuService roleRefMenuService;
@@ -45,7 +45,7 @@ public class RoleServiceImpl extends ServiceImpl<BaseRoleMapper, BaseRoleDO> imp
     public String insertOrUpdate(RoleInsertOrUpdateDTO dto) {
 
         // 角色名，不能重复
-        Long count = lambdaQuery().eq(BaseRoleDO::getName, dto.getName())
+        Long count = lambdaQuery().eq(SysRoleDO::getName, dto.getName())
             .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
         if (count != 0) {
             ApiResultVO.error(BizCodeEnum.THE_SAME_ROLE_NAME_EXISTS);
@@ -53,46 +53,46 @@ public class RoleServiceImpl extends ServiceImpl<BaseRoleMapper, BaseRoleDO> imp
 
         // 如果是默认角色，则取消之前的默认角色
         if (dto.isDefaultFlag()) {
-            lambdaUpdate().set(BaseRoleDO::getDefaultFlag, false).eq(BaseRoleDO::getDefaultFlag, true)
+            lambdaUpdate().set(SysRoleDO::getDefaultFlag, false).eq(SysRoleDO::getDefaultFlag, true)
                 .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
         }
 
-        BaseRoleDO baseRoleDO = new BaseRoleDO();
-        baseRoleDO.setName(dto.getName());
-        baseRoleDO.setDefaultFlag(dto.isDefaultFlag());
-        baseRoleDO.setEnableFlag(dto.isEnableFlag());
-        baseRoleDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
-        baseRoleDO.setId(dto.getId());
+        SysRoleDO sysRoleDO = new SysRoleDO();
+        sysRoleDO.setName(dto.getName());
+        sysRoleDO.setDefaultFlag(dto.isDefaultFlag());
+        sysRoleDO.setEnableFlag(dto.isEnableFlag());
+        sysRoleDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+        sysRoleDO.setId(dto.getId());
 
         if (dto.getId() == null) {
             // 新增
-            baseMapper.insert(baseRoleDO);
+            baseMapper.insert(sysRoleDO);
         } else {
             // 修改
-            baseMapper.updateById(baseRoleDO);
+            baseMapper.updateById(sysRoleDO);
             // 先删除子表数据
             deleteByIdSetSub(Collections.singleton(dto.getId()));
         }
 
         // 再插入子表数据
         if (CollUtil.isNotEmpty(dto.getMenuIdSet())) {
-            List<BaseRoleRefMenuDO> insertList = new ArrayList<>();
+            List<SysRoleRefMenuDO> insertList = new ArrayList<>();
             for (Long menuId : dto.getMenuIdSet()) {
-                BaseRoleRefMenuDO baseRoleRefMenuDO = new BaseRoleRefMenuDO();
-                baseRoleRefMenuDO.setRoleId(baseRoleDO.getId());
-                baseRoleRefMenuDO.setMenuId(menuId);
-                insertList.add(baseRoleRefMenuDO);
+                SysRoleRefMenuDO sysRoleRefMenuDO = new SysRoleRefMenuDO();
+                sysRoleRefMenuDO.setRoleId(sysRoleDO.getId());
+                sysRoleRefMenuDO.setMenuId(menuId);
+                insertList.add(sysRoleRefMenuDO);
             }
             roleRefMenuService.saveBatch(insertList);
         }
 
         if (CollUtil.isNotEmpty(dto.getUserIdSet())) {
-            List<BaseRoleRefUserDO> insertList = new ArrayList<>();
+            List<SysRoleRefUserDO> insertList = new ArrayList<>();
             for (Long userId : dto.getUserIdSet()) {
-                BaseRoleRefUserDO baseRoleRefUserDO = new BaseRoleRefUserDO();
-                baseRoleRefUserDO.setRoleId(baseRoleDO.getId());
-                baseRoleRefUserDO.setUserId(userId);
-                insertList.add(baseRoleRefUserDO);
+                SysRoleRefUserDO sysRoleRefUserDO = new SysRoleRefUserDO();
+                sysRoleRefUserDO.setRoleId(sysRoleDO.getId());
+                sysRoleRefUserDO.setUserId(userId);
+                insertList.add(sysRoleRefUserDO);
             }
             roleRefUserService.saveBatch(insertList);
         }
@@ -104,13 +104,13 @@ public class RoleServiceImpl extends ServiceImpl<BaseRoleMapper, BaseRoleDO> imp
      * 分页排序查询
      */
     @Override
-    public Page<BaseRoleDO> myPage(RolePageDTO dto) {
+    public Page<SysRoleDO> myPage(RolePageDTO dto) {
 
-        return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), BaseRoleDO::getName, dto.getName())
+        return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysRoleDO::getName, dto.getName())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntityThree::getRemark, dto.getRemark())
             .eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
-            .eq(dto.getDefaultFlag() != null, BaseRoleDO::getDefaultFlag, dto.getDefaultFlag()).page(dto.getPage());
+            .eq(dto.getDefaultFlag() != null, SysRoleDO::getDefaultFlag, dto.getDefaultFlag()).page(dto.getPage());
 
     }
 
@@ -127,16 +127,16 @@ public class RoleServiceImpl extends ServiceImpl<BaseRoleMapper, BaseRoleDO> imp
         }
 
         // 完善子表的数据
-        List<BaseRoleRefMenuDO> menuList =
-            roleRefMenuService.lambdaQuery().eq(BaseRoleRefMenuDO::getRoleId, rolePageVO.getId())
-                .select(BaseRoleRefMenuDO::getMenuId).list();
+        List<SysRoleRefMenuDO> menuList =
+            roleRefMenuService.lambdaQuery().eq(SysRoleRefMenuDO::getRoleId, rolePageVO.getId())
+                .select(SysRoleRefMenuDO::getMenuId).list();
 
-        List<BaseRoleRefUserDO> userList =
-            roleRefUserService.lambdaQuery().eq(BaseRoleRefUserDO::getRoleId, rolePageVO.getId())
-                .select(BaseRoleRefUserDO::getUserId).list();
+        List<SysRoleRefUserDO> userList =
+            roleRefUserService.lambdaQuery().eq(SysRoleRefUserDO::getRoleId, rolePageVO.getId())
+                .select(SysRoleRefUserDO::getUserId).list();
 
-        rolePageVO.setMenuIdSet(menuList.stream().map(BaseRoleRefMenuDO::getMenuId).collect(Collectors.toSet()));
-        rolePageVO.setUserIdSet(userList.stream().map(BaseRoleRefUserDO::getUserId).collect(Collectors.toSet()));
+        rolePageVO.setMenuIdSet(menuList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet()));
+        rolePageVO.setUserIdSet(userList.stream().map(SysRoleRefUserDO::getUserId).collect(Collectors.toSet()));
 
         return rolePageVO;
     }

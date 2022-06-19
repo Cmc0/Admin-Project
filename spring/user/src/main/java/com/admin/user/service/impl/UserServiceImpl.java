@@ -1,12 +1,14 @@
 package com.admin.user.service.impl;
 
 import cn.hutool.core.util.DesensitizedUtil;
+import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.entity.BaseUserInfoDO;
+import com.admin.common.model.entity.BaseEntityTwo;
+import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.UserUtil;
-import com.admin.user.mapper.UserInfoMapper;
+import com.admin.user.mapper.UserMapper;
 import com.admin.user.model.vo.UserBaseInfoVO;
 import com.admin.user.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,7 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class UserServiceImpl extends ServiceImpl<UserInfoMapper, BaseUserInfoDO> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, SysUserDO> implements UserService {
 
     @Resource
     HttpServletRequest httpServletRequest;
@@ -44,22 +46,27 @@ public class UserServiceImpl extends ServiceImpl<UserInfoMapper, BaseUserInfoDO>
 
         Long userId = UserUtil.getCurrentUserId();
 
+        UserBaseInfoVO userBaseInfoVO = new UserBaseInfoVO();
+
         if (BaseConstant.ADMIN_ID.equals(userId)) {
-            UserBaseInfoVO userBaseInfoVO = new UserBaseInfoVO();
             userBaseInfoVO.setAvatarUrl("");
             userBaseInfoVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
-            userBaseInfoVO.setPersonalStatement("");
+            userBaseInfoVO.setBio("");
             userBaseInfoVO.setEmail("");
-            userBaseInfoVO.setPhone("");
             userBaseInfoVO.setPasswordFlag(true);
             return userBaseInfoVO;
         }
 
-        UserBaseInfoVO userBaseInfoVO = baseMapper.baseInfo(userId);
+        SysUserDO sysUserDO = lambdaQuery().eq(BaseEntityTwo::getId, userId)
+            .select(SysUserDO::getAvatarUrl, SysUserDO::getNickname, SysUserDO::getEmail, SysUserDO::getBio,
+                SysUserDO::getEmail, SysUserDO::getPassword).one();
 
-        if (userBaseInfoVO != null) {
-            userBaseInfoVO.setEmail(DesensitizedUtil.email(userBaseInfoVO.getEmail())); // 脱敏
-            userBaseInfoVO.setPhone(DesensitizedUtil.mobilePhone(userBaseInfoVO.getPhone())); // 脱敏
+        if (sysUserDO != null) {
+            userBaseInfoVO.setAvatarUrl(sysUserDO.getAvatarUrl());
+            userBaseInfoVO.setNickname(sysUserDO.getNickname());
+            userBaseInfoVO.setBio(sysUserDO.getBio());
+            userBaseInfoVO.setEmail(DesensitizedUtil.email(sysUserDO.getEmail())); // 脱敏
+            userBaseInfoVO.setPasswordFlag(StrUtil.isNotBlank(sysUserDO.getPassword()));
         }
 
         return userBaseInfoVO;

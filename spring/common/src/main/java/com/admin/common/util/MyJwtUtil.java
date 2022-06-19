@@ -10,13 +10,16 @@ import cn.hutool.jwt.JWT;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.mapper.*;
+import com.admin.common.mapper.SysMenuMapper;
+import com.admin.common.mapper.SysRoleRefMenuMapper;
+import com.admin.common.mapper.SysRoleRefUserMapper;
+import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.entity.BaseMenuDO;
-import com.admin.common.model.entity.BaseUserSecurityDO;
+import com.admin.common.model.entity.SysMenuDO;
+import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
-import lombok.Data;
+import lombok.Setter;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,42 +31,35 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
-@Data
+@Setter
 public class MyJwtUtil {
 
-    private static BaseRoleRefUserMapper baseRoleUserMapper;
+    private static SysRoleRefUserMapper baseRoleUserMapper;
 
     @Resource
-    private void setBaseRoleUserMapper(BaseRoleRefUserMapper value) {
+    private void setBaseRoleUserMapper(SysRoleRefUserMapper value) {
         baseRoleUserMapper = value;
     }
 
-    private static BaseRoleRefMenuMapper baseRoleMenuMapper;
+    private static SysRoleRefMenuMapper baseRoleMenuMapper;
 
     @Resource
-    private void setBaseRoleMenuMapper(BaseRoleRefMenuMapper value) {
+    private void setBaseRoleMenuMapper(SysRoleRefMenuMapper value) {
         baseRoleMenuMapper = value;
     }
 
-    private static BaseMenuMapper baseMenuMapper;
+    private static SysMenuMapper sysMenuMapper;
 
     @Resource
-    private void setBaseMenuMapper(BaseMenuMapper value) {
-        baseMenuMapper = value;
+    private void setSysMenuMapper(SysMenuMapper value) {
+        sysMenuMapper = value;
     }
 
-    private static BaseUserMapper baseUserMapper;
+    private static SysUserMapper sysUserMapper;
 
     @Resource
-    private void setBaseUserMapper(BaseUserMapper value) {
-        baseUserMapper = value;
-    }
-
-    private static BaseUserSecurityMapper baseUserSecurityMapper;
-
-    @Resource
-    private void setBaseUserSecurityMapper(BaseUserSecurityMapper value) {
-        baseUserSecurityMapper = value;
+    private void setSysUserMapper(SysUserMapper value) {
+        sysUserMapper = value;
     }
 
     // 系统里的 jwt密钥
@@ -347,12 +343,12 @@ public class MyJwtUtil {
             return null;
         }
 
-        BaseUserSecurityDO baseUserSecurityDO = UserUtil.getUserJwtSecretSufByUserId(userId);
-        if (baseUserSecurityDO == null || StrUtil.isBlank(baseUserSecurityDO.getJwtSecretSuf())) {
+        SysUserDO sysUserDO = UserUtil.getUserJwtSecretSufByUserId(userId);
+        if (sysUserDO == null || StrUtil.isBlank(sysUserDO.getJwtSecretSuf())) {
             return null;
         }
 
-        return baseUserSecurityDO.getJwtSecretSuf();
+        return sysUserDO.getJwtSecretSuf();
     }
 
     /**
@@ -371,13 +367,13 @@ public class MyJwtUtil {
 
         List<SimpleGrantedAuthority> result = new ArrayList<>(); // 本方法返回值
 
-        List<BaseMenuDO> menuList = UserUtil.getMenuListByUserId(userId, 2); // 通过用户 id，获取 菜单集合
+        List<SysMenuDO> menuList = UserUtil.getMenuListByUserId(userId, 2); // 通过用户 id，获取 菜单集合
 
         if (menuList.size() == 0) {
             return result;
         }
 
-        Set<String> authsSet = menuList.stream().map(BaseMenuDO::getAuths).collect(Collectors.toSet());
+        Set<String> authsSet = menuList.stream().map(SysMenuDO::getAuths).collect(Collectors.toSet());
 
         // 组装权限，并去重
         Set<String> hashSet = new HashSet<>();

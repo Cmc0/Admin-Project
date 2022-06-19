@@ -3,7 +3,7 @@ package com.admin.menu.controller;
 import com.admin.common.model.dto.AddOrderNoDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
-import com.admin.common.model.entity.BaseMenuDO;
+import com.admin.common.model.entity.SysMenuDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.menu.model.dto.MenuInsertOrUpdateDTO;
 import com.admin.menu.model.dto.MenuPageDTO;
@@ -40,14 +40,14 @@ public class MenuController {
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('menu:page')")
-    public ApiResultVO<Page<BaseMenuDO>> myPage(@RequestBody @Valid MenuPageDTO dto) {
+    public ApiResultVO<Page<SysMenuDO>> myPage(@RequestBody @Valid MenuPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 
     @ApiOperation(value = "查询：树结构")
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('menu:page')")
-    public ApiResultVO<List<BaseMenuDO>> tree(@RequestBody @Valid MenuPageDTO dto) {
+    public ApiResultVO<List<SysMenuDO>> tree(@RequestBody @Valid MenuPageDTO dto) {
         return ApiResultVO.ok(baseService.tree(dto));
     }
 
@@ -67,7 +67,7 @@ public class MenuController {
 
     @PostMapping("/listForUser")
     @ApiOperation(value = "获取当前用户绑定的菜单")
-    public ApiResultVO<List<BaseMenuDO>> menuListForUser() {
+    public ApiResultVO<List<SysMenuDO>> menuListForUser() {
         return ApiResultVO.ok(baseService.menuListForUser());
     }
 

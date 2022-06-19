@@ -2,10 +2,10 @@ package com.admin.common.interceptor;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.json.JSONUtil;
-import com.admin.common.mapper.BaseUserIdMapper;
+import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.entity.BaseParamDO;
-import com.admin.common.model.entity.BaseUserIdDO;
+import com.admin.common.model.entity.SysParamDO;
+import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.ParamUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
@@ -27,7 +27,7 @@ import java.util.List;
 public class MyHandlerInterceptor implements HandlerInterceptor {
 
     @Resource
-    BaseUserIdMapper baseUserIdMapper;
+    SysUserMapper sysUserMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -49,35 +49,37 @@ public class MyHandlerInterceptor implements HandlerInterceptor {
         // 获取请求body
         String bodyStr = IoUtil.readUtf8(request.getInputStream());
 
-        BaseParamDO baseParamDO = JSONUtil.toBean(bodyStr, BaseParamDO.class);
+        SysParamDO sysParamDO = JSONUtil.toBean(bodyStr, SysParamDO.class);
 
-        if (!BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID.equals(baseParamDO.getId())) {
+        if (!BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID.equals(sysParamDO.getId())) {
             return;
         }
 
-        if ("1".equals(baseParamDO.getValue())) {
+        if ("1".equals(sysParamDO.getValue())) {
             // 如果设置为都不互斥，则结束方法
             return;
         }
 
         String paramValue = ParamUtil.getValueById(BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID);
 
-        if (paramValue == null || paramValue.equals(baseParamDO.getValue())) {
+        if (paramValue == null || paramValue.equals(sysParamDO.getValue())) {
             return; // 如果value没有发生改变，则不处理
         }
 
         // 下线有互斥关系的账号
-        String value = baseParamDO.getValue();
+        String value = sysParamDO.getValue();
         if ("2".equals(value)) {
             // 2 相同端的互斥（H5/移动端/桌面程序）
-            List<BaseUserIdDO> userIdDbList = ChainWrappers.lambdaQueryChain(baseUserIdMapper).select(BaseUserIdDO::getId).list();
-            for (BaseUserIdDO item : userIdDbList) {
+            List<SysUserDO> userIdDbList =
+                ChainWrappers.lambdaQueryChain(sysUserMapper).select(SysUserDO::getId).list();
+            for (SysUserDO item : userIdDbList) {
                 MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(item.getId(), null, null, false);
             }
         } else if ("3".equals(value)) {
             // 3 所有端都互斥
-            List<BaseUserIdDO> userIdDbList = ChainWrappers.lambdaQueryChain(baseUserIdMapper).select(BaseUserIdDO::getId).list();
-            for (BaseUserIdDO item : userIdDbList) {
+            List<SysUserDO> userIdDbList =
+                ChainWrappers.lambdaQueryChain(sysUserMapper).select(SysUserDO::getId).list();
+            for (SysUserDO item : userIdDbList) {
                 MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(item.getId(), null, null, true);
             }
         }

@@ -1,12 +1,12 @@
 package com.admin.common.mapper;
 
-import com.admin.common.model.entity.BaseMenuDO;
+import com.admin.common.model.entity.SysMenuDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Set;
 
-public interface BaseMenuMapper extends BaseMapper<BaseMenuDO> {
+public interface SysMenuMapper extends BaseMapper<SysMenuDO> {
 
     // 通过 menuIdSet，获取 userIdSet
     Set<Long> getUserIdSetByMenuIdSet(@Param("menuIdSet") Set<Long> menuIdSet);

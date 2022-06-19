@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @TableName(value = "sys_menu")
 @Data
 @ApiModel(description = "菜单主表")
-public class BaseMenuDO extends BaseEntityFour<BaseMenuDO> {
+public class SysMenuDO extends BaseEntityFour<SysMenuDO> {
 
     @ApiModelProperty(value = "页面的 path，备注：相同父菜单下，子菜单 path不能重复")
     private String path;

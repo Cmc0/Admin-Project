@@ -2,7 +2,7 @@ package com.admin.role.controller;
 
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
-import com.admin.common.model.entity.BaseRoleDO;
+import com.admin.common.model.entity.SysRoleDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.role.model.dto.RoleInsertOrUpdateDTO;
 import com.admin.role.model.dto.RolePageDTO;
@@ -38,7 +38,7 @@ public class RoleController {
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('role:page')")
-    public ApiResultVO<Page<BaseRoleDO>> myPage(@RequestBody @Valid RolePageDTO dto) {
+    public ApiResultVO<Page<SysRoleDO>> myPage(@RequestBody @Valid RolePageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 

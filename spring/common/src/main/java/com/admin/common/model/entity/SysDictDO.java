@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @TableName(value = "sys_dict")
 @Data
 @ApiModel(description = "字典主表")
-public class BaseDictDO extends BaseEntityThree {
+public class SysDictDO extends BaseEntityThree {
 
     @ApiModelProperty(value = "字典 key（不能重复），字典项要冗余这个 key，目的：方便操作")
     private String dictKey;
