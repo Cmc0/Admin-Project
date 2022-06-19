@@ -45,7 +45,7 @@ export default function () {
                 subTitle="Will have the most powerful !"
                 actions={
                     <div>
-                        <div>或者 <a title={"注册"}>注册</a></div>
+                        <div>或者 <a title={"注册"} onClick={InDev}>注册</a></div>
                         <Divider plain>
                             <Typography.Text type="secondary">其他登录方式</Typography.Text>
                         </Divider>
@@ -125,7 +125,7 @@ export default function () {
                                         <Typography.Text type="secondary"> 7天免登录</Typography.Text>
                                     </span>
                     </ProFormCheckbox>
-                    <a title={"忘记密码"}>
+                    <a title={"忘记密码"} onClick={InDev}>
                         忘记密码
                     </a>
                 </div>
