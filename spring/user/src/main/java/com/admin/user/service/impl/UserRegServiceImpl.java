@@ -12,10 +12,7 @@ import com.admin.common.model.constant.BaseRegexConstant;
 import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.util.MyMailUtil;
-import com.admin.common.util.MyRsaUtil;
-import com.admin.common.util.ParamUtil;
-import com.admin.common.util.UserUtil;
+import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.model.dto.UserRegByEmailDTO;
 import com.admin.user.service.UserRegService;
@@ -83,7 +80,7 @@ public class UserRegServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
             sysUserDO.setNickname(UserUtil.getDefaultNickname());
             sysUserDO.setBio("");
             sysUserDO.setAvatarUrl("");
-            sysUserDO.setPassword(dto.getPassword());
+            sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getPassword(), true));
             sysUserDO.setEmail(dto.getEmail());
 
             save(sysUserDO); // 保存

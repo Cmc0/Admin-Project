@@ -17,9 +17,8 @@ public class PasswordConvertUtil {
 
     /**
      * 密码加密
-     * checkPasswordBlank：一般情况下就传 true
      */
-    public static String converter(String password, boolean checkPasswordBlank) {
+    public static String convert(String password, boolean checkPasswordBlank) {
 
         if (StrUtil.isBlank(password)) {
             if (checkPasswordBlank) {
