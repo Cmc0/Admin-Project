@@ -95,6 +95,7 @@ export default function () {
                                 rules={[
                                     {
                                         required: true,
+                                        message: "请输入邮箱",
                                     },
                                 ]}
                             />
@@ -103,11 +104,13 @@ export default function () {
                                 fieldProps={{
                                     size: 'large',
                                     prefix: <LockOutlined/>,
+                                    allowClear: true
                                 }}
                                 placeholder={'密码'}
                                 rules={[
                                     {
                                         required: true,
+                                        message: "请输入密码",
                                     },
                                 ]}
                             />
