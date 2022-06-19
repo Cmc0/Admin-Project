@@ -113,7 +113,7 @@ export default function () {
                             />
                         </>
                     </Tabs.TabPane>
-                    <Tabs.TabPane key={'phone'} tab={'手机快捷登录'}>
+                    <Tabs.TabPane key={'phone'} tab={'手机号登录'}>
                         <>
                         </>
                     </Tabs.TabPane>
