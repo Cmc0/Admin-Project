@@ -124,8 +124,9 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    const userMenuListTemp: SysMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
-                    userMenuListTemp.filter(item => item.showFlag).forEach(item => {
+                    let userMenuListTemp: SysMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
+                    userMenuListTemp = userMenuListTemp.filter(item => item.showFlag);
+                    userMenuListTemp.forEach(item => {
                         if (item.icon) {
                             // @ts-ignore
                             item.icon = <MyIcon icon={item.icon}/>
