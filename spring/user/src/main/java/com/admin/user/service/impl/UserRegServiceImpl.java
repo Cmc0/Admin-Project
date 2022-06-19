@@ -117,7 +117,7 @@ public class UserRegServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
             StrBuilder strBuilder = new StrBuilder("尊敬的用户您好，您本次注册的验证码是（10分钟内有效）：");
             String subject = "邮箱注册";
 
-            // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则controller层code的正则表达式校验也需要改
+            // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
             String code = RandomUtil.randomNumbers(6).toUpperCase();
             strBuilder.append(code);
 

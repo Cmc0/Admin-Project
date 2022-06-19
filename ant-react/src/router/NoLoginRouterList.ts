@@ -14,6 +14,10 @@ const NoLoginRouterList: INoLoginRouterList[] = [
         path: CommonConstant.LOGIN_PATH,
         element: 'LoginLogin',
     },
+    {
+        path: CommonConstant.REGISTER_PATH,
+        element: 'RegisterRegister',
+    },
 ]
 
 export default NoLoginRouterList

@@ -45,7 +45,7 @@ export default function () {
                 subTitle="Will have the most powerful !"
                 actions={
                     <div>
-                        <div>或者 <a title={"注册"} onClick={InDev}>注册</a></div>
+                        <div>或者 <a title={"注册"} onClick={() => getAppNav()(CommonConstant.REGISTER_PATH)}>注册</a></div>
                         <Divider plain>
                             <Typography.Text type="secondary">其他登录方式</Typography.Text>
                         </Divider>
