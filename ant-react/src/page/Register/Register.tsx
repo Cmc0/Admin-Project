@@ -9,10 +9,11 @@ import {ToastSuccess} from "../../../util/ToastUtil";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
 import {getAppNav} from "@/App";
 import {closeWebSocket} from "../../../util/WebSocketUtil";
-import {useAppDispatch} from "@/store";
+import {useAppDispatch, useAppSelector} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
-import {UserRegByEmailDTO, userRegEmailSendCode} from "@/api/UserRegController";
+import {UserRegByEmailDTO, userRegEmail, userRegEmailSendCode} from "@/api/UserRegController";
+import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
 
 type RegisterType = 'email' | 'phone';
 
@@ -21,6 +22,7 @@ export default function () {
     const [registerType, setRegisterType] = useState<RegisterType>('email');
     const jwt = localStorage.getItem(LocalStorageKey.JWT)
     const appDispatch = useAppDispatch()
+    const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
 
     const [useForm] = Form.useForm<UserRegByEmailDTO>();
 
@@ -46,8 +48,19 @@ export default function () {
                         <a title={"登录已有账号"} onClick={() => getAppNav()(CommonConstant.LOGIN_PATH)}>登录已有账号</a>
                     </div>
                 }
-                onFinish={async (formData) => {
-                    console.log(formData)
+                onFinish={async (form) => {
+
+                    const formTemp = {...form}
+
+                    const date = new Date()
+                    formTemp.origPassword = RSAEncryptPro(formTemp.password, rsaPublicKey, date)
+                    formTemp.password = PasswordRSAEncrypt(formTemp.password, rsaPublicKey, date)
+
+                    await userRegEmail(formTemp).then(res => {
+                        ToastSuccess(res.msg)
+                        getAppNav()(CommonConstant.LOGIN_PATH)
+                    })
+
                     return true
                 }}
             >
@@ -98,12 +111,6 @@ export default function () {
                                     size: 'large',
                                 }}
                                 placeholder={'请输入验证码'}
-                                captchaTextRender={(timing, count) => {
-                                    if (timing) {
-                                        return `${count} 获取验证码`;
-                                    }
-                                    return '获取验证码';
-                                }}
                                 name="code"
                                 rules={[
                                     {
