@@ -65,7 +65,13 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<MenuI
                     ? [
                         {
                             dataIndex: 'auths',
-                            formItemProps: {required: true},
+                            formItemProps: {
+                                rules: [
+                                    {
+                                        required: true,
+                                    },
+                                ],
+                            },
                             valueType: 'textarea',
                             fieldProps: {
                                 showCount: true,
