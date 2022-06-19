@@ -111,17 +111,6 @@ export default function () {
                                     },
                                 ]}
                             />
-                            <div className={"flex jc-sb"}>
-                                <ProFormCheckbox name="rememberMe">
-                                    <span title={"记住我"}>
-                                        记住我
-                                        <Typography.Text type="secondary"> 7天免登录</Typography.Text>
-                                    </span>
-                                </ProFormCheckbox>
-                                <a title={"忘记密码"}>
-                                    忘记密码
-                                </a>
-                            </div>
                         </>
                     </Tabs.TabPane>
                     <Tabs.TabPane key={'phone'} tab={'手机快捷登录'}>
@@ -129,6 +118,17 @@ export default function () {
                         </>
                     </Tabs.TabPane>
                 </Tabs>
+                <div className={"flex jc-sb"}>
+                    <ProFormCheckbox name="rememberMe">
+                                    <span title={"记住我"}>
+                                        记住我
+                                        <Typography.Text type="secondary"> 7天免登录</Typography.Text>
+                                    </span>
+                    </ProFormCheckbox>
+                    <a title={"忘记密码"}>
+                        忘记密码
+                    </a>
+                </div>
             </LoginFormPage>
         </div>
     )
