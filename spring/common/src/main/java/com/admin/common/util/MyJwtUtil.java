@@ -10,16 +10,11 @@ import cn.hutool.jwt.JWT;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.mapper.SysMenuMapper;
-import com.admin.common.mapper.SysRoleRefMenuMapper;
-import com.admin.common.mapper.SysRoleRefUserMapper;
-import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.SysMenuDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
-import lombok.Setter;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,36 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
-@Setter
 public class MyJwtUtil {
-
-    private static SysRoleRefUserMapper baseRoleUserMapper;
-
-    @Resource
-    private void setBaseRoleUserMapper(SysRoleRefUserMapper value) {
-        baseRoleUserMapper = value;
-    }
-
-    private static SysRoleRefMenuMapper baseRoleMenuMapper;
-
-    @Resource
-    private void setBaseRoleMenuMapper(SysRoleRefMenuMapper value) {
-        baseRoleMenuMapper = value;
-    }
-
-    private static SysMenuMapper sysMenuMapper;
-
-    @Resource
-    private void setSysMenuMapper(SysMenuMapper value) {
-        sysMenuMapper = value;
-    }
-
-    private static SysUserMapper sysUserMapper;
-
-    @Resource
-    private void setSysUserMapper(SysUserMapper value) {
-        sysUserMapper = value;
-    }
 
     // 系统里的 jwt密钥
     private static final String JWT_SECRET_SYS =

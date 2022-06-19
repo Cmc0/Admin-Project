@@ -159,10 +159,10 @@ public class UserUtil {
         // 判断默认角色是否包含了菜单 idSet，如果是，则直接返回 未被注销的，所有用户 idSet
         boolean defaultRoleHasMenuFlag = sysMenuMapper.checkDefaultRoleHasMenu(menuIdSet);
         if (defaultRoleHasMenuFlag) {
-            List<SysUserDO> baseUserSecurityDOList =
+            List<SysUserDO> sysUserDOList =
                 ChainWrappers.lambdaQueryChain(sysUserMapper).select(SysUserDO::getId).eq(SysUserDO::getDelFlag, false)
                     .list();
-            return baseUserSecurityDOList.stream().map(SysUserDO::getId).collect(Collectors.toSet());
+            return sysUserDOList.stream().map(SysUserDO::getId).collect(Collectors.toSet());
         }
 
         // 通过 menuIdSet，获取 userIdSet
@@ -181,11 +181,12 @@ public class UserUtil {
         List<SysMenuDO> resList = new ArrayList<>(); // 本方法返回值
 
         // 获取用户绑定的 角色
-        List<SysRoleRefUserDO> baseRoleRefUserList =
+        List<SysRoleRefUserDO> sysRoleRefUserDOList =
             ChainWrappers.lambdaQueryChain(sysRoleRefUserMapper).eq(SysRoleRefUserDO::getUserId, userId)
                 .select(SysRoleRefUserDO::getRoleId).list();
 
-        Set<Long> roleIdSet = baseRoleRefUserList.stream().map(SysRoleRefUserDO::getRoleId).collect(Collectors.toSet());
+        Set<Long> roleIdSet =
+            sysRoleRefUserDOList.stream().map(SysRoleRefUserDO::getRoleId).collect(Collectors.toSet());
 
         // 查询是否有 默认角色，条件：没被禁用的
         SysRoleDO roleOne = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
@@ -199,10 +200,10 @@ public class UserUtil {
         }
 
         // 获取 角色绑定的菜单
-        List<SysRoleRefMenuDO> baseRoleRefMenuList =
+        List<SysRoleRefMenuDO> sysRoleRefMenuDOList =
             ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper).in(SysRoleRefMenuDO::getRoleId, roleIdSet)
                 .select(SysRoleRefMenuDO::getMenuId).list();
-        if (baseRoleRefMenuList.size() == 0) {
+        if (sysRoleRefMenuDOList.size() == 0) {
             return resList; // 结束方法
         }
 
@@ -224,7 +225,8 @@ public class UserUtil {
             return resList; // 结束方法
         }
 
-        Set<Long> menuIdSet = baseRoleRefMenuList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet());
+        Set<Long> menuIdSet =
+            sysRoleRefMenuDOList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet());
 
         // 开始进行匹配，组装返回值
         for (SysMenuDO item : allMenuDbList) {
