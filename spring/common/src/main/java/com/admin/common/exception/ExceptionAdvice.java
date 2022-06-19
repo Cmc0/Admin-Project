@@ -3,6 +3,7 @@ package com.admin.common.exception;
 import cn.hutool.core.map.MapUtil;
 import com.admin.common.model.vo.ApiResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionHandlerAdvice {
+public class ExceptionAdvice {
 
     /**
      * 参数校验异常
@@ -46,6 +47,23 @@ public class ExceptionHandlerAdvice {
         e.printStackTrace();
 
         return getBaseExceptionApiResult(e);
+    }
+
+    /**
+     * 权限不够时的异常处理
+     */
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ApiResultVO<?> handleAccessDeniedException(AccessDeniedException e) {
+
+        e.printStackTrace();
+
+        try {
+            ApiResultVO.error(BaseBizCodeEnum.INSUFFICIENT_PERMISSIONS); // 这里肯定会抛出 BaseException异常
+        } catch (BaseException baseException) {
+            return getBaseExceptionApiResult(baseException);
+        }
+
+        return null; // 这里不会执行，只是为了通过语法检查
     }
 
     /**
