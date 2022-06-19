@@ -16,7 +16,7 @@ import {useAppDispatch} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
 
-type LoginType = 'password';
+type LoginType = 'password' | 'phone';
 
 export default function () {
 
@@ -76,7 +76,13 @@ export default function () {
                     return true
                 }}
             >
-                <Tabs activeKey={loginType} onChange={(activeKey) => setLoginType(activeKey as LoginType)}>
+                <Tabs activeKey={loginType} onChange={(activeKey) => {
+                    if (activeKey === 'phone') {
+                        InDev()
+                        return
+                    }
+                    setLoginType(activeKey as LoginType)
+                }}>
                     <Tabs.TabPane key={'password'} tab={'账号密码登录'}>
                         <>
                             <ProFormText
@@ -105,20 +111,24 @@ export default function () {
                                     },
                                 ]}
                             />
+                            <div className={"flex jc-sb"}>
+                                <ProFormCheckbox name="rememberMe">
+                                    <span title={"记住我"}>
+                                        记住我
+                                        <Typography.Text type="secondary"> 7天免登录</Typography.Text>
+                                    </span>
+                                </ProFormCheckbox>
+                                <a title={"忘记密码"}>
+                                    忘记密码
+                                </a>
+                            </div>
+                        </>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane key={'phone'} tab={'手机快捷登录'}>
+                        <>
                         </>
                     </Tabs.TabPane>
                 </Tabs>
-                <div className={"flex jc-sb"}>
-                    <ProFormCheckbox name="rememberMe">
-                        <span title={"记住我"}>
-                            记住我
-                            <Typography.Text type="secondary"> 7天免登录</Typography.Text>
-                        </span>
-                    </ProFormCheckbox>
-                    <a title={"忘记密码"}>
-                        忘记密码
-                    </a>
-                </div>
             </LoginFormPage>
         </div>
     )
