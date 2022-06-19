@@ -31,7 +31,7 @@ public class PasswordConvertUtil {
 
         String salt = IdUtil.simpleUUID(); // 取盐
 
-        String saltPro = shaEncode2(salt); // 盐处理一下
+        String saltPro = shaEncode(salt); // 盐处理一下
 
         String p = cycle6(saltPro + password); // 循环
 
@@ -45,9 +45,11 @@ public class PasswordConvertUtil {
      * 循环加密：6次
      */
     private static String cycle6(String p) {
+
         for (int i = 0; i < 6; i++) {
             p = shaEncode(p);
         }
+
         return p;
     }
 
@@ -69,28 +71,19 @@ public class PasswordConvertUtil {
 
         String[] split = source.split(REGEX);
 
-        split[0] = shaEncode2(split[0]); // 盐处理一下
+        split[0] = shaEncode(split[0]); // 盐处理一下
 
         return cycle6(split[0] + target).equals(split[1]);
     }
 
     /**
-     * SHA256和SHA512摘要算法混合
+     * 摘要算法
      */
     private static String shaEncode(String password) {
-        Digester digester = new Digester(DigestAlgorithm.SHA256);
-        password = digester.digestHex(password);
-        digester = new Digester(DigestAlgorithm.SHA512);
-        return digester.digestHex(password);
+
+        Digester digester = new Digester(DigestAlgorithm.SHA512);
+
+        return digester.digestHex(digester.digestHex(password));
     }
 
-    /**
-     * SHA256和SHA512摘要算法混合：2
-     */
-    private static String shaEncode2(String password) {
-        Digester digester = new Digester(DigestAlgorithm.SHA512);
-        password = digester.digestHex(password);
-        digester = new Digester(DigestAlgorithm.SHA256);
-        return digester.digestHex(password);
-    }
 }

@@ -13,7 +13,7 @@ import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
-import com.admin.user.model.dto.UserLoginPasswordDTO;
+import com.admin.user.model.dto.UserLoginByPasswordDTO;
 import com.admin.user.service.UserLoginService;
 import com.admin.websocket.model.entity.WebSocketDO;
 import com.admin.websocket.service.WebSocketService;
@@ -43,7 +43,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
      * 账号密码登录
      */
     @Override
-    public String password(UserLoginPasswordDTO dto) {
+    public String userLoginByPassword(UserLoginByPasswordDTO dto) {
 
         // 密码，非对称，解密
         dto.setPassword(MyRsaUtil.rsaDecrypt(dto.getPassword()));
@@ -65,7 +65,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
     /**
      * admin 账号密码登录
      */
-    private String passwordForAdmin(UserLoginPasswordDTO dto) {
+    private String passwordForAdmin(UserLoginByPasswordDTO dto) {
 
         if (!BaseConfiguration.adminProperties.getAdminPassword().equals(dto.getPassword())) {
             ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
@@ -78,7 +78,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
     /**
      * 账号密码登录
      */
-    private String passwordByAccount(UserLoginPasswordDTO dto) {
+    private String passwordByAccount(UserLoginByPasswordDTO dto) {
 
         SysUserDO sysUserDO = lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount())
             .select(SysUserDO::getPassword, BaseEntityThree::getDelFlag, BaseEntityThree::getEnableFlag,

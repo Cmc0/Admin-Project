@@ -1,6 +1,7 @@
 package com.admin.common.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.*;
 import com.admin.common.model.constant.BaseConstant;
@@ -264,6 +265,14 @@ public class UserUtil {
             }
         }
 
+    }
+
+    /**
+     * 获取默认的用户名
+     * 备注：不使用邮箱的原因，因为邮箱不符合 用户昵称的规则：只能包含中文，数字，字母，下划线，长度2-20
+     */
+    public static String getDefaultNickname() {
+        return "用户昵称" + RandomUtil.randomString(6).toUpperCase();
     }
 
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class UserLoginPasswordDTO {
+public class UserLoginByPasswordDTO {
 
     @NotBlank
     @ApiModelProperty(value = "账号：邮箱")

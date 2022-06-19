@@ -25,6 +25,7 @@ public enum BaseBizCodeEnum implements IBizCode {
     LOGIN_EXPIRED(100111, "登录过期，请重新登录"), //
     FORCED_OFFLINE(100111, "账号在其他地方登录，您被迫下线"), //
     PARENT_ID_CANNOT_BE_EQUAL_TO_ID(100141, "操作失败：parentId 不能等于 id"), //
+    EMAIL_DOES_NOT_EXIST_PLEASE_RE_ENTER(300161, "操作失败：邮箱不存在，请重新输入"), //
     ;
 
     private int code;
