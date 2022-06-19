@@ -82,7 +82,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
 
         SysUserDO sysUserDO = lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount())
             .select(SysUserDO::getPassword, BaseEntityThree::getDelFlag, BaseEntityThree::getEnableFlag,
-                SysUserDO::getJwtSecretSuf).one();
+                SysUserDO::getJwtSecretSuf, BaseEntityTwo::getId).one();
 
         // 账户是否存在
         if (sysUserDO == null) {
@@ -93,13 +93,11 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
             ApiResultVO.error(BizCodeEnum.NO_PASSWORD_SET); // 未设置密码，请点击忘记密码，进行密码设置
         }
 
-        // 校验密码
+        // 校验密码，成功之后，再判断是否被冻结，免得透露用户被封号的信息
         if (!PasswordConvertUtil.match(sysUserDO.getPassword(), dto.getPassword())) {
             ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
         }
 
-        // 校验成功之后，再判断是否被冻结，免得透露用户被封号的信息
-        // 如果被注销了
         if (sysUserDO.getDelFlag()) {
             ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
         }
