@@ -69,6 +69,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<MenuI
                                 rules: [
                                     {
                                         required: true,
+                                        message: '请输入权限'
                                     },
                                 ],
                             },
