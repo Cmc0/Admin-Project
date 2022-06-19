@@ -15,13 +15,13 @@ import {setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {menuListForUser} from "@/api/MenuController";
 import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
-import BaseMenuDO from "@/model/entity/BaseMenuDO";
+import SysMenuDO from "@/model/entity/SysMenuDO";
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 
 // 前往：第一个页面
-function goFirstPage(menuList: BaseMenuDO[]) {
+function goFirstPage(menuList: SysMenuDO[]) {
 
     if (window.location.pathname !== CommonConstant.MAIN_PATH) {
         return
@@ -61,7 +61,7 @@ export default function () {
     }
 
     // 设置 element
-    function doSetElement(userMenuList: BaseMenuDO[]) {
+    function doSetElement(userMenuList: SysMenuDO[]) {
         if (element == null) {
             setElement(<MainLayoutElement userMenuList={userMenuList}/>)
         }
@@ -103,7 +103,7 @@ export default function () {
 }
 
 interface IMainLayoutElement {
-    userMenuList: BaseMenuDO[]
+    userMenuList: SysMenuDO[]
 }
 
 // MainLayout组件页面
@@ -124,7 +124,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    const userMenuListTemp: BaseMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
+                    const userMenuListTemp: SysMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
                     userMenuListTemp.filter(item => item.showFlag).forEach(item => {
                         if (item.icon) {
                             // @ts-ignore
@@ -136,7 +136,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             fixSiderbar={true}
             fixedHeader={true}
-            menuItemRender={(item: BaseMenuDO, dom: React.ReactNode) => (
+            menuItemRender={(item: SysMenuDO, dom: React.ReactNode) => (
                 <a
                     onClick={() => {
                         if (item.path && item.router) {

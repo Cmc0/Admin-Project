@@ -56,7 +56,7 @@ export interface RolePageDTO extends MyPageDTO {
     remark?: string // 描述/备注
 }
 
-export interface BaseRoleDO {
+export interface SysRoleDO {
     createId?: number // 创建人id
     createTime?: string // 创建时间
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
@@ -72,5 +72,5 @@ export interface BaseRoleDO {
 
 // 角色-管理 分页排序查询
 export function rolePage(form: RolePageDTO) {
-    return $http.myProPagePost<BaseRoleDO>('/role/page', form)
+    return $http.myProPagePost<SysRoleDO>('/role/page', form)
 }

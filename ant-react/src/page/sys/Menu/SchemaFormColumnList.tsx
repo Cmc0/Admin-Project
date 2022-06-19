@@ -2,7 +2,7 @@ import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {MenuInsertOrUpdateDTO} from "@/api/MenuController";
-import BaseMenuDO from "@/model/entity/BaseMenuDO";
+import SysMenuDO from "@/model/entity/SysMenuDO";
 import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
@@ -12,7 +12,7 @@ export const InitForm = {
     showFlag: true,
 }
 
-const SchemaFormColumnList = (treeList: BaseMenuDO[], useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(

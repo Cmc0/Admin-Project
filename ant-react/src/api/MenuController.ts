@@ -1,6 +1,6 @@
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
-import BaseMenuDO from "@/model/entity/BaseMenuDO";
+import SysMenuDO from "@/model/entity/SysMenuDO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
@@ -19,7 +19,7 @@ export function menuDeleteByIdSet(form: NotEmptyIdSet) {
 export interface MenuInfoByIdVO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
-    children?: BaseMenuDO // 子节点
+    children?: SysMenuDO // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
@@ -58,7 +58,7 @@ export interface MenuInsertOrUpdateDTO {
     name?: string // 菜单名
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     parentId?: number // 父节点id（顶级则为0）
-    path?: string // 页面的 path，备注：path不能重复
+    path?: string // 页面的 path，备注：相同父菜单下，子菜单 path不能重复
     redirect?: string // 重定向：linkFlag === false 时使用，不必填，暂时未使用
     remark?: string // 描述/备注
     roleIdSet?: number[] // 角色 idSet
@@ -73,7 +73,7 @@ export function menuInsertOrUpdate(form: MenuInsertOrUpdateDTO) {
 
 // 菜单-管理 获取当前用户绑定的菜单
 export function menuListForUser() {
-    return $http.myProTreePost<BaseMenuDO>('/menu/listForUser')
+    return $http.myProTreePost<SysMenuDO>('/menu/listForUser')
 }
 
 export interface MenuPageDTO extends MyPageDTO {
@@ -88,7 +88,7 @@ export interface MenuPageDTO extends MyPageDTO {
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
     parentId?: number // 父节点id（顶级则为0）
-    path?: string // 页面的 path，备注：path不能重复
+    path?: string // 页面的 path，备注：相同父菜单下，子菜单 path不能重复
     redirect?: string // 重定向：linkFlag === false 时使用，不必填，暂时未使用
     router?: string // 路由
     showFlag?: boolean // 是否显示在 左侧的菜单栏里面，如果为 false，也可以通过 $router.push()访问到
@@ -96,10 +96,10 @@ export interface MenuPageDTO extends MyPageDTO {
 
 // 菜单-管理 分页排序查询
 export function menuPage(form: MenuPageDTO) {
-    return $http.myProPagePost<BaseMenuDO>('/menu/page', form)
+    return $http.myProPagePost<SysMenuDO>('/menu/page', form)
 }
 
 // 菜单-管理 查询：树结构
 export function menuTree(form: MenuPageDTO) {
-    return $http.myProTreePost<BaseMenuDO>('/menu/tree', form)
+    return $http.myProTreePost<SysMenuDO>('/menu/tree', form)
 }

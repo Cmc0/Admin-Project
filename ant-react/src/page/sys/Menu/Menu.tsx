@@ -1,4 +1,4 @@
-import BaseMenuDO from "@/model/entity/BaseMenuDO";
+import SysMenuDO from "@/model/entity/SysMenuDO";
 import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {
@@ -34,7 +34,7 @@ export default function () {
 
     const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
 
-    const [treeList, setTreeList] = useState<BaseMenuDO[]>([]);
+    const [treeList, setTreeList] = useState<SysMenuDO[]>([]);
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
@@ -45,7 +45,7 @@ export default function () {
     const currentForm = useRef<MenuInsertOrUpdateDTO>({})
 
     return <>
-        <ProTable<BaseMenuDO, MenuPageDTO>
+        <ProTable<SysMenuDO, MenuPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
             pagination={{

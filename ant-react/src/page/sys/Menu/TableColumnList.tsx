@@ -1,5 +1,5 @@
 import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
-import BaseMenuDO from "@/model/entity/BaseMenuDO";
+import SysMenuDO from "@/model/entity/SysMenuDO";
 import {Dropdown, Menu, Space} from "antd";
 import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
@@ -13,7 +13,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 
 const QuicklyAddAuth = "快速添加权限"
 
-const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<BaseMenuDO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
