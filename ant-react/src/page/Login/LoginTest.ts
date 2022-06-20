@@ -6,7 +6,7 @@ export default function (useForm: FormInstance<UserLoginByPasswordDTO>) {
     console.log('LoginTest')
 
     execTest({
-        name: '账号密码未输入',
+        name: '全部未输入',
         func: () => {
             useForm.setFieldsValue({
                 account: '',
@@ -76,6 +76,5 @@ export default function (useForm: FormInstance<UserLoginByPasswordDTO>) {
             useForm.submit()
         }
     })
-
 
 }
