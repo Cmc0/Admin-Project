@@ -40,7 +40,7 @@ public interface BaseConstant {
     // properties 相关 ↑
 
     // id 相关 ↓
-    Long ADMIN_ID = 1L; // 管理员 id
+    Long ADMIN_ID = 0L; // 管理员 id
     Long SYS_ID = -1L; // 系统缺省 id
     // id 相关 ↑
 
