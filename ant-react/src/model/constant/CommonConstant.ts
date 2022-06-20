@@ -3,5 +3,5 @@ export default {
     MAIN_PATH: '/main',
     LOGIN_PATH: '/login',
     REGISTER_PATH: '/register',
-    MODAL_ANIM_TIME: 400, // modal 关闭动画的时间
+    MODAL_ANIM_TIME: 500, // modal 关闭动画的时间
 }
