@@ -6,7 +6,43 @@ export default function (useForm: FormInstance<UserLoginByPasswordDTO>) {
     console.log('LoginTest')
 
     execTest({
-        name: '错误登录测试-1',
+        name: '账号密码未输入',
+        func: () => {
+            useForm.setFieldsValue({
+                account: '',
+                password: ''
+            })
+
+            useForm.submit()
+        }
+    })
+
+    execTest({
+        name: '账号未输入',
+        func: () => {
+            useForm.setFieldsValue({
+                account: '',
+                password: 'suancai123'
+            })
+
+            useForm.submit()
+        }
+    })
+
+    execTest({
+        name: '密码未输入',
+        func: () => {
+            useForm.setFieldsValue({
+                account: 'admin',
+                password: ''
+            })
+
+            useForm.submit()
+        }
+    })
+
+    execTest({
+        name: '密码错误',
         func: () => {
             useForm.setFieldsValue({
                 account: 'admin',
@@ -18,10 +54,22 @@ export default function (useForm: FormInstance<UserLoginByPasswordDTO>) {
     })
 
     execTest({
-        name: '错误登录测试-2',
+        name: '账号错误',
         func: () => {
             useForm.setFieldsValue({
                 account: 'admin123',
+                password: 'suancai'
+            })
+
+            useForm.submit()
+        }
+    })
+
+    execTest({
+        name: '登录成功',
+        func: () => {
+            useForm.setFieldsValue({
+                account: 'admin',
                 password: 'suancai'
             })
 

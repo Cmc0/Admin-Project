@@ -12,9 +12,9 @@ export function execTest(data: IExecTest) {
     setTimeout(() => {
         const execData = queue.shift();
         if (execData) {
-            console.log(`【${execData.name}】开始 ↓`)
+            console.log(`【${execData.name}】测试开始 ↓ ${new Date().toLocaleString()}`)
             execData.func() // 执行方法
-            console.log(`【${execData.name}】完成 ↑`)
+            console.log(`【${execData.name}】测试完成 ↑ ${new Date().toLocaleString()}`)
         }
     }, 1000 * length)
 
