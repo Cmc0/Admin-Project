@@ -200,7 +200,7 @@ public class UserUtil {
             return resList; // 结束方法
         }
 
-        // 获取 角色绑定的菜单
+        // 获取：角色绑定的菜单
         List<SysRoleRefMenuDO> sysRoleRefMenuDOList =
             ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper).in(SysRoleRefMenuDO::getRoleId, roleIdSet)
                 .select(SysRoleRefMenuDO::getMenuId).list();
