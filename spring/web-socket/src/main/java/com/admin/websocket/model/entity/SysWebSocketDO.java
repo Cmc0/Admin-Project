@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_sys_web_socket")
+@TableName(value = "sys_web_socket")
 @Data
 @ApiModel(description = "WebSocket 连接记录主表")
 public class SysWebSocketDO extends BaseEntityThree {
