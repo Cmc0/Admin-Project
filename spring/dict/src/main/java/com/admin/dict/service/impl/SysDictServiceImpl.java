@@ -128,14 +128,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
             return resList;
         }
 
-        // 过滤出为字典项的数据，目的：查询其所属字典，封装成树结构
-        List<SysDictDO> dictItemList = new ArrayList<>();
-        for (SysDictDO item : records) {
-            // 防止乱序
-            if (SysDictTypeEnum.DICT_ITEM.equals(item.getType())) {
-                dictItemList.add(item);
-            }
-        }
+        // 过滤出为 字典项的数据，目的：查询其所属字典，封装成树结构
+        List<SysDictDO> dictItemList =
+            records.stream().filter(it -> SysDictTypeEnum.DICT_ITEM.equals(it.getType())).collect(Collectors.toList());
 
         if (dictItemList.size() == 0) {
             // 如果没有字典项类型数据，则直接返回
@@ -154,12 +149,12 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
         Set<String> dictKeySet = dictItemList.stream().map(SysDictDO::getDictKey).collect(Collectors.toSet());
 
         // 查询数据库
-        List<SysDictDO> dbDictList = lambdaQuery().notIn(dictIdSet.size() != 0, BaseEntityTwo::getId, dictIdSet)
+        List<SysDictDO> sysDictDOList = lambdaQuery().notIn(dictIdSet.size() != 0, BaseEntityTwo::getId, dictIdSet)
             .in(dictKeySet.size() != 0, SysDictDO::getDictKey, dictKeySet).eq(SysDictDO::getType, SysDictTypeEnum.DICT)
             .list();
 
-        // 拼接本次返回值所需的所有字典
-        allDictList.addAll(dbDictList);
+        // 拼接本次返回值所需的所有 字典
+        allDictList.addAll(sysDictDOList);
 
         for (SysDictDO item : allDictList) {
             SysDictTreeVO treeVO = BeanUtil.copyProperties(item, SysDictTreeVO.class);

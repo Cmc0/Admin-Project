@@ -143,13 +143,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
      */
     @Override
     public Page<SysMenuDO> myPage(SysMenuPageDTO dto) {
-        return doMyPage(dto);
-    }
-
-    /**
-     * 执行：分页排序查询
-     */
-    private Page<SysMenuDO> doMyPage(SysMenuPageDTO dto) {
 
         return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysMenuDO::getName, dto.getName())
             .like(StrUtil.isNotBlank(dto.getPath()), SysMenuDO::getPath, dto.getPath())
@@ -164,7 +157,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             .eq(dto.getAuthFlag() != null, SysMenuDO::getAuthFlag, dto.getAuthFlag())
             .eq(dto.getShowFlag() != null, SysMenuDO::getShowFlag, dto.getShowFlag())
             .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
-
     }
 
     /**
@@ -177,7 +169,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
 
         // 根据条件进行筛选，得到符合条件的数据，然后再逆向生成整棵树，并返回这个树结构
         dto.setPageSize(-1); // 不分页
-        List<SysMenuDO> sysMenuDOList = doMyPage(dto).getRecords();
+        List<SysMenuDO> sysMenuDOList = myPage(dto).getRecords();
 
         if (sysMenuDOList.size() == 0) {
             return resList;
