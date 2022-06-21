@@ -44,7 +44,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
         // 先检查 redis中是否存在，存在则说明已经用过了，不存在，则解密之后，校验是否过期，过期了也不能使用
 
         // 非对称：解密 ↓
-        String paramValue = ParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
+        String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
         dto.setOrigPassword(MyRsaUtil.rsaDecrypt(dto.getOrigPassword(), paramValue)); // 非对称：解密
         dto.setPassword(MyRsaUtil.rsaDecrypt(dto.getPassword(), paramValue)); // 非对称：解密
         // 非对称：解密 ↑

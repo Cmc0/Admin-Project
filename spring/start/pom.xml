@@ -15,6 +15,11 @@
 
         <dependency>
             <groupId>com.admin</groupId>
+            <artifactId>paramF</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
             <artifactId>request</artifactId>
         </dependency>
 

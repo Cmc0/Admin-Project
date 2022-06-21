@@ -8,8 +8,8 @@ import cn.hutool.extra.servlet.ServletUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.util.ParamUtil;
 import com.admin.common.util.ResponseUtil;
+import com.admin.common.util.SysParamUtil;
 import lombok.SneakyThrows;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.ValueOperations;
@@ -86,7 +86,7 @@ public class IpFilter implements Filter {
     private String setRedisTotal(String ip, ValueOperations<String, Object> ops, String blackListIpKey) {
 
         // ip 请求速率：多少秒钟，一个 ip可以请求多少次，用冒号隔开的
-        String ipTotalCheckValue = ParamUtil.getValueById(BaseConstant.IP_REQUESTS_PER_SECOND_ID);
+        String ipTotalCheckValue = SysParamUtil.getValueById(BaseConstant.IP_REQUESTS_PER_SECOND_ID);
 
         if (ipTotalCheckValue == null) {
             return null;

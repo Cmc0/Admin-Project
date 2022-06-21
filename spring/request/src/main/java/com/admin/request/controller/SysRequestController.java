@@ -18,7 +18,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/sysRequest")
-@Api(tags = "接口请求记录")
+@Api(tags = "接口请求-管理")
 public class SysRequestController {
 
     @Resource

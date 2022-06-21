@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * 系统参数 工具类
  */
 @Component
-public class ParamUtil {
+public class SysParamUtil {
 
     private static SysParamMapper sysParamMapper;
 
@@ -51,16 +51,16 @@ public class ParamUtil {
         Long size = ops.size();
         if (size == null || size == 0) {
             // 更新 redis中【系统参数】的缓存，并返回 值，备注：值可能会为 null
-            return updateRedisCache(idStr);
+            return updateRedisCache().get(idStr);
         }
 
         return ops.get(idStr);
     }
 
     /**
-     * 更新 redis中【系统参数】的缓存，并返回 值，备注：值可能会为 null
+     * 更新 redis中【系统参数】的缓存，并返回 值
      */
-    public static String updateRedisCache(String idStr) {
+    public static Map<String, String> updateRedisCache() {
 
         List<SysParamDO> paramRedisList =
             ChainWrappers.lambdaQueryChain(sysParamMapper).select(BaseEntityTwo::getId, SysParamDO::getValue).list();
@@ -73,16 +73,8 @@ public class ParamUtil {
 
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 
-        return map.get(idStr);
+        return map;
 
-    }
-
-    /**
-     * 移除 redis中【系统参数】的缓存
-     */
-    public static void deleteRedisCache() {
-
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
     }
 
 }
