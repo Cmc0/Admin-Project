@@ -209,7 +209,7 @@ public class UserUtil {
         }
 
         // 获取所有菜单，条件：没有被 禁用
-        /** 这里和{@link com.admin.menu.service.MenuService#getUserMenuInfo}需要进行同步修改 */
+        /** 这里和{@link com.admin.menu.service.MenuService#menuListForUser}需要进行同步修改 */
         List<SysMenuDO> sysMenuDOList;
         if (type == 2) { // 2 给 security获取权限时使用
             sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
