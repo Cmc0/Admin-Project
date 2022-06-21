@@ -13,6 +13,12 @@
 
     <dependencies>
 
+        <!-- aop -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- 发送邮件 -->
         <dependency>
             <groupId>com.sun.mail</groupId>
