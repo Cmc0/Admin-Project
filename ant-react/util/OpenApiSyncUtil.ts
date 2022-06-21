@@ -310,6 +310,8 @@ function toHump(name: string, searchValue: string | RegExp = /\_(\w)/g) {
     })
 }
 
+console.log('执行开始 ↓ ' + new Date().toLocaleString())
+
 start()
 
-console.log('执行成功')
+console.log('执行成功 ↑ ' + new Date().toLocaleString())
