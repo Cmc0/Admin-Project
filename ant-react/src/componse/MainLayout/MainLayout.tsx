@@ -8,17 +8,17 @@ import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
-import {userBaseInfo, userLogout} from "@/api/UserController";
 import {useAppDispatch, useAppSelector} from "@/store";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
 import {setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
-import {menuListForUser} from "@/api/MenuController";
 import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
 import SysMenuDO from "@/model/entity/SysMenuDO";
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
+import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
+import {sysMenuListForUser} from "@/api/SysMenuController";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -81,12 +81,12 @@ export default function () {
 
         connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
-        userBaseInfo().then(res => {
+        sysUserBaseInfo().then(res => {
             appDispatch(setUserBaseInfo(res.data))
         })
 
         // 加载菜单
-        menuListForUser().then(res => {
+        sysMenuListForUser().then(res => {
             if (!res.data || !res.data.length) {
                 ToastError('暂未配置菜单，请联系管理员', 5)
                 logout()
@@ -177,7 +177,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             label: <a
                                 onClick={() => {
                                     execConfirm(() => {
-                                        return userLogout().then((res) => {
+                                        return sysUserLogout().then((res) => {
                                             ToastSuccess(res.msg)
                                             logout()
                                         })
