@@ -4,7 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.websocket.service.WebSocketService;
+import com.admin.websocket.service.SysWebSocketService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -37,12 +37,12 @@ public class NettyServer implements CommandLineRunner {
     public static String webSocketRegisterCodePreKey = null; // WebSocket 连接时的 redisKey前缀
 
     @Resource
-    WebSocketService webSocketService;
+    SysWebSocketService sysWebSocketService;
 
     @PreDestroy
     public void destroy() {
 
-        webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
+        sysWebSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 
         log.info("WebSocket 离线成功");
     }
@@ -56,7 +56,7 @@ public class NettyServer implements CommandLineRunner {
 
         webSocketRegisterCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REGISTER_CODE + ipAndPort + ":";
 
-        webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
+        sysWebSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 
         ThreadUtil.execute(() -> start(port));
 

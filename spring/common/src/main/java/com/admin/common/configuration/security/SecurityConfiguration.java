@@ -17,7 +17,7 @@ import java.util.List;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // 不需要登录就可以 下载文件的地址
-    private final static String FILE_PUBLIC_DOWNLOAD_URL = "/file/publicDownload";
+    public final static String FILE_PUBLIC_DOWNLOAD_URL = "/file/publicDownload";
 
     // 生产环境，不需要 Security 处理的 url
     private static final List<String> PROD_IGNORING_LIST =

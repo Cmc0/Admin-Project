@@ -8,7 +8,7 @@ import cn.hutool.jwt.JWTValidator;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.enums.RequestCategoryEnum;
+import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.RequestUtil;
 import com.admin.common.util.ResponseUtil;
@@ -81,11 +81,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return null;
         }
 
-        RequestCategoryEnum requestCategoryEnum = RequestUtil.getRequestCategoryEnum(request);
+        SysRequestCategoryEnum sysRequestCategoryEnum = RequestUtil.getSysRequestCategoryEnum(request);
 
         // 判断 jwtHash是否存在于 redis中
         Boolean hasKey = MyJwtUtil.jsonRedisTemplate
-            .hasKey(MyJwtUtil.generateRedisJwtHash(authorization, userId, requestCategoryEnum));
+            .hasKey(MyJwtUtil.generateRedisJwtHash(authorization, userId, sysRequestCategoryEnum));
         if (hasKey == null || !hasKey) {
             return loginExpired(response); // 提示登录过期，请重新登录
         }

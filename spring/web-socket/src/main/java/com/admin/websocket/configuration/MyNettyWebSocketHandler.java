@@ -8,13 +8,13 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.model.enums.RequestCategoryEnum;
+import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.websocket.model.constant.CommonConstant;
-import com.admin.websocket.model.entity.WebSocketDO;
-import com.admin.websocket.model.enums.WebSocketTypeEnum;
-import com.admin.websocket.service.WebSocketService;
+import com.admin.websocket.model.entity.SysWebSocketDO;
+import com.admin.websocket.model.enums.SysWebSocketTypeEnum;
+import com.admin.websocket.service.SysWebSocketService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -32,9 +32,9 @@ import java.util.Collections;
 public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSocketMessageEnum> {
 
     @Resource
-    JsonRedisTemplate<WebSocketDO> jsonRedisTemplate;
+    JsonRedisTemplate<SysWebSocketDO> jsonRedisTemplate;
     @Resource
-    WebSocketService webSocketService;
+    SysWebSocketService sysWebSocketService;
 
     @SneakyThrows
     @Override
@@ -42,7 +42,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
         Long socketId = ctx.channel().attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
 
-        webSocketService.offlineByWebSocketIdSet(Collections.singleton(socketId)); // 调用离线方法
+        sysWebSocketService.offlineByWebSocketIdSet(Collections.singleton(socketId)); // 调用离线方法
 
         super.channelInactive(ctx);
     }
@@ -62,15 +62,15 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
                 ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
             }
 
-            ValueOperations<String, WebSocketDO> ops = jsonRedisTemplate.opsForValue();
+            ValueOperations<String, SysWebSocketDO> ops = jsonRedisTemplate.opsForValue();
 
             String redisKey = NettyServer.webSocketRegisterCodePreKey + code;
 
             /**
-             * {@link com.admin.websocket.service.impl.WebSocketServiceImpl#setWebSocketForRegister}
+             * {@link com.admin.websocket.service.impl.SysWebSocketServiceImpl#setWebSocketForRegister}
              */
-            WebSocketDO webSocketDO = ops.get(redisKey);
-            if (webSocketDO == null) {
+            SysWebSocketDO sysWebSocketDO = ops.get(redisKey);
+            if (sysWebSocketDO == null) {
                 ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
             }
 
@@ -78,12 +78,13 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             jsonRedisTemplate.delete(redisKey);
 
             // 由于 存在 redis中的是 数字，在给对象赋值的时候，是从 下标为 0开始进行匹配的，所以这里要 减 1
-            webSocketDO.setType(WebSocketTypeEnum.getByCode((byte)(webSocketDO.getType().getCode() - 1)));
-            webSocketDO.setCategory(RequestCategoryEnum.getByCode((byte)(webSocketDO.getCategory().getCode() - 1)));
-            webSocketService.save(webSocketDO); // 保存到数据库
+            sysWebSocketDO.setType(SysWebSocketTypeEnum.getByCode((byte)(sysWebSocketDO.getType().getCode() - 1)));
+            sysWebSocketDO
+                .setCategory(SysRequestCategoryEnum.getByCode((byte)(sysWebSocketDO.getCategory().getCode() - 1)));
+            sysWebSocketService.save(sysWebSocketDO); // 保存到数据库
 
             // 上线操作
-            online(webSocketDO, ctx.channel());
+            online(sysWebSocketDO, ctx.channel());
 
             // url包含参数，需要处理
             request.setUri(NettyServer.WS);
@@ -92,12 +93,12 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
         super.channelRead(ctx, msg);
     }
 
-    private void online(WebSocketDO webSocketDO, Channel channel) {
+    private void online(SysWebSocketDO sysWebSocketDO, Channel channel) {
 
         // 绑定 userId
-        channel.attr(MyNettyChannelGroupHelper.USER_ID_KEY).set(webSocketDO.getUserId());
+        channel.attr(MyNettyChannelGroupHelper.USER_ID_KEY).set(sysWebSocketDO.getUserId());
         // 绑定 WebSocket 连接记录 主键id
-        channel.attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(webSocketDO.getId());
+        channel.attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(sysWebSocketDO.getId());
 
         boolean add = MyNettyChannelGroupHelper.CHANNEL_GROUP.add(channel);// 备注：断开连接之后，ChannelGroup 会自动移除该通道
 
@@ -105,7 +106,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             ThreadUtil.execute(() -> {
                 WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.SOCKET_ID;
                 webSocketMessageEnum
-                    .setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, webSocketDO.getIp()));
+                    .setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, sysWebSocketDO.getIp()));
                 channel.writeAndFlush(webSocketMessageEnum); // 给前端发送 socketId
             });
         }

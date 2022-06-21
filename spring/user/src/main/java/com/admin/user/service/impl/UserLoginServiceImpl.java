@@ -9,7 +9,7 @@ import com.admin.common.model.constant.BaseRegexConstant;
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
-import com.admin.common.model.enums.RequestCategoryEnum;
+import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.MyRsaUtil;
@@ -18,7 +18,7 @@ import com.admin.common.util.RequestUtil;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.model.dto.UserLoginByPasswordDTO;
 import com.admin.user.service.UserLoginService;
-import com.admin.websocket.service.WebSocketService;
+import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
     @Resource
     HttpServletRequest httpServletRequest;
     @Resource
-    WebSocketService webSocketService;
+    SysWebSocketService sysWebSocketService;
 
     /**
      * 账号密码登录
@@ -109,9 +109,9 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
     // 登录成功之后，返回给前端的数据
     private String getLoginResult(Long userId, boolean rememberMe, String jwtSecretSuf) {
 
-        RequestCategoryEnum requestCategoryEnum = RequestUtil.getRequestCategoryEnum(httpServletRequest);
+        SysRequestCategoryEnum sysRequestCategoryEnum = RequestUtil.getSysRequestCategoryEnum(httpServletRequest);
 
-        return MyJwtUtil.generateJwt(userId, rememberMe, jwtSecretSuf, requestCategoryEnum); // 颁发，并返回 jwt
+        return MyJwtUtil.generateJwt(userId, rememberMe, jwtSecretSuf, sysRequestCategoryEnum); // 颁发，并返回 jwt
 
     }
 

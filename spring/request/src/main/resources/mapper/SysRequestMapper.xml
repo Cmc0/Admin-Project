@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cmc.admin.request.mapper.SysRequestMapper">
+
+    <!-- 分页排序查询 -->
+    <select id="myPage" resultType="cmc.admin.request.model.vo.SysRequestPageVO">
+        SELECT a.id,
+        a.create_id,
+        a.create_time,
+        a.uri,
+        a.time,
+        a.name,
+        a.time_number,
+        a.category,
+        a.region,
+        a.ip,
+        IF(b.nickname IS NULL, '-', b.nickname) AS userName
+        FROM sys_request a
+        LEFT JOIN sys_user b ON b.id = a.create_id
+        <where>
+            <if test="dto.uri != null and dto.uri != ''">
+                AND a.uri LIKE concat('%', #{dto.uri}, '%')
+            </if>
+            <if test="dto.name != null and dto.name != ''">
+                AND a.name LIKE concat('%', #{dto.name}, '%')
+            </if>
+            <if test="dto.time != null and dto.time != ''">
+                AND a.time LIKE concat('%', #{dto.time}, '%')
+            </if>
+            <if test="dto.ip != null and dto.ip != ''">
+                AND a.ip LIKE concat('%', #{dto.ip}, '%')
+            </if>
+            <if test="dto.region != null and dto.region != ''">
+                AND a.region LIKE concat('%', #{dto.region}, '%')
+            </if>
+            <if test="dto.beginTimeNumber != null">
+                AND a.time_number <![CDATA[>=]]> #{dto.beginTimeNumber}
+            </if>
+            <if test="dto.endTimeNumber != null">
+                AND a.time_number <![CDATA[<=]]> #{dto.endTimeNumber}
+            </if>
+            <if test="dto.beginTime != null">
+                AND a.create_time <![CDATA[>=]]> #{dto.beginTime}
+            </if>
+            <if test="dto.endTime != null">
+                AND a.create_time <![CDATA[<=]]> #{dto.endTime}
+            </if>
+            <if test="dto.createId != null and dto.createId != ''">
+                AND a.create_id = #{dto.createId}
+            </if>
+            <if test="dto.category != null">
+                AND a.category = #{dto.category}
+            </if>
+        </where>
+    </select>
+
+</mapper>

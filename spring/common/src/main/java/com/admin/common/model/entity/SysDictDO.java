@@ -1,6 +1,6 @@
 package com.admin.common.model.entity;
 
-import com.admin.common.model.enums.DictTypeEnum;
+import com.admin.common.model.enums.SysDictTypeEnum;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -22,7 +22,7 @@ public class SysDictDO extends BaseEntityThree {
     private String name;
 
     @ApiModelProperty(value = "类型：1 字典 2 字典项")
-    private DictTypeEnum type;
+    private SysDictTypeEnum type;
 
     @ApiModelProperty(value = "字典项 value（数字 123...）备注：字典为 -1")
     private Byte value;

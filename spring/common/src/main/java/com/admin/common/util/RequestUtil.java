@@ -2,7 +2,7 @@ package com.admin.common.util;
 
 import cn.hutool.core.convert.Convert;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.enums.RequestCategoryEnum;
+import com.admin.common.model.enums.SysRequestCategoryEnum;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -25,18 +25,19 @@ public class RequestUtil {
     /**
      * 获取请求类别
      */
-    public static RequestCategoryEnum getRequestCategoryEnum() {
-        return getRequestCategoryEnum(getRequest());
+    public static SysRequestCategoryEnum getSysRequestCategoryEnum() {
+        return getSysRequestCategoryEnum(getRequest());
     }
 
     /**
      * 获取请求类别
      */
-    public static RequestCategoryEnum getRequestCategoryEnum(HttpServletRequest request) {
+    public static SysRequestCategoryEnum getSysRequestCategoryEnum(HttpServletRequest request) {
         if (request == null) {
-            return RequestCategoryEnum.H5;
+            return SysRequestCategoryEnum.H5;
         }
-        return RequestCategoryEnum.getByCode(Convert.toByte(request.getHeader(BaseConstant.REQUEST_HEADER_CATEGORY)));
+        return SysRequestCategoryEnum
+            .getByCode(Convert.toByte(request.getHeader(BaseConstant.REQUEST_HEADER_CATEGORY)));
     }
 
 }

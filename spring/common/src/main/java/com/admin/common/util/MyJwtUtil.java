@@ -12,7 +12,7 @@ import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.SysMenuDO;
 import com.admin.common.model.entity.SysUserDO;
-import com.admin.common.model.enums.RequestCategoryEnum;
+import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +41,7 @@ public class MyJwtUtil {
      * 统一生成 jwt
      */
     public static String generateJwt(Long userId, boolean rememberMe, String jwtSecretSuf,
-        RequestCategoryEnum requestCategoryEnum) {
+        SysRequestCategoryEnum sysRequestCategoryEnum) {
 
         if (userId == null) {
             userId = (Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -62,14 +62,14 @@ public class MyJwtUtil {
             return null;
         }
 
-        return sign(userId, jwtSecretSuf, rememberMe, requestCategoryEnum);
+        return sign(userId, jwtSecretSuf, rememberMe, sysRequestCategoryEnum);
     }
 
     /**
      * 生成 jwt
      */
     private static String sign(Long userId, String jwtSecretSuf, boolean rememberMe,
-        RequestCategoryEnum requestCategoryEnum) {
+        SysRequestCategoryEnum sysRequestCategoryEnum) {
 
         JSONObject payloadMap = JSONUtil.createObj().set("userId", userId);
 
@@ -89,7 +89,7 @@ public class MyJwtUtil {
 
         // 存储到 redis中
         expireTime = expireTime - BaseConstant.SECOND_30_EXPIRE_TIME;
-        String redisJwtHash = generateRedisJwtHash(jwt, userId, requestCategoryEnum);
+        String redisJwtHash = generateRedisJwtHash(jwt, userId, sysRequestCategoryEnum);
         jsonRedisTemplate.opsForValue().set(redisJwtHash, "jwtHash", expireTime, TimeUnit.MILLISECONDS);
 
         return jwt;
@@ -109,10 +109,10 @@ public class MyJwtUtil {
     /**
      * 生成 redis中，jwt存储使用的 key（jwtHash），目的：不直接暴露明文的 jwt
      */
-    public static String generateRedisJwtHash(String jwt, Long userId, RequestCategoryEnum requestCategoryEnum) {
+    public static String generateRedisJwtHash(String jwt, Long userId, SysRequestCategoryEnum sysRequestCategoryEnum) {
 
         StrBuilder strBuilder = StrBuilder.create(BaseConstant.PRE_REDIS_JWT_HASH);
-        strBuilder.append(userId).append(":").append(requestCategoryEnum.getCode()).append(":")
+        strBuilder.append(userId).append(":").append(sysRequestCategoryEnum.getCode()).append(":")
             .append(DigestUtil.sha512Hex(jwt));
 
         return strBuilder.toString();
