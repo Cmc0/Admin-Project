@@ -32,10 +32,17 @@
         <module>role</module> <!-- 角色相关功能包 -->
         <module>request</module> <!-- 请求统计相关功能包 -->
         <module>param</module> <!-- 系统参数设置相关功能包 -->
+        <module>dict</module> <!-- 字典相关功能包 -->
     </modules>
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.admin</groupId>
+                <artifactId>dict</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.admin</groupId>

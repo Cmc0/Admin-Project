@@ -15,7 +15,12 @@
 
         <dependency>
             <groupId>com.admin</groupId>
-            <artifactId>paramF</artifactId>
+            <artifactId>dict</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
+            <artifactId>param</artifactId>
         </dependency>
 
         <dependency>
