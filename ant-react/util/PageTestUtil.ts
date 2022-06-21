@@ -7,7 +7,7 @@ interface IExecTest {
 
 export function execTest(data: IExecTest) {
 
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return
     }
 
