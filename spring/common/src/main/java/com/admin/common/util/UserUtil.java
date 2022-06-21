@@ -190,10 +190,10 @@ public class UserUtil {
             sysRoleRefUserDOList.stream().map(SysRoleRefUserDO::getRoleId).collect(Collectors.toSet());
 
         // 查询是否有 默认角色，条件：没被禁用的
-        SysRoleDO roleOne = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
+        SysRoleDO sysRoleDO = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
             .eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).one();
-        if (roleOne != null) {
-            roleIdSet.add(roleOne.getId()); // 添加到 roleIdSet里面
+        if (sysRoleDO != null) {
+            roleIdSet.add(sysRoleDO.getId()); // 添加到 roleIdSet里面
         }
 
         if (roleIdSet.size() == 0) {
