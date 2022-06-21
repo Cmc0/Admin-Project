@@ -52,6 +52,8 @@ public interface BaseConstant {
     // redis 相关 ↓ 【PRE_REDIS】开头和 【PRE_LOCK】开头，以及【_CACHE】结尾
     String PRE_REDISSON = "PRE_REDISSON:"; // 锁前缀，所有的分布式锁，都要加这个前缀
 
+    String PRE_REDIS_XXL_JOB_COOKIE_CACHE = "PRE_REDIS_XXL_JOB_COOKIE_CACHE"; // xxl-job 登录 cookie缓存
+
     // 注册相关 ↓
     String PRE_LOCK_EMAIL_CODE = "PRE_LOCK_EMAIL_CODE:"; // 邮箱发送的验证码，和分布式锁名前缀，锁邮箱
     // 注册相关 ↑

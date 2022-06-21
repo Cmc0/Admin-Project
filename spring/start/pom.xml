@@ -15,6 +15,26 @@
 
         <dependency>
             <groupId>com.admin</groupId>
+            <artifactId>file</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
+            <artifactId>job</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
+            <artifactId>area</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
+            <artifactId>dept</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
             <artifactId>dict</artifactId>
         </dependency>
 
