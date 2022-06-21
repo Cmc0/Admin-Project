@@ -109,7 +109,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
             .like(StrUtil.isNotBlank(dto.getDictKey()), SysDictDO::getDictKey, dto.getDictKey())
             .eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
             .eq(dto.getType() != null, SysDictDO::getType, dto.getType())
-            .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag()).page(dto.getPage());
+            .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
+            .orderByDesc(SysDictDO::getOrderNo).page(dto.getPage());
     }
 
     /**
@@ -151,6 +152,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
         // 查询数据库
         List<SysDictDO> sysDictDOList = lambdaQuery().notIn(dictIdSet.size() != 0, BaseEntityTwo::getId, dictIdSet)
             .in(dictKeySet.size() != 0, SysDictDO::getDictKey, dictKeySet).eq(SysDictDO::getType, SysDictTypeEnum.DICT)
+            .orderByDesc(SysDictDO::getOrderNo)
             .list();
 
         // 拼接本次返回值所需的所有 字典
