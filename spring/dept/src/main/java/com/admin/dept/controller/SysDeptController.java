@@ -1,14 +1,13 @@
-package com.admin.area.controller;
+package com.admin.dept.controller;
 
-import com.admin.area.model.dto.SysAreaInsertOrUpdateDTO;
-import com.admin.area.model.dto.SysAreaPageDTO;
-import com.admin.area.model.entity.SysAreaDO;
-import com.admin.area.model.vo.SysAreaInfoByIdVO;
-import com.admin.area.service.SysAreaService;
 import com.admin.common.model.dto.AddOrderNoDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
+import com.admin.dept.model.dto.SysDeptInsertOrUpdateDTO;
+import com.admin.dept.model.dto.SysDeptPageDTO;
+import com.admin.dept.model.entity.SysDeptDO;
+import com.admin.dept.service.SysDeptService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,51 +22,51 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sysArea")
-@Api(tags = "区域-管理")
-public class SysAreaController {
+@RequestMapping("/sysDept")
+@Api(tags = "部门-管理")
+public class SysDeptController {
 
     @Resource
-    SysAreaService baseService;
+    SysDeptService baseService;
 
     @ApiOperation(value = "新增/修改")
     @PostMapping("/insertOrUpdate")
-    @PreAuthorize("hasAuthority('sysArea:insertOrUpdate')")
-    public ApiResultVO<String> insertOrUpdate(@RequestBody @Valid SysAreaInsertOrUpdateDTO dto) {
+    @PreAuthorize("hasAuthority('sysDept:insertOrUpdate')")
+    public ApiResultVO<String> insertOrUpdate(@RequestBody @Valid SysDeptInsertOrUpdateDTO dto) {
         return ApiResultVO.ok(baseService.insertOrUpdate(dto));
     }
 
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
-    @PreAuthorize("hasAuthority('sysArea:page')")
-    public ApiResultVO<Page<SysAreaDO>> myPage(@RequestBody @Valid SysAreaPageDTO dto) {
+    @PreAuthorize("hasAuthority('sysDept:page')")
+    public ApiResultVO<Page<SysDeptDO>> myPage(@RequestBody @Valid SysDeptPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 
     @ApiOperation(value = "查询：树结构")
     @PostMapping("/tree")
-    @PreAuthorize("hasAuthority('sysArea:page')")
-    public ApiResultVO<List<SysAreaDO>> tree(@RequestBody @Valid SysAreaPageDTO dto) {
+    @PreAuthorize("hasAuthority('sysDept:page')")
+    public ApiResultVO<List<SysDeptDO>> tree(@RequestBody @Valid SysDeptPageDTO dto) {
         return ApiResultVO.ok(baseService.tree(dto));
     }
 
     @ApiOperation(value = "批量删除")
     @PostMapping("/deleteByIdSet")
-    @PreAuthorize("hasAuthority('sysArea:deleteByIdSet')")
+    @PreAuthorize("hasAuthority('sysDept:deleteByIdSet')")
     public ApiResultVO<String> deleteByIdSet(@RequestBody @Valid NotEmptyIdSet notEmptyIdSet) {
         return ApiResultVO.ok(baseService.deleteByIdSet(notEmptyIdSet));
     }
 
     @ApiOperation(value = "通过主键id，查看详情")
     @PostMapping("/infoById")
-    @PreAuthorize("hasAuthority('sysArea:infoById')")
-    public ApiResultVO<SysAreaInfoByIdVO> infoById(@RequestBody @Valid NotNullId notNullId) {
+    @PreAuthorize("hasAuthority('sysDept:infoById')")
+    public ApiResultVO<SysDeptDO> infoById(@RequestBody @Valid NotNullId notNullId) {
         return ApiResultVO.ok(baseService.infoById(notNullId));
     }
 
     @ApiOperation(value = "通过主键 idSet，加减排序号")
     @PostMapping("/addOrderNo")
-    @PreAuthorize("hasAuthority('sysArea:insertOrUpdate')")
+    @PreAuthorize("hasAuthority('sysDept:insertOrUpdate')")
     public ApiResultVO<String> addOrderNo(@RequestBody @Valid AddOrderNoDTO dto) {
         return ApiResultVO.ok(baseService.addOrderNo(dto));
     }

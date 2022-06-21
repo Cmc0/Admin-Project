@@ -39,7 +39,7 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
     SysAreaRefDeptService areaRefDeptService;
 
     /**
-     * 新增/修改 区域
+     * 新增/修改
      */
     @Override
     @Transactional
@@ -88,7 +88,7 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
     }
 
     /**
-     * 分页排序查询：区域
+     * 分页排序查询
      */
     @Override
     public Page<SysAreaDO> myPage(SysAreaPageDTO dto) {
@@ -101,7 +101,7 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
     }
 
     /**
-     * 查询区域（树结构）
+     * 查询：树结构
      */
     @Override
     public List<SysAreaDO> tree(SysAreaPageDTO dto) {
@@ -110,9 +110,9 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
 
         // 根据条件进行筛选，得到符合条件的数据，然后再逆向生成整棵树，并返回这个树结构
         dto.setPageSize(-1); // 不分页
-        List<SysAreaDO> dbList = myPage(dto).getRecords();
+        List<SysAreaDO> sysAreaDOList = myPage(dto).getRecords();
 
-        if (dbList.size() == 0) {
+        if (sysAreaDOList.size() == 0) {
             return resultList;
         }
 
@@ -123,11 +123,11 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
             return resultList;
         }
 
-        return MyTreeUtil.getFullTreeByDeepNode(dbList, allList);
+        return MyTreeUtil.getFullTreeByDeepNode(sysAreaDOList, allList);
     }
 
     /**
-     * 删除区域
+     * 批量删除
      */
     @Override
     @Transactional
