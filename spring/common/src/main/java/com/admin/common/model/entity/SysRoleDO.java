@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_sys_role")
+@TableName(value = "sys_role")
 @Data
 @ApiModel(description = "角色主表")
 public class SysRoleDO extends BaseEntityThree {
