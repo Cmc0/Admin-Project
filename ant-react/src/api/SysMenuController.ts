@@ -7,16 +7,16 @@ import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
 import $http from "../../util/HttpUtil";
 
 // 菜单-管理 通过主键 idSet，加减排序号
-export function menuAddOrderNo(form: AddOrderNoDTO) {
-    return $http.myPost<string>('/menu/addOrderNo', form)
+export function sysMenuAddOrderNo(form: AddOrderNoDTO) {
+    return $http.myPost<string>('/sysMenu/addOrderNo', form)
 }
 
 // 菜单-管理 批量删除
-export function menuDeleteByIdSet(form: NotEmptyIdSet) {
-    return $http.myPost<string>('/menu/deleteByIdSet', form)
+export function sysMenuDeleteByIdSet(form: NotEmptyIdSet) {
+    return $http.myPost<string>('/sysMenu/deleteByIdSet', form)
 }
 
-export interface MenuInfoByIdVO {
+export interface SysMenuInfoByIdVO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
     children?: SysMenuDO // 子节点
@@ -43,11 +43,11 @@ export interface MenuInfoByIdVO {
 }
 
 // 菜单-管理 通过主键id，查看详情
-export function menuInfoById(form: NotNullId) {
-    return $http.myProPost<MenuInfoByIdVO>('/menu/infoById', form)
+export function sysMenuInfoById(form: NotNullId) {
+    return $http.myProPost<SysMenuInfoByIdVO>('/sysMenu/infoById', form)
 }
 
-export interface MenuInsertOrUpdateDTO {
+export interface SysMenuInsertOrUpdateDTO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
     enableFlag?: boolean // 启用/禁用
@@ -67,16 +67,16 @@ export interface MenuInsertOrUpdateDTO {
 }
 
 // 菜单-管理 新增/修改
-export function menuInsertOrUpdate(form: MenuInsertOrUpdateDTO) {
-    return $http.myPost<string>('/menu/insertOrUpdate', form)
+export function sysMenuInsertOrUpdate(form: SysMenuInsertOrUpdateDTO) {
+    return $http.myPost<string>('/sysMenu/insertOrUpdate', form)
 }
 
 // 菜单-管理 获取当前用户绑定的菜单
-export function menuListForUser() {
-    return $http.myProTreePost<SysMenuDO>('/menu/listForUser')
+export function sysMenuListForUser() {
+    return $http.myProTreePost<SysMenuDO>('/sysMenu/listForUser')
 }
 
-export interface MenuPageDTO extends MyPageDTO {
+export interface SysMenuPageDTO extends MyPageDTO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
     current?: number // 第几页
@@ -95,11 +95,11 @@ export interface MenuPageDTO extends MyPageDTO {
 }
 
 // 菜单-管理 分页排序查询
-export function menuPage(form: MenuPageDTO) {
-    return $http.myProPagePost<SysMenuDO>('/menu/page', form)
+export function sysMenuPage(form: SysMenuPageDTO) {
+    return $http.myProPagePost<SysMenuDO>('/sysMenu/page', form)
 }
 
 // 菜单-管理 查询：树结构
-export function menuTree(form: MenuPageDTO) {
-    return $http.myProTreePost<SysMenuDO>('/menu/tree', form)
+export function sysMenuTree(form: SysMenuPageDTO) {
+    return $http.myProTreePost<SysMenuDO>('/sysMenu/tree', form)
 }

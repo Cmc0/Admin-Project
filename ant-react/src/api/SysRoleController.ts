@@ -5,11 +5,11 @@ import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import $http from "../../util/HttpUtil";
 
 // 角色-管理 批量删除
-export function roleDeleteByIdSet(form: NotEmptyIdSet) {
-    return $http.myPost<string>('/role/deleteByIdSet', form)
+export function sysRoleDeleteByIdSet(form: NotEmptyIdSet) {
+    return $http.myPost<string>('/sysRole/deleteByIdSet', form)
 }
 
-export interface RolePageVO {
+export interface SysRolePageVO {
     createId?: number // 创建人id
     createTime?: string // 创建时间
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
@@ -26,11 +26,11 @@ export interface RolePageVO {
 }
 
 // 角色-管理 通过主键id，查看详情
-export function roleInfoById(form: NotNullId) {
-    return $http.myProPost<RolePageVO>('/role/infoById', form)
+export function sysRoleInfoById(form: NotNullId) {
+    return $http.myProPost<SysRolePageVO>('/sysRole/infoById', form)
 }
 
-export interface RoleInsertOrUpdateDTO {
+export interface SysRoleInsertOrUpdateDTO {
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
     enableFlag?: boolean // 启用/禁用
     id?: number // 主键id
@@ -41,11 +41,11 @@ export interface RoleInsertOrUpdateDTO {
 }
 
 // 角色-管理 新增/修改
-export function roleInsertOrUpdate(form: RoleInsertOrUpdateDTO) {
-    return $http.myPost<string>('/role/insertOrUpdate', form)
+export function sysRoleInsertOrUpdate(form: SysRoleInsertOrUpdateDTO) {
+    return $http.myPost<string>('/sysRole/insertOrUpdate', form)
 }
 
-export interface RolePageDTO extends MyPageDTO {
+export interface SysRolePageDTO extends MyPageDTO {
     current?: number // 第几页
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
     enableFlag?: boolean // 启用/禁用
@@ -71,6 +71,6 @@ export interface SysRoleDO {
 }
 
 // 角色-管理 分页排序查询
-export function rolePage(form: RolePageDTO) {
-    return $http.myProPagePost<SysRoleDO>('/role/page', form)
+export function sysRolePage(form: SysRolePageDTO) {
+    return $http.myProPagePost<SysRoleDO>('/sysRole/page', form)
 }

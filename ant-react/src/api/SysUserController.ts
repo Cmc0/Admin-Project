@@ -9,11 +9,11 @@ export interface UserBaseInfoVO {
 }
 
 // 用户-管理 用户基本信息
-export function userBaseInfo() {
-    return $http.myPost<UserBaseInfoVO>('/user/baseInfo')
+export function sysUserBaseInfo() {
+    return $http.myPost<UserBaseInfoVO>('/sysUser/baseInfo')
 }
 
 // 用户-管理 退出登录
-export function userLogout() {
-    return $http.myPost<string>('/user/logout')
+export function sysUserLogout() {
+    return $http.myPost<string>('/sysUser/logout')
 }

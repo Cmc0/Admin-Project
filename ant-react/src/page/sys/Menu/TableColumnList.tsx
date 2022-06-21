@@ -6,14 +6,14 @@ import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {menuDeleteByIdSet, menuInsertOrUpdate, MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {CalcOrderNo, defaultOrderNo} from "../../../../util/TreeUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
+import {sysMenuDeleteByIdSet, sysMenuInsertOrUpdate, SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 
 const QuicklyAddAuth = "快速添加权限"
 
-const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysMenuDO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysMenuDO>[] => [
     {
         title: '菜单名',
         dataIndex: 'name',
@@ -81,7 +81,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
             }}>编辑</a>,
             <a key="del" className={"red3"} onClick={() => {
                 execConfirm(() => {
-                    return menuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
+                    return sysMenuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
                         ToastSuccess(res.msg)
                         actionRef.current?.reload()
                     })
@@ -101,7 +101,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                 {
                     key: 'quicklyAddAuth',
                     label:
-                        <ModalForm<MenuInsertOrUpdateDTO>
+                        <ModalForm<SysMenuInsertOrUpdateDTO>
                             modalProps={{
                                 maskClosable: false
                             }}
@@ -110,30 +110,30 @@ const TableColumnList = (currentForm: React.MutableRefObject<MenuInsertOrUpdateD
                             title={QuicklyAddAuth}
                             trigger={<a>{QuicklyAddAuth}</a>}
                             onFinish={async (form) => {
-                                const formTemp: MenuInsertOrUpdateDTO = {
+                                const formTemp: SysMenuInsertOrUpdateDTO = {
                                     parentId: entity.id,
                                     authFlag: true,
                                     enableFlag: true
                                 }
-                                menuInsertOrUpdate({
+                                sysMenuInsertOrUpdate({
                                     ...formTemp,
                                     name: '新增修改',
                                     auths: form.auths + ":insertOrUpdate",
                                     orderNo: defaultOrderNo
                                 })
-                                menuInsertOrUpdate({
+                                sysMenuInsertOrUpdate({
                                     ...formTemp,
                                     name: '列表查询',
                                     auths: form.auths + ":page",
                                     orderNo: defaultOrderNo - 10
                                 })
-                                menuInsertOrUpdate({
+                                sysMenuInsertOrUpdate({
                                     ...formTemp,
                                     name: '删除',
                                     auths: form.auths + ":deleteByIdSet",
                                     orderNo: defaultOrderNo - 20
                                 })
-                                await menuInsertOrUpdate({
+                                await sysMenuInsertOrUpdate({
                                     ...formTemp,
                                     name: '查看详情',
                                     auths: form.auths + ":infoById",

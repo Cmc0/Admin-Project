@@ -6,21 +6,21 @@ import NotNullByteAndId from "@/model/dto/NotNullByteAndId";
 import $http from "../../util/HttpUtil";
 
 // webSocket 更改在线状态
-export function webSocketChangeType(form: NotNullByteAndId) {
-    return $http.myPost<string>('/webSocket/changeType', form)
+export function sysWebSocketChangeType(form: NotNullByteAndId) {
+    return $http.myPost<string>('/sysWebSocket/changeType', form)
 }
 
 // webSocket 全部强退
-export function webSocketOfflineAll() {
-    return $http.myPost<string>('/webSocket/offlineAll')
+export function sysWebSocketOfflineAll() {
+    return $http.myPost<string>('/sysWebSocket/offlineAll')
 }
 
 // webSocket 强退，通过 idSet
-export function webSocketOfflineByIdSet(form: NotEmptyIdSet) {
-    return $http.myPost<string>('/webSocket/offlineByIdSet', form)
+export function sysWebSocketOfflineByIdSet(form: NotEmptyIdSet) {
+    return $http.myPost<string>('/sysWebSocket/offlineByIdSet', form)
 }
 
-export interface WebSocketPageDTO extends MyPageDTO {
+export interface SysWebSocketPageDTO extends MyPageDTO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
     category?: boolean // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     current?: number // 第几页
@@ -37,7 +37,7 @@ export interface WebSocketPageDTO extends MyPageDTO {
     userId?: number // 用户id
 }
 
-export interface WebSocketPageVO {
+export interface SysSysWebSocketPageVO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
     category?: string // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
@@ -61,16 +61,16 @@ export interface WebSocketPageVO {
 }
 
 // webSocket 分页排序查询
-export function webSocketPage(form: WebSocketPageDTO) {
-    return $http.myProPagePost<WebSocketPageVO>('/webSocket/page', form)
+export function sysWebSocketPage(form: SysWebSocketPageDTO) {
+    return $http.myProPagePost<SysSysWebSocketPageVO>('/sysWebSocket/page', form)
 }
 
-export interface WebSocketRegisterVO {
+export interface SysWebSocketRegisterVO {
     code?: string // WebSocket 连接码，备注：只能使用一次
     webSocketUrl?: string // WebSocket 连接地址，ip:port
 }
 
 // webSocket 获取 webSocket连接地址和随机码
-export function webSocketRegister(form: NotNullByte) {
-    return $http.myPost<WebSocketRegisterVO>('/webSocket/register', form)
+export function sysWebSocketRegister(form: NotNullByte) {
+    return $http.myPost<SysWebSocketRegisterVO>('/sysWebSocket/register', form)
 }

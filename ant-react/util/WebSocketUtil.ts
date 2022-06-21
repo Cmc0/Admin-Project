@@ -4,7 +4,7 @@ import {getAppNav} from "@/App";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {logout} from "./UserUtil";
-import {webSocketRegister} from "@/api/WebSocketController";
+import {sysWebSocketRegister} from "@/api/SysWebSocketController";
 
 let webSocketUrl: string | undefined = ''
 let code: string | undefined = ''
@@ -15,7 +15,7 @@ function getWebSocketRegData() {
   webSocketUrl = ''
   code = ''
 
-  return webSocketRegister({
+  return sysWebSocketRegister({
     value: Number(localStorage.getItem(LocalStorageKey.WEB_SOCKET_TYPE)) || 1
   })
       .then(({data}) => {

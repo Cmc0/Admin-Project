@@ -1,18 +1,18 @@
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {MenuInsertOrUpdateDTO} from "@/api/MenuController";
 import SysMenuDO from "@/model/entity/SysMenuDO";
 import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
+import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 
 export const InitForm = {
     enableFlag: true,
     showFlag: true,
 }
 
-const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<MenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(
@@ -60,7 +60,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<MenuI
             fieldProps: {
                 name: ['authFlag'],
             },
-            columns: ({authFlag}: MenuInsertOrUpdateDTO): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+            columns: ({authFlag}: SysMenuInsertOrUpdateDTO): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
                 return authFlag
                     ? [
                         {
@@ -118,7 +118,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<MenuI
                             fieldProps: {
                                 name: ['path'],
                             },
-                            columns: ({path}: MenuInsertOrUpdateDTO): ProFormColumnsType<MenuInsertOrUpdateDTO>[] => {
+                            columns: ({path}: SysMenuInsertOrUpdateDTO): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
                                 return [
                                     {
                                         title: '外链',

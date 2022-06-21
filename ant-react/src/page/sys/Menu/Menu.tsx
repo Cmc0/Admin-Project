@@ -1,15 +1,6 @@
 import SysMenuDO from "@/model/entity/SysMenuDO";
 import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
-import {
-    menuAddOrderNo,
-    menuDeleteByIdSet,
-    menuInfoById,
-    menuInsertOrUpdate,
-    MenuInsertOrUpdateDTO,
-    MenuPageDTO,
-    menuTree
-} from "@/api/MenuController";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useRef, useState} from "react";
 import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
@@ -17,6 +8,15 @@ import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
+import {
+    sysMenuAddOrderNo,
+    sysMenuDeleteByIdSet,
+    sysMenuInfoById,
+    sysMenuInsertOrUpdate,
+    SysMenuInsertOrUpdateDTO,
+    SysMenuPageDTO,
+    sysMenuTree
+} from "@/api/SysMenuController";
 
 const AddOrderNo = "累加排序号"
 
@@ -38,14 +38,14 @@ export default function () {
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
-    const [useForm] = Form.useForm<MenuInsertOrUpdateDTO>();
+    const [useForm] = Form.useForm<SysMenuInsertOrUpdateDTO>();
 
     const actionRef = useRef<ActionType>(null)
 
-    const currentForm = useRef<MenuInsertOrUpdateDTO>({})
+    const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
 
     return <>
-        <ProTable<SysMenuDO, MenuPageDTO>
+        <ProTable<SysMenuDO, SysMenuPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
             pagination={{
@@ -69,7 +69,7 @@ export default function () {
                 fullScreen: true,
             }}
             request={(params, sort, filter) => {
-                return menuTree({...params, sort})
+                return sysMenuTree({...params, sort})
             }}
             postData={(data) => {
                 setTreeList(data)
@@ -112,7 +112,7 @@ export default function () {
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                 <Space size={16}>
-                    <ModalForm<MenuInsertOrUpdateDTO>
+                    <ModalForm<SysMenuInsertOrUpdateDTO>
                         modalProps={{
                             maskClosable: false
                         }}
@@ -121,7 +121,7 @@ export default function () {
                         title={AddOrderNo}
                         trigger={<a>{AddOrderNo}</a>}
                         onFinish={async (form) => {
-                            await menuAddOrderNo({
+                            await sysMenuAddOrderNo({
                                 idSet: selectedRowKeys,
                                 number: form.orderNo!
                             }).then(res => {
@@ -138,7 +138,7 @@ export default function () {
                     </ModalForm>
                     <a onClick={() => {
                         execConfirm(() => {
-                            return menuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
+                            return sysMenuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
                                 ToastSuccess(res.msg)
                                 actionRef.current?.reload()
                                 onCleanSelected()
@@ -151,7 +151,7 @@ export default function () {
         >
         </ProTable>
 
-        <BetaSchemaForm<MenuInsertOrUpdateDTO>
+        <BetaSchemaForm<SysMenuInsertOrUpdateDTO>
             title={currentForm.current.id ? "新建菜单" : "编辑菜单"}
             layoutType={"ModalForm"}
             grid
@@ -189,7 +189,7 @@ export default function () {
                             danger
                             onClick={() => {
                                 execConfirm(async () => {
-                                    return menuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                    return sysMenuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
@@ -209,7 +209,7 @@ export default function () {
                 useForm.resetFields()
 
                 if (currentForm.current.id) {
-                    await menuInfoById({id: currentForm.current.id}).then(res => {
+                    await sysMenuInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res
                     })
                 }
@@ -221,7 +221,7 @@ export default function () {
             onVisibleChange={setFormVisible}
             columns={SchemaFormColumnList(treeList, useForm)}
             onFinish={async (form) => {
-                await menuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+                await sysMenuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
