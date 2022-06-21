@@ -115,7 +115,6 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
             return resultList;
         }
 
-        // 查询出所有的菜单
         List<SysJobDO> allList = list();
 
         if (allList.size() == 0) {

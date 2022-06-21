@@ -175,7 +175,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             return resList;
         }
 
-        // 查询出所有的菜单
         List<SysMenuDO> allList = list();
 
         if (allList.size() == 0) {

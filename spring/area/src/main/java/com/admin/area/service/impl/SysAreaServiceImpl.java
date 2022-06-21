@@ -116,7 +116,6 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
             return resultList;
         }
 
-        // 查询出所有的菜单
         List<SysAreaDO> allList = list();
 
         if (allList.size() == 0) {
