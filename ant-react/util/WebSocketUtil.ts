@@ -72,7 +72,7 @@ export function connectWebSocket(
       webSocket = new WebSocket(
           `${
               import.meta.env.DEV ? 'ws:' : 'ws:'
-          }//${webSocketUrl}/ws?code=${code}&category=1`
+          }//${webSocketUrl}/ws?code=${code}`
       )
 
       webSocket.onmessage = (message: MessageEvent<string>) => {

@@ -15,10 +15,7 @@ import com.admin.common.model.entity.BaseEntity;
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.util.IpUtil;
-import com.admin.common.util.KafkaUtil;
-import com.admin.common.util.MyJwtUtil;
-import com.admin.common.util.UserUtil;
+import com.admin.common.util.*;
 import com.admin.websocket.configuration.NettyServer;
 import com.admin.websocket.mapper.WebSocketMapper;
 import com.admin.websocket.model.dto.WebSocketPageDTO;
@@ -170,6 +167,8 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
         webSocketDO.setOs(ua.getOs().toString());
         webSocketDO.setMobileFlag(ua.isMobile());
         webSocketDO.setServer(NettyServer.ipAndPort);
+
+        webSocketDO.setCategory(RequestUtil.getRequestCategoryEnum(httpServletRequest));
 
         // 备注：这里不用担心 jwt不存在的问题，因为 JwtAuthorizationFilter已经处理过了，所以这里一定会有 jwt
         webSocketDO.setJwtHash(MyJwtUtil

@@ -8,8 +8,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.websocket.model.constant.CommonConstant;
@@ -58,9 +56,8 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             UrlQuery urlQuery = UrlQuery.of(request.uri(), CharsetUtil.CHARSET_UTF_8);
 
             String code = Convert.toStr(urlQuery.get("code")); // 随机码
-            Byte category = Convert.toByte(urlQuery.get(BaseConstant.REQUEST_HEADER_CATEGORY));
 
-            if (category == null || StrUtil.isBlank(code)) {
+            if (StrUtil.isBlank(code)) {
                 ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
             }
 
@@ -81,7 +78,6 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
             // 由于 存在 redis中的是 数字，在给对象赋值的时候，是从 下标为 0开始进行匹配的，所以这里要 减 1
             webSocketDO.setType(WebSocketTypeEnum.getByCode((byte)(webSocketDO.getType().getCode() - 1)));
-            webSocketDO.setCategory(RequestCategoryEnum.getByCode(category)); // 类别
             webSocketService.save(webSocketDO); // 保存到数据库
 
             // 上线操作
