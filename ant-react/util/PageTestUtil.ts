@@ -7,6 +7,10 @@ interface IExecTest {
 
 export function execTest(data: IExecTest) {
 
+    if (import.meta.env.DEV) {
+        return
+    }
+
     const length = queue.push(data);
 
     setTimeout(() => {
