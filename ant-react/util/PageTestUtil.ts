@@ -20,6 +20,6 @@ export function execTest(data: IExecTest) {
             execData.func() // 执行方法
             console.log(`【${execData.name}】测试完成 ↑ ${new Date().toLocaleString()}`)
         }
-    }, 1000 * length)
+    }, 2000 * length)
 
 }
