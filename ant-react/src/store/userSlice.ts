@@ -1,8 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import SysMenuDO from "../model/entity/SysMenuDO";
-import {UserBaseInfoVO} from "@/api/UserController";
 import LocalStorageKey from "../model/constant/LocalStorageKey";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
+import {UserBaseInfoVO} from "@/api/SysUserController";
 
 interface IUserSlice {
   loadMenuFlag: boolean // 是否加载过菜单
