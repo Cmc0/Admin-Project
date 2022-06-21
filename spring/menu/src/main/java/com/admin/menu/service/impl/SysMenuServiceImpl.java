@@ -165,7 +165,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     @Override
     public List<SysMenuDO> tree(SysMenuPageDTO dto) {
 
-        List<SysMenuDO> resList = new ArrayList<>(); // 本接口返回值
+        List<SysMenuDO> resList = new ArrayList<>();
 
         // 根据条件进行筛选，得到符合条件的数据，然后再逆向生成整棵树，并返回这个树结构
         dto.setPageSize(-1); // 不分页

@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_user")
+@TableName(value = "sys_sys_user")
 @Data
 @ApiModel(description = "用户主表")
 public class SysUserDO extends BaseEntityThree {

@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_menu")
+@TableName(value = "sys_sys_menu")
 @Data
 @ApiModel(description = "菜单主表")
 public class SysMenuDO extends BaseEntityFour<SysMenuDO> {

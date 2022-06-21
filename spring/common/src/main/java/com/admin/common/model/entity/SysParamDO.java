@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_param")
+@TableName(value = "sys_sys_param")
 @Data
 @ApiModel(description = "系统参数设置主表")
 public class SysParamDO extends BaseEntityThree {

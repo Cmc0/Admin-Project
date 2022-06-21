@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_dict")
+@TableName(value = "sys_sys_dict")
 @Data
 @ApiModel(description = "字典主表")
 public class SysDictDO extends BaseEntityThree {

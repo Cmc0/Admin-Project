@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_request")
+@TableName(value = "sys_sys_request")
 @Data
 @ApiModel(description = "接口请求记录主表")
 public class SysRequestDO extends BaseEntityThree {

@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@TableName(value = "sys_role_ref_menu")
+@TableName(value = "sys_sys_role_ref_menu")
 @Data
 @ApiModel(description = "角色，菜单关联表")
 public class SysRoleRefMenuDO {

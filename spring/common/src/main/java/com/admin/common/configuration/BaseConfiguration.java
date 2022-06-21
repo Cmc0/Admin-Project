@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 public class BaseConfiguration {
 
     public static String applicationName; // 服务名
-    public static final String HOST_ADDRESS = SystemUtil.getHostInfo().getAddress(); // 当前主机的地址
     public static final String HOST_NAME = SystemUtil.getHostInfo().getName(); // 当前主机的名称
     public static Integer port; // 启动的端口
     public static boolean prodFlag = true; // 是否是正式环境

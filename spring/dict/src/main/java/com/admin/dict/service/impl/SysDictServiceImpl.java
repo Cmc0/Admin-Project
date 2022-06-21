@@ -120,10 +120,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
     public List<SysDictTreeVO> tree(SysDictPageDTO dto) {
 
         dto.setPageSize(-1); // 不分页
-        Page<SysDictDO> selectPage = myPage(dto);
-        List<SysDictDO> records = selectPage.getRecords();
+        List<SysDictDO> records = myPage(dto).getRecords();
 
-        List<SysDictTreeVO> resList = new ArrayList<>(); // 本接口返回值
+        List<SysDictTreeVO> resList = new ArrayList<>();
 
         if (records.size() == 0) {
             return resList;
@@ -152,8 +151,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
         // 查询数据库
         List<SysDictDO> sysDictDOList = lambdaQuery().notIn(dictIdSet.size() != 0, BaseEntityTwo::getId, dictIdSet)
             .in(dictKeySet.size() != 0, SysDictDO::getDictKey, dictKeySet).eq(SysDictDO::getType, SysDictTypeEnum.DICT)
-            .orderByDesc(SysDictDO::getOrderNo)
-            .list();
+            .orderByDesc(SysDictDO::getOrderNo).list();
 
         // 拼接本次返回值所需的所有 字典
         allDictList.addAll(sysDictDOList);
