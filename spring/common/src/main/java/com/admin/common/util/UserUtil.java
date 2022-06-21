@@ -116,10 +116,10 @@ public class UserUtil {
      */
     public static Set<Long> getUserIdSetByMenuIdSet(Set<Long> menuIdSet) {
 
-        Set<Long> resSet = new HashSet<>(); // 本方法返回值
+        Set<Long> userIdSet = new HashSet<>();
 
         if (CollUtil.isEmpty(menuIdSet)) {
-            return resSet;
+            return userIdSet;
         }
 
         // 获取所有菜单：条件，没有被禁用的
@@ -128,7 +128,7 @@ public class UserUtil {
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId).list();
 
         if (sysMenuDOList.size() == 0) {
-            return resSet;
+            return userIdSet;
         }
 
         List<SysMenuDO> menuList = new ArrayList<>();
@@ -140,7 +140,7 @@ public class UserUtil {
         }
 
         if (menuList.size() == 0) {
-            return resSet;
+            return userIdSet;
         }
 
         /**
@@ -157,7 +157,7 @@ public class UserUtil {
         // 得到完整的 menuIdSet
         menuIdSet = menuList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
 
-        // 判断默认角色是否包含了菜单 idSet，如果是，则直接返回 未被注销的，所有用户 idSet
+        // 判断：默认角色是否包含了菜单 idSet，如果是，则直接返回 未被注销的，所有用户 idSet
         boolean defaultRoleHasMenuFlag = sysMenuMapper.checkDefaultRoleHasMenu(menuIdSet);
         if (defaultRoleHasMenuFlag) {
             List<SysUserDO> sysUserDOList =
@@ -167,10 +167,10 @@ public class UserUtil {
         }
 
         // 通过 menuIdSet，获取 userIdSet
-        resSet = sysMenuMapper.getUserIdSetByMenuIdSet(menuIdSet);
+        userIdSet = sysMenuMapper.getUserIdSetByMenuIdSet(menuIdSet);
 
-        resSet.removeAll(Collections.singleton(null));
-        return resSet;
+        userIdSet.removeAll(Collections.singleton(null));
+        return userIdSet;
     }
 
     /**
@@ -179,7 +179,7 @@ public class UserUtil {
      */
     public static List<SysMenuDO> getMenuListByUserId(Long userId, int type) {
 
-        List<SysMenuDO> resList = new ArrayList<>(); // 本方法返回值
+        List<SysMenuDO> resList = new ArrayList<>();
 
         // 获取用户绑定的 角色
         List<SysRoleRefUserDO> sysRoleRefUserDOList =
@@ -209,7 +209,7 @@ public class UserUtil {
         }
 
         // 获取所有菜单，条件：没有被 禁用
-        /** 这里和{@link com.admin.menu.service.MenuService#menuListForUser}需要进行同步修改 */
+        /** 这里和{@link com.admin.menu.service.SysMenuService#menuListForUser}需要进行同步修改 */
         List<SysMenuDO> sysMenuDOList;
         if (type == 2) { // 2 给 security获取权限时使用
             sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)

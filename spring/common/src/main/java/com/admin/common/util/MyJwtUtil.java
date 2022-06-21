@@ -162,12 +162,12 @@ public class MyJwtUtil {
             return null; // admin自带所有权限
         }
 
-        List<SimpleGrantedAuthority> result = new ArrayList<>(); // 本方法返回值
+        List<SimpleGrantedAuthority> resultList = new ArrayList<>();
 
         List<SysMenuDO> menuList = UserUtil.getMenuListByUserId(userId, 2); // 通过用户 id，获取 菜单集合
 
         if (menuList.size() == 0) {
-            return result;
+            return resultList;
         }
 
         Set<String> authsSet = menuList.stream().map(SysMenuDO::getAuths).collect(Collectors.toSet());
@@ -186,9 +186,9 @@ public class MyJwtUtil {
             }
         }
 
-        result = hashSet.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        resultList = hashSet.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
-        return result;
+        return resultList;
     }
 
 }

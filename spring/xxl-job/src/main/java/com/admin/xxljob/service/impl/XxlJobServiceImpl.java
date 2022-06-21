@@ -166,7 +166,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 
         JSONObject jsonObject = ops.get(BaseConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
 
-        HttpCookie httpCookie; // 本方法返回值
+        HttpCookie httpCookie;
 
         if (jsonObject == null) {
             JSONObject formJson =
