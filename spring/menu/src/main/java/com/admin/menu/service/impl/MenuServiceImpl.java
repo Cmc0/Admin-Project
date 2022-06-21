@@ -177,9 +177,9 @@ public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> imple
 
         // 根据条件进行筛选，得到符合条件的数据，然后再逆向生成整棵树，并返回这个树结构
         dto.setPageSize(-1); // 不分页
-        List<SysMenuDO> dbList = doMyPage(dto).getRecords();
+        List<SysMenuDO> sysMenuDOList = doMyPage(dto).getRecords();
 
-        if (dbList.size() == 0) {
+        if (sysMenuDOList.size() == 0) {
             return resList;
         }
 
@@ -190,7 +190,7 @@ public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> imple
             return resList;
         }
 
-        return MyTreeUtil.getFullTreeByDeepNode(dbList, allList);
+        return MyTreeUtil.getFullTreeByDeepNode(sysMenuDOList, allList);
     }
 
     /**

@@ -2,14 +2,15 @@ package com.admin.common.filter;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.exceptions.ValidateException;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTValidator;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.util.MyJwtUtil;
+import com.admin.common.util.RequestUtil;
 import com.admin.common.util.ResponseUtil;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,7 +47,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
         // 如果请求头中有 jwt，则进行解析，并且设置授权信息
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(authorization, response);
+        UsernamePasswordAuthenticationToken authentication = getAuthentication(authorization, response, request);
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -58,7 +59,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
      * 备注：这里对用户状态，会进行全面的校验，所以后续的接口，都不需要校验用户的状态
      */
     @SneakyThrows
-    private UsernamePasswordAuthenticationToken getAuthentication(String authorization, HttpServletResponse response) {
+    private UsernamePasswordAuthenticationToken getAuthentication(String authorization, HttpServletResponse response,
+        HttpServletRequest request) {
 
         String jwt = authorization.replace(BaseConstant.JWT_PREFIX, "");
 
@@ -66,16 +68,29 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return null;
         }
 
-        // 判断 jwt是否存在于 redis中
-        Boolean hasKey = MyJwtUtil.jsonRedisTemplate.hasKey(MyJwtUtil.generateRedisJwtHash(authorization));
+        JWT jwtOf;
+        try {
+            jwtOf = JWT.of(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Long userId = Convert.toLong(jwtOf.getPayload("userId"));
+        if (userId == null) {
+            return null;
+        }
+
+        RequestCategoryEnum requestCategoryEnum = RequestUtil.getRequestCategoryEnum(request);
+
+        // 判断 jwtHash是否存在于 redis中
+        Boolean hasKey = MyJwtUtil.jsonRedisTemplate
+            .hasKey(MyJwtUtil.generateRedisJwtHash(authorization, userId, requestCategoryEnum));
         if (hasKey == null || !hasKey) {
             return loginExpired(response); // 提示登录过期，请重新登录
         }
 
-        JWT jwtOf = JWT.of(jwt);
-
         String jwtSecretSuf = null;
-        Long userId = Convert.toLong(jwtOf.getPayload("userId"));
         if (BaseConstant.ADMIN_ID.equals(userId)) {
             if (!BaseConfiguration.adminProperties.isAdminEnable()) {
                 return null;
@@ -94,9 +109,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (!jwtOf.verify()) {
             return null;
         }
-
-        // 异步：清理过期了，但是还是存在于 jwtUser set里面的 jwtHash
-        ThreadUtil.execute(() -> MyJwtUtil.removeJwtHashForJwtUser(userId));
 
         try {
             // 校验时间字段：如果过期了，这里会抛出 ValidateException异常

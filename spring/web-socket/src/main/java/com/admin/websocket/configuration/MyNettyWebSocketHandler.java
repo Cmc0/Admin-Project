@@ -66,8 +66,11 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
             ValueOperations<String, WebSocketDO> ops = jsonRedisTemplate.opsForValue();
 
-            String redisKey = NettyServer.webSocketRegCodePreKey + code;
+            String redisKey = NettyServer.webSocketRegisterCodePreKey + code;
 
+            /**
+             * {@link com.admin.websocket.service.impl.WebSocketServiceImpl#setWebSocketForRegister}
+             */
             WebSocketDO webSocketDO = ops.get(redisKey);
             if (webSocketDO == null) {
                 ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);

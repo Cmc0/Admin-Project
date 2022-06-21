@@ -1,9 +1,5 @@
 package com.admin.common.model.constant;
 
-import cn.hutool.core.collection.CollUtil;
-
-import java.util.Set;
-
 /**
  * 通用的常量类
  */
@@ -45,12 +41,8 @@ public interface BaseConstant {
     // id 相关 ↑
 
     // 参数配置相关 ↓
-    Long USER_MUTUALLY_EXCLUSIVE_ID = 1L; // 用户互斥配置的的主键 id
-    Long RSA_PRIVATE_KEY_ID = 3L; // 非对称加密，密钥 主键id
+    Long RSA_PRIVATE_KEY_ID = 1L; // 非对称加密，密钥 主键id
     Long IP_REQUESTS_PER_SECOND_ID = 2L; // ip请求速率 主键id
-
-    // 改变系统配置参数的 value的路径，作用：拦截器进行识别，如果是 USER_MUTUALLY_EXCLUSIVE_ID 进行了修改，则需要下线全部用户
-    Set<String> PARAM_CHANGE_VALUE_URI_SET = CollUtil.newHashSet("/param/insertOrUpdate");
     // 参数配置相关 ↑
 
     // request 相关 ↓
@@ -69,11 +61,10 @@ public interface BaseConstant {
     String PRE_REDIS_RSA_ENCRYPT = "PRE_REDIS_RSA_ENCRYPT:"; // 非对称加密存入 redis中 key前缀
 
     // WebSocket连接时，存储到 redis分布式锁名前缀，锁：【ip + port + 返回的随机码】
-    String PRE_LOCK_WEB_SOCKET_REG_CODE = "PRE_LOCK_WEB_SOCKET_REG_CODE:";
+    String PRE_LOCK_WEB_SOCKET_REGISTER_CODE = "PRE_LOCK_WEB_SOCKET_REGISTER_CODE:";
 
     // jwt 相关 ↓
-    String PRE_REDIS_JWT = "PRE_REDIS_JWT:"; // jwt在redis中存储的 锁前缀，备注：和 PRE_REDIS_JWT_USER 同时存在或者延迟不存在
-    String PRE_REDIS_JWT_USER = "PRE_REDIS_JWT_USER:"; // jwt在redis中按照 userId存储的 锁前缀，备注：和 PRE_REDIS_JWT 同时存在或者延迟不存在
+    String PRE_REDIS_JWT_HASH = "PRE_REDIS_JWT_HASH:"; // jwt在 redis中存储的 锁前缀，锁 jwtHash（jwt 生成的 hash）
     // jwt 相关 ↑
 
     String PRE_REDIS_PARAM_CACHE = "PRE_REDIS_PARAM_CACHE"; // 系统参数，redis缓存

@@ -14,8 +14,8 @@ import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
-import com.admin.user.model.dto.UserRegByEmailDTO;
-import com.admin.user.service.UserRegService;
+import com.admin.user.model.dto.UserRegisterByEmailDTO;
+import com.admin.user.service.UserRegisterService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -26,7 +26,7 @@ import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class UserRegServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> implements UserRegService {
+public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> implements UserRegisterService {
 
     @Resource
     JsonRedisTemplate<String> jsonRedisTemplate;
@@ -37,7 +37,7 @@ public class UserRegServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
      * 邮箱-注册
      */
     @Override
-    public String userRegByEmail(UserRegByEmailDTO dto) {
+    public String userRegisterByEmail(UserRegisterByEmailDTO dto) {
 
         // 前端会在 SHA256加密 之后，再进行一次非对称加密，并且会携带一分钟之后的时间戳
         // 后端会把这个非对称加密，存入 redis（一分钟自动过期），目的：一个非对称加密，只能用一次
@@ -96,7 +96,7 @@ public class UserRegServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
      * 邮箱-注册-发送验证码
      */
     @Override
-    public String userRegByEmailSendCode(EmailNotBlankDTO dto) {
+    public String userRegisterByEmailSendCode(EmailNotBlankDTO dto) {
 
         RLock lock =
             redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail());

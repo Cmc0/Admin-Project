@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserRegByEmailDTO extends UserUpdateEmailDTO {
+public class UserRegisterByEmailDTO extends UserUpdateEmailDTO {
 
     @NotBlank
     @ApiModelProperty(value = "前端加密之后的原始密码")

@@ -3,10 +3,12 @@ package com.admin.user.service.impl;
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.BaseConfiguration;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.util.MyJwtUtil;
+import com.admin.common.util.RequestUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.user.mapper.UserMapper;
 import com.admin.user.model.vo.UserBaseInfoVO;
@@ -22,6 +24,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, SysUserDO> implemen
 
     @Resource
     HttpServletRequest httpServletRequest;
+    @Resource
+    JsonRedisTemplate<String> jsonRedisTemplate;
 
     /**
      * 退出登录
@@ -29,11 +33,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, SysUserDO> implemen
     @Override
     public String logout() {
 
-        Long currentUserId = UserUtil.getCurrentUserId();
+        // 清除 redis中的 jwtHash
+        String jwtHash = MyJwtUtil.generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY),
+            UserUtil.getCurrentUserId(), RequestUtil.getRequestCategoryEnum(httpServletRequest));
 
-        // 清除 redis中的 jwt
-        MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(currentUserId, null,
-            MyJwtUtil.generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY)), null);
+        jsonRedisTemplate.delete(jwtHash);
 
         return "登出成功";
     }

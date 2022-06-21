@@ -11,23 +11,20 @@ import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.util.*;
+import com.admin.common.util.MyJwtUtil;
+import com.admin.common.util.MyRsaUtil;
+import com.admin.common.util.PasswordConvertUtil;
+import com.admin.common.util.RequestUtil;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.model.dto.UserLoginByPasswordDTO;
 import com.admin.user.service.UserLoginService;
-import com.admin.websocket.model.entity.WebSocketDO;
 import com.admin.websocket.service.WebSocketService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> implements UserLoginService {
@@ -114,46 +111,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
 
         RequestCategoryEnum requestCategoryEnum = RequestUtil.getRequestCategoryEnum(httpServletRequest);
 
-        // 获取互斥配置：1 所有都不互斥（默认） 2 相同端的互斥，H5/移动端/桌面程序 3 所有端都互斥
-        String exclusionSetting = "1";
-        String paramValue = ParamUtil.getValueById(BaseConstant.USER_MUTUALLY_EXCLUSIVE_ID);
-        if (paramValue != null) {
-            exclusionSetting = paramValue;
-        }
-
-        if ("1".equals(exclusionSetting)) {
-            return MyJwtUtil.generateJwt(userId, rememberMe, jwtSecretSuf); // 颁发，并返回 jwt
-        }
-
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_LOGIN + userId);
-        lock.lock();
-
-        try {
-
-            if ("2".equals(exclusionSetting)) {
-
-                List<WebSocketDO> webSocketDOList = webSocketService.lambdaQuery().eq(WebSocketDO::getUserId, userId)
-                    .eq(BaseEntityThree::getEnableFlag, true).eq(WebSocketDO::getCategory, requestCategoryEnum)
-                    .select(BaseEntityTwo::getId).list();
-
-                // 下线该类型的用户
-                Set<Long> webSocketIdSet =
-                    webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
-                webSocketService.offlineAndNoticeBySocketIdSetAndUserId(webSocketIdSet, userId, requestCategoryEnum);
-
-            } else if ("3".equals(exclusionSetting)) {
-                // 下线其他
-                webSocketService.offlineAndNoticeByUserIdSet(Collections.singleton(userId));
-            }
-
-            /**
-             * 备注：如果这里修改了返回值，那么 {@link com.cmc.request.aop.RequestAop#around} 也要同步进行修改
-             */
-            return MyJwtUtil.generateJwt(userId, rememberMe, jwtSecretSuf);
-
-        } finally {
-            lock.unlock();
-        }
+        return MyJwtUtil.generateJwt(userId, rememberMe, jwtSecretSuf, requestCategoryEnum); // 颁发，并返回 jwt
 
     }
 

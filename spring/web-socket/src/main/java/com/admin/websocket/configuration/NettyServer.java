@@ -34,7 +34,7 @@ public class NettyServer implements CommandLineRunner {
 
     public static final String WS = "/ws";
     public static String ipAndPort = null; // ip:port
-    public static String webSocketRegCodePreKey = null; // WebSocket 连接时的 redisKey前缀
+    public static String webSocketRegisterCodePreKey = null; // WebSocket 连接时的 redisKey前缀
 
     @Resource
     WebSocketService webSocketService;
@@ -54,7 +54,7 @@ public class NettyServer implements CommandLineRunner {
 
         ipAndPort = BaseConfiguration.adminProperties.getWebSocketAddress() + ":" + port;
 
-        webSocketRegCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REG_CODE + ipAndPort + ":";
+        webSocketRegisterCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REGISTER_CODE + ipAndPort + ":";
 
         webSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 

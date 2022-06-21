@@ -65,12 +65,12 @@ export function webSocketPage(form: WebSocketPageDTO) {
     return $http.myProPagePost<WebSocketPageVO>('/webSocket/page', form)
 }
 
-export interface WebSocketRegVO {
+export interface WebSocketRegisterVO {
     code?: string // WebSocket 连接码，备注：只能使用一次
     webSocketUrl?: string // WebSocket 连接地址，ip:port
 }
 
 // webSocket 获取 webSocket连接地址和随机码
-export function webSocketReg(form: NotNullByte) {
-    return $http.myPost<WebSocketRegVO>('/webSocket/reg', form)
+export function webSocketRegister(form: NotNullByte) {
+    return $http.myPost<WebSocketRegisterVO>('/webSocket/register', form)
 }

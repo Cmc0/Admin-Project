@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class WebSocketRegVO {
+public class WebSocketRegisterVO {
 
     @ApiModelProperty(value = "WebSocket 连接地址，ip:port")
     private String webSocketUrl;

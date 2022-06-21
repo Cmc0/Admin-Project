@@ -12,9 +12,9 @@ import {closeWebSocket} from "../../../util/WebSocketUtil";
 import {useAppDispatch, useAppSelector} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
-import {UserRegByEmailDTO, userRegEmail, userRegEmailSendCode} from "@/api/UserRegController";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
 import RegisterTest from "@/page/Register/RegisterTest";
+import {UserRegisterByEmailDTO, userRegisterEmail, userRegisterEmailSendCode} from "@/api/UserRegisterController";
 
 type RegisterType = 'email' | 'phone';
 
@@ -24,7 +24,7 @@ export default function () {
     const jwt = localStorage.getItem(LocalStorageKey.JWT)
     const appDispatch = useAppDispatch()
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
-    const [useForm] = Form.useForm<UserRegByEmailDTO>();
+    const [useForm] = Form.useForm<UserRegisterByEmailDTO>();
 
     useEffect(() => {
         if (!jwt) {
@@ -38,7 +38,7 @@ export default function () {
 
     return (
         <div className={"vh100"}>
-            <LoginFormPage<UserRegByEmailDTO>
+            <LoginFormPage<UserRegisterByEmailDTO>
                 form={useForm}
                 isKeyPressSubmit
                 backgroundImageUrl={LoginBg}
@@ -59,7 +59,7 @@ export default function () {
                     formTemp.origPassword = RSAEncryptPro(formTemp.password, rsaPublicKey, date)
                     formTemp.password = PasswordRSAEncrypt(formTemp.password, rsaPublicKey, date)
 
-                    await userRegEmail(formTemp).then(res => {
+                    await userRegisterEmail(formTemp).then(res => {
                         ToastSuccess(res.msg)
                         getAppNav()(CommonConstant.LOGIN_PATH)
                     })
@@ -123,7 +123,7 @@ export default function () {
                                 ]}
                                 onGetCaptcha={async () => {
                                     await useForm.validateFields(['email']).then(async res => {
-                                        await userRegEmailSendCode({email: res.email!}).then(res => {
+                                        await userRegisterEmailSendCode({email: res.email!}).then(res => {
                                             ToastSuccess(res.msg)
                                         })
                                     })

@@ -1,6 +1,5 @@
 package com.admin.websocket.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.Header;
@@ -12,9 +11,9 @@ import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullByte;
 import com.admin.common.model.dto.NotNullByteAndId;
+import com.admin.common.model.entity.BaseEntity;
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
-import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.IpUtil;
 import com.admin.common.util.KafkaUtil;
@@ -26,7 +25,7 @@ import com.admin.websocket.model.dto.WebSocketPageDTO;
 import com.admin.websocket.model.entity.WebSocketDO;
 import com.admin.websocket.model.enums.WebSocketTypeEnum;
 import com.admin.websocket.model.vo.WebSocketPageVO;
-import com.admin.websocket.model.vo.WebSocketRegVO;
+import com.admin.websocket.model.vo.WebSocketRegisterVO;
 import com.admin.websocket.service.WebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,71 +52,6 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
     JsonRedisTemplate<WebSocketDO> jsonRedisTemplate;
 
     /**
-     * 离线用户：通过 socketId，并且进行 socket通知
-     */
-    @Override
-    public void offlineAndNoticeBySocketIdSetAndUserId(Set<Long> webSocketIdSet, Long userId,
-        RequestCategoryEnum requestCategoryEnum) {
-
-        offlineByWebSocketIdSet(webSocketIdSet); // 先操作数据库
-
-        // 移除 redis中的 jwtHash
-        MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(userId, requestCategoryEnum, null, null);
-
-        // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.forcedOffline(webSocketIdSet, null);
-
-    }
-
-    /**
-     * 离线用户：通过 webSocketIdSet
-     */
-    @Override
-    public void offlineByWebSocketIdSet(Set<Long> webSocketIdSet) {
-
-        if (CollUtil.isEmpty(webSocketIdSet)) {
-            return;
-        }
-
-        lambdaUpdate().in(WebSocketDO::getId, webSocketIdSet).eq(BaseEntityThree::getEnableFlag, true)
-            .set(BaseEntityThree::getEnableFlag, false).set(BaseEntityTwo::getUpdateTime, new Date()).update();
-
-    }
-
-    /**
-     * 离线用户：通过 userIdSet
-     */
-    @Override
-    public void offlineByUserIdSet(Set<Long> userIdSet) {
-
-        if (CollUtil.isEmpty(userIdSet)) {
-            return;
-        }
-
-        lambdaUpdate().in(WebSocketDO::getUserId, userIdSet).eq(BaseEntityThree::getEnableFlag, true)
-            .set(BaseEntityThree::getEnableFlag, false).set(BaseEntityTwo::getUpdateTime, new Date()).update();
-
-    }
-
-    /**
-     * 离线用户：通过 userIdSet
-     */
-    @Override
-    public void offlineAndNoticeByUserIdSet(Set<Long> userIdSet) {
-
-        offlineByUserIdSet(userIdSet);
-
-        // 移除 redis中的 jwtHash
-        for (Long item : userIdSet) {
-            MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(item, null, null, null);
-        }
-
-        // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.forcedOffline(null, userIdSet);
-
-    }
-
-    /**
      * 启动项目 或者springboot销毁时：断开当前 WebSocket 的所有连接
      */
     @Override
@@ -126,7 +60,7 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
         log.info("下线数据库的 WebSocket 连接，条件：server = {}", NettyServer.ipAndPort);
 
         lambdaUpdate().eq(WebSocketDO::getServer, NettyServer.ipAndPort).eq(BaseEntityThree::getEnableFlag, true)
-            .set(BaseEntityThree::getEnableFlag, false).update();
+            .set(BaseEntityThree::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date()).update(); // 更新
 
     }
 
@@ -134,23 +68,23 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
      * 强退，通过 idSet
      */
     @Override
-    @Transactional
-    public String offlineAndNoticeByIdSet(NotEmptyIdSet notEmptyIdSet) {
+    public String retreatAndNoticeByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
-        offlineByWebSocketIdSet(notEmptyIdSet.getIdSet());
+        List<WebSocketDO> webSocketDOList =
+            lambdaQuery().in(BaseEntityTwo::getId, notEmptyIdSet.getIdSet()).eq(WebSocketDO::getEnableFlag, true)
+                .groupBy(WebSocketDO::getJwtHash).select(WebSocketDO::getJwtHash).list();
 
-        List<WebSocketDO> socketDbList = lambdaQuery().in(BaseEntityTwo::getId, notEmptyIdSet.getIdSet())
-            .select(WebSocketDO::getJwtHash, WebSocketDO::getUserId).groupBy(WebSocketDO::getJwtHash).list();
+        if (webSocketDOList.size() != 0) {
 
-        if (socketDbList.size() != 0) {
-            for (WebSocketDO item : socketDbList) {
-                // 清理：jwtUser set里面的 jwtHash，以及 jwtHash
-                MyJwtUtil.removeJwtHashByRequestCategoryOrJwtHash(item.getUserId(), null, item.getJwtHash(), null);
-            }
+            Set<String> jwtHashSet = webSocketDOList.stream().map(WebSocketDO::getJwtHash).collect(Collectors.toSet());
+            jsonRedisTemplate.delete(jwtHashSet);
+
+            offlineByWebSocketIdSet(notEmptyIdSet.getIdSet()); // 更新
+
+            // 并且给 消息中间件推送，进行下线操作
+            KafkaUtil.loginExpired(notEmptyIdSet.getIdSet());
+
         }
-
-        // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.loginExpired(notEmptyIdSet.getIdSet());
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -160,46 +94,33 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
      */
     @Override
     @Transactional
-    public String offlineAndNoticeAll() {
+    public String retreatAndNoticeAll() {
 
         MyJwtUtil.removeAllJwtHash();
 
         List<WebSocketDO> webSocketDOList =
             lambdaQuery().eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).list();
 
-        Set<Long> webSocketIdSet = webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
+        if (webSocketDOList.size() != 0) {
 
-        if (webSocketIdSet.size() == 0) {
-            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+            Set<Long> webSocketIdSet = webSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
+
+            lambdaUpdate().eq(BaseEntityThree::getEnableFlag, true).set(BaseEntityThree::getEnableFlag, false)
+                .set(BaseEntityTwo::getUpdateTime, new Date()).update(); // 更新
+
+            // 并且给 消息中间件推送，进行下线操作
+            KafkaUtil.loginExpired(webSocketIdSet);
+
         }
 
-        lambdaUpdate().eq(BaseEntityThree::getEnableFlag, true).set(BaseEntityThree::getEnableFlag, false)
-            .set(BaseEntityTwo::getUpdateTime, new Date()).update();
-
-        // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.loginExpired(webSocketIdSet);
-
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-    }
-
-    /**
-     * 在注销用户的时候，通过 userIdSet，下线用户
-     */
-    @Override
-    public void offlineByUserIdSetForDeleteUser(Set<Long> userIdSet) {
-
-        offlineByUserIdSet(userIdSet);
-
-        // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.delAccount(userIdSet);
-
     }
 
     /**
      * 获取 webSocket连接地址和随机码
      */
     @Override
-    public WebSocketRegVO reg(NotNullByte notNullByte) {
+    public WebSocketRegisterVO register(NotNullByte notNullByte) {
 
         Byte value = notNullByte.getValue();
 
@@ -212,28 +133,28 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
 
         webSocketDO.setType(webSocketTypeEnum);
 
-        setWebSocketForReg(webSocketDO); // 设置：webSocketDO的其他属性值
+        setWebSocketForRegister(webSocketDO); // 设置：webSocketDO的其他属性值
 
-        String uuid = IdUtil.simpleUUID(); // uuid
+        String uuid = IdUtil.simpleUUID();
 
         // 放到 redis里面，一分钟自动过期
         ValueOperations<String, WebSocketDO> ops = jsonRedisTemplate.opsForValue();
 
-        ops.set(NettyServer.webSocketRegCodePreKey + uuid, webSocketDO, BaseConstant.MINUTE_1_EXPIRE_TIME,
-            TimeUnit.MILLISECONDS); // key：PRE_LOCK_WEB_SOCKET_REG_CODE:ip:port:uuid
+        ops.set(NettyServer.webSocketRegisterCodePreKey + uuid, webSocketDO, BaseConstant.MINUTE_1_EXPIRE_TIME,
+            TimeUnit.MILLISECONDS);
 
-        WebSocketRegVO webSocketRegVO = new WebSocketRegVO();
-        webSocketRegVO.setWebSocketUrl(NettyServer.ipAndPort);
-        webSocketRegVO.setCode(uuid);
+        WebSocketRegisterVO webSocketRegisterVO = new WebSocketRegisterVO();
+        webSocketRegisterVO.setWebSocketUrl(NettyServer.ipAndPort);
+        webSocketRegisterVO.setCode(uuid);
 
-        return webSocketRegVO;
+        return webSocketRegisterVO;
     }
 
     /**
      * {@link com.admin.websocket.configuration.MyNettyWebSocketHandler#channelRead}
      * 设置：webSocketDO的其他属性值
      */
-    private void setWebSocketForReg(WebSocketDO webSocketDO) {
+    private void setWebSocketForRegister(WebSocketDO webSocketDO) {
 
         webSocketDO.setUserId(UserUtil.getCurrentUserId());
 
@@ -251,8 +172,9 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
         webSocketDO.setServer(NettyServer.ipAndPort);
 
         // 备注：这里不用担心 jwt不存在的问题，因为 JwtAuthorizationFilter已经处理过了，所以这里一定会有 jwt
-        webSocketDO
-            .setJwtHash(MyJwtUtil.generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY)));
+        webSocketDO.setJwtHash(MyJwtUtil
+            .generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY), webSocketDO.getUserId(),
+                webSocketDO.getCategory()));
 
     }
 
@@ -280,6 +202,17 @@ public class WebSocketServiceImpl extends ServiceImpl<WebSocketMapper, WebSocket
         updateById(webSocketDO);
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 离线：数据库的连接数据
+     */
+    @Override
+    public void offlineByWebSocketIdSet(Set<Long> webSocketIdSet) {
+
+        lambdaUpdate().in(BaseEntityTwo::getId, webSocketIdSet).eq(WebSocketDO::getEnableFlag, true)
+            .set(WebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date()).update(); // 更新
+
     }
 
 }

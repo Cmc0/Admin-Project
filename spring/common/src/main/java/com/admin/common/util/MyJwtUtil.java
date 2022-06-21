@@ -1,6 +1,5 @@
 package com.admin.common.util;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -15,7 +14,6 @@ import com.admin.common.model.entity.SysMenuDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.enums.RequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
-import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -42,7 +40,8 @@ public class MyJwtUtil {
     /**
      * 统一生成 jwt
      */
-    public static String generateJwt(Long userId, boolean rememberMe, String jwtSecretSuf) {
+    public static String generateJwt(Long userId, boolean rememberMe, String jwtSecretSuf,
+        RequestCategoryEnum requestCategoryEnum) {
 
         if (userId == null) {
             userId = (Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -63,13 +62,14 @@ public class MyJwtUtil {
             return null;
         }
 
-        return sign(userId, jwtSecretSuf, rememberMe);
+        return sign(userId, jwtSecretSuf, rememberMe, requestCategoryEnum);
     }
 
     /**
      * 生成 jwt
      */
-    private static String sign(Long userId, String jwtSecretSuf, boolean rememberMe) {
+    private static String sign(Long userId, String jwtSecretSuf, boolean rememberMe,
+        RequestCategoryEnum requestCategoryEnum) {
 
         JSONObject payloadMap = JSONUtil.createObj().set("userId", userId);
 
@@ -89,13 +89,8 @@ public class MyJwtUtil {
 
         // 存储到 redis中
         expireTime = expireTime - BaseConstant.SECOND_30_EXPIRE_TIME;
-        String redisJwtHash = generateRedisJwtHash(jwt);
+        String redisJwtHash = generateRedisJwtHash(jwt, userId, requestCategoryEnum);
         jsonRedisTemplate.opsForValue().set(redisJwtHash, "jwtHash", expireTime, TimeUnit.MILLISECONDS);
-
-        String jwtUserKey = generateRedisJwtUserKey(userId);
-        jsonRedisTemplate.boundSetOps(jwtUserKey).add(redisJwtHash); // 添加元素
-        jsonRedisTemplate.expire(jwtUserKey, BaseConstant.DAY_7_EXPIRE_TIME - BaseConstant.SECOND_30_EXPIRE_TIME,
-            TimeUnit.MILLISECONDS); // 备注：这里设置为 7天 - 30秒过期，因为最久的 jwt过期时间也是这个
 
         return jwt;
     }
@@ -105,199 +100,35 @@ public class MyJwtUtil {
      */
     public static String getJwtSecret(String jwtSecretSuf) {
 
-        StrBuilder strBuilder = new StrBuilder(BaseConfiguration.adminProperties.getJwtSecretPre());
+        StrBuilder strBuilder = StrBuilder.create(BaseConfiguration.adminProperties.getJwtSecretPre());
         strBuilder.append(JWT_SECRET_SYS).append(jwtSecretSuf);
 
         return strBuilder.toString();
     }
 
     /**
-     * 生成 redis中，jwt存储使用的 key
-     * 格式：userId + 类别: jwtHashSet
+     * 生成 redis中，jwt存储使用的 key（jwtHash），目的：不直接暴露明文的 jwt
      */
-    public static String generateRedisJwtUserKey(Long userId) {
-        return generateRedisJwtUserKeyPre(userId) + RequestUtil.getRequestCategoryEnum().getCode();
+    public static String generateRedisJwtHash(String jwt, Long userId, RequestCategoryEnum requestCategoryEnum) {
+
+        StrBuilder strBuilder = StrBuilder.create(BaseConstant.PRE_REDIS_JWT_HASH);
+        strBuilder.append(userId).append(":").append(requestCategoryEnum.getCode()).append(":")
+            .append(DigestUtil.sha512Hex(jwt));
+
+        return strBuilder.toString();
     }
 
     /**
-     * 生成 redis中，jwtUser 存储使用的 key前面一部分值
-     */
-    public static String generateRedisJwtUserKeyPre(Long userId) {
-        return BaseConstant.PRE_REDIS_JWT_USER + userId + ":";
-    }
-
-    /**
-     * 生成 redis中，jwt存储使用的 key（jwtHash）
-     */
-    public static String generateRedisJwtHash(String jwt) {
-        return BaseConstant.PRE_REDIS_JWT + DigestUtil.sha256Hex(jwt);
-    }
-
-    /**
-     * 清理过期了，但是还是存在于 jwtUser set里面的 jwtHash
-     */
-    public static void removeJwtHashForJwtUser(Long userId) {
-
-        String jwtUserKeyPre = generateRedisJwtUserKeyPre(userId);
-
-        for (RequestCategoryEnum item : RequestCategoryEnum.values()) {
-            String jwtUserKey = jwtUserKeyIsExist(jwtUserKeyPre, item);
-            if (jwtUserKey == null) {
-                continue;
-            }
-            // 获取 jwtUser set里面所有的 jwtHash
-            BoundSetOperations<String, String> setOps = jsonRedisTemplate.boundSetOps(jwtUserKey);
-            Set<String> jwtHashSet = setOps.members();
-            if (CollUtil.isEmpty(jwtHashSet)) {
-                continue;
-            }
-            Set<String> removeSet = new HashSet<>(); // 需要移除：过期了，但是还是存在于 jwtUser set里面的 jwtHash
-            for (String subItem : jwtHashSet) {
-                Boolean aBoolean = jsonRedisTemplate.hasKey(subItem);
-                if (aBoolean == null || !aBoolean) {
-                    // 如果这个 jwtHash不存在了，则移除 jwtUser set里面的 jwtHash
-                    removeSet.add(subItem);
-                }
-            }
-            if (removeSet.size() != 0) {
-                setOps.remove(removeSet.toArray()); // 执行批量移除
-            }
-        }
-
-    }
-
-    /**
-     * 移除全部的 jwt
+     * 移除：全部 jwtHash
      */
     public static void removeAllJwtHash() {
 
-        Set<String> jwtSet = RedisUtil.scan(BaseConstant.PRE_REDIS_JWT);
-        Set<String> jwtUserSet = RedisUtil.scan(BaseConstant.PRE_REDIS_JWT_USER);
+        Set<String> jwtHashSet = RedisUtil.scan(BaseConstant.PRE_REDIS_JWT_HASH);
 
-        jwtSet.addAll(jwtUserSet);
-
-        if (jwtSet.size() != 0) {
-            jsonRedisTemplate.delete(jwtSet); // 移除 全部 jwt
+        if (jwtHashSet.size() != 0) {
+            jsonRedisTemplate.delete(jwtHashSet); // 移除：全部 jwtHash
         }
 
-    }
-
-    /**
-     * 通过 requestCategoryEnum或者 jwtHash清理：jwtUser set里面的 jwtHash，以及 jwtHash
-     * userId 不能为 null，其他全部为 null时，则表示：移除 userId下的所有 jwt
-     * requestCategoryEnum：移除指定的 requestCategoryEnum，不传则移除全部
-     * jwtHash：如果传了这个值，那么 requestCategoryEnum，anyOneFlag不会生效
-     * anyOneFlag：是否随机剩下一个，为 null，则不进行操作，为 true 则 全部只剩一个 为 false 则 各个类别都剩一个
-     */
-    public static void removeJwtHashByRequestCategoryOrJwtHash(Long userId, RequestCategoryEnum requestCategoryEnum,
-        String jwtHash, Boolean anyOneFlag) {
-
-        boolean jwtHashFlag = StrUtil.isNotBlank(jwtHash);
-        if (jwtHashFlag) {
-            jsonRedisTemplate.delete(jwtHash); // 移除 jwtHash
-            requestCategoryEnum = null;
-        }
-        if (anyOneFlag != null) {
-            requestCategoryEnum = null;
-        }
-
-        String jwtUserKeyPre = generateRedisJwtUserKeyPre(userId);
-
-        Set<String> removeKeySet = new HashSet<>(); // redis需要移除的 keySet
-
-        boolean allAnyOneFlag = false; // anyOneFlag == true 时使用：用于判断是否留了一个
-
-        for (RequestCategoryEnum item : RequestCategoryEnum.values()) {
-
-            if (requestCategoryEnum == null) { // 如果等于 null，则移除全部
-            } else if (!item.equals(requestCategoryEnum)) { // 如果不为 null，则只移除指定的 requestCategoryEnum
-                continue;
-            }
-
-            String jwtUserKey = jwtUserKeyIsExist(jwtUserKeyPre, item);
-            if (jwtUserKey == null) {
-                continue;
-            }
-            // 获取 jwtUser set里面所有的 jwtHash
-            BoundSetOperations<String, String> setOps = jsonRedisTemplate.boundSetOps(jwtUserKey);
-
-            if (jwtHashFlag) {
-                Long remove = setOps.remove(jwtHash);
-                if (remove != null && remove != 0) {
-                    return; // 如果移除成功，则直接返回
-                }
-                continue; // 继续下一次循环，即：下面的代码都不会执行
-            }
-
-            Set<String> jwtHashSet = setOps.members();
-            if (CollUtil.isEmpty(jwtHashSet)) {
-                continue;
-            }
-
-            if (anyOneFlag != null && !anyOneFlag) {
-                // 各个类别都剩一个
-                jwtHashSetAnyOne(setOps, jwtHashSet, removeKeySet); // jwtHashSet，随机剩下一个
-            } else {
-                if (anyOneFlag != null) {
-                    // 全部只剩一个
-                    if (!allAnyOneFlag) {
-                        allAnyOneFlag = true; // 赋值为 true，表示已经 随机剩了一个
-                        jwtHashSetAnyOne(setOps, jwtHashSet, null); // jwtHashSet，随机剩下一个
-                        continue; // 继续下一次循环，即：下面的代码都不会执行
-                    }
-                }
-
-                // 全部移除
-                jwtHashSet.add(jwtUserKey); // 添加元素：jwtUserKey
-                removeKeySet.addAll(jwtHashSet); // 添加所有到：removeKeySet
-            }
-
-        }
-
-        if (removeKeySet.size() != 0) {
-            jsonRedisTemplate.delete(removeKeySet); // 执行批量移除
-        }
-
-    }
-
-    /**
-     * jwtHashSet，随机剩下一个
-     */
-    private static void jwtHashSetAnyOne(BoundSetOperations<String, String> setOps, Set<String> jwtHashSet,
-        Set<String> removeKeySet) {
-
-        boolean flag = false;
-
-        Set<String> jwtHashRemoveSet = new HashSet<>();
-        for (String subItem : jwtHashSet) {
-            if (flag) {
-                jwtHashRemoveSet.add(subItem); // 添加到：jwtHashRemoveSet 里
-            } else {
-                flag = true; // 赋值为 true，表示已经 随机剩了一个
-            }
-        }
-        if (jwtHashRemoveSet.size() != 0) {
-            if (removeKeySet != null) {
-                removeKeySet.addAll(jwtHashRemoveSet); // 移除 jwtHash
-            }
-            setOps.remove(jwtHashRemoveSet.toArray());
-        }
-
-    }
-
-    /**
-     * 判断：jwtUserKey是否存在于 redis中
-     */
-    private static String jwtUserKeyIsExist(String jwtUserKeyPre, RequestCategoryEnum item) {
-
-        String jwtUserKey = jwtUserKeyPre + item.getCode();
-
-        Boolean hasKey = jsonRedisTemplate.hasKey(jwtUserKey);
-        if (hasKey == null || !hasKey) {
-            return null;
-        }
-
-        return jwtUserKey;
     }
 
     /**

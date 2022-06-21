@@ -123,17 +123,17 @@ public class UserUtil {
         }
 
         // 获取所有菜单：条件，没有被禁用的
-        List<SysMenuDO> allMenuDbList =
+        List<SysMenuDO> sysMenuDOList =
             ChainWrappers.lambdaQueryChain(sysMenuMapper).eq(BaseEntityThree::getEnableFlag, true)
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId).list();
 
-        if (allMenuDbList.size() == 0) {
+        if (sysMenuDOList.size() == 0) {
             return resSet;
         }
 
         List<SysMenuDO> menuList = new ArrayList<>();
 
-        for (SysMenuDO item : allMenuDbList) {
+        for (SysMenuDO item : sysMenuDOList) {
             if (menuIdSet.contains(item.getId())) {
                 menuList.add(item); // 添加 menuId 对应数据库的对象
             }
@@ -147,11 +147,11 @@ public class UserUtil {
          * 注意：要和{@link #getMenuListByUserId}同步修改
          */
         // 根据底级节点 list，逆向生成整棵树 list
-        menuList = MyTreeUtil.getFullTreeList(menuList, allMenuDbList);
+        menuList = MyTreeUtil.getFullTreeList(menuList, sysMenuDOList);
 
         // 再添加 menuIdSet 的所有子级菜单
         for (Long item : menuIdSet) {
-            getMenuListByUserIdNext(menuList, allMenuDbList, item);
+            getMenuListByUserIdNext(menuList, sysMenuDOList, item);
         }
 
         // 得到完整的 menuIdSet
@@ -210,19 +210,19 @@ public class UserUtil {
 
         // 获取所有菜单，条件：没有被 禁用
         /** 这里和{@link com.admin.menu.service.MenuService#getUserMenuInfo}需要进行同步修改 */
-        List<SysMenuDO> allMenuDbList;
+        List<SysMenuDO> sysMenuDOList;
         if (type == 2) { // 2 给 security获取权限时使用
-            allMenuDbList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
+            sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
                 .eq(BaseEntityThree::getEnableFlag, true).list();
         } else { // 默认是 1
-            allMenuDbList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
+            sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
                     SysMenuDO::getRouter, SysMenuDO::getName, SysMenuDO::getFirstFlag, SysMenuDO::getLinkFlag,
                     SysMenuDO::getShowFlag, SysMenuDO::getAuths, SysMenuDO::getAuthFlag)
                 .eq(BaseEntityThree::getEnableFlag, true).orderByDesc(BaseEntityFour::getOrderNo).list();
         }
-        if (allMenuDbList.size() == 0) {
+        if (sysMenuDOList.size() == 0) {
             return resList; // 结束方法
         }
 
@@ -230,7 +230,7 @@ public class UserUtil {
             sysRoleRefMenuDOList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet());
 
         // 开始进行匹配，组装返回值
-        for (SysMenuDO item : allMenuDbList) {
+        for (SysMenuDO item : sysMenuDOList) {
             if (menuIdSet.contains(item.getId())) {
                 resList.add(item); // 先添加 menuIdSet里面的 菜单
             }
@@ -240,10 +240,10 @@ public class UserUtil {
          * 注意：要和{@link #getUserIdSetByMenuIdSet}同步修改
          */
         // 根据底级节点 list，逆向生成整棵树 list
-        resList = MyTreeUtil.getFullTreeList(resList, allMenuDbList);
+        resList = MyTreeUtil.getFullTreeList(resList, sysMenuDOList);
 
         for (Long item : menuIdSet) { // 再添加 menuIdSet的所有子级菜单
-            getMenuListByUserIdNext(resList, allMenuDbList, item);
+            getMenuListByUserIdNext(resList, sysMenuDOList, item);
         }
 
         return resList;

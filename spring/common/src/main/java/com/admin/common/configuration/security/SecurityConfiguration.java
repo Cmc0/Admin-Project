@@ -21,7 +21,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // 生产环境，不需要 Security 处理的 url
     private static final List<String> PROD_IGNORING_LIST =
-        Arrays.asList("/userReg/**", "/userLogin/**", FILE_PUBLIC_DOWNLOAD_URL);
+        Arrays.asList("/userRegister/**", "/userLogin/**", FILE_PUBLIC_DOWNLOAD_URL);
 
     // 其他环境，不需要 Security 处理的 url
     private static final List<String> IGNORING_LIST = CollUtil
