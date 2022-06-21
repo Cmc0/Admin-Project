@@ -132,7 +132,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptDO> im
             return resultList;
         }
 
-        // 查询出所有的菜单
+        // 查询出所有的部门
         List<SysDeptDO> allList = list();
 
         if (allList.size() == 0) {
