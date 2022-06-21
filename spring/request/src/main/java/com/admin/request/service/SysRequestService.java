@@ -1,8 +1,8 @@
-package cmc.admin.request.service;
+package com.admin.request.service;
 
-import cmc.admin.request.model.dto.SysRequestPageDTO;
-import cmc.admin.request.model.entity.SysRequestDO;
-import cmc.admin.request.model.vo.SysRequestPageVO;
+import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.entity.SysRequestDO;
+import com.admin.request.model.vo.SysRequestPageVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 

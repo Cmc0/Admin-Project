@@ -1,6 +1,6 @@
-package cmc.admin.request.model.vo;
+package com.admin.request.model.vo;
 
-import cmc.admin.request.model.entity.SysRequestDO;
+import com.admin.request.model.entity.SysRequestDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

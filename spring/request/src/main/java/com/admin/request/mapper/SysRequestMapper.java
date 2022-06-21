@@ -1,8 +1,8 @@
-package cmc.admin.request.mapper;
+package com.admin.request.mapper;
 
-import cmc.admin.request.model.dto.SysRequestPageDTO;
-import cmc.admin.request.model.entity.SysRequestDO;
-import cmc.admin.request.model.vo.SysRequestPageVO;
+import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.entity.SysRequestDO;
+import com.admin.request.model.vo.SysRequestPageVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;

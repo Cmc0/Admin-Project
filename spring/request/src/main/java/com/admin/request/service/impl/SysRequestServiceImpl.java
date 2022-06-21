@@ -1,10 +1,10 @@
-package cmc.admin.request.service.impl;
+package com.admin.request.service.impl;
 
-import cmc.admin.request.mapper.SysRequestMapper;
-import cmc.admin.request.model.dto.SysRequestPageDTO;
-import cmc.admin.request.model.entity.SysRequestDO;
-import cmc.admin.request.model.vo.SysRequestPageVO;
-import cmc.admin.request.service.SysRequestService;
+import com.admin.request.mapper.SysRequestMapper;
+import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.entity.SysRequestDO;
+import com.admin.request.model.vo.SysRequestPageVO;
+import com.admin.request.service.SysRequestService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,7 @@
-package cmc.admin.request.model.dto;
+package com.admin.request.model.dto;
 
 import com.admin.common.model.dto.MyPageDTO;
+import com.admin.request.model.entity.SysRequestDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
- * {@link cmc.admin.request.model.entity.SysRequestDO}
+ * {@link SysRequestDO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

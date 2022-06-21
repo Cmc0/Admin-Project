@@ -1,4 +1,4 @@
-package cmc.admin.request.model.entity;
+package com.admin.request.model.entity;
 
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.enums.SysRequestCategoryEnum;
