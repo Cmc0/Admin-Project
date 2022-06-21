@@ -1,7 +1,6 @@
-package com.admin.dept.model.dto;
+package com.admin.job.model.dto;
 
 import com.admin.common.model.dto.BaseInsertOrUpdateDTO;
-import com.admin.dept.model.entity.SysDeptDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,11 +9,11 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 /**
- * {@link SysDeptDO}
+ * {@link com.admin.job.model.entity.SysJobDO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysDeptInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
+public class SysJobInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
 
     @ApiModelProperty(value = "排序号（值越大越前面，默认为 0）")
     private Integer orderNo;
@@ -26,14 +25,11 @@ public class SysDeptInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     private Long parentId;
 
     @NotBlank
-    @ApiModelProperty(value = "部门名称")
+    @ApiModelProperty(value = "岗位名")
     private String name;
 
     @ApiModelProperty(value = "描述/备注")
     private String remark;
-
-    @ApiModelProperty(value = "区域 idSet")
-    private Set<Long> areaIdSet;
 
     @ApiModelProperty(value = "用户 idSet")
     private Set<Long> userIdSet;
