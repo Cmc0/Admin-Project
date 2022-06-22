@@ -7,13 +7,14 @@ import com.admin.file.model.dto.SysFileUploadDTO;
 import com.admin.file.service.SysFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/file")
+@RequestMapping("/sysFile")
 @Api(tags = "文件-管理")
 public class SysFileController {
 
@@ -34,6 +35,7 @@ public class SysFileController {
 
     @ApiOperation(value = "文件下载")
     @PostMapping("/download")
+    @PreAuthorize("hasAuthority('sysFile:download')")
     public void download(@RequestBody @Valid SysFileDownloadDTO dto) {
         baseService.download(dto);
     }

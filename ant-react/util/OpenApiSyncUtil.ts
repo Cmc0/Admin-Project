@@ -244,7 +244,10 @@ function start() {
                     }
                 }
 
-                if (subItem.responses && subItem.responses["200"].content) {
+                if (subItem.responses) {
+                    if (!subItem.responses["200"].content) {
+                        return
+                    }
                     const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
                     responsesName = getComponentNameByFullName(responsesFullName)
                     responsesName = getMatchStr(responsesName);
