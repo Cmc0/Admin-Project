@@ -8,12 +8,12 @@ import $http from "../../util/HttpUtil";
 
 // 岗位-管理 通过主键 idSet，加减排序号
 export function sysJobAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysJob/addOrderNo', form)
+    return $http.myPost<string>('/sysJob/addOrderNo', form, config)
 }
 
 // 岗位-管理 批量删除
 export function sysJobDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysJob/deleteByIdSet', form)
+    return $http.myPost<string>('/sysJob/deleteByIdSet', form, config)
 }
 
 export interface SysJobInfoByIdVO {
@@ -35,7 +35,7 @@ export interface SysJobInfoByIdVO {
 
 // 岗位-管理 通过主键id，查看详情
 export function sysJobInfoById(form: NotNullId, config?: AxiosRequestConfig) {
-    return $http.myProPost<SysJobInfoByIdVO>('/sysJob/infoById', form)
+    return $http.myProPost<SysJobInfoByIdVO>('/sysJob/infoById', form, config)
 }
 
 export interface SysJobInsertOrUpdateDTO {
@@ -50,7 +50,7 @@ export interface SysJobInsertOrUpdateDTO {
 
 // 岗位-管理 新增/修改
 export function sysJobInsertOrUpdate(form: SysJobInsertOrUpdateDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysJob/insertOrUpdate', form)
+    return $http.myPost<string>('/sysJob/insertOrUpdate', form, config)
 }
 
 export interface SysJobPageDTO extends MyPageDTO {
@@ -69,10 +69,10 @@ export interface SysJobDO {
 
 // 岗位-管理 分页排序查询
 export function sysJobPage(form: SysJobPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysJobDO>('/sysJob/page', form)
+    return $http.myProPagePost<SysJobDO>('/sysJob/page', form, config)
 }
 
 // 岗位-管理 查询：树结构
 export function sysJobTree(form: SysJobPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProTreePost<SysJobDO>('/sysJob/tree', form)
+    return $http.myProTreePost<SysJobDO>('/sysJob/tree', form, config)
 }

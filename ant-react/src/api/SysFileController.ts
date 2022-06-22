@@ -11,7 +11,7 @@ export interface SysFileRemoveDTO {
 
 // 文件-管理 文件批量删除
 export function sysFileRemove(form: SysFileRemoveDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysFile/remove', form)
+    return $http.myPost<string>('/sysFile/remove', form, config)
 }
 
 // 文件-管理 文件上传

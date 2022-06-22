@@ -8,7 +8,7 @@ import $http from "../../util/HttpUtil";
 
 // webSocket 更改在线状态
 export function sysWebSocketChangeType(form: NotNullByteAndId, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysWebSocket/changeType', form)
+    return $http.myPost<string>('/sysWebSocket/changeType', form, config)
 }
 
 export interface SysWebSocketPageDTO extends MyPageDTO {
@@ -53,7 +53,7 @@ export interface SysSysWebSocketPageVO {
 
 // webSocket 分页排序查询
 export function sysWebSocketPage(form: SysWebSocketPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysSysWebSocketPageVO>('/sysWebSocket/page', form)
+    return $http.myProPagePost<SysSysWebSocketPageVO>('/sysWebSocket/page', form, config)
 }
 
 export interface SysWebSocketRegisterVO {
@@ -63,7 +63,7 @@ export interface SysWebSocketRegisterVO {
 
 // webSocket 获取 webSocket连接地址和随机码
 export function sysWebSocketRegister(form: NotNullByte, config?: AxiosRequestConfig) {
-    return $http.myPost<SysWebSocketRegisterVO>('/sysWebSocket/register', form)
+    return $http.myPost<SysWebSocketRegisterVO>('/sysWebSocket/register', form, config)
 }
 
 // webSocket 全部强退
@@ -73,5 +73,5 @@ export function sysWebSocketRetreatAll() {
 
 // webSocket 强退，通过 idSet
 export function sysWebSocketRetreatByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysWebSocket/retreatByIdSet', form)
+    return $http.myPost<string>('/sysWebSocket/retreatByIdSet', form, config)
 }

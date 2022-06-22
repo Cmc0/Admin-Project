@@ -8,12 +8,12 @@ import $http from "../../util/HttpUtil";
 
 // 字典-管理 通过主键 idSet，加减排序号
 export function sysDictAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysDict/addOrderNo', form)
+    return $http.myPost<string>('/sysDict/addOrderNo', form, config)
 }
 
 // 字典-管理 删除字典
 export function sysDictDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysDict/deleteByIdSet', form)
+    return $http.myPost<string>('/sysDict/deleteByIdSet', form, config)
 }
 
 export interface SysDictDO {
@@ -35,7 +35,7 @@ export interface SysDictDO {
 
 // 字典-管理 通过主键id，查看详情
 export function sysDictInfoById(form: NotNullId, config?: AxiosRequestConfig) {
-    return $http.myProPost<SysDictDO>('/sysDict/infoById', form)
+    return $http.myProPost<SysDictDO>('/sysDict/infoById', form, config)
 }
 
 export interface SysDictInsertOrUpdateDTO {
@@ -51,7 +51,7 @@ export interface SysDictInsertOrUpdateDTO {
 
 // 字典-管理 新增/修改
 export function sysDictInsertOrUpdate(form: SysDictInsertOrUpdateDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysDict/insertOrUpdate', form)
+    return $http.myPost<string>('/sysDict/insertOrUpdate', form, config)
 }
 
 export interface SysDictPageDTO extends MyPageDTO {
@@ -68,7 +68,7 @@ export interface SysDictPageDTO extends MyPageDTO {
 
 // 字典-管理 分页排序查询
 export function sysDictPage(form: SysDictPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysDictDO>('/sysDict/page', form)
+    return $http.myProPagePost<SysDictDO>('/sysDict/page', form, config)
 }
 
 export interface SysDictTreeVO {
@@ -91,5 +91,5 @@ export interface SysDictTreeVO {
 
 // 字典-管理 查询：树结构
 export function sysDictTree(form: SysDictPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProTreePost<SysDictTreeVO>('/sysDict/tree', form)
+    return $http.myProTreePost<SysDictTreeVO>('/sysDict/tree', form, config)
 }

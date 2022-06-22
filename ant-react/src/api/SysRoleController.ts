@@ -7,7 +7,7 @@ import $http from "../../util/HttpUtil";
 
 // 角色-管理 批量删除
 export function sysRoleDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysRole/deleteByIdSet', form)
+    return $http.myPost<string>('/sysRole/deleteByIdSet', form, config)
 }
 
 export interface SysRolePageVO {
@@ -28,7 +28,7 @@ export interface SysRolePageVO {
 
 // 角色-管理 通过主键id，查看详情
 export function sysRoleInfoById(form: NotNullId, config?: AxiosRequestConfig) {
-    return $http.myProPost<SysRolePageVO>('/sysRole/infoById', form)
+    return $http.myProPost<SysRolePageVO>('/sysRole/infoById', form, config)
 }
 
 export interface SysRoleInsertOrUpdateDTO {
@@ -43,7 +43,7 @@ export interface SysRoleInsertOrUpdateDTO {
 
 // 角色-管理 新增/修改
 export function sysRoleInsertOrUpdate(form: SysRoleInsertOrUpdateDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysRole/insertOrUpdate', form)
+    return $http.myPost<string>('/sysRole/insertOrUpdate', form, config)
 }
 
 export interface SysRolePageDTO extends MyPageDTO {
@@ -73,5 +73,5 @@ export interface SysRoleDO {
 
 // 角色-管理 分页排序查询
 export function sysRolePage(form: SysRolePageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysRoleDO>('/sysRole/page', form)
+    return $http.myProPagePost<SysRoleDO>('/sysRole/page', form, config)
 }

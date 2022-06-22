@@ -298,7 +298,7 @@ function start() {
                 fileData += `('${subItem.uri}'`
 
                 if (requestBodyName) {
-                    fileData += ', form'
+                    fileData += ', form, config'
                 }
 
                 if (subIndex === pathList.length - 1) {

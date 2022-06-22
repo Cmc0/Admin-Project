@@ -7,7 +7,7 @@ import $http from "../../util/HttpUtil";
 
 // 系统参数-管理 批量删除
 export function sysParamDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysParam/deleteByIdSet', form)
+    return $http.myPost<string>('/sysParam/deleteByIdSet', form, config)
 }
 
 export interface SysParamDO {
@@ -26,7 +26,7 @@ export interface SysParamDO {
 
 // 系统参数-管理 通过主键id，查看详情
 export function sysParamInfoById(form: NotNullId, config?: AxiosRequestConfig) {
-    return $http.myProPost<SysParamDO>('/sysParam/infoById', form)
+    return $http.myProPost<SysParamDO>('/sysParam/infoById', form, config)
 }
 
 export interface SysParamInsertOrUpdateDTO {
@@ -39,7 +39,7 @@ export interface SysParamInsertOrUpdateDTO {
 
 // 系统参数-管理 新增/修改
 export function sysParamInsertOrUpdate(form: SysParamInsertOrUpdateDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysParam/insertOrUpdate', form)
+    return $http.myPost<string>('/sysParam/insertOrUpdate', form, config)
 }
 
 export interface SysParamPageDTO extends MyPageDTO {
@@ -54,5 +54,5 @@ export interface SysParamPageDTO extends MyPageDTO {
 
 // 系统参数-管理 分页排序查询
 export function sysParamPage(form: SysParamPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysParamDO>('/sysParam/page', form)
+    return $http.myProPagePost<SysParamDO>('/sysParam/page', form, config)
 }

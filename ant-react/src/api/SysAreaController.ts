@@ -8,12 +8,12 @@ import $http from "../../util/HttpUtil";
 
 // 区域-管理 通过主键 idSet，加减排序号
 export function sysAreaAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysArea/addOrderNo', form)
+    return $http.myPost<string>('/sysArea/addOrderNo', form, config)
 }
 
 // 区域-管理 批量删除
 export function sysAreaDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysArea/deleteByIdSet', form)
+    return $http.myPost<string>('/sysArea/deleteByIdSet', form, config)
 }
 
 export interface SysAreaInfoByIdVO {
@@ -35,7 +35,7 @@ export interface SysAreaInfoByIdVO {
 
 // 区域-管理 通过主键id，查看详情
 export function sysAreaInfoById(form: NotNullId, config?: AxiosRequestConfig) {
-    return $http.myProPost<SysAreaInfoByIdVO>('/sysArea/infoById', form)
+    return $http.myProPost<SysAreaInfoByIdVO>('/sysArea/infoById', form, config)
 }
 
 export interface SysAreaInsertOrUpdateDTO {
@@ -50,7 +50,7 @@ export interface SysAreaInsertOrUpdateDTO {
 
 // 区域-管理 新增/修改
 export function sysAreaInsertOrUpdate(form: SysAreaInsertOrUpdateDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysArea/insertOrUpdate', form)
+    return $http.myPost<string>('/sysArea/insertOrUpdate', form, config)
 }
 
 export interface SysAreaPageDTO extends MyPageDTO {
@@ -69,10 +69,10 @@ export interface SysAreaDO {
 
 // 区域-管理 分页排序查询
 export function sysAreaPage(form: SysAreaPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysAreaDO>('/sysArea/page', form)
+    return $http.myProPagePost<SysAreaDO>('/sysArea/page', form, config)
 }
 
 // 区域-管理 查询：树结构
 export function sysAreaTree(form: SysAreaPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProTreePost<SysAreaDO>('/sysArea/tree', form)
+    return $http.myProTreePost<SysAreaDO>('/sysArea/tree', form, config)
 }
