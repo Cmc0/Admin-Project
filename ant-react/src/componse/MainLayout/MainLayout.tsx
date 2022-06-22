@@ -22,6 +22,7 @@ import {sysMenuListForUser} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
+import {timeoutTwoSeconds} from "../../../util/HttpUtil";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -120,7 +121,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
             headers: {
-                timeout: 2000,
+                timeout: timeoutTwoSeconds,
                 hiddenErrorMsg: true,
             },
         }).then(res => {

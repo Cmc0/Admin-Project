@@ -4,6 +4,7 @@ import {getAppNav} from "@/App";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {logout} from "./UserUtil";
 import {sysWebSocketRegister} from "@/api/SysWebSocketController";
+import {timeoutTwoSeconds} from "./HttpUtil";
 
 let webSocketUrl: string | undefined = ''
 let code: string | undefined = ''
@@ -17,7 +18,7 @@ function getWebSocketRegisterData() {
     return sysWebSocketRegister({
         value: Number(GetWebSocketType())
     }, {
-        timeout: 2000,
+        timeout: timeoutTwoSeconds,
         headers: {
             hiddenErrorMsg: true,
         },
