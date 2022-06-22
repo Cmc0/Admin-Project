@@ -32,7 +32,7 @@ export interface SysMenuInfoByIdVO {
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     parentId?: number // 父节点id（顶级则为0）
     path?: string // 页面的 path，备注：相同父菜单下，子菜单 path不能重复
-    redirect?: string // 重定向：linkFlag === false 时使用，不必填，暂时未使用
+    redirect?: string // 重定向，暂时未使用
     remark?: string // 描述/备注
     roleIdSet?: number[] // 角色 idSet
     router?: string // 路由
@@ -59,7 +59,7 @@ export interface SysMenuInsertOrUpdateDTO {
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     parentId?: number // 父节点id（顶级则为0）
     path?: string // 页面的 path，备注：相同父菜单下，子菜单 path不能重复
-    redirect?: string // 重定向：linkFlag === false 时使用，不必填，暂时未使用
+    redirect?: string // 重定向，暂时未使用
     remark?: string // 描述/备注
     roleIdSet?: number[] // 角色 idSet
     router?: string // 路由
@@ -89,7 +89,7 @@ export interface SysMenuPageDTO extends MyPageDTO {
     pageSize?: number // 每页显示条数
     parentId?: number // 父节点id（顶级则为0）
     path?: string // 页面的 path，备注：相同父菜单下，子菜单 path不能重复
-    redirect?: string // 重定向：linkFlag === false 时使用，不必填，暂时未使用
+    redirect?: string // 重定向，暂时未使用
     router?: string // 路由
     showFlag?: boolean // 是否显示在 左侧的菜单栏里面，如果为 false，也可以通过 $router.push()访问到
 }

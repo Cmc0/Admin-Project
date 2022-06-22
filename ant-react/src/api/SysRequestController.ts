@@ -3,19 +3,19 @@ import MyPageDTO from "@/model/dto/MyPageDTO";
 import $http from "../../util/HttpUtil";
 
 export interface SysRequestPageDTO extends MyPageDTO {
-    beginTime?: string // 创建开始时间
+    beginCreateTime?: string // 创建开始时间
     beginTimeNumber?: number // 耗时开始（毫秒）
     category?: boolean // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     current?: number // 第几页
-    endTime?: string // 创建结束时间
+    endCreateTime?: string // 创建结束时间
     endTimeNumber?: number // 耗时结束（毫秒）
     ip?: string // ip
     name?: string // 接口名（备用）
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
-    time?: string // 耗时（字符串）
+    timeStr?: string // 耗时（字符串）
     uri?: string // 请求的uri
 }
 
@@ -30,8 +30,8 @@ export interface SysRequestPageVO {
     name?: string // 接口名（备用）
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     remark?: string // 描述/备注
-    time?: string // 耗时（字符串）
     timeNumber?: number // 耗时（毫秒）
+    timeStr?: string // 耗时（字符串）
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     uri?: string // 请求的uri

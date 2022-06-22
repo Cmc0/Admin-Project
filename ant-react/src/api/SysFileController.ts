@@ -8,7 +8,7 @@ export interface SysFileRemoveDTO {
     urlSet?: string[] // 文件路径（包含文件名） set
 }
 
-// 文件-管理 文件删除
+// 文件-管理 文件批量删除
 export function sysFileRemove(form: SysFileRemoveDTO) {
     return $http.myPost<string>('/sysFile/remove', form)
 }

@@ -1,23 +1,13 @@
+import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import NotNullByte from "@/model/dto/NotNullByte";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
-import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import NotNullByteAndId from "@/model/dto/NotNullByteAndId";
 import $http from "../../util/HttpUtil";
 
 // webSocket 更改在线状态
 export function sysWebSocketChangeType(form: NotNullByteAndId) {
     return $http.myPost<string>('/sysWebSocket/changeType', form)
-}
-
-// webSocket 全部强退
-export function sysWebSocketOfflineAll() {
-    return $http.myPost<string>('/sysWebSocket/offlineAll')
-}
-
-// webSocket 强退，通过 idSet
-export function sysWebSocketOfflineByIdSet(form: NotEmptyIdSet) {
-    return $http.myPost<string>('/sysWebSocket/offlineByIdSet', form)
 }
 
 export interface SysWebSocketPageDTO extends MyPageDTO {
@@ -73,4 +63,14 @@ export interface SysWebSocketRegisterVO {
 // webSocket 获取 webSocket连接地址和随机码
 export function sysWebSocketRegister(form: NotNullByte) {
     return $http.myPost<SysWebSocketRegisterVO>('/sysWebSocket/register', form)
+}
+
+// webSocket 全部强退
+export function sysWebSocketRetreatAll() {
+    return $http.myPost<string>('/sysWebSocket/retreatAll')
+}
+
+// webSocket 强退，通过 idSet
+export function sysWebSocketRetreatByIdSet(form: NotEmptyIdSet) {
+    return $http.myPost<string>('/sysWebSocket/retreatByIdSet', form)
 }
