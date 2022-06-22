@@ -12,9 +12,9 @@ import lombok.Data;
 public class SysAreaRefDeptDO {
 
     @TableId
-    @ApiModelProperty(value = "区域id")
+    @ApiModelProperty(value = "区域主键 id")
     private Long areaId;
 
-    @ApiModelProperty(value = "部门id")
+    @ApiModelProperty(value = "部门主键 id")
     private Long deptId;
 }
