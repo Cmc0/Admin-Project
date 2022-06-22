@@ -2,16 +2,17 @@ import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
+import {AxiosRequestConfig} from "axios";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
 import $http from "../../util/HttpUtil";
 
 // 部门-管理 通过主键 idSet，加减排序号
-export function sysDeptAddOrderNo(form: AddOrderNoDTO) {
+export function sysDeptAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysDept/addOrderNo', form)
 }
 
 // 部门-管理 批量删除
-export function sysDeptDeleteByIdSet(form: NotEmptyIdSet) {
+export function sysDeptDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysDept/deleteByIdSet', form)
 }
 
@@ -32,7 +33,7 @@ export interface SysDeptDO {
 }
 
 // 部门-管理 通过主键id，查看详情
-export function sysDeptInfoById(form: NotNullId) {
+export function sysDeptInfoById(form: NotNullId, config?: AxiosRequestConfig) {
     return $http.myProPost<SysDeptDO>('/sysDept/infoById', form)
 }
 
@@ -48,7 +49,7 @@ export interface SysDeptInsertOrUpdateDTO {
 }
 
 // 部门-管理 新增/修改
-export function sysDeptInsertOrUpdate(form: SysDeptInsertOrUpdateDTO) {
+export function sysDeptInsertOrUpdate(form: SysDeptInsertOrUpdateDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysDept/insertOrUpdate', form)
 }
 
@@ -63,11 +64,11 @@ export interface SysDeptPageDTO extends MyPageDTO {
 }
 
 // 部门-管理 分页排序查询
-export function sysDeptPage(form: SysDeptPageDTO) {
+export function sysDeptPage(form: SysDeptPageDTO, config?: AxiosRequestConfig) {
     return $http.myProPagePost<SysDeptDO>('/sysDept/page', form)
 }
 
 // 部门-管理 查询：树结构
-export function sysDeptTree(form: SysDeptPageDTO) {
+export function sysDeptTree(form: SysDeptPageDTO, config?: AxiosRequestConfig) {
     return $http.myProTreePost<SysDeptDO>('/sysDept/tree', form)
 }

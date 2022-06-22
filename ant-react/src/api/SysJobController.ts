@@ -2,16 +2,17 @@ import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
+import {AxiosRequestConfig} from "axios";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
 import $http from "../../util/HttpUtil";
 
 // 岗位-管理 通过主键 idSet，加减排序号
-export function sysJobAddOrderNo(form: AddOrderNoDTO) {
+export function sysJobAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysJob/addOrderNo', form)
 }
 
 // 岗位-管理 批量删除
-export function sysJobDeleteByIdSet(form: NotEmptyIdSet) {
+export function sysJobDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysJob/deleteByIdSet', form)
 }
 
@@ -33,7 +34,7 @@ export interface SysJobInfoByIdVO {
 }
 
 // 岗位-管理 通过主键id，查看详情
-export function sysJobInfoById(form: NotNullId) {
+export function sysJobInfoById(form: NotNullId, config?: AxiosRequestConfig) {
     return $http.myProPost<SysJobInfoByIdVO>('/sysJob/infoById', form)
 }
 
@@ -48,7 +49,7 @@ export interface SysJobInsertOrUpdateDTO {
 }
 
 // 岗位-管理 新增/修改
-export function sysJobInsertOrUpdate(form: SysJobInsertOrUpdateDTO) {
+export function sysJobInsertOrUpdate(form: SysJobInsertOrUpdateDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysJob/insertOrUpdate', form)
 }
 
@@ -67,11 +68,11 @@ export interface SysJobDO {
 }
 
 // 岗位-管理 分页排序查询
-export function sysJobPage(form: SysJobPageDTO) {
+export function sysJobPage(form: SysJobPageDTO, config?: AxiosRequestConfig) {
     return $http.myProPagePost<SysJobDO>('/sysJob/page', form)
 }
 
 // 岗位-管理 查询：树结构
-export function sysJobTree(form: SysJobPageDTO) {
+export function sysJobTree(form: SysJobPageDTO, config?: AxiosRequestConfig) {
     return $http.myProTreePost<SysJobDO>('/sysJob/tree', form)
 }

@@ -1,3 +1,4 @@
+import {AxiosRequestConfig} from "axios";
 import $http from "../../util/HttpUtil";
 
 export interface SysFileDownloadDTO {
@@ -9,7 +10,7 @@ export interface SysFileRemoveDTO {
 }
 
 // 文件-管理 文件批量删除
-export function sysFileRemove(form: SysFileRemoveDTO) {
+export function sysFileRemove(form: SysFileRemoveDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysFile/remove', form)
 }
 

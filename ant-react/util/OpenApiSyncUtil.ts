@@ -179,6 +179,8 @@ function getMatchStr(responsesName: string, regexp: string | RegExp = /«(.*)»/
     return responsesName;
 }
 
+const AxiosRequestConfigImportStr = 'import {AxiosRequestConfig} from "axios";\n'
+
 // 同步 openApi到 api文件夹
 function start() {
 
@@ -271,7 +273,10 @@ function start() {
                 fileData += `export function ${apiName}(`
 
                 if (requestBodyName) {
-                    fileData += 'form: ' + requestBodyName
+                    fileData += 'form: ' + requestBodyName + ', config?: AxiosRequestConfig';
+                    if (!fileData.includes(AxiosRequestConfigImportStr)) {
+                        fileData = AxiosRequestConfigImportStr + fileData
+                    }
                 }
 
                 fileData += `) {\n`

@@ -3,16 +3,17 @@ import MyPageDTO from "@/model/dto/MyPageDTO";
 import SysMenuDO from "@/model/entity/SysMenuDO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
+import {AxiosRequestConfig} from "axios";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
 import $http from "../../util/HttpUtil";
 
 // 菜单-管理 通过主键 idSet，加减排序号
-export function sysMenuAddOrderNo(form: AddOrderNoDTO) {
+export function sysMenuAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysMenu/addOrderNo', form)
 }
 
 // 菜单-管理 批量删除
-export function sysMenuDeleteByIdSet(form: NotEmptyIdSet) {
+export function sysMenuDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysMenu/deleteByIdSet', form)
 }
 
@@ -43,7 +44,7 @@ export interface SysMenuInfoByIdVO {
 }
 
 // 菜单-管理 通过主键id，查看详情
-export function sysMenuInfoById(form: NotNullId) {
+export function sysMenuInfoById(form: NotNullId, config?: AxiosRequestConfig) {
     return $http.myProPost<SysMenuInfoByIdVO>('/sysMenu/infoById', form)
 }
 
@@ -67,7 +68,7 @@ export interface SysMenuInsertOrUpdateDTO {
 }
 
 // 菜单-管理 新增/修改
-export function sysMenuInsertOrUpdate(form: SysMenuInsertOrUpdateDTO) {
+export function sysMenuInsertOrUpdate(form: SysMenuInsertOrUpdateDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysMenu/insertOrUpdate', form)
 }
 
@@ -95,11 +96,11 @@ export interface SysMenuPageDTO extends MyPageDTO {
 }
 
 // 菜单-管理 分页排序查询
-export function sysMenuPage(form: SysMenuPageDTO) {
+export function sysMenuPage(form: SysMenuPageDTO, config?: AxiosRequestConfig) {
     return $http.myProPagePost<SysMenuDO>('/sysMenu/page', form)
 }
 
 // 菜单-管理 查询：树结构
-export function sysMenuTree(form: SysMenuPageDTO) {
+export function sysMenuTree(form: SysMenuPageDTO, config?: AxiosRequestConfig) {
     return $http.myProTreePost<SysMenuDO>('/sysMenu/tree', form)
 }

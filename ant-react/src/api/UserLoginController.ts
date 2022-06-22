@@ -1,3 +1,4 @@
+import {AxiosRequestConfig} from "axios";
 import $http from "../../util/HttpUtil";
 
 export interface UserLoginByPasswordDTO {
@@ -7,6 +8,6 @@ export interface UserLoginByPasswordDTO {
 }
 
 // 用户-登录 账号密码登录
-export function userLoginPassword(form: UserLoginByPasswordDTO) {
+export function userLoginPassword(form: UserLoginByPasswordDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/userLogin/password', form)
 }

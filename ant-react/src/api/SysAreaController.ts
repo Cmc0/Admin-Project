@@ -2,16 +2,17 @@ import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
+import {AxiosRequestConfig} from "axios";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
 import $http from "../../util/HttpUtil";
 
 // 区域-管理 通过主键 idSet，加减排序号
-export function sysAreaAddOrderNo(form: AddOrderNoDTO) {
+export function sysAreaAddOrderNo(form: AddOrderNoDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysArea/addOrderNo', form)
 }
 
 // 区域-管理 批量删除
-export function sysAreaDeleteByIdSet(form: NotEmptyIdSet) {
+export function sysAreaDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysArea/deleteByIdSet', form)
 }
 
@@ -33,7 +34,7 @@ export interface SysAreaInfoByIdVO {
 }
 
 // 区域-管理 通过主键id，查看详情
-export function sysAreaInfoById(form: NotNullId) {
+export function sysAreaInfoById(form: NotNullId, config?: AxiosRequestConfig) {
     return $http.myProPost<SysAreaInfoByIdVO>('/sysArea/infoById', form)
 }
 
@@ -48,7 +49,7 @@ export interface SysAreaInsertOrUpdateDTO {
 }
 
 // 区域-管理 新增/修改
-export function sysAreaInsertOrUpdate(form: SysAreaInsertOrUpdateDTO) {
+export function sysAreaInsertOrUpdate(form: SysAreaInsertOrUpdateDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysArea/insertOrUpdate', form)
 }
 
@@ -67,11 +68,11 @@ export interface SysAreaDO {
 }
 
 // 区域-管理 分页排序查询
-export function sysAreaPage(form: SysAreaPageDTO) {
+export function sysAreaPage(form: SysAreaPageDTO, config?: AxiosRequestConfig) {
     return $http.myProPagePost<SysAreaDO>('/sysArea/page', form)
 }
 
 // 区域-管理 查询：树结构
-export function sysAreaTree(form: SysAreaPageDTO) {
+export function sysAreaTree(form: SysAreaPageDTO, config?: AxiosRequestConfig) {
     return $http.myProTreePost<SysAreaDO>('/sysArea/tree', form)
 }

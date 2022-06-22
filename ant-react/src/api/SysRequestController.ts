@@ -1,3 +1,4 @@
+import {AxiosRequestConfig} from "axios";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import $http from "../../util/HttpUtil";
@@ -40,6 +41,6 @@ export interface SysRequestPageVO {
 }
 
 // 接口请求-管理 分页排序查询
-export function sysRequestPage(form: SysRequestPageDTO) {
+export function sysRequestPage(form: SysRequestPageDTO, config?: AxiosRequestConfig) {
     return $http.myProPagePost<SysRequestPageVO>('/sysRequest/page', form)
 }
