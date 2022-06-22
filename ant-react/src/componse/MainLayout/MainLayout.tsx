@@ -21,8 +21,7 @@ import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
 import {sysMenuListForUser} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
-import {StatisticCard} from '@ant-design/pro-components';
-import ExportTypography from "antd/es/typography/Typography";
+import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -116,9 +115,28 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const [pathname, setPathname] = useState<string>('')
     const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
     const [webSocketType, setWebSocketType] = useState<TWebSocketType>(GetWebSocketType())
+    const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
+    const [sysRequestAllAvgLoading, setSysRequestAllAvgLoading] = useState<boolean>(false)
+
+    function doSysRequestAllAvg() {
+        setSysRequestAllAvgLoading(true)
+        sysRequestAllAvg().then(res => {
+            setSysRequestAllAvgVO(res.data)
+            setSysRequestAllAvgLoading(false)
+        })
+    }
 
     useEffect(() => {
         setPathname(window.location.pathname)
+
+        doSysRequestAllAvg()
+
+        const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 10 * 1000);
+
+        return () => {
+            clearInterval(sysRequestAllAvgInterval)
+        }
+
     }, [])
 
     return (
@@ -170,11 +188,12 @@ function MainLayoutElement(props: IMainLayoutElement) {
             )}
             headerContentRender={() => (
                 <Space>
-                    <div className={"cursor-def"} title={"接口平均响应耗时"}>
+                    <div className={"cursor-def"} title={`接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
                         <Badge status="processing"
                                text={
-                                   <Typography.Text strong>avg：326ms
-                                       <a title={"刷新"}> <ReloadOutlined/></a>
+                                   <Typography.Text strong>avg：{sysRequestAllAvgVO.avg}ms
+                                       <a title={"刷新"} onClick={doSysRequestAllAvg}> <ReloadOutlined
+                                           spin={sysRequestAllAvgLoading}/></a>
                                    </Typography.Text>
                                }/>
                     </div>
