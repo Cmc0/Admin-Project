@@ -2,7 +2,6 @@ package com.admin.websocket.model.dto;
 
 import com.admin.common.model.dto.MyPageDTO;
 import com.admin.common.model.enums.SysRequestCategoryEnum;
-import com.admin.websocket.model.entity.SysWebSocketDO;
 import com.admin.websocket.model.enums.SysWebSocketTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.Min;
 
 /**
- * {@link SysWebSocketDO}
+ * {@link com.admin.websocket.model.entity.SysWebSocketDO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

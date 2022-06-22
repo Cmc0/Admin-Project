@@ -48,16 +48,16 @@ public class SysWebSocketController {
     }
 
     @PreAuthorize("hasAuthority('sysWebSocket:insertOrUpdate')")
-    @PostMapping("/offlineByIdSet")
+    @PostMapping("/retreatByIdSet")
     @ApiOperation(value = "强退，通过 idSet")
-    public ApiResultVO<String> offlineByIdSet(@RequestBody @Valid NotEmptyIdSet notEmptyIdSet) {
+    public ApiResultVO<String> retreatByIdSet(@RequestBody @Valid NotEmptyIdSet notEmptyIdSet) {
         return ApiResultVO.ok(baseService.retreatAndNoticeByIdSet(notEmptyIdSet));
     }
 
     @PreAuthorize("hasAuthority('sysWebSocket:insertOrUpdate')")
-    @PostMapping("/offlineAll")
+    @PostMapping("/retreatAll")
     @ApiOperation(value = "全部强退")
-    public ApiResultVO<String> offlineAll() {
+    public ApiResultVO<String> retreatAll() {
         return ApiResultVO.ok(baseService.retreatAndNoticeAll());
     }
 

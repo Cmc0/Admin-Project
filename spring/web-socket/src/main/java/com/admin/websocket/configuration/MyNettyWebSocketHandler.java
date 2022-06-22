@@ -53,8 +53,8 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
 
         // 首次连接是 FullHttpRequest，处理参数
         if (msg instanceof FullHttpRequest) {
-            FullHttpRequest request = (FullHttpRequest)msg;
-            UrlQuery urlQuery = UrlQuery.of(request.uri(), CharsetUtil.CHARSET_UTF_8);
+            FullHttpRequest fullHttpRequest = (FullHttpRequest)msg;
+            UrlQuery urlQuery = UrlQuery.of(fullHttpRequest.uri(), CharsetUtil.CHARSET_UTF_8);
 
             String code = Convert.toStr(urlQuery.get("code")); // 随机码
 
@@ -87,7 +87,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             online(sysWebSocketDO, ctx.channel());
 
             // url包含参数，需要处理
-            request.setUri(NettyServer.WS);
+            fullHttpRequest.setUri(NettyServer.WS);
         }
 
         super.channelRead(ctx, msg);

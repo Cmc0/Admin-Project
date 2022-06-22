@@ -64,11 +64,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         sysRoleDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
         sysRoleDO.setId(dto.getId());
 
-        if (dto.getId() == null) {
-            // 新增
+        if (dto.getId() == null) { // 新增
             baseMapper.insert(sysRoleDO);
-        } else {
-            // 修改
+        } else { // 修改
             baseMapper.updateById(sysRoleDO);
             // 先删除子表数据
             deleteByIdSetSub(Collections.singleton(dto.getId()));

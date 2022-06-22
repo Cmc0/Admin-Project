@@ -1,7 +1,6 @@
 package com.admin.role.model.dto;
 
 import com.admin.common.model.dto.BaseInsertOrUpdateDTO;
-import com.admin.common.model.entity.SysRoleDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 /**
- * {@link SysRoleDO}
+ * {@link com.admin.common.model.entity.SysRoleDO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

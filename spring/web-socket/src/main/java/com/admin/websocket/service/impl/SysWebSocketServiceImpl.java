@@ -76,6 +76,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
             Set<String> jwtHashSet =
                 sysWebSocketDOList.stream().map(SysWebSocketDO::getJwtHash).collect(Collectors.toSet());
+
             jsonRedisTemplate.delete(jwtHashSet);
 
             offlineByWebSocketIdSet(notEmptyIdSet.getIdSet()); // 更新

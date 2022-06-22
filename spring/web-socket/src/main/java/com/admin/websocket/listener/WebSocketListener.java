@@ -22,9 +22,7 @@ public class WebSocketListener {
 
     @KafkaHandler
     public void receive(WebSocketMessageEnum webSocketMessageEnum) {
-
         handleWebSocketMessageEnum(webSocketMessageEnum);
-
     }
 
     /**
