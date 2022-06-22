@@ -192,8 +192,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         // 如果存在下级，则无法删除
-        Long selectCount = lambdaQuery().in(SysMenuDO::getParentId, notEmptyIdSet.getIdSet()).count();
-        if (selectCount != 0) {
+        Long count = lambdaQuery().in(SysMenuDO::getParentId, notEmptyIdSet.getIdSet()).count();
+        if (count != 0) {
             ApiResultVO.error(BaseBizCodeEnum.PLEASE_DELETE_THE_CHILD_NODE_FIRST);
         }
 

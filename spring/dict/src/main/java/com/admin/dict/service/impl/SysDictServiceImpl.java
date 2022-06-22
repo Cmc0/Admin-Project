@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> implements SysDictService {
 
     /**
-     * 新增/修改 字典
+     * 新增/修改
      */
     @Override
     @Transactional
@@ -46,32 +46,30 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
 
         if (sysDictTypeEnum.equals(SysDictTypeEnum.DICT)) {
             // 字典 key和 name不能重复
-            Long count = lambdaQuery().eq(SysDictDO::getType, 1)
+            Long count = lambdaQuery().eq(SysDictDO::getType, SysDictTypeEnum.DICT)
                 .and(i -> i.eq(SysDictDO::getDictKey, dto.getDictKey()).or().eq(SysDictDO::getName, dto.getName()))
                 .eq(BaseEntityThree::getEnableFlag, true).ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
                 .count();
             if (count != 0) {
                 ApiResultVO.error(BizCodeEnum.SAME_KEY_OR_NAME_EXISTS);
             }
-
             dto.setValue((byte)-1); // 字典的value为 -1
         } else {
-
             if (dto.getValue() == null) {
                 ApiResultVO.error(BizCodeEnum.VALUE_CANNOT_BE_EMPTY);
             }
-
             // 字典项 value和 name不能重复
-            Long count = lambdaQuery().eq(SysDictDO::getType, 2).eq(BaseEntityThree::getEnableFlag, true)
-                .eq(SysDictDO::getDictKey, dto.getDictKey())
-                .and(i -> i.eq(SysDictDO::getValue, dto.getValue()).or().eq(SysDictDO::getName, dto.getName()))
-                .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
+            Long count =
+                lambdaQuery().eq(SysDictDO::getType, SysDictTypeEnum.DICT_ITEM).eq(BaseEntityThree::getEnableFlag, true)
+                    .eq(SysDictDO::getDictKey, dto.getDictKey())
+                    .and(i -> i.eq(SysDictDO::getValue, dto.getValue()).or().eq(SysDictDO::getName, dto.getName()))
+                    .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
             if (count != 0) {
                 ApiResultVO.error(BizCodeEnum.SAME_VALUE_OR_NAME_EXISTS);
             }
         }
 
-        if (dto.getId() != null && dto.getType() == 1) {
+        if (dto.getId() != null && sysDictTypeEnum.equals(SysDictTypeEnum.DICT)) {
             // 如果是修改，并且是字典，那么也需要修改 该字典的字典项的 dictKey
             SysDictDO sysDictDO =
                 lambdaQuery().eq(BaseEntityTwo::getId, dto.getId()).select(SysDictDO::getDictKey).one();
@@ -79,8 +77,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
                 ApiResultVO.error("操作失败：字典不存在，请刷新重试");
             }
             if (!sysDictDO.getDictKey().equals(dto.getDictKey())) {
-                lambdaUpdate().eq(SysDictDO::getDictKey, sysDictDO.getDictKey()).eq(SysDictDO::getType, 2)
-                    .set(SysDictDO::getDictKey, dto.getDictKey()).update();
+                lambdaUpdate().eq(SysDictDO::getDictKey, sysDictDO.getDictKey())
+                    .eq(SysDictDO::getType, SysDictTypeEnum.DICT_ITEM).set(SysDictDO::getDictKey, dto.getDictKey())
+                    .update();
             }
         }
 
@@ -99,7 +98,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
     }
 
     /**
-     * 分页排序查询：字典
+     * 分页排序查询
      */
     @Override
     public Page<SysDictDO> myPage(SysDictPageDTO dto) {
@@ -114,7 +113,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
     }
 
     /**
-     * 查询字典（树结构）
+     * 查询：树结构
      */
     @Override
     public List<SysDictTreeVO> tree(SysDictPageDTO dto) {
@@ -181,7 +180,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
     }
 
     /**
-     * 删除字典
+     * 批量删除
      */
     @Override
     @Transactional
