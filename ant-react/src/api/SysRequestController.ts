@@ -1,6 +1,6 @@
-import {AxiosRequestConfig} from "axios";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
+import {AxiosRequestConfig} from "axios";
 import $http from "../../util/HttpUtil";
 
 export interface SysRequestAllAvgVO {
@@ -9,8 +9,8 @@ export interface SysRequestAllAvgVO {
 }
 
 // 接口请求-管理 所有请求的平均耗时
-export function sysRequestAllAvg() {
-    return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvg')
+export function sysRequestAllAvg(config?: AxiosRequestConfig) {
+    return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvg', config)
 }
 
 export interface SysRequestPageDTO extends MyPageDTO {

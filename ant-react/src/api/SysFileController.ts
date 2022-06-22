@@ -15,6 +15,6 @@ export function sysFileRemove(form: SysFileRemoveDTO, config?: AxiosRequestConfi
 }
 
 // 文件-管理 文件上传
-export function sysFileUpload() {
-    return $http.myPost<string>('/sysFile/upload')
+export function sysFileUpload(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysFile/upload', config)
 }

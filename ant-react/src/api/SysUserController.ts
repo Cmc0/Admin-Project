@@ -1,3 +1,4 @@
+import {AxiosRequestConfig} from "axios";
 import $http from "../../util/HttpUtil";
 
 export interface UserBaseInfoVO {
@@ -9,11 +10,11 @@ export interface UserBaseInfoVO {
 }
 
 // 用户-管理 用户基本信息
-export function sysUserBaseInfo() {
-    return $http.myPost<UserBaseInfoVO>('/sysUser/baseInfo')
+export function sysUserBaseInfo(config?: AxiosRequestConfig) {
+    return $http.myPost<UserBaseInfoVO>('/sysUser/baseInfo', config)
 }
 
 // 用户-管理 退出登录
-export function sysUserLogout() {
-    return $http.myPost<string>('/sysUser/logout')
+export function sysUserLogout(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/logout', config)
 }

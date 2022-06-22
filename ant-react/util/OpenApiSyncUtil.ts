@@ -215,6 +215,8 @@ function start() {
 
             let fileData = 'import $http from "../../util/HttpUtil";\n\n'
 
+            let axiosRequestConfigImportFlag = false // 是否导入过：axiosRequestConfig
+
             const pathList = tagNameAndPathResMap[item.name]
 
             if (!pathList) {
@@ -273,10 +275,13 @@ function start() {
                 fileData += `export function ${apiName}(`
 
                 if (requestBodyName) {
-                    fileData += 'form: ' + requestBodyName + ', config?: AxiosRequestConfig';
-                    if (!fileData.includes(AxiosRequestConfigImportStr)) {
-                        fileData = AxiosRequestConfigImportStr + fileData
-                    }
+                    fileData += 'form: ' + requestBodyName + ', '
+                }
+
+                fileData += 'config?: AxiosRequestConfig'
+                if (!axiosRequestConfigImportFlag) {
+                    axiosRequestConfigImportFlag = true
+                    fileData = AxiosRequestConfigImportStr + fileData
                 }
 
                 fileData += `) {\n`
@@ -298,8 +303,10 @@ function start() {
                 fileData += `('${subItem.uri}'`
 
                 if (requestBodyName) {
-                    fileData += ', form, config'
+                    fileData += ', form'
                 }
+
+                fileData += ', config'
 
                 if (subIndex === pathList.length - 1) {
                     fileData += ')\n}\n'

@@ -73,8 +73,8 @@ export function sysMenuInsertOrUpdate(form: SysMenuInsertOrUpdateDTO, config?: A
 }
 
 // 菜单-管理 获取当前用户绑定的菜单
-export function sysMenuListForUser() {
-    return $http.myProTreePost<SysMenuDO>('/sysMenu/listForUser')
+export function sysMenuListForUser(config?: AxiosRequestConfig) {
+    return $http.myProTreePost<SysMenuDO>('/sysMenu/listForUser', config)
 }
 
 export interface SysMenuPageDTO extends MyPageDTO {
