@@ -3,7 +3,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Badge, Dropdown, Menu, Space} from "antd";
+import {Avatar, Badge, Button, Dropdown, Menu, Space} from "antd";
 import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
@@ -47,8 +47,8 @@ function goFirstPage(menuList: SysMenuDO[]) {
 export default function () {
 
     const appDispatch = useAppDispatch()
-    const userMenuList = useAppSelector((state) => state.user.userMenuList) // 用户菜单
-    const loadMenuFlag = useAppSelector((state) => state.user.loadMenuFlag) // 是否获取过菜单
+    const userMenuList = useAppSelector((state) => state.user.userMenuList)
+    const loadMenuFlag = useAppSelector((state) => state.user.loadMenuFlag)
     const [element, setElement] = useState<React.ReactNode>(null);
 
     // 更新 redux里面 webSocket消息模板的值
@@ -111,7 +111,8 @@ interface IMainLayoutElement {
 function MainLayoutElement(props: IMainLayoutElement) {
 
     const [pathname, setPathname] = useState<string>('')
-    const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus) // webSocket连接状态
+    const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
+    const userBaseInfo = useAppSelector((state) => state.user.userBaseInfo)
 
     useEffect(() => {
         setPathname(window.location.pathname)
@@ -165,9 +166,30 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 </a>
             )}
             rightContentRender={() => (
-                <Space align={"center"} size={16}>
-                    <Badge status={webSocketStatus ? (getWebSocketType() === '1' ? 'success' : 'warning') : 'default'}
-                           text={webSocketStatus ? (getWebSocketType() === '1' ? '在线' : '隐身') : '离线'}/>
+                <Space>
+                    <Dropdown overlay={<Menu items={[
+                        {
+                            key: '1',
+                            label: <a onClick={InDev}>
+                                我在线上
+                            </a>,
+                            icon: <Badge status={"success"}/>
+                        },
+                        {
+                            key: '2',
+                            label: <a onClick={InDev}>
+                                隐身
+                            </a>,
+                            icon: <Badge status={"warning"}/>
+                        },
+                    ]}/>}>
+                        <Button type="text" icon={<Badge className={"hand"}
+                                                         status={webSocketStatus ? (getWebSocketType() === '1' ? 'success' : 'warning') : 'default'}
+                        />}>
+                            {webSocketStatus ? (getWebSocketType() === '1' ? '在线' : '隐身') : '离线'}
+                        </Button>
+                    </Dropdown>
+
                     <Dropdown overlay={<Menu items={[
                         {
                             key: '1',
@@ -192,10 +214,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             </a>,
                             icon: <LogoutOutlined/>
                         },
-                    ]}>
-
-                    </Menu>}>
-                        <Avatar className={"hand"} size="small" icon={<UserOutlined/>}/>
+                    ]}/>}>
+                        <Avatar className={"hand"} size="small" src={"https://joeschmoe.io/api/v1/random"}/>
                     </Dropdown>
                 </Space>
             )}

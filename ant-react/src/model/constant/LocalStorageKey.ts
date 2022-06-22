@@ -12,6 +12,6 @@ export function getWebSocketType(): TWebSocketType {
     return (localStorage.getItem(LocalStorageKey.WEB_SOCKET_TYPE) || '1') as TWebSocketType
 }
 
-export function setWebSocketType(webSocketType: TWebSocketType = '1') {
+export function setWebSocketType(webSocketType: TWebSocketType = '2') {
     localStorage.setItem(LocalStorageKey.WEB_SOCKET_TYPE, webSocketType)
 }
