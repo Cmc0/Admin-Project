@@ -3,7 +3,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Badge, Button, Dropdown, Menu, Space} from "antd";
+import {Avatar, Badge, Dropdown, Menu, Space} from "antd";
 import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
@@ -166,7 +166,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 </a>
             )}
             rightContentRender={() => (
-                <Space>
+                <Space size={20}>
                     <Dropdown overlay={<Menu items={[
                         {
                             key: '1',
@@ -183,14 +183,14 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             icon: <Badge status={"warning"}/>
                         },
                     ]}/>}>
-                        <Button type="text" icon={<Badge className={"hand"}
-                                                         status={webSocketStatus ? (getWebSocketType() === '1' ? 'success' : 'warning') : 'default'}
-                        />}>
-                            {webSocketStatus ? (getWebSocketType() === '1' ? '在线' : '隐身') : '离线'}
-                        </Button>
+                        <Badge
+                            className={"hand"}
+                            status={webSocketStatus ? (getWebSocketType() === '1' ? 'success' : 'warning') : 'default'}
+                            text={webSocketStatus ? (getWebSocketType() === '1' ? '在线' : '隐身') : '离线'}
+                        />
                     </Dropdown>
 
-                    <Dropdown overlay={<Menu items={[
+                    <Dropdown overlayClassName={"body-bc"} overlay={<Menu items={[
                         {
                             key: '1',
                             label: <a onClick={InDev}>
