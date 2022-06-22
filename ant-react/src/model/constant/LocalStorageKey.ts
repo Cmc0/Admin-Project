@@ -6,7 +6,7 @@ const LocalStorageKey = {
 
 export default LocalStorageKey
 
-type TWebSocketType = '1' | '2' // 1 在线 2 隐身
+export type TWebSocketType = '1' | '2' // 1 在线 2 隐身
 
 export function getWebSocketType(): TWebSocketType {
     return (localStorage.getItem(LocalStorageKey.WEB_SOCKET_TYPE) || '1') as TWebSocketType

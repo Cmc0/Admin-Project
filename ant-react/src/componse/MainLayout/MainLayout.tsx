@@ -19,7 +19,8 @@ import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
 import {sysMenuListForUser} from "@/api/SysMenuController";
-import {getWebSocketType} from "@/model/constant/LocalStorageKey";
+import {getWebSocketType, setWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
+import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -169,14 +170,14 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <Dropdown overlay={<Menu items={[
                         {
                             key: '1',
-                            label: <a onClick={InDev}>
+                            label: <a onClick={() => doSysWebSocketChangeType('1')}>
                                 我在线上
                             </a>,
                             icon: <Badge status={"success"}/>
                         },
                         {
                             key: '2',
-                            label: <a onClick={InDev}>
+                            label: <a onClick={() => doSysWebSocketChangeType('2')}>
                                 隐身
                             </a>,
                             icon: <Badge status={"warning"}/>
@@ -224,4 +225,19 @@ function MainLayoutElement(props: IMainLayoutElement) {
             </PageContainer>
         </ProLayout>
     )
+}
+
+function doSysWebSocketChangeType(value: TWebSocketType) {
+
+    const webSocketId = sessionStorage.getItem(SessionStorageKey.WEB_SOCKET_ID);
+
+    if (!webSocketId) {
+        ToastError("切换状态失败，请刷新页面")
+        return
+    }
+
+    sysWebSocketChangeType({id: Number(webSocketId), value: Number(value)}).then(res => {
+        ToastSuccess(res.msg)
+        setWebSocketType(value)
+    })
 }
