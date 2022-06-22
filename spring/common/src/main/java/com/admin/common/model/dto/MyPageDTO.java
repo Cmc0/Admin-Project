@@ -24,19 +24,19 @@ public class MyPageDTO {
      * 分页属性拷贝
      */
     public <T> Page<T> getPage() {
-        Page<T> resPage = new Page<>();
+        Page<T> page = new Page<>();
 
-        resPage.setCurrent(getCurrent());
-        resPage.setSize(getPageSize());
+        page.setCurrent(getCurrent());
+        page.setSize(getPageSize());
 
         if (getOrder() == null || StrUtil.isBlank(order.getName())) {
-            return resPage;
+            return page;
         }
 
         // 添加 orderList里面的排序规则
-        resPage.orders().add(orderToOrderItem(getOrder()));
+        page.orders().add(orderToOrderItem(getOrder()));
 
-        return resPage;
+        return page;
     }
 
     /**

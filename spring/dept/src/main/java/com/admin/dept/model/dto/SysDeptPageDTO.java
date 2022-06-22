@@ -1,13 +1,12 @@
 package com.admin.dept.model.dto;
 
 import com.admin.common.model.dto.MyPageDTO;
-import com.admin.dept.model.entity.SysDeptDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * {@link SysDeptDO , SysDeptInsertOrUpdateDTO}
+ * {@link com.admin.dept.model.entity.SysDeptDO , SysDeptInsertOrUpdateDTO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

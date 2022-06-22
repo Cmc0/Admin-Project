@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@TableName(value = "dept_ref_user")
+@TableName(value = "sys_dept_ref_user")
 @Data
 @ApiModel(description = "部门，用户关联表")
 public class SysDeptRefUserDO {

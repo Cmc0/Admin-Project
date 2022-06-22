@@ -28,10 +28,12 @@ export function download(
 
 // 文件-管理 文件下载
 export function sysFileDownload(form: SysFileDownloadDTO) {
-    return $http.request({
+    $http.request({
         url: '/sysFile/download',
         responseType: 'blob',
         method: 'post',
         data: form
+    }).then(res => {
+        download(res.data, res.headers['content-disposition'])
     })
 }
