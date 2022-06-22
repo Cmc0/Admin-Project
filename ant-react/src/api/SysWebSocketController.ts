@@ -68,7 +68,7 @@ export function sysWebSocketRegister(form: NotNullByte, config?: AxiosRequestCon
 
 // webSocket 全部强退
 export function sysWebSocketRetreatAll(config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysWebSocket/retreatAll', config)
+    return $http.myPost<string>('/sysWebSocket/retreatAll', undefined, config)
 }
 
 // webSocket 强退，通过 idSet

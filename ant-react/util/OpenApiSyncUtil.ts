@@ -303,10 +303,10 @@ function start() {
                 fileData += `('${subItem.uri}'`
 
                 if (requestBodyName) {
-                    fileData += ', form'
+                    fileData += ', form, config'
+                } else {
+                    fileData += ', undefined, config'
                 }
-
-                fileData += ', config'
 
                 if (subIndex === pathList.length - 1) {
                     fileData += ')\n}\n'

@@ -11,10 +11,10 @@ export interface UserBaseInfoVO {
 
 // 用户-管理 用户基本信息
 export function sysUserBaseInfo(config?: AxiosRequestConfig) {
-    return $http.myPost<UserBaseInfoVO>('/sysUser/baseInfo', config)
+    return $http.myPost<UserBaseInfoVO>('/sysUser/baseInfo', undefined, config)
 }
 
 // 用户-管理 退出登录
 export function sysUserLogout(config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysUser/logout', config)
+    return $http.myPost<string>('/sysUser/logout', undefined, config)
 }

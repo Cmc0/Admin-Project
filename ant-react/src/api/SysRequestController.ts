@@ -10,7 +10,7 @@ export interface SysRequestAllAvgVO {
 
 // 接口请求-管理 所有请求的平均耗时
 export function sysRequestAllAvg(config?: AxiosRequestConfig) {
-    return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvg', config)
+    return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvg', undefined, config)
 }
 
 export interface SysRequestPageDTO extends MyPageDTO {
