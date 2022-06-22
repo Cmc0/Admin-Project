@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
-@Api(tags = "字典控制器")
+@Api(tags = "字典-管理")
 @RestController
 @RequestMapping("/sysDict")
 public class SysDictController {
