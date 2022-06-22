@@ -3,6 +3,16 @@ import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import $http from "../../util/HttpUtil";
 
+export interface SysRequestAllAvgVO {
+    avg?: number // 请求的平均耗时（毫秒）
+    count?: number // 请求的总数
+}
+
+// 接口请求-管理 所有请求的平均耗时
+export function sysRequestAllAvg() {
+    return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvg')
+}
+
 export interface SysRequestPageDTO extends MyPageDTO {
     beginCreateTime?: string // 创建开始时间
     beginTimeNumber?: number // 耗时开始（毫秒）
