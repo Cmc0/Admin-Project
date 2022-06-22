@@ -2,7 +2,6 @@ import LocalStorageKey, {getWebSocketType} from "../src/model/constant/LocalStor
 import {ToastError} from "./ToastUtil";
 import {getAppNav} from "@/App";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
-import CommonConstant from "@/model/constant/CommonConstant";
 import {logout} from "./UserUtil";
 import {sysWebSocketRegister} from "@/api/SysWebSocketController";
 
@@ -117,7 +116,7 @@ export function connectWebSocket(
                 console.log(`webSocket连接 :>> ${webSocketUrl}`)
                 doSetSocketStatus(true)
                 if (sessionStorage.getItem(SessionStorageKey.LOAD_MENU_FLAG) === 'false') {
-                    getAppNav()(CommonConstant.MAIN_PATH) // 如果此时，还没有加载完菜单，则再加载一次
+                    getAppNav()("/") // 如果此时，还没有加载完菜单，则再加载一次
                 }
             }
             webSocket.onclose = (event) => {
