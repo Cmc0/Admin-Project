@@ -39,7 +39,7 @@ public class SysMenuPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "路由")
     private String router;
 
-    @ApiModelProperty(value = "重定向：linkFlag === false 时使用，不必填，暂时未使用")
+    @ApiModelProperty(value = "重定向，暂时未使用")
     private String redirect;
 
     @ApiModelProperty(value = "是否是起始页面，备注：只能存在一个 firstFlag === true 的菜单")

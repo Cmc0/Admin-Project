@@ -152,8 +152,10 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
     @Override
     public SysAreaInfoByIdVO infoById(NotNullId notNullId) {
 
-        SysAreaDO sysAreaDO = getById(notNullId.getId());
-        if (sysAreaDO == null) {
+        SysAreaInfoByIdVO sysAreaInfoByIdVO =
+            BeanUtil.copyProperties(getById(notNullId.getId()), SysAreaInfoByIdVO.class);
+
+        if (sysAreaInfoByIdVO == null) {
             return null;
         }
 
@@ -164,7 +166,6 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
 
         Set<Long> deptIdSet = areaRefDeptDOList.stream().map(SysAreaRefDeptDO::getDeptId).collect(Collectors.toSet());
 
-        SysAreaInfoByIdVO sysAreaInfoByIdVO = BeanUtil.copyProperties(sysAreaDO, SysAreaInfoByIdVO.class);
         sysAreaInfoByIdVO.setDeptIdSet(deptIdSet);
 
         return sysAreaInfoByIdVO;

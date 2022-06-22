@@ -96,7 +96,8 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
         return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysJobDO::getName, dto.getName())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntityThree::getRemark, dto.getRemark())
             .eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
-            .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag()).page(dto.getPage());
+            .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
+            .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
     }
 
     /**
@@ -159,8 +160,9 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
     @Override
     public SysJobInfoByIdVO infoById(NotNullId notNullId) {
 
-        SysJobDO sysJobDO = getById(notNullId.getId());
-        if (sysJobDO == null) {
+        SysJobInfoByIdVO sysJobInfoByIdVO = BeanUtil.copyProperties(getById(notNullId.getId()), SysJobInfoByIdVO.class);
+
+        if (sysJobInfoByIdVO == null) {
             return null;
         }
 
@@ -170,7 +172,6 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
                 .select(SysJobRefUserDO::getUserId).list();
         Set<Long> userIdSet = sysJobRefUserDOList.stream().map(SysJobRefUserDO::getUserId).collect(Collectors.toSet());
 
-        SysJobInfoByIdVO sysJobInfoByIdVO = BeanUtil.copyProperties(sysJobDO, SysJobInfoByIdVO.class);
         sysJobInfoByIdVO.setUserIdSet(userIdSet);
 
         return sysJobInfoByIdVO;

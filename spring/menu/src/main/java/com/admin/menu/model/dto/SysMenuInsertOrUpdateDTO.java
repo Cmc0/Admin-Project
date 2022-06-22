@@ -46,7 +46,7 @@ public class SysMenuInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     @ApiModelProperty(value = "路由")
     private String router;
 
-    @ApiModelProperty(value = "重定向：linkFlag === false 时使用，不必填，暂时未使用")
+    @ApiModelProperty(value = "重定向，暂时未使用")
     private String redirect;
 
     @ApiModelProperty(value = "描述/备注")

@@ -71,11 +71,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         // 判断：path是否以 http开头
         dto.setLinkFlag(StrUtil.startWith(dto.getPath(), "http", true));
 
-        // 如果是外链，则清空 一些属性
-        if (dto.isLinkFlag()) {
-            dto.setRedirect(null);
-        }
-
         if (dto.getId() != null) {
             deleteByIdSetSub(Collections.singleton(dto.getId())); // 先删除 子表数据
         }
@@ -126,7 +121,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         sysMenuDO.setRedirect(MyEntityUtil.getNotNullStr(dto.getRedirect()));
         sysMenuDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
         sysMenuDO.setFirstFlag(dto.isFirstFlag());
-        sysMenuDO.setAuthFlag(dto.isAuthFlag()); // 当新增时，才允许设置 authFlag的值
+        sysMenuDO.setAuthFlag(dto.isAuthFlag());
         if (dto.isAuthFlag()) {
             sysMenuDO.setAuths(dto.getAuths()); // 只有权限菜单，才可以设置 auths
             sysMenuDO.setShowFlag(false);
@@ -228,7 +223,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             return lambdaQuery()
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
                     SysMenuDO::getRouter, SysMenuDO::getName, SysMenuDO::getFirstFlag, SysMenuDO::getLinkFlag,
-                    SysMenuDO::getShowFlag, SysMenuDO::getAuthFlag).eq(BaseEntityThree::getEnableFlag, 1)
+                    SysMenuDO::getShowFlag, SysMenuDO::getAuths, SysMenuDO::getAuthFlag)
+                .eq(BaseEntityThree::getEnableFlag, true)
                 .orderByDesc(SysMenuDO::getOrderNo).list();
         }
 
