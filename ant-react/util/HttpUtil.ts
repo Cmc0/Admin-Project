@@ -79,7 +79,6 @@ $http.interceptors.response.use(
     },
     (err) => {
         if (hiddenErrorMsgFlag) {
-            hiddenErrorMsgFlag = false
             return Promise.reject(err) // 这里会触发 catch
         }
 
