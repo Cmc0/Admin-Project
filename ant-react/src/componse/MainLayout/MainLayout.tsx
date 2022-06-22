@@ -120,7 +120,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
             headers: {
-                hiddenErrorMsg: true, // 隐藏接口请求报错提示
+                timeout: 2000,
+                hiddenErrorMsg: true,
             },
         }).then(res => {
             setSysRequestAllAvgVO(res.data)

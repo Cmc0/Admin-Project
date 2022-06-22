@@ -19,7 +19,7 @@ function getWebSocketRegisterData() {
     }, {
         timeout: 2000,
         headers: {
-            hiddenErrorMsg: true, // 隐藏接口请求报错提示
+            hiddenErrorMsg: true,
         },
     })
         .then(({data}) => {
