@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class IpUtil {
 
-    private static DbSearcher searcher; // searcher
+    private static DbSearcher searcher;
 
     static {
         try {
