@@ -2,6 +2,7 @@ package com.admin.request.controller;
 
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.vo.SysRequestAllAvgVO;
 import com.admin.request.model.vo.SysRequestPageVO;
 import com.admin.request.service.SysRequestService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,6 +30,12 @@ public class SysRequestController {
     @ApiOperation(value = "分页排序查询")
     public ApiResultVO<Page<SysRequestPageVO>> myPage(@RequestBody @Valid SysRequestPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
+    }
+
+    @PostMapping("/allAvg")
+    @ApiOperation(value = "所有请求的平均耗时")
+    public ApiResultVO<SysRequestAllAvgVO> allAvg() {
+        return ApiResultVO.ok(baseService.allAvg());
     }
 
 }

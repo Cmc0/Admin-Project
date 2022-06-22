@@ -57,4 +57,11 @@
         ORDER BY a.create_time DESC
     </select>
 
+    <!-- 所有请求的平均耗时 -->
+    <select id="allAvg" resultType="com.admin.request.model.vo.SysRequestAllAvgVO">
+        SELECT COUNT(1)                          AS count,
+               (SUM(a.time_number) DIV COUNT(1)) AS avg
+        FROM sys_request a
+    </select>
+
 </mapper>

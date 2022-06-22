@@ -3,6 +3,7 @@ package com.admin.request.service.impl;
 import com.admin.request.mapper.SysRequestMapper;
 import com.admin.request.model.dto.SysRequestPageDTO;
 import com.admin.request.model.entity.SysRequestDO;
+import com.admin.request.model.vo.SysRequestAllAvgVO;
 import com.admin.request.model.vo.SysRequestPageVO;
 import com.admin.request.service.SysRequestService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,5 +19,13 @@ public class SysRequestServiceImpl extends ServiceImpl<SysRequestMapper, SysRequ
     @Override
     public Page<SysRequestPageVO> myPage(SysRequestPageDTO dto) {
         return baseMapper.myPage(dto.getPage(), dto);
+    }
+
+    /**
+     * 所有请求的平均耗时
+     */
+    @Override
+    public SysRequestAllAvgVO allAvg() {
+        return baseMapper.allAvg();
     }
 }

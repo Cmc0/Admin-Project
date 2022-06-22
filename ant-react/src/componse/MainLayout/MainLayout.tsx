@@ -3,8 +3,8 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Badge, Dropdown, Menu, Space} from "antd";
-import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
+import {Avatar, Badge, Dropdown, Menu, Space, Typography} from "antd";
+import {LogoutOutlined, ReloadOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
@@ -21,6 +21,8 @@ import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
 import {sysMenuListForUser} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
+import {StatisticCard} from '@ant-design/pro-components';
+import ExportTypography from "antd/es/typography/Typography";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -165,6 +167,19 @@ function MainLayoutElement(props: IMainLayoutElement) {
                         }
                     </>
                 </a>
+            )}
+            headerContentRender={() => (
+                <Space>
+                    <div className={"cursor-def"} title={"接口平均响应耗时"}>
+                        <Badge status="processing"
+                               text={
+                                   <Typography.Text strong>avg：326ms
+                                       <a title={"刷新"}> <ReloadOutlined/></a>
+                                   </Typography.Text>
+                               }/>
+                    </div>
+
+                </Space>
             )}
             rightContentRender={() => (
                 <Space size={20}>
