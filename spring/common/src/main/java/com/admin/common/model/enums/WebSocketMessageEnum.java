@@ -16,9 +16,9 @@ import lombok.Setter;
 public enum WebSocketMessageEnum {
     SOCKET_ID(1, null, "webSocket连接记录主键 id"), // json:{ webSocketId }
     FORCED_OFFLINE(2, null,
-        BaseBizCodeEnum.FORCED_OFFLINE.getMsg()), // json:{ userIdSet/webSocketIdSet }，账号已在其他地方登录，您被迫下线 (〒︿〒)
-    LOGIN_EXPIRED(3, null, BaseBizCodeEnum.LOGIN_EXPIRED.getMsg()), // json:{ webSocketIdSet }，登录过期，请重新登录 (・ω<)
-    DEL_ACCOUNT(4, null, "账号已被注销 ╮(╯﹏╰）╭"), // json:{ userIdSet }
+        BaseBizCodeEnum.FORCED_OFFLINE.getMsg()), // json:{ userIdSet/webSocketIdSet }，账号已在其他地方登录，您被迫下线
+    LOGIN_EXPIRED(3, null, BaseBizCodeEnum.LOGIN_EXPIRED.getMsg()), // json:{ webSocketIdSet }，登录过期，请重新登录
+    DEL_ACCOUNT(4, null, "账号已被注销"), // json:{ userIdSet }
     NEW_NOTIFY(5, null, "有新的通知"), // json:{ userIdSet }
     NEW_BULLETIN(6, null, "有新的公告"), // json:{ userIdSet }
     ;

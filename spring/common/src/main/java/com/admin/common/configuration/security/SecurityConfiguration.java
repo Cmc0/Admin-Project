@@ -17,11 +17,11 @@ import java.util.List;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // 不需要登录就可以 下载文件的地址
-    public final static String FILE_PUBLIC_DOWNLOAD_URL = "/file/publicDownload";
+    public final static String SYS_FILE_PUBLIC_DOWNLOAD_URL = "/sysFile/publicDownload";
 
     // 生产环境，不需要 Security 处理的 url
     private static final List<String> PROD_IGNORING_LIST =
-        Arrays.asList("/userRegister/**", "/userLogin/**", FILE_PUBLIC_DOWNLOAD_URL);
+        Arrays.asList("/userRegister/**", "/userLogin/**", SYS_FILE_PUBLIC_DOWNLOAD_URL);
 
     // 其他环境，不需要 Security 处理的 url
     private static final List<String> IGNORING_LIST = CollUtil

@@ -59,7 +59,7 @@ public class SysRequestAop {
         String uri = httpServletRequest.getRequestURI();
 
         // 这个路径不需要记录到数据库
-        if (uri.equals(SecurityConfiguration.FILE_PUBLIC_DOWNLOAD_URL)) {
+        if (uri.equals(SecurityConfiguration.SYS_FILE_PUBLIC_DOWNLOAD_URL)) {
             return object;
         }
 

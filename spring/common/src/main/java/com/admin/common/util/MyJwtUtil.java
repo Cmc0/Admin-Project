@@ -81,7 +81,7 @@ public class MyJwtUtil {
             expireTime = BaseConstant.DAY_1_EXPIRE_TIME; // 1天过期
         }
 
-        String jwt = BaseConstant.JWT_PREFIX + JWT.create() //
+        String fullJwt = BaseConstant.JWT_PREFIX + JWT.create() //
             .setExpiresAt(new Date(System.currentTimeMillis() + expireTime)) // 设置过期时间
             .addPayloads(payloadMap) // 增加JWT载荷信息
             .setKey(getJwtSecret(jwtSecretSuf).getBytes()) // 设置密钥
@@ -89,10 +89,10 @@ public class MyJwtUtil {
 
         // 存储到 redis中
         expireTime = expireTime - BaseConstant.SECOND_30_EXPIRE_TIME;
-        String redisJwtHash = generateRedisJwtHash(jwt, userId, sysRequestCategoryEnum);
+        String redisJwtHash = generateRedisJwtHash(fullJwt, userId, sysRequestCategoryEnum);
         jsonRedisTemplate.opsForValue().set(redisJwtHash, "jwtHash", expireTime, TimeUnit.MILLISECONDS);
 
-        return jwt;
+        return fullJwt;
     }
 
     /**

@@ -8,13 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 自定义 DispatcherServlet 来分派 MyHttpServletRequestWrapper
+ * 自定义 DispatcherServlet，目的：可以多次获取 requestBody
  */
 public class MyDispatcherServlet extends DispatcherServlet {
 
-    /**
-     * 包装成我们自定义的request
-     */
     @SneakyThrows
     @Override
     protected void doDispatch(HttpServletRequest request, @Nonnull HttpServletResponse response) {

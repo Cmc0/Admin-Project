@@ -71,6 +71,7 @@ public class SysParamUtil {
         Map<String, String> map =
             paramRedisList.stream().collect(Collectors.toMap(it -> Convert.toStr(it.getId()), SysParamDO::getValue));
 
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 
         return map;

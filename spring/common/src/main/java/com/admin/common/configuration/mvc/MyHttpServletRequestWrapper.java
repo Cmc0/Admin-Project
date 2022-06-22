@@ -12,13 +12,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-/**
- * 自定义 HttpServletRequestWrapper 来包装输入流
- */
 public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     /**
-     * 缓存下来的HTTP body
+     * 缓存下来的 requestBody
      */
     private byte[] body;
 
@@ -45,7 +42,7 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
             }
 
             /**
-             * 下面的方法一般情况下不会被使用，如果你引入了一些需要使用ServletInputStream的外部组件，可以重点关注一下。
+             * 下面的方法一般情况下不会被使用
              */
             @Override
             public boolean isFinished() {
