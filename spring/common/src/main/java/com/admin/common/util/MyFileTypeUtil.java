@@ -19,8 +19,7 @@ public class MyFileTypeUtil {
      */
     @SneakyThrows
     public static String getType(MultipartFile multipartFile) {
-        InputStream inputStream = multipartFile.getInputStream();
-        return getType(inputStream);
+        return getType(multipartFile.getInputStream());
     }
 
     /**
