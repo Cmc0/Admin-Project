@@ -210,7 +210,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
     }
 
     /**
-     * 文件删除
+     * 文件批量删除
      */
     @SneakyThrows
     @Override
