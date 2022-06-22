@@ -7,7 +7,7 @@ import {logout} from "./UserUtil";
 
 export const timeoutMsg = '请求超时，请重试'
 export const baseErrorMsg = "请求错误："
-export const timeoutTwoSeconds = 2000
+export const TimeoutTwoSeconds = 2000
 
 let hiddenErrorMsgFlag = false
 
