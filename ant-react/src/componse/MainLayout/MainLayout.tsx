@@ -112,7 +112,6 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     const [pathname, setPathname] = useState<string>('')
     const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
-    const userBaseInfo = useAppSelector((state) => state.user.userBaseInfo)
 
     useEffect(() => {
         setPathname(window.location.pathname)
