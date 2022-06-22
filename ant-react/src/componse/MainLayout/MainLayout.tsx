@@ -118,7 +118,11 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
 
     function doSysRequestAllAvg() {
-        sysRequestAllAvg().then(res => {
+        sysRequestAllAvg({
+            headers: {
+                hiddenErrorMsg: true, // 隐藏接口请求报错提示
+            },
+        }).then(res => {
             setSysRequestAllAvgVO(res.data)
         })
     }
