@@ -15,10 +15,12 @@ import com.admin.websocket.model.constant.CommonConstant;
 import com.admin.websocket.model.entity.SysWebSocketDO;
 import com.admin.websocket.model.enums.SysWebSocketTypeEnum;
 import com.admin.websocket.service.SysWebSocketService;
+import com.admin.websocket.util.MyWebSocketUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.ValueOperations;
@@ -29,7 +31,7 @@ import java.util.Collections;
 
 @Component
 @Scope("prototype") // 多例
-public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSocketMessageEnum> {
+public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     @Resource
     JsonRedisTemplate<SysWebSocketDO> jsonRedisTemplate;
@@ -106,8 +108,8 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             ThreadUtil.execute(() -> {
                 WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.SOCKET_ID;
                 webSocketMessageEnum
-                    .setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, sysWebSocketDO.getIp()));
-                channel.writeAndFlush(webSocketMessageEnum); // 给前端发送 socketId
+                    .setJson(JSONUtil.createObj().set(CommonConstant.WEB_SOCKET_ID, sysWebSocketDO.getId()));
+                channel.writeAndFlush(MyWebSocketUtil.getTextWebSocketFrame(webSocketMessageEnum)); // 给前端发送 socketId
             });
         }
     }
@@ -116,7 +118,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<WebSock
      * 收到消息时
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketMessageEnum webSocketMessageEnum) {
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
 
     }
 
