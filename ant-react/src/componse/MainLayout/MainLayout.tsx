@@ -4,7 +4,7 @@ import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Badge, Dropdown, Menu, Space, Typography} from "antd";
-import {LogoutOutlined, ReloadOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
+import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
@@ -116,16 +116,10 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
     const [webSocketType, setWebSocketType] = useState<TWebSocketType>(GetWebSocketType())
     const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
-    const [sysRequestAllAvgLoading, setSysRequestAllAvgLoading] = useState<boolean>(false)
 
     function doSysRequestAllAvg() {
-        if (sysRequestAllAvgLoading) {
-            return
-        }
-        setSysRequestAllAvgLoading(true)
         sysRequestAllAvg().then(res => {
             setSysRequestAllAvgVO(res.data)
-            setSysRequestAllAvgLoading(false)
         })
     }
 
@@ -191,13 +185,10 @@ function MainLayoutElement(props: IMainLayoutElement) {
             )}
             headerContentRender={() => (
                 <Space>
-                    <div className={"cursor-def"} title={`接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                    <div className={"hand"} title={`接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
                         <Badge status="processing"
                                text={
-                                   <Typography.Text strong>avg：{sysRequestAllAvgVO.avg}ms
-                                       <a title={"刷新"} onClick={doSysRequestAllAvg}> <ReloadOutlined
-                                           spin={sysRequestAllAvgLoading}/></a>
-                                   </Typography.Text>
+                                   <Typography.Text strong>avg：{sysRequestAllAvgVO.avg}ms</Typography.Text>
                                }/>
                     </div>
 
