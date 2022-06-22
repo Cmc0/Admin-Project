@@ -7,7 +7,7 @@ import {LockOutlined, QqOutlined, UserOutlined, WechatOutlined} from "@ant-desig
 import {useEffect, useState} from "react";
 import {UserLoginByPasswordDTO, userLoginPassword} from "@/api/UserLoginController";
 import {ToastSuccess} from "../../../util/ToastUtil";
-import LocalStorageKey from "@/model/constant/LocalStorageKey";
+import LocalStorageKey, {setWebSocketType} from "@/model/constant/LocalStorageKey";
 import {PasswordRSAEncrypt} from "../../../util/RsaUtil";
 import {Navigate} from "react-router-dom";
 import {getAppNav} from "@/App";
@@ -67,13 +67,14 @@ export default function () {
                         </Space>
                     </div>
                 }
-                onFinish={async (formData) => {
+                onFinish={async (form) => {
                     await userLoginPassword({
-                        ...formData,
-                        password: PasswordRSAEncrypt(formData.password)!
+                        ...form,
+                        password: PasswordRSAEncrypt(form.password)!
                     }).then(res => {
                         localStorage.clear()
                         sessionStorage.clear()
+                        setWebSocketType()
                         ToastSuccess('欢迎回来~')
                         localStorage.setItem(LocalStorageKey.JWT, res.data)
                         getAppNav()(CommonConstant.MAIN_PATH)

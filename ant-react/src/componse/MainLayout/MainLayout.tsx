@@ -3,7 +3,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Dropdown, Menu} from "antd";
+import {Avatar, Badge, Dropdown, Menu, Space} from "antd";
 import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
@@ -19,6 +19,7 @@ import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
 import {sysMenuListForUser} from "@/api/SysMenuController";
+import {getWebSocketType} from "@/model/constant/LocalStorageKey";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -110,6 +111,7 @@ interface IMainLayoutElement {
 function MainLayoutElement(props: IMainLayoutElement) {
 
     const [pathname, setPathname] = useState<string>('')
+    const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus) // webSocket连接状态
 
     useEffect(() => {
         setPathname(window.location.pathname)
@@ -163,7 +165,9 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 </a>
             )}
             rightContentRender={() => (
-                <>
+                <Space align={"center"} size={16}>
+                    <Badge status={webSocketStatus ? (getWebSocketType() === '1' ? 'success' : 'warning') : 'default'}
+                           text={webSocketStatus ? (getWebSocketType() === '1' ? '在线' : '隐身') : '离线'}/>
                     <Dropdown overlay={<Menu items={[
                         {
                             key: '1',
@@ -193,7 +197,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     </Menu>}>
                         <Avatar className={"hand"} size="small" icon={<UserOutlined/>}/>
                     </Dropdown>
-                </>
+                </Space>
             )}
         >
             <PageContainer>

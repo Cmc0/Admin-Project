@@ -1,4 +1,4 @@
-import LocalStorageKey from "../src/model/constant/LocalStorageKey";
+import LocalStorageKey, {getWebSocketType} from "../src/model/constant/LocalStorageKey";
 import {ToastError} from "./ToastUtil";
 import {getAppNav} from "@/App";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
@@ -16,7 +16,7 @@ function getWebSocketRegData() {
   code = ''
 
   return sysWebSocketRegister({
-    value: Number(localStorage.getItem(LocalStorageKey.WEB_SOCKET_TYPE)) || 1
+    value: Number(getWebSocketType())
   })
       .then(({data}) => {
         webSocketUrl = data.webSocketUrl
