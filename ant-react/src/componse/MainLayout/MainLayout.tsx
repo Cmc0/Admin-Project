@@ -119,6 +119,9 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const [sysRequestAllAvgLoading, setSysRequestAllAvgLoading] = useState<boolean>(false)
 
     function doSysRequestAllAvg() {
+        if (sysRequestAllAvgLoading) {
+            return
+        }
         setSysRequestAllAvgLoading(true)
         sysRequestAllAvg().then(res => {
             setSysRequestAllAvgVO(res.data)
