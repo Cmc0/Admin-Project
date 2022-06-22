@@ -5,12 +5,12 @@ import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import AddOrderNoDTO from "@/model/dto/AddOrderNoDTO";
 import $http from "../../util/HttpUtil";
 
-// 字典控制器 通过主键 idSet，加减排序号
+// 字典-管理 通过主键 idSet，加减排序号
 export function sysDictAddOrderNo(form: AddOrderNoDTO) {
     return $http.myPost<string>('/sysDict/addOrderNo', form)
 }
 
-// 字典控制器 删除字典
+// 字典-管理 删除字典
 export function sysDictDeleteByIdSet(form: NotEmptyIdSet) {
     return $http.myPost<string>('/sysDict/deleteByIdSet', form)
 }
@@ -32,7 +32,7 @@ export interface SysDictDO {
     version?: number // 乐观锁
 }
 
-// 字典控制器 通过主键id，查看详情
+// 字典-管理 通过主键id，查看详情
 export function sysDictInfoById(form: NotNullId) {
     return $http.myProPost<SysDictDO>('/sysDict/infoById', form)
 }
@@ -48,7 +48,7 @@ export interface SysDictInsertOrUpdateDTO {
     value?: boolean // 字典项 value（数字 123...）备注：字典为 -1
 }
 
-// 字典控制器 新增/修改
+// 字典-管理 新增/修改
 export function sysDictInsertOrUpdate(form: SysDictInsertOrUpdateDTO) {
     return $http.myPost<string>('/sysDict/insertOrUpdate', form)
 }
@@ -65,7 +65,7 @@ export interface SysDictPageDTO extends MyPageDTO {
     type?: boolean // 类型：1 字典 2 字典项
 }
 
-// 字典控制器 分页排序查询
+// 字典-管理 分页排序查询
 export function sysDictPage(form: SysDictPageDTO) {
     return $http.myProPagePost<SysDictDO>('/sysDict/page', form)
 }
@@ -88,7 +88,7 @@ export interface SysDictTreeVO {
     version?: number // 乐观锁
 }
 
-// 字典控制器 查询：树结构
+// 字典-管理 查询：树结构
 export function sysDictTree(form: SysDictPageDTO) {
     return $http.myProTreePost<SysDictTreeVO>('/sysDict/tree', form)
 }

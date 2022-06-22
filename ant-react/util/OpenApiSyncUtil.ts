@@ -188,6 +188,9 @@ function start() {
         const tagNameAndPathResMap: Record<string, IOpenApiPathRes[]> = {}
 
         Object.keys(data.paths).forEach(item => {
+            if (!data.paths[item].post) {
+                return
+            }
             const tagName = data.paths[item].post.tags[0]
             data.paths[item].post.uri = item // 这里赋值：uri
             if (tagNameAndPathResMap[tagName]) {
@@ -241,7 +244,7 @@ function start() {
                     }
                 }
 
-                if (subItem.responses) {
+                if (subItem.responses && subItem.responses["200"].content) {
                     const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
                     responsesName = getComponentNameByFullName(responsesFullName)
                     responsesName = getMatchStr(responsesName);
