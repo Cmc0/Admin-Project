@@ -1,7 +1,7 @@
 import ProLayout, {PageContainer} from '@ant-design/pro-layout';
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
 import {Avatar, Badge, Dropdown, Menu, Space} from "antd";
 import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
@@ -19,7 +19,7 @@ import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
 import {sysMenuListForUser} from "@/api/SysMenuController";
-import {getWebSocketType, setWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
+import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 
 // 前往：第一个页面
@@ -113,6 +113,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     const [pathname, setPathname] = useState<string>('')
     const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
+    const [webSocketType, setWebSocketType] = useState<TWebSocketType>(GetWebSocketType())
 
     useEffect(() => {
         setPathname(window.location.pathname)
@@ -170,14 +171,14 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <Dropdown overlay={<Menu items={[
                         {
                             key: '1',
-                            label: <a onClick={() => doSysWebSocketChangeType('1')}>
+                            label: <a onClick={() => doSysWebSocketChangeType('1', setWebSocketType)}>
                                 我在线上
                             </a>,
                             icon: <Badge status={"success"}/>
                         },
                         {
                             key: '2',
-                            label: <a onClick={() => doSysWebSocketChangeType('2')}>
+                            label: <a onClick={() => doSysWebSocketChangeType('2', setWebSocketType)}>
                                 隐身
                             </a>,
                             icon: <Badge status={"warning"}/>
@@ -185,8 +186,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     ]}/>}>
                         <Badge
                             className={"hand"}
-                            status={webSocketStatus ? (getWebSocketType() === '1' ? 'success' : 'warning') : 'default'}
-                            text={webSocketStatus ? (getWebSocketType() === '1' ? '在线' : '隐身') : '离线'}
+                            status={webSocketStatus ? (webSocketType === '1' ? 'success' : 'warning') : 'default'}
+                            text={webSocketStatus ? (webSocketType === '1' ? '在线' : '隐身') : '离线'}
                         />
                     </Dropdown>
 
@@ -227,7 +228,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
     )
 }
 
-function doSysWebSocketChangeType(value: TWebSocketType) {
+function doSysWebSocketChangeType(value: TWebSocketType, setWebSocketType: Dispatch<SetStateAction<TWebSocketType>>) {
 
     const webSocketId = sessionStorage.getItem(SessionStorageKey.WEB_SOCKET_ID);
 
@@ -238,6 +239,7 @@ function doSysWebSocketChangeType(value: TWebSocketType) {
 
     sysWebSocketChangeType({id: Number(webSocketId), value: Number(value)}).then(res => {
         ToastSuccess(res.msg)
+        SetWebSocketType(value)
         setWebSocketType(value)
     })
 }
