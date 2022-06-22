@@ -10,7 +10,7 @@
         a.create_id,
         a.create_time,
         a.uri,
-        a.time,
+        a.time_str,
         a.name,
         a.time_number,
         a.category,
@@ -27,7 +27,7 @@
                 AND a.name LIKE concat('%', #{dto.name}, '%')
             </if>
             <if test="dto.time != null and dto.time != ''">
-                AND a.time LIKE concat('%', #{dto.time}, '%')
+                AND a.time_str LIKE concat('%', #{dto.time}, '%')
             </if>
             <if test="dto.ip != null and dto.ip != ''">
                 AND a.ip LIKE concat('%', #{dto.ip}, '%')
@@ -41,11 +41,11 @@
             <if test="dto.endTimeNumber != null">
                 AND a.time_number <![CDATA[<=]]> #{dto.endTimeNumber}
             </if>
-            <if test="dto.beginTime != null">
-                AND a.create_time <![CDATA[>=]]> #{dto.beginTime}
+            <if test="dto.beginCreateTime != null">
+                AND a.create_time <![CDATA[>=]]> #{dto.beginCreateTime}
             </if>
-            <if test="dto.endTime != null">
-                AND a.create_time <![CDATA[<=]]> #{dto.endTime}
+            <if test="dto.endCreateTime != null">
+                AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
             </if>
             <if test="dto.createId != null and dto.createId != ''">
                 AND a.create_id = #{dto.createId}

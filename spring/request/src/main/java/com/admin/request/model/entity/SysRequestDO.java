@@ -18,7 +18,7 @@ public class SysRequestDO extends BaseEntityThree {
     private String uri;
 
     @ApiModelProperty(value = "耗时（字符串）")
-    private String time;
+    private String timeStr;
 
     @ApiModelProperty(value = "耗时（毫秒）")
     private Long timeNumber;

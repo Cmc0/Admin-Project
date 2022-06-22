@@ -1,7 +1,6 @@
 package com.admin.request.model.dto;
 
 import com.admin.common.model.dto.MyPageDTO;
-import com.admin.request.model.entity.SysRequestDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
- * {@link SysRequestDO}
+ * {@link com.admin.request.model.entity.SysRequestDO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,7 +18,7 @@ public class SysRequestPageDTO extends MyPageDTO {
     private String uri;
 
     @ApiModelProperty(value = "耗时（字符串）")
-    private String time;
+    private String timeStr;
 
     @ApiModelProperty(value = "耗时开始（毫秒）")
     private Long beginTimeNumber;
@@ -31,10 +30,10 @@ public class SysRequestPageDTO extends MyPageDTO {
     private String name;
 
     @ApiModelProperty(value = "创建开始时间")
-    private Date beginTime;
+    private Date beginCreateTime;
 
     @ApiModelProperty(value = "创建结束时间")
-    private Date endTime;
+    private Date endCreateTime;
 
     @ApiModelProperty(value = "创建人id")
     private Long createId;

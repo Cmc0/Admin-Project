@@ -3,7 +3,6 @@ package com.admin.request.aop;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.jwt.JWT;
 import com.admin.common.configuration.security.SecurityConfiguration;
@@ -64,18 +63,17 @@ public class SysRequestAop {
             return object;
         }
 
-        String time = DateUtil.formatBetween(timeNumber, BetweenFormatter.Level.MILLISECOND); // 耗时（字符串）
+        String timeStr = DateUtil.formatBetween(timeNumber, BetweenFormatter.Level.MILLISECOND); // 耗时（字符串）
 
         SysRequestDO sysRequestDO = new SysRequestDO();
 
         Date date = new Date();
 
         sysRequestDO.setUri(uri);
-        sysRequestDO.setTime(time);
+        sysRequestDO.setTimeStr(timeStr);
         sysRequestDO.setTimeNumber(timeNumber);
-        sysRequestDO.setName(apiOperation.value()); // 接口的描述
-        sysRequestDO.setCategory(
-            RequestUtil.getSysRequestCategoryEnum(httpServletRequest)); // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+        sysRequestDO.setName(apiOperation.value());
+        sysRequestDO.setCategory(RequestUtil.getSysRequestCategoryEnum(httpServletRequest));
         sysRequestDO.setIp(ServletUtil.getClientIP(httpServletRequest));
         sysRequestDO.setRegion(IpUtil.getRegion(sysRequestDO.getIp()));
 
@@ -89,7 +87,7 @@ public class SysRequestAop {
         }
 
         // 存库
-        ThreadUtil.execute(() -> sysRequestService.save(sysRequestDO));
+        sysRequestService.save(sysRequestDO);
 
         return object;
     }
