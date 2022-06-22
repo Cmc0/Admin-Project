@@ -188,7 +188,11 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <div className={"hand"} title={`接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
                         <Badge status="processing"
                                text={
-                                   <Typography.Text strong>avg：{sysRequestAllAvgVO.avg}ms</Typography.Text>
+                                   <Typography.Text
+                                       strong
+                                       type={sysRequestAllAvgVO.avg! < 800 ? 'success' : (sysRequestAllAvgVO.avg! > 1600 ? 'danger' : 'warning')}>
+                                       avg：{sysRequestAllAvgVO.avg}ms
+                                   </Typography.Text>
                                }/>
                     </div>
 
