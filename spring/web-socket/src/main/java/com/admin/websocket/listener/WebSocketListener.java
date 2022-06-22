@@ -34,9 +34,7 @@ public class WebSocketListener {
         JSONObject json = webSocketMessageEnum.getJson();
         List<Channel> channelList;
 
-        if (code == 1) {
-            // 1 webSocket连接记录主键id
-        } else if (code >= 2 && code <= 4) {
+        if (code >= 2 && code <= 4) {
 
             // 2 账号已在其他地方登录，您被迫下线
             // 3 登录过期，请重新登录
