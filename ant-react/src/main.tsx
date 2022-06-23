@@ -15,6 +15,17 @@ import store from './store'
 
 moment.locale('zh-cn');
 
+const consoleOldError = console.error
+
+console.error = (message?: any, ...optionalParams: any[]) => {
+    if (optionalParams && optionalParams.length) {
+        if (optionalParams[0] === 'findDOMNode') { // 过滤 findDOMNode警告
+            return
+        }
+    }
+    consoleOldError(message, ...optionalParams)
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <Provider store={store}>
