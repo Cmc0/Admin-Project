@@ -6,16 +6,16 @@
 
     <!-- 分页排序查询 -->
     <select id="myPage" resultType="com.admin.request.model.vo.SysRequestPageVO">
-        SELECT a.id,
-        a.create_id,
-        a.create_time,
-        a.uri,
-        a.time_str,
-        a.name,
-        a.time_number,
-        a.category,
-        a.region,
-        a.ip,
+        SELECT a.id AS id,
+        a.create_id AS createId,
+        a.create_time AS createTime,
+        a.uri AS uri,
+        a.time_str AS timeStr,
+        a.name AS name,
+        a.time_number AS timeNumber,
+        a.category AS category,
+        a.region AS region,
+        a.ip AS ip,
         IF(b.nickname IS NULL, '-', b.nickname) AS userName
         FROM sys_request a
         LEFT JOIN sys_user b ON b.id = a.create_id

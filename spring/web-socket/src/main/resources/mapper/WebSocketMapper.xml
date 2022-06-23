@@ -4,18 +4,18 @@
 
     <!-- 分页排序查询 -->
     <select id="myPage" resultType="com.admin.websocket.model.vo.SysSysWebSocketPageVO">
-        SELECT a.id,
-        a.create_id,
-        a.create_time,
-        a.user_id,
-        a.region,
-        a.ip,
-        a.browser,
-        a.os,
-        a.mobile_flag,
-        a.type,
-        a.server,
-        a.category,
+        SELECT a.id AS id,
+        a.create_id AS createId,
+        a.create_time AS createTime,
+        a.user_id AS userId,
+        a.region AS region,
+        a.ip AS ip,
+        a.browser AS browser,
+        a.os AS os,
+        a.mobile_flag AS mobileFlag,
+        a.type AS type,
+        a.server AS server,
+        a.category AS category,
         IF(b.nickname IS NULL, '-' , b.nickname) AS userName
         FROM sys_web_socket a
         LEFT JOIN sys_user b ON b.id = a.user_id
