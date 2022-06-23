@@ -32,7 +32,11 @@ public enum WebSocketMessageEnum {
         return JSONUtil.toJsonStr(BeanUtil.beanToMap(this));
     }
 
-    public static WebSocketMessageEnum getByCode(int code) {
+    public static WebSocketMessageEnum getByCode(Integer code) {
+        if (code == null) {
+            return null;
+        }
+
         for (WebSocketMessageEnum item : WebSocketMessageEnum.values()) {
             if (item.getCode() == code) {
                 return item;

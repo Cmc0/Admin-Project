@@ -21,7 +21,10 @@ public enum SysWebSocketTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
-    public static SysWebSocketTypeEnum getByCode(byte code) {
+    public static SysWebSocketTypeEnum getByCode(Byte code) {
+        if (code == null) {
+            return null;
+        }
         for (SysWebSocketTypeEnum item : SysWebSocketTypeEnum.values()) {
             if (item.getCode() == code) {
                 return item;

@@ -1,7 +1,9 @@
 package com.admin.websocket.listener;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.websocket.configuration.MyNettyChannelGroupHelper;
@@ -21,7 +23,22 @@ import java.util.Set;
 public class WebSocketListener {
 
     @KafkaHandler
-    public void receive(WebSocketMessageEnum webSocketMessageEnum) {
+    public void receive(String jsonStr) {
+
+        JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+
+        Integer code = jsonObject.getInt("code");
+        if (code == null) {
+            return;
+        }
+
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.getByCode(code);
+        if (webSocketMessageEnum == null) {
+            return;
+        }
+
+        BeanUtil.copyProperties(jsonObject, webSocketMessageEnum); // 属性拷贝
+
         handleWebSocketMessageEnum(webSocketMessageEnum);
     }
 

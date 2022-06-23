@@ -28,7 +28,7 @@ public class KafkaUtil {
      * {@link com.admin.websocket.listener.WebSocketListener}
      */
     private static void sendWebSocketMessageByKafka(WebSocketMessageEnum webSocketMessageEnum) {
-        kafkaTemplate.send(BaseConstant.MQ_WEB_SOCKET_TOPIC, webSocketMessageEnum);
+        kafkaTemplate.send(BaseConstant.MQ_WEB_SOCKET_TOPIC, webSocketMessageEnum.toJsonString());
     }
 
     /**

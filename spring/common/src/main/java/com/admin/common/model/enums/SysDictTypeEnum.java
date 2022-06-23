@@ -20,7 +20,10 @@ public enum SysDictTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
-    public static SysDictTypeEnum getByCode(byte code) {
+    public static SysDictTypeEnum getByCode(Byte code) {
+        if (code == null) {
+            return null;
+        }
         for (SysDictTypeEnum item : SysDictTypeEnum.values()) {
             if (item.getCode() == code) {
                 return item;
