@@ -139,10 +139,10 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
         String uuid = IdUtil.simpleUUID();
 
-        // 放到 redis里面，一分钟自动过期
+        // 放到 redis里面，一段时间后自动过期
         ValueOperations<String, SysWebSocketDO> ops = jsonRedisTemplate.opsForValue();
 
-        ops.set(NettyServer.webSocketRegisterCodePreKey + uuid, sysWebSocketDO, BaseConstant.MINUTE_1_EXPIRE_TIME,
+        ops.set(NettyServer.webSocketRegisterCodePreKey + uuid, sysWebSocketDO, BaseConstant.SECOND_30_EXPIRE_TIME,
             TimeUnit.MILLISECONDS);
 
         SysWebSocketRegisterVO sysWebSocketRegisterVO = new SysWebSocketRegisterVO();

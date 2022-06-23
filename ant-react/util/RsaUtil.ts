@@ -28,7 +28,7 @@ export function RSAEncryptPro(
     if (!word) {
         return undefined
     }
-    const timestamp = ';' + date.setMinutes(date.getMinutes() + 1) // 时间戳：一分钟
+    const timestamp = ';' + date.setSeconds(date.getSeconds() + 30) // 未来时间的时间戳
     const rsaEncrypt = RSAEncrypt(word + timestamp, rsaPublicKey); // 加入时间戳，进行非对称加密
     return rsaEncrypt ? rsaEncrypt : undefined
 }

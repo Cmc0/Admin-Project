@@ -39,8 +39,8 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
     @Override
     public String userRegisterByEmail(UserRegisterByEmailDTO dto) {
 
-        // 前端会在 SHA256加密 之后，再进行一次非对称加密，并且会携带一分钟之后的时间戳
-        // 后端会把这个非对称加密，存入 redis（一分钟自动过期），目的：一个非对称加密，只能用一次
+        // 前端会在 SHA256加密 之后，再进行一次非对称加密，并且会携带 30s之后的时间戳
+        // 后端会把这个非对称加密，存入 redis（30s自动过期），目的：一个非对称加密，只能用一次
         // 先检查 redis中是否存在，存在则说明已经用过了，不存在，则解密之后，校验是否过期，过期了也不能使用
 
         // 非对称：解密 ↓
