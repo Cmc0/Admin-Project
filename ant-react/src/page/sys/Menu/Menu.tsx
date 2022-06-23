@@ -47,9 +47,7 @@ export default function () {
         <ProTable<SysMenuDO, SysMenuPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
-            pagination={{
-                showQuickJumper: true,
-            }}
+            pagination={false}
             columnEmptyText={false}
             columnsState={{
                 value: columnsStateMap,

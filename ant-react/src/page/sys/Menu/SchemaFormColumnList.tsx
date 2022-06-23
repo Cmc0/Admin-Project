@@ -6,6 +6,7 @@ import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
+import {IconList} from "@/componse/MyIcon/MyIcon";
 
 export const InitForm = {
     enableFlag: true,
@@ -96,6 +97,15 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMe
                                     useForm.setFieldsValue({path: '/main/sys/menu'})
                                 }}>生成示例</a>
                             </>,
+                        },
+                        {
+                            title: '图标',
+                            dataIndex: 'icon',
+                            valueType: 'select',
+                            fieldProps: {
+                                showSearch: true,
+                                options: IconList,
+                            }
                         },
                         {
                             title: '路由',

@@ -10,13 +10,17 @@ import {
 } from "@/api/SysWebSocketController";
 import {PoweroffOutlined} from "@ant-design/icons";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import moment from "moment";
+import {LoadingOutlined, ReloadOutlined} from "@ant-design/icons/lib";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 export default function () {
 
     const [columnsStateMap, setColumnsStateMap] = useState<Record<string, ColumnsState>>(
         {});
-
     const actionRef = useRef<ActionType>(null)
+    const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
+    const [polling, setPolling] = useState<number | undefined>(CommonConstant.POLLING_TIME);
 
     return (
         <ProTable<SysSysWebSocketPageVO, SysWebSocketPageDTO>
@@ -24,7 +28,10 @@ export default function () {
             rowKey={"id"}
             pagination={{
                 showQuickJumper: true,
+                showSizeChanger: true,
             }}
+            headerTitle={`上次更新时间：${moment(lastUpdateTime).format('HH:mm:ss')}`}
+            polling={polling}
             columnEmptyText={false}
             columnsState={{
                 value: columnsStateMap,
@@ -36,6 +43,7 @@ export default function () {
                 fullScreen: true,
             }}
             request={(params, sort, filter) => {
+                setLastUpdateTime(new Date())
                 return sysWebSocketPage({...params, enableFlag: true, sort})
             }}
             toolbar={{
@@ -47,7 +55,21 @@ export default function () {
                                 actionRef.current?.reload()
                             })
                         }, undefined, `确定【全部强退】吗？`)
-                    }}>全部强退</Button>
+                    }}>全部强退</Button>,
+                    <Button
+                        key="2"
+                        type="primary"
+                        onClick={() => {
+                            if (polling) {
+                                setPolling(undefined);
+                                return;
+                            }
+                            setPolling(CommonConstant.POLLING_TIME);
+                        }}
+                    >
+                        {polling ? <LoadingOutlined/> : <ReloadOutlined/>}
+                        {polling ? '停止轮询' : '开始轮询'}
+                    </Button>,
                 ],
             }}
         >

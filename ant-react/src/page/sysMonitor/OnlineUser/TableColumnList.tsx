@@ -7,6 +7,7 @@ import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysSysWebSocketPageVO>[] => [
     {
+        title: '序号',
         dataIndex: 'index',
         valueType: 'index',
     },
@@ -41,7 +42,7 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
             return RequestGetDictList('request_category')
         }
     },
-    {title: '连接时间', dataIndex: 'createTime', sorter: true},
+    {title: '连接时间', dataIndex: 'createTime', sorter: true, valueType: 'fromNow'},
     {
         title: '操作',
         dataIndex: 'option',
