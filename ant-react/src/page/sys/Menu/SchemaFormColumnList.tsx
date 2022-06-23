@@ -108,7 +108,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMe
                                 showSearch: true,
                                 options: IconList,
                                 optionItemRender: (item: RequestOptionsType) => {
-                                    return <Space key={item.value}>
+                                    return <Space>
                                         <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
                                     </Space>
                                 },
