@@ -26,8 +26,8 @@
             <if test="dto.name != null and dto.name != ''">
                 AND a.name LIKE concat('%', #{dto.name}, '%')
             </if>
-            <if test="dto.time != null and dto.time != ''">
-                AND a.time_str LIKE concat('%', #{dto.time}, '%')
+            <if test="dto.timeStr != null and dto.timeStr != ''">
+                AND a.time_str LIKE concat('%', #{dto.timeStr}, '%')
             </if>
             <if test="dto.ip != null and dto.ip != ''">
                 AND a.ip LIKE concat('%', #{dto.ip}, '%')

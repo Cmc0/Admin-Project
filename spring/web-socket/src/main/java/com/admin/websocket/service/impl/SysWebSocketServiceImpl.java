@@ -186,7 +186,6 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      */
     @Override
     public Page<SysSysWebSocketPageVO> myPage(SysWebSocketPageDTO dto) {
-
         return baseMapper.myPage(dto.getPage(), dto);
     }
 

@@ -17,8 +17,7 @@ import {
     SysMenuPageDTO,
     sysMenuTree
 } from "@/api/SysMenuController";
-
-const AddOrderNo = "累加排序号"
+import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
 
 export default function () {
 
