@@ -63,7 +63,7 @@ export interface SysDictPageDTO extends MyPageDTO {
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
     remark?: string // 描述/备注
-    type?: number // 类型：1 字典 2 字典项
+    type?: boolean // 类型：1 字典 2 字典项
 }
 
 // 字典-管理 分页排序查询
