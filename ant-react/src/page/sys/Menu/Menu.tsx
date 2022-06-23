@@ -81,7 +81,7 @@ export default function () {
                     <Dropdown
                         overlay={<Menu items={[
                             {
-                                key: 'expandAll',
+                                key: '1',
                                 label: <a onClick={() => {
                                     setExpandedRowKeys(hasChildrenIdList.current)
                                 }}>
@@ -90,7 +90,7 @@ export default function () {
                                 icon: <ColumnHeightOutlined/>
                             },
                             {
-                                key: 'collapseAll',
+                                key: '2',
                                 label: <a onClick={() => {
                                     setExpandedRowKeys([])
                                 }}>
@@ -152,7 +152,7 @@ export default function () {
         </ProTable>
 
         <BetaSchemaForm<SysMenuInsertOrUpdateDTO>
-            title={currentForm.current.id ? "新建菜单" : "编辑菜单"}
+            title={currentForm.current.id ? "编辑菜单" : "新建菜单"}
             layoutType={"ModalForm"}
             grid
             rowProps={{
@@ -176,7 +176,7 @@ export default function () {
                     return [
                         ...dom,
                         <Button
-                            key="extra-reset"
+                            key="1"
                             onClick={() => {
                                 props.reset();
                             }}
@@ -184,7 +184,7 @@ export default function () {
                             重置
                         </Button>,
                         currentForm.current.id ? <Button
-                            key="extra-del"
+                            key="2"
                             type="primary"
                             danger
                             onClick={() => {
