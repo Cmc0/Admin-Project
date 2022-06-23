@@ -1,9 +1,9 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
 import React from "react";
-import {InDev} from "../../../../util/CommonUtil";
-import {SysSysWebSocketPageVO} from "@/api/SysWebSocketController";
+import {SysSysWebSocketPageVO, sysWebSocketRetreatByIdSet} from "@/api/SysWebSocketController";
 import {handlerRegion} from "../../../../util/StrUtil";
 import {RequestGetDictList, WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
+import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysSysWebSocketPageVO>[] => [
     {
@@ -47,7 +47,14 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         dataIndex: 'option',
         valueType: 'option',
         render: (dom, entity) => [
-            <a key="1" onClick={InDev}>强退</a>,
+            <a key="1" className={"red3"} onClick={() => {
+                execConfirm(() => {
+                    return sysWebSocketRetreatByIdSet({idSet: [entity.id!]}).then(res => {
+                        ToastSuccess(res.msg)
+                        actionRef.current?.reload()
+                    })
+                }, undefined, `确定强退【${entity.userName}】吗？`)
+            }}>强退</a>,
         ],
     },
 ];

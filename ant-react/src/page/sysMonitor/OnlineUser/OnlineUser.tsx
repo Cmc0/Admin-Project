@@ -1,10 +1,15 @@
 import {Button} from "antd";
-import {CloseOutlined} from "@ant-design/icons/lib";
 import {ActionType, ColumnsState, ProTable} from "@ant-design/pro-components";
 import React, {useRef, useState} from "react";
 import TableColumnList from "@/page/sysMonitor/OnlineUser/TableColumnList";
-import {InDev} from "../../../../util/CommonUtil";
-import {SysSysWebSocketPageVO, sysWebSocketPage, SysWebSocketPageDTO} from "@/api/SysWebSocketController";
+import {
+    SysSysWebSocketPageVO,
+    sysWebSocketPage,
+    SysWebSocketPageDTO,
+    sysWebSocketRetreatAll
+} from "@/api/SysWebSocketController";
+import {PoweroffOutlined} from "@ant-design/icons";
+import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
 export default function () {
 
@@ -35,7 +40,14 @@ export default function () {
             }}
             toolbar={{
                 actions: [
-                    <Button key={"1"} icon={<CloseOutlined/>} type="primary" danger onClick={InDev}>全部强退</Button>
+                    <Button key={"1"} icon={<PoweroffOutlined/>} type="primary" danger onClick={() => {
+                        execConfirm(() => {
+                            return sysWebSocketRetreatAll().then(res => {
+                                ToastSuccess(res.msg)
+                                actionRef.current?.reload()
+                            })
+                        }, undefined, `确定【全部强退】吗？`)
+                    }}>全部强退</Button>
                 ],
             }}
         >
