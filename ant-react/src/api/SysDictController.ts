@@ -29,7 +29,7 @@ export interface SysDictDO {
     type?: string // 类型：1 字典 2 字典项
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
-    value?: boolean // 字典项 value（数字 123...）备注：字典为 -1
+    value?: number // 字典项 value（数字 123...）备注：字典为 -1
     version?: number // 乐观锁
 }
 
@@ -45,8 +45,8 @@ export interface SysDictInsertOrUpdateDTO {
     name?: string // 字典/字典项 名
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     remark?: string // 描述/备注
-    type?: boolean // 类型：1 字典 2 字典项
-    value?: boolean // 字典项 value（数字 123...）备注：字典为 -1
+    type?: number // 类型：1 字典 2 字典项
+    value?: number // 字典项 value（数字 123...）备注：字典为 -1
 }
 
 // 字典-管理 新增/修改
@@ -63,7 +63,7 @@ export interface SysDictPageDTO extends MyPageDTO {
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
     remark?: string // 描述/备注
-    type?: boolean // 类型：1 字典 2 字典项
+    type?: number // 类型：1 字典 2 字典项
 }
 
 // 字典-管理 分页排序查询
@@ -85,7 +85,7 @@ export interface SysDictTreeVO {
     type?: string // 类型：1 字典 2 字典项
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
-    value?: boolean // 字典项 value（数字 123...）备注：字典为 -1
+    value?: number // 字典项 value（数字 123...）备注：字典为 -1
     version?: number // 乐观锁
 }
 
