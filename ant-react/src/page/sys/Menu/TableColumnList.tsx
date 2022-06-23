@@ -21,7 +21,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpda
             return (
                 <Space className="ai-c">
                     {entity.firstFlag && <HomeFilled className="cyan1" title="起始页面"/>}
-                    {entity.icon && <MyIcon icon={entity.icon}/>}
+                    {<MyIcon icon={entity.icon}/>}
                     {entity.parentId + '' === '0' ? <strong>{dom}</strong> : dom}
                 </Space>
             )

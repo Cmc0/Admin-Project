@@ -6,7 +6,9 @@ import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
-import {IconList} from "@/componse/MyIcon/MyIcon";
+import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
+import {Space} from "antd";
+import {RequestOptionsType} from "@ant-design/pro-utils/lib/typing";
 
 export const InitForm = {
     enableFlag: true,
@@ -105,6 +107,11 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMe
                             fieldProps: {
                                 showSearch: true,
                                 options: IconList,
+                                optionItemRender: (item: RequestOptionsType) => {
+                                    return <Space key={item.value}>
+                                        <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
+                                    </Space>
+                                },
                             }
                         },
                         {

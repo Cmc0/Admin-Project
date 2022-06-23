@@ -154,10 +154,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     let userMenuListTemp: SysMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
                     userMenuListTemp = userMenuListTemp.filter(item => item.showFlag);
                     userMenuListTemp.forEach(item => {
-                        if (item.icon) {
-                            // @ts-ignore
-                            item.icon = <MyIcon icon={item.icon}/>
-                        }
+                        // @ts-ignore
+                        item.icon = <MyIcon icon={item.icon}/>
                     })
                     return ListToTree(userMenuListTemp, true, 0, 'routes');
                 },
