@@ -1,5 +1,7 @@
 package com.admin.request.service.impl;
 
+import com.admin.common.configuration.BaseConfiguration;
+import com.admin.common.model.constant.BaseConstant;
 import com.admin.request.mapper.SysRequestMapper;
 import com.admin.request.model.dto.SysRequestPageDTO;
 import com.admin.request.model.entity.SysRequestDO;
@@ -18,7 +20,8 @@ public class SysRequestServiceImpl extends ServiceImpl<SysRequestMapper, SysRequ
      */
     @Override
     public Page<SysRequestPageVO> myPage(SysRequestPageDTO dto) {
-        return baseMapper.myPage(dto.getPage(), dto);
+        return baseMapper
+            .myPage(dto.getPage(), dto, BaseConfiguration.adminProperties.getAdminNickname(), BaseConstant.ADMIN_ID);
     }
 
     /**

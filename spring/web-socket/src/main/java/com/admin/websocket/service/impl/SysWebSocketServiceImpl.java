@@ -5,6 +5,7 @@ import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
+import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
@@ -186,7 +187,8 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      */
     @Override
     public Page<SysSysWebSocketPageVO> myPage(SysWebSocketPageDTO dto) {
-        return baseMapper.myPage(dto.getPage(), dto);
+        return baseMapper
+            .myPage(dto.getPage(), dto, BaseConfiguration.adminProperties.getAdminNickname(), BaseConstant.ADMIN_ID);
     }
 
     /**

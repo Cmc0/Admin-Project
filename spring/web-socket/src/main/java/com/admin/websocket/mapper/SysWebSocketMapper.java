@@ -10,7 +10,10 @@ import org.apache.ibatis.annotations.Param;
 public interface SysWebSocketMapper extends BaseMapper<SysWebSocketDO> {
 
     // 分页排序查询
-    Page<SysSysWebSocketPageVO> myPage(Page<SysSysWebSocketPageVO> page, @Param("dto") SysWebSocketPageDTO dto);
+    Page<SysSysWebSocketPageVO> myPage(@Param("page") Page<SysSysWebSocketPageVO> page,
+        @Param("dto") SysWebSocketPageDTO dto, @Param("adminNickname") String adminNickname,
+        @Param("adminId") Long adminId);
+
 }
 
 

@@ -11,7 +11,8 @@ import org.apache.ibatis.annotations.Param;
 public interface SysRequestMapper extends BaseMapper<SysRequestDO> {
 
     // 分页排序查询
-    Page<SysRequestPageVO> myPage(Page<SysRequestPageVO> page, @Param("dto") SysRequestPageDTO dto);
+    Page<SysRequestPageVO> myPage(@Param("page") Page<SysRequestPageVO> page, @Param("dto") SysRequestPageDTO dto,
+        @Param("adminNickname") String adminNickname, @Param("adminId") Long adminId);
 
     // 所有请求的平均耗时
     SysRequestAllAvgVO allAvg();

@@ -16,7 +16,7 @@
         a.type AS type,
         a.server AS server,
         a.category AS category,
-        IF(b.nickname IS NULL, '-' , b.nickname) AS userName
+        IF(b.nickname IS NULL, IF(a.user_id = #{adminId} , #{adminNickname} , '-') , b.nickname) AS userName
         FROM sys_web_socket a
         LEFT JOIN sys_user b ON b.id = a.user_id
         WHERE a.del_flag = FALSE

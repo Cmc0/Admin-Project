@@ -134,7 +134,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
         doSysRequestAllAvg()
 
-        const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 10 * 1000);
+        const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 30 * 1000);
 
         return () => {
             clearInterval(sysRequestAllAvgInterval)

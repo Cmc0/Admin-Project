@@ -76,7 +76,7 @@ public class UserUtil {
         Long userId = getCurrentUserIdNoCheck();
 
         if (userId == null) {
-            userId = -1L;
+            userId = BaseConstant.SYS_ID;
         }
 
         return userId;
