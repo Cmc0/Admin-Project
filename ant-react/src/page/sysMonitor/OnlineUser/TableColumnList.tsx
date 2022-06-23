@@ -3,7 +3,7 @@ import React from "react";
 import {InDev} from "../../../../util/CommonUtil";
 import {SysSysWebSocketPageVO} from "@/api/SysWebSocketController";
 import {handlerRegion} from "../../../../util/StrUtil";
-import {WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
+import {RequestGetDictList, WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysSysWebSocketPageVO>[] => [
     {
@@ -36,6 +36,10 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
     {
         title: '类别',
         dataIndex: 'category',
+        valueType: 'select',
+        request: () => {
+            return RequestGetDictList('request_category')
+        }
     },
     {title: '连接时间', dataIndex: 'createTime', sorter: true},
     {
