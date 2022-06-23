@@ -7,8 +7,8 @@ import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm
 import {FormInstance} from "antd/es";
 import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
+import {RequestOptionsType} from "@ant-design/pro-components";
 import {Space} from "antd";
-import {RequestOptionsType} from "@ant-design/pro-utils/lib/typing";
 
 export const InitForm = {
     enableFlag: true,
@@ -107,6 +107,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMe
                             fieldProps: {
                                 showSearch: true,
                                 options: IconList,
+                                optionLabelProp: 'children',
                                 optionItemRender: (item: RequestOptionsType) => {
                                     return <Space>
                                         <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
