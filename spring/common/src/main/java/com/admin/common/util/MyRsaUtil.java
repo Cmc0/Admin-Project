@@ -81,7 +81,7 @@ public class MyRsaUtil {
 
         // 这个 key存入 redis，不能再次使用了
         jsonRedisTemplate.opsForValue()
-            .set(redisKey, "不能使用该非对称加密字符串", , BaseConstant.SECOND_30_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+            .set(redisKey, "不能使用该非对称加密字符串", BaseConstant.SECOND_30_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         return split[0]; // 返回解密之后的 字符串
     }
