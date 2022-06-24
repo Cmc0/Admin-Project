@@ -4,13 +4,30 @@ import React from "react";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {sysMenuDeleteByIdSet} from "@/api/SysMenuController";
 import {SysRoleDO, SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
+import {Space} from "antd";
+import {SmileTwoTone} from "@ant-design/icons/lib";
 
 const TableColumnList = (currentForm: React.MutableRefObject<SysRoleInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysRoleDO>[] => [
-    {title: '角色名', dataIndex: 'name'},
+    {
+        title: '序号',
+        dataIndex: 'index',
+        valueType: 'index',
+    },
+    {
+        title: '角色名', dataIndex: 'name',
+        render: (dom, entity) => {
+            return (
+                <Space>
+                    {entity.defaultFlag && <SmileTwoTone title="默认角色"/>}
+                    {dom}
+                </Space>
+            )
+        },
+    },
     {title: '备注', dataIndex: 'remark'},
     {
         title: '默认角色',
-        dataIndex: 'firstFlag',
+        dataIndex: 'defaultFlag',
         valueEnum: YesNoDict,
     },
     {

@@ -1,7 +1,7 @@
 import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
 import SysMenuDO from "@/model/entity/SysMenuDO";
 import {Dropdown, Menu, Space} from "antd";
-import {EllipsisOutlined, HomeFilled} from "@ant-design/icons/lib";
+import {EllipsisOutlined, HomeTwoTone} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import {YesNoDict} from "../../../../util/DictUtil";
@@ -19,8 +19,8 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpda
         dataIndex: 'name',
         render: (dom, entity) => {
             return (
-                <Space className="ai-c">
-                    {entity.firstFlag && <HomeFilled className="cyan1" title="起始页面"/>}
+                <Space>
+                    {entity.firstFlag && <HomeTwoTone title="起始页面"/>}
                     {<MyIcon icon={entity.icon}/>}
                     {entity.parentId + '' === '0' ? <strong>{dom}</strong> : dom}
                 </Space>

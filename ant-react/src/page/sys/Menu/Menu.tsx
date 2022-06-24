@@ -35,11 +35,11 @@ export default function () {
 
     const [treeList, setTreeList] = useState<SysMenuDO[]>([]);
 
-    const [formVisible, setFormVisible] = useState<boolean>(false);
-
     const [useForm] = Form.useForm<SysMenuInsertOrUpdateDTO>();
 
     const actionRef = useRef<ActionType>(null)
+
+    const [formVisible, setFormVisible] = useState<boolean>(false);
 
     const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
 
