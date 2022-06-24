@@ -2,8 +2,7 @@ import {ActionType, ProColumns} from "@ant-design/pro-components";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
-import {sysMenuDeleteByIdSet} from "@/api/SysMenuController";
-import {SysRoleDO, SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
+import {sysRoleDeleteByIdSet, SysRoleDO, SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
 import {Space} from "antd";
 import {SmileTwoTone} from "@ant-design/icons/lib";
 
@@ -51,7 +50,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysRoleInsertOrUpda
             }}>编辑</a>,
             <a key="2" className={"red3"} onClick={() => {
                 execConfirm(() => {
-                    return sysMenuDeleteByIdSet({idSet: [entity.id!]}).then(res => {
+                    return sysRoleDeleteByIdSet({idSet: [entity.id!]}).then(res => {
                         ToastSuccess(res.msg)
                         actionRef.current?.reload()
                     })
