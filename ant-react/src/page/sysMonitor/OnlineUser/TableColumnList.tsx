@@ -59,7 +59,7 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
                         ToastSuccess(res.msg)
                         actionRef.current?.reload()
                     })
-                }, undefined, `确定强退【${entity.userNickname}】吗？`)
+                }, undefined, `确定强退【id为${entity.id}】的数据吗？`)
             }}>强退</a>,
         ],
     },
