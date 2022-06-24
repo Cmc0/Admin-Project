@@ -216,7 +216,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(treeList, useForm)}
+            columns={SchemaFormColumnList(treeList, useForm, currentForm)}
             onFinish={async (form) => {
                 await sysMenuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

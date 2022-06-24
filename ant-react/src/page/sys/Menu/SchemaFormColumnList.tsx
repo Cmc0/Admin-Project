@@ -15,13 +15,13 @@ export const InitForm: SysMenuInsertOrUpdateDTO = {
     showFlag: true,
 }
 
-const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(
         treeList,
         true,
-        (item) => item.id !== useForm.getFieldValue('id') // 不要本节点
+        (item) => item.id !== currentForm.current.id // 不要本节点
     ).map((item) => ({
         id: item.id,
         key: item.id,
