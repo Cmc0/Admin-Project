@@ -5,7 +5,7 @@ import com.admin.common.model.dto.NotNullByte;
 import com.admin.common.model.dto.NotNullByteAndId;
 import com.admin.websocket.model.dto.SysWebSocketPageDTO;
 import com.admin.websocket.model.entity.SysWebSocketDO;
-import com.admin.websocket.model.vo.SysSysWebSocketPageVO;
+import com.admin.websocket.model.vo.SysWebSocketPageVO;
 import com.admin.websocket.model.vo.SysWebSocketRegisterVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,7 +22,7 @@ public interface SysWebSocketService extends IService<SysWebSocketDO> {
 
     SysWebSocketRegisterVO register(NotNullByte notNullByte);
 
-    Page<SysSysWebSocketPageVO> myPage(SysWebSocketPageDTO dto);
+    Page<SysWebSocketPageVO> myPage(SysWebSocketPageDTO dto);
 
     String changeType(NotNullByteAndId notNullByteAndId);
 

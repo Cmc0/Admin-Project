@@ -18,7 +18,7 @@ public class SysRequestServiceImpl extends ServiceImpl<SysRequestMapper, SysRequ
      */
     @Override
     public Page<SysRequestPageVO> myPage(SysRequestPageDTO dto) {
-        return baseMapper.myPage(dto.getPage(), dto);
+        return baseMapper.myPage(dto.getCreateTimeDescDefaultOrderPage(), dto);
     }
 
     /**

@@ -12,7 +12,6 @@
         a.uri AS uri,
         a.time_str AS timeStr,
         a.name AS name,
-        a.time_number AS timeNumber,
         a.category AS category,
         a.region AS region,
         a.ip AS ip
@@ -33,12 +32,6 @@
             <if test="dto.region != null and dto.region != ''">
                 AND a.region LIKE concat('%', #{dto.region}, '%')
             </if>
-            <if test="dto.beginTimeNumber != null">
-                AND a.time_number <![CDATA[>=]]> #{dto.beginTimeNumber}
-            </if>
-            <if test="dto.endTimeNumber != null">
-                AND a.time_number <![CDATA[<=]]> #{dto.endTimeNumber}
-            </if>
             <if test="dto.beginCreateTime != null">
                 AND a.create_time <![CDATA[>=]]> #{dto.beginCreateTime}
             </if>
@@ -52,7 +45,6 @@
                 AND a.category = #{dto.category}
             </if>
         </where>
-        ORDER BY a.create_time DESC
     </select>
 
     <!-- 所有请求的平均耗时 -->

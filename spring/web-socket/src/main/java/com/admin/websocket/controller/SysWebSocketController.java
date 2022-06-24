@@ -5,7 +5,7 @@ import com.admin.common.model.dto.NotNullByte;
 import com.admin.common.model.dto.NotNullByteAndId;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.websocket.model.dto.SysWebSocketPageDTO;
-import com.admin.websocket.model.vo.SysSysWebSocketPageVO;
+import com.admin.websocket.model.vo.SysWebSocketPageVO;
 import com.admin.websocket.model.vo.SysWebSocketRegisterVO;
 import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -37,7 +37,7 @@ public class SysWebSocketController {
     @PreAuthorize("hasAuthority('sysWebSocket:page')")
     @PostMapping("/page")
     @ApiOperation(value = "分页排序查询")
-    public ApiResultVO<Page<SysSysWebSocketPageVO>> myPage(@RequestBody @Valid SysWebSocketPageDTO dto) {
+    public ApiResultVO<Page<SysWebSocketPageVO>> myPage(@RequestBody @Valid SysWebSocketPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 

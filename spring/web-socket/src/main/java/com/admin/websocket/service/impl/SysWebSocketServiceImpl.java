@@ -21,7 +21,7 @@ import com.admin.websocket.mapper.SysWebSocketMapper;
 import com.admin.websocket.model.dto.SysWebSocketPageDTO;
 import com.admin.websocket.model.entity.SysWebSocketDO;
 import com.admin.websocket.model.enums.SysWebSocketTypeEnum;
-import com.admin.websocket.model.vo.SysSysWebSocketPageVO;
+import com.admin.websocket.model.vo.SysWebSocketPageVO;
 import com.admin.websocket.model.vo.SysWebSocketRegisterVO;
 import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -188,7 +188,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      * 分页排序查询
      */
     @Override
-    public Page<SysSysWebSocketPageVO> myPage(SysWebSocketPageDTO dto) {
+    public Page<SysWebSocketPageVO> myPage(SysWebSocketPageDTO dto) {
         return baseMapper.myPage(dto.getPage(), dto);
     }
 

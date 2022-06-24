@@ -28,7 +28,7 @@ export interface SysWebSocketPageDTO extends MyPageDTO {
     type?: number // 状态：1 在线 2 隐身
 }
 
-export interface SysSysWebSocketPageVO {
+export interface SysWebSocketPageVO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
     category?: string // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
@@ -51,7 +51,7 @@ export interface SysSysWebSocketPageVO {
 
 // webSocket 分页排序查询
 export function sysWebSocketPage(form: SysWebSocketPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysSysWebSocketPageVO>('/sysWebSocket/page', form, config)
+    return $http.myProPagePost<SysWebSocketPageVO>('/sysWebSocket/page', form, config)
 }
 
 export interface SysWebSocketRegisterVO {

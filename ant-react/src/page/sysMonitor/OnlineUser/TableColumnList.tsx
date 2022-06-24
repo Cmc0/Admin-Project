@@ -1,11 +1,11 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
 import React from "react";
-import {SysSysWebSocketPageVO, sysWebSocketRetreatByIdSet} from "@/api/SysWebSocketController";
+import {SysWebSocketPageVO, sysWebSocketRetreatByIdSet} from "@/api/SysWebSocketController";
 import {handlerRegion} from "../../../../util/StrUtil";
 import {GetUserDictList, RequestGetDictList, WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
-const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysSysWebSocketPageVO>[] => [
+const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysWebSocketPageVO>[] => [
     {
         title: '序号',
         dataIndex: 'index',

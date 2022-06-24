@@ -1,5 +1,6 @@
 package com.admin.common.model.dto;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -35,6 +36,20 @@ public class MyPageDTO {
 
         // 添加 orderList里面的排序规则
         page.orders().add(orderToOrderItem(getOrder()));
+
+        return page;
+    }
+
+    /**
+     * 分页属性拷贝-增加：默认创建时间 倒序排序
+     */
+    public <T> Page<T> getCreateTimeDescDefaultOrderPage() {
+
+        Page<T> page = getPage();
+
+        if (CollUtil.isEmpty(page.orders())) {
+            page.orders().add(OrderItem.desc("createTime"));
+        }
 
         return page;
     }

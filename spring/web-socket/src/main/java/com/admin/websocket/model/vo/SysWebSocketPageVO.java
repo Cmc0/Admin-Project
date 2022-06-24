@@ -6,6 +6,6 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysSysWebSocketPageVO extends SysWebSocketDO {
+public class SysWebSocketPageVO extends SysWebSocketDO {
 
 }

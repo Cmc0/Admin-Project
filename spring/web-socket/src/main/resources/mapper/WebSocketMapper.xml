@@ -3,7 +3,7 @@
 <mapper namespace="com.admin.websocket.mapper.SysWebSocketMapper">
 
     <!-- 分页排序查询 -->
-    <select id="myPage" resultType="com.admin.websocket.model.vo.SysSysWebSocketPageVO">
+    <select id="myPage" resultType="com.admin.websocket.model.vo.SysWebSocketPageVO">
         SELECT a.id AS id,
         a.create_id AS createId,
         a.create_time AS createTime,
