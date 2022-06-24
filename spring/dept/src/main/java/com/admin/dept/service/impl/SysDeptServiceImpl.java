@@ -54,7 +54,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptDO> im
             ApiResultVO.error(BaseBizCodeEnum.PARENT_ID_CANNOT_BE_EQUAL_TO_ID);
         }
 
-        // 相同父节点下：部门名称（不能重复）
+        // 相同父节点下：部门名（不能重复）
         Long count = lambdaQuery().eq(SysDeptDO::getName, dto.getName())
             .eq(BaseEntityFour::getParentId, MyEntityUtil.getNotNullParentId(dto.getParentId()))
             .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();

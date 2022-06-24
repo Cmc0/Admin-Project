@@ -15,7 +15,7 @@ public class SysDeptPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
-    @ApiModelProperty(value = "部门名称")
+    @ApiModelProperty(value = "部门名")
     private String name;
 
     @ApiModelProperty(value = "描述/备注")

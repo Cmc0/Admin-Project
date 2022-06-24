@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel(description = "岗位主表")
 public class SysJobDO extends BaseEntityFour<SysJobDO> {
 
-    @ApiModelProperty(value = "岗位名称")
+    @ApiModelProperty(value = "岗位名")
     private String name;
 
 }

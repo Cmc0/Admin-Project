@@ -1,7 +1,6 @@
 package com.admin.dept.model.dto;
 
 import com.admin.common.model.dto.BaseInsertOrUpdateDTO;
-import com.admin.dept.model.entity.SysDeptDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 /**
- * {@link SysDeptDO}
+ * {@link com.admin.dept.model.entity.SysDeptDO}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -26,7 +25,7 @@ public class SysDeptInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     private Long parentId;
 
     @NotBlank
-    @ApiModelProperty(value = "部门名称")
+    @ApiModelProperty(value = "部门名")
     private String name;
 
     @ApiModelProperty(value = "描述/备注")

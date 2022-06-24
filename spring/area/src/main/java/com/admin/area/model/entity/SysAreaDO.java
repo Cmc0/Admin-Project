@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel(description = "区域主表")
 public class SysAreaDO extends BaseEntityFour<SysAreaDO> {
 
-    @ApiModelProperty(value = "区域名称")
+    @ApiModelProperty(value = "区域名")
     private String name;
 
 }
