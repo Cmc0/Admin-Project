@@ -41,20 +41,6 @@ public class MyPageDTO {
     }
 
     /**
-     * 分页属性拷贝-增加：默认创建时间 倒序排序
-     */
-    public <T> Page<T> getCreateTimeDescDefaultOrderPage() {
-
-        Page<T> page = getPage();
-
-        if (CollUtil.isEmpty(page.orders())) {
-            page.orders().add(OrderItem.desc("createTime"));
-        }
-
-        return page;
-    }
-
-    /**
      * 自定义的排序规则，转换为 mybatis plus 的排序规则
      */
     public static OrderItem orderToOrderItem(MyOrderDTO order) {
@@ -64,6 +50,27 @@ public class MyPageDTO {
             orderItem.setAsc("ascend".equals(order.getValue()));
         }
         return orderItem;
+    }
+
+    /**
+     * 分页属性拷贝-增加：默认创建时间 倒序排序
+     */
+    public <T> Page<T> getCreateTimeDescDefaultOrderPage() {
+        return getDefaultOrderPage("createTime", false);
+    }
+
+    /**
+     * 分页属性拷贝-增加：默认排序
+     */
+    public <T> Page<T> getDefaultOrderPage(String column, boolean asc) {
+
+        Page<T> page = getPage();
+
+        if (CollUtil.isEmpty(page.orders())) {
+            page.orders().add(new OrderItem(column, asc));
+        }
+
+        return page;
     }
 
 }
