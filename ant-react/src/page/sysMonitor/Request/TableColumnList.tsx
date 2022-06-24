@@ -10,8 +10,8 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         dataIndex: 'index',
         valueType: 'index',
     },
-    {title: '接口名', dataIndex: 'name', copyable: true},
-    {title: 'uri', dataIndex: 'uri'},
+    {title: '接口名', dataIndex: 'name'},
+    {title: 'uri', dataIndex: 'uri', copyable: true},
     {
         title: '用户昵称', dataIndex: 'createId', valueType: 'select',
         request: () => {
