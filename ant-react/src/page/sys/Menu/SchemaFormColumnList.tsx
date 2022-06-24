@@ -10,18 +10,18 @@ import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
 import {RequestOptionsType} from "@ant-design/pro-components";
 import {Space} from "antd";
 
-export const InitForm = {
+export const InitForm: SysMenuInsertOrUpdateDTO = {
     enableFlag: true,
     showFlag: true,
 }
 
-const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMenuInsertOrUpdateDTO>, ignoreId?: number): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     // 先扁平化树结构
     const list = FlatTree(
         treeList,
         true,
-        (item) => item.id !== ignoreId // 不要本节点
+        (item) => item.id !== useForm.getFieldValue('id') // 不要本节点
     ).map((item) => ({
         id: item.id,
         key: item.id,
