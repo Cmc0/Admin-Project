@@ -4,6 +4,7 @@ import {SysWebSocketPageVO, sysWebSocketRetreatByIdSet} from "@/api/SysWebSocket
 import {handlerRegion} from "../../../../util/StrUtil";
 import {GetUserDictList, RequestGetDictList, WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import {SysRequestPageDTO} from "@/api/SysRequestController";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysWebSocketPageVO>[] => [
     {
@@ -48,6 +49,16 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         }
     },
     {title: '连接时间', dataIndex: 'createTime', sorter: true, valueType: 'fromNow', hideInSearch: true},
+    {
+        title: '连接时间', dataIndex: 'createTimeRange', hideInTable: true, valueType: 'dateTimeRange', search: {
+            transform: (value) => {
+                return {
+                    beginCreateTime: value[0],
+                    endCreateTime: value[1],
+                } as SysRequestPageDTO
+            }
+        }
+    },
     {
         title: '操作',
         dataIndex: 'option',

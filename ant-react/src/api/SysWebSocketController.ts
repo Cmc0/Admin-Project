@@ -12,11 +12,13 @@ export function sysWebSocketChangeType(form: NotNullByteAndId, config?: AxiosReq
 }
 
 export interface SysWebSocketPageDTO extends MyPageDTO {
+    beginCreateTime?: string // 创建开始时间
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
     category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     current?: number // 第几页
     enableFlag?: boolean // 连接中/断开连接
+    endCreateTime?: string // 创建结束时间
     id?: number // 主键id
     ip?: string // ip
     mobileFlag?: boolean // 是否是移动端网页，true：是 false 否
