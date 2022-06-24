@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.admin.user.mapper.SysUserProMapper">
+
+    <!-- 分页排序查询 -->
+    <select id="myPage" resultType="com.admin.user.model.vo.SysUserPageVO">
+        SELECT
+        a.nickname AS nickname,
+        a.avatar_url AS avatarUrl,
+        a.id AS id,
+        a.email AS email,
+        a.create_time AS createTime,
+        a.enable_flag AS enableFlag
+        FROM sys_user a
+        WHERE
+        a.del_flag = FALSE
+        <if test="dto.id != null and dto.id != ''">
+            AND a.id = #{dto.id}
+        </if>
+        <if test="dto.email != null and dto.email != ''">
+            AND a.email LIKE concat('%', #{dto.email}, '%')
+        </if>
+        <if test="dto.enableFlag != null">
+            AND a.enable_flag = #{dto.enableFlag}
+        </if>
+    </select>
+
+</mapper>

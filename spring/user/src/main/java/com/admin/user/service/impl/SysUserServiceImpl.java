@@ -4,15 +4,18 @@ import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
-import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.RequestUtil;
 import com.admin.common.util.UserUtil;
+import com.admin.user.mapper.SysUserProMapper;
+import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.vo.SysUserPageVO;
 import com.admin.user.model.vo.UserBaseInfoVO;
 import com.admin.user.service.SysUserService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +23,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> implements SysUserService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO> implements SysUserService {
 
     @Resource
     HttpServletRequest httpServletRequest;
@@ -74,6 +77,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
         }
 
         return userBaseInfoVO;
+    }
+
+    /**
+     * 分页排序查询
+     */
+    @Override
+    public Page<SysUserPageVO> myPage(SysUserPageDTO dto) {
+
+        Page<SysUserPageVO> page = baseMapper.myPage(dto.getPage(), dto);
+
+        for (SysUserPageVO item : page.getRecords()) {
+            item.setEmail(DesensitizedUtil.email(item.getEmail())); // 脱敏
+        }
+
+        // 增加 admin账号
+        if (dto.isAddAdminFlag() && dto.getPageSize() == -1) {
+            SysUserPageVO sysUserPageVO = new SysUserPageVO();
+            sysUserPageVO.setId(BaseConstant.ADMIN_ID);
+            sysUserPageVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
+            page.getRecords().add(sysUserPageVO);
+            page.setTotal(page.getTotal() + 1); // total + 1
+        }
+
+        return page;
     }
 
 }

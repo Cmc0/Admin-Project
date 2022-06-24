@@ -46,7 +46,6 @@ export interface SysSysWebSocketPageVO {
     type?: string // 状态：1 在线 2 隐身
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
-    userNickname?: string // 用户昵称
     version?: number // 乐观锁
 }
 

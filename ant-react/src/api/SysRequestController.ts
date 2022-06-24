@@ -46,7 +46,6 @@ export interface SysRequestPageVO {
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     uri?: string // 请求的uri
-    userNickname?: string // 用户昵称
     version?: number // 乐观锁
 }
 

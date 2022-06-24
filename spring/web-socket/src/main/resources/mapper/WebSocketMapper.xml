@@ -14,10 +14,8 @@
         a.mobile_flag AS mobileFlag,
         a.type AS type,
         a.server AS server,
-        a.category AS category,
-        IF(b.nickname IS NULL, IF(a.create_id = #{adminId} , #{adminNickname} , '-') , b.nickname) AS userNickname
+        a.category AS category
         FROM sys_web_socket a
-        LEFT JOIN sys_user b ON b.id = a.create_id
         WHERE a.del_flag = FALSE
         <if test="dto.id != null and dto.id != ''">
             AND a.id = #{dto.id}

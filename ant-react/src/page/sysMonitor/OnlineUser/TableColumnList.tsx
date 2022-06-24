@@ -2,7 +2,7 @@ import {ActionType, ProColumns} from "@ant-design/pro-components";
 import React from "react";
 import {SysSysWebSocketPageVO, sysWebSocketRetreatByIdSet} from "@/api/SysWebSocketController";
 import {handlerRegion} from "../../../../util/StrUtil";
-import {RequestGetDictList, WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
+import {GetUserDictList, RequestGetDictList, WebSocketTypeDict, YesNoBaseDict} from "../../../../util/DictUtil";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysSysWebSocketPageVO>[] => [
@@ -12,7 +12,12 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         valueType: 'index',
     },
     {title: 'id', dataIndex: 'id'},
-    {title: '用户昵称', dataIndex: 'userNickname'},
+    {
+        title: '用户昵称', dataIndex: 'createId', valueType: 'select',
+        request: () => {
+            return GetUserDictList()
+        }
+    },
     {title: 'ip', dataIndex: 'ip'},
     {
         title: 'ip区域',

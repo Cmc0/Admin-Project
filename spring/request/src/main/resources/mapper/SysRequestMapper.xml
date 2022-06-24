@@ -15,10 +15,8 @@
         a.time_number AS timeNumber,
         a.category AS category,
         a.region AS region,
-        a.ip AS ip,
-        IF(b.nickname IS NULL, IF(a.create_id = #{adminId} , #{adminNickname} , '-') , b.nickname) AS userNickname
+        a.ip AS ip
         FROM sys_request a
-        LEFT JOIN sys_user b ON b.id = a.create_id
         <where>
             <if test="dto.uri != null and dto.uri != ''">
                 AND a.uri LIKE concat('%', #{dto.uri}, '%')

@@ -2,6 +2,7 @@ import {TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {ProSchemaValueEnumType} from "@ant-design/pro-components";
 import {sysDictPage} from "@/api/SysDictController";
 import {RequestOptionsType} from "@ant-design/pro-utils/lib/typing";
+import {sysUserPage} from "@/api/SysUserController";
 
 export const YesNoDict = new Map<any, ProSchemaValueEnumType>();
 YesNoDict.set(true, {text: '是', status: 'success'})
@@ -23,6 +24,21 @@ export function RequestGetDictList(dictKey: string) {
                 dictList = res.data.map(item => ({
                     label: item.name,
                     value: item.value,
+                } as RequestOptionsType));
+            }
+            resolve(dictList)
+        })
+    })
+}
+
+export function GetUserDictList(addAdminFlag: boolean = true) {
+    return new Promise<RequestOptionsType[]>(async resolve => {
+        await sysUserPage({pageSize: -1, addAdminFlag}).then(res => {
+            let dictList: RequestOptionsType[] = []
+            if (res.data) {
+                dictList = res.data.map(item => ({
+                    label: item.nickname,
+                    value: item.id,
                 } as RequestOptionsType));
             }
             resolve(dictList)
