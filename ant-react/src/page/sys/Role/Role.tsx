@@ -11,7 +11,6 @@ import {
     sysRolePage,
     SysRolePageDTO
 } from "@/api/SysRoleController";
-import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 import TableColumnList from "@/page/sys/Role/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
@@ -30,7 +29,7 @@ export default function () {
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
-    const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
+    const currentForm = useRef<SysRoleInsertOrUpdateDTO>({})
 
     return (
         <>
