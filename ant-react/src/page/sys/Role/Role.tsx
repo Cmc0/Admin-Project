@@ -1,5 +1,5 @@
-import React, {useRef, useState} from "react";
-import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
+import React, {useEffect, useRef, useState} from "react";
+import {ActionType, BetaSchemaForm, ColumnsState, ProTable, RequestOptionsType} from "@ant-design/pro-components";
 import {Button, Form} from "antd";
 import {PlusOutlined} from "@ant-design/icons/lib";
 import {
@@ -15,6 +15,7 @@ import TableColumnList from "@/page/sys/Role/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Role/SchemaFormColumnList";
+import {GetMenuDictList} from "../../../../util/DictUtil";
 
 export default function () {
 
@@ -30,6 +31,14 @@ export default function () {
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
     const currentForm = useRef<SysRoleInsertOrUpdateDTO>({})
+
+    const menuDictListRef = useRef<RequestOptionsType[]>([])
+
+    useEffect(() => {
+        GetMenuDictList().then(res => {
+            menuDictListRef.current = res
+        })
+    }, [])
 
     return (
         <>
@@ -127,7 +136,7 @@ export default function () {
                 }}
                 visible={formVisible}
                 onVisibleChange={setFormVisible}
-                columns={SchemaFormColumnList(useForm)}
+                columns={SchemaFormColumnList(useForm, menuDictListRef)}
                 onFinish={async (form) => {
                     await sysRoleInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                         ToastSuccess(res.msg)

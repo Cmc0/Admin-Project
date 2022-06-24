@@ -1,15 +1,16 @@
-import {GetMenuDictList, YesNoDict} from "../../../../util/DictUtil";
+import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 import {SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
 import {TreeSelect} from "antd";
+import {RequestOptionsType} from "@ant-design/pro-components";
 
 export const InitForm: SysRoleInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (useForm: FormInstance<SysRoleInsertOrUpdateDTO>): ProFormColumnsType<SysRoleInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (useForm: FormInstance<SysRoleInsertOrUpdateDTO>, menuDictListRef: React.MutableRefObject<RequestOptionsType[]>): ProFormColumnsType<SysRoleInsertOrUpdateDTO>[] => {
 
     return [
         {
@@ -25,17 +26,14 @@ const SchemaFormColumnList = (useForm: FormInstance<SysRoleInsertOrUpdateDTO>): 
             title: '关联菜单',
             dataIndex: 'menuIdSet',
             valueType: 'treeSelect',
-            request: () => {
-                return GetMenuDictList()
-            },
             fieldProps: {
                 placeholder: '请选择',
                 allowClear: true,
-                showSearch: true,
                 treeNodeFilterProp: 'title',
-                maxTagCount: 10,
+                maxTagCount: 2,
                 treeCheckable: true,
                 showCheckedStrategy: TreeSelect.SHOW_PARENT,
+                options: menuDictListRef.current
             },
         },
         {

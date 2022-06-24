@@ -23,6 +23,9 @@ console.error = (message?: any, ...optionalParams: any[]) => {
             return
         }
     }
+    // if (typeof message === 'string' && message.startsWith("Warning: Tree missing follow keys:")) {
+    //     return;
+    // }
     consoleOldError(message, ...optionalParams)
 }
 
