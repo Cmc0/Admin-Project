@@ -2,7 +2,7 @@ import SysMenuDO from "@/model/entity/SysMenuDO";
 import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
@@ -18,6 +18,7 @@ import {
     sysMenuTree
 } from "@/api/SysMenuController";
 import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
+import {GetMenuDictList, IMyTree} from "../../../../util/DictUtil";
 
 export default function () {
 
@@ -33,8 +34,6 @@ export default function () {
 
     const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
 
-    const [treeList, setTreeList] = useState<SysMenuDO[]>([]);
-
     const actionRef = useRef<ActionType>(null)
 
     const [useForm] = Form.useForm<SysMenuInsertOrUpdateDTO>();
@@ -42,6 +41,18 @@ export default function () {
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
     const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
+
+    const menuDictListRef = useRef<IMyTree[]>([])
+
+    function doGetMenuDictList() {
+        GetMenuDictList().then(res => {
+            menuDictListRef.current = res
+        })
+    }
+
+    useEffect(() => {
+        doGetMenuDictList()
+    }, [])
 
     return <>
         <ProTable<SysMenuDO, SysMenuPageDTO>
@@ -69,7 +80,7 @@ export default function () {
                 return sysMenuTree({...params, sort})
             }}
             postData={(data) => {
-                setTreeList(data)
+                doGetMenuDictList()
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
                 return data
             }}
@@ -102,7 +113,7 @@ export default function () {
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: treeList});
+                        CalcOrderNo(currentForm.current, {children: menuDictListRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -216,7 +227,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(treeList, useForm, currentForm)}
+            columns={SchemaFormColumnList(menuDictListRef, useForm, currentForm)}
             onFinish={async (form) => {
                 await sysMenuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

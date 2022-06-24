@@ -1,16 +1,15 @@
-import {YesNoDict} from "../../../../util/DictUtil";
+import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 import {SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
 import {TreeSelect} from "antd";
-import {RequestOptionsType} from "@ant-design/pro-components";
 
 export const InitForm: SysRoleInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (useForm: FormInstance<SysRoleInsertOrUpdateDTO>, menuDictListRef: React.MutableRefObject<RequestOptionsType[]>): ProFormColumnsType<SysRoleInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (useForm: FormInstance<SysRoleInsertOrUpdateDTO>, menuDictListRef: React.MutableRefObject<IMyTree[]>): ProFormColumnsType<SysRoleInsertOrUpdateDTO>[] => {
 
     return [
         {

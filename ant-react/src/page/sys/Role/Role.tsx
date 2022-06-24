@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {ActionType, BetaSchemaForm, ColumnsState, ProTable, RequestOptionsType} from "@ant-design/pro-components";
+import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
 import {Button, Form} from "antd";
 import {PlusOutlined} from "@ant-design/icons/lib";
 import {
@@ -15,7 +15,7 @@ import TableColumnList from "@/page/sys/Role/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Role/SchemaFormColumnList";
-import {GetMenuDictList} from "../../../../util/DictUtil";
+import {GetMenuDictList, IMyTree} from "../../../../util/DictUtil";
 
 export default function () {
 
@@ -32,7 +32,7 @@ export default function () {
 
     const currentForm = useRef<SysRoleInsertOrUpdateDTO>({})
 
-    const menuDictListRef = useRef<RequestOptionsType[]>([])
+    const menuDictListRef = useRef<IMyTree[]>([])
 
     useEffect(() => {
         GetMenuDictList().then(res => {

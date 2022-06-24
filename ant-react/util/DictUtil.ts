@@ -1,7 +1,6 @@
 import {TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {ProSchemaValueEnumType} from "@ant-design/pro-components";
 import {sysDictPage} from "@/api/SysDictController";
-import {RequestOptionsType} from "@ant-design/pro-utils/lib/typing";
 import {sysUserPage} from "@/api/SysUserController";
 import {sysMenuPage} from "@/api/SysMenuController";
 import {ListToTree} from "./TreeUtil";
@@ -18,15 +17,20 @@ export const WebSocketTypeDict = new Map<TWebSocketType, ProSchemaValueEnumType>
 WebSocketTypeDict.set('1', {text: '在线', status: 'success'})
 WebSocketTypeDict.set('2', {text: '隐身', status: 'warning'})
 
+export interface IMyOption {
+    label?: string
+    value?: number | string
+}
+
 export function RequestGetDictList(dictKey: string) {
-    return new Promise<RequestOptionsType[]>(async resolve => {
+    return new Promise<IMyOption[]>(async resolve => {
         await sysDictPage({pageSize: -1, type: 2, dictKey}).then(res => {
-            let dictList: RequestOptionsType[] = []
+            let dictList: IMyOption[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     label: item.name,
                     value: item.value,
-                } as RequestOptionsType));
+                } as IMyOption));
             }
             resolve(dictList)
         })
@@ -34,24 +38,34 @@ export function RequestGetDictList(dictKey: string) {
 }
 
 export function GetUserDictList(addAdminFlag: boolean = true) {
-    return new Promise<RequestOptionsType[]>(async resolve => {
+    return new Promise<IMyOption[]>(async resolve => {
         await sysUserPage({pageSize: -1, addAdminFlag}).then(res => {
-            let dictList: RequestOptionsType[] = []
+            let dictList: IMyOption[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     label: item.nickname,
                     value: item.id,
-                } as RequestOptionsType));
+                } as IMyOption));
             }
             resolve(dictList)
         })
     })
 }
 
+export interface IMyTree {
+    id?: number
+    key?: number
+    title?: string
+    value?: number
+    parentId: number,
+    orderNo: number,
+    children: IMyTree[]
+}
+
 export function GetMenuDictList(addAdminFlag: boolean = true) {
-    return new Promise<RequestOptionsType[]>(async resolve => {
+    return new Promise<IMyTree[]>(async resolve => {
         await sysMenuPage({pageSize: -1}).then(res => {
-            let dictList: RequestOptionsType[] = []
+            let dictList: IMyTree[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     id: item.id,
@@ -59,7 +73,8 @@ export function GetMenuDictList(addAdminFlag: boolean = true) {
                     value: item.id,
                     title: item.name,
                     parentId: item.parentId,
-                } as RequestOptionsType));
+                    orderNo: item.orderNo
+                } as IMyTree));
             }
             resolve(ListToTree(dictList))
         })

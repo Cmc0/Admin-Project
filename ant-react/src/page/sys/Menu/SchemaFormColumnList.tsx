@@ -1,13 +1,11 @@
 import {RouterMapKeyList} from "@/router/RouterMap";
-import {YesNoDict} from "../../../../util/DictUtil";
+import {IMyOption, IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import SysMenuDO from "@/model/entity/SysMenuDO";
-import {FlatTree, ListToTree} from "../../../../util/TreeUtil";
+import {ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
-import {RequestOptionsType} from "@ant-design/pro-components";
 import {Space} from "antd";
 
 export const InitForm: SysMenuInsertOrUpdateDTO = {
@@ -15,22 +13,12 @@ export const InitForm: SysMenuInsertOrUpdateDTO = {
     showFlag: true,
 }
 
-const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
-    // 先扁平化树结构
-    const list = FlatTree(
-        treeList,
-        true,
-        (item) => item.id !== currentForm.current.id // 不要本节点
-    ).map((item) => ({
-        id: item.id,
-        key: item.id,
-        value: item.id,
-        title: item.name,
-        parentId: item.parentId,
-    } as RequestOptionsType))
-
-    const newTreeList = ListToTree(list);
+    const newTreeList = ListToTree(
+        menuDictListRef.current.filter(item =>
+            item.id !== currentForm.current.id // 不要本节点
+        ));
 
     return [
         {
@@ -108,7 +96,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMe
                                 showSearch: true,
                                 options: IconList,
                                 optionLabelProp: 'children',
-                                optionItemRender: (item: RequestOptionsType) => {
+                                optionItemRender: (item: IMyOption) => {
                                     return <Space>
                                         <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
                                     </Space>
