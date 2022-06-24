@@ -37,7 +37,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysRoleInsertOrUpda
     {
         title: '修改时间',
         dataIndex: 'updateTime',
-        hideInSearch: true
+        hideInSearch: true,
     },
     {
         title: '操作',
