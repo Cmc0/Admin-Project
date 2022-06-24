@@ -29,6 +29,11 @@ export interface SysRequestPageDTO extends MyPageDTO {
     uri?: string // 请求的uri
 }
 
+// 接口请求-管理 所有请求的平均耗时-增强：增加筛选项
+export function sysRequestAllAvgPro(form: SysRequestPageDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvgPro', form, config)
+}
+
 export interface SysRequestPageVO {
     category?: string // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id

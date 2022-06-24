@@ -22,6 +22,14 @@ public class SysRequestServiceImpl extends ServiceImpl<SysRequestMapper, SysRequ
     }
 
     /**
+     * 所有请求的平均耗时-增强：增加筛选项
+     */
+    @Override
+    public SysRequestAllAvgVO allAvgPro(SysRequestPageDTO dto) {
+        return baseMapper.allAvgPro(dto);
+    }
+
+    /**
      * 所有请求的平均耗时
      */
     @Override

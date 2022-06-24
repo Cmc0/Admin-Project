@@ -2,16 +2,23 @@ import React, {useRef, useState} from "react";
 import {ActionType, ProTable} from "@ant-design/pro-components";
 import CommonConstant from "@/model/constant/CommonConstant";
 import moment from "moment";
-import {Button} from "antd";
+import {Badge, Button, Space, Typography} from "antd";
 import {LoadingOutlined, ReloadOutlined} from "@ant-design/icons/lib";
 import TableColumnList from "@/page/sysMonitor/Request/TableColumnList";
-import {sysRequestPage, SysRequestPageDTO, SysRequestPageVO} from "@/api/SysRequestController";
+import {
+    sysRequestAllAvgPro,
+    SysRequestAllAvgVO,
+    sysRequestPage,
+    SysRequestPageDTO,
+    SysRequestPageVO
+} from "@/api/SysRequestController";
 
 export default function () {
 
     const actionRef = useRef<ActionType>(null)
     const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
-    const [polling, setPolling] = useState<number | undefined>(CommonConstant.POLLING_TIME);
+    const [polling, setPolling] = useState<number | undefined>(CommonConstant.POLLING_TIME)
+    const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
 
     return (
         <ProTable<SysRequestPageVO, SysRequestPageDTO>
@@ -21,7 +28,19 @@ export default function () {
                 showQuickJumper: true,
                 showSizeChanger: true,
             }}
-            headerTitle={`上次更新时间：${moment(lastUpdateTime).format('HH:mm:ss')}`}
+            headerTitle={<Space size={16}>
+                <span>上次更新时间：{moment(lastUpdateTime).format('HH:mm:ss')}</span>
+                <div className={"hand"} title={`筛选条件，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                    <Badge status="processing"
+                           text={
+                               <Typography.Text
+                                   strong
+                                   type={sysRequestAllAvgVO.avg! < 800 ? 'success' : (sysRequestAllAvgVO.avg! > 1600 ? 'danger' : 'warning')}>
+                                   avg：{sysRequestAllAvgVO.avg}ms
+                               </Typography.Text>
+                           }/>
+                </div>
+            </Space>}
             polling={polling}
             columnEmptyText={false}
             revalidateOnFocus={false}
@@ -31,6 +50,9 @@ export default function () {
             }}
             request={(params, sort, filter) => {
                 setLastUpdateTime(new Date())
+                sysRequestAllAvgPro({...params}).then(res => {
+                    setSysRequestAllAvgVO(res.data)
+                })
                 return sysRequestPage({...params, sort})
             }}
             toolbar={{

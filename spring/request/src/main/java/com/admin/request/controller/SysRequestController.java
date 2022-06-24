@@ -32,6 +32,12 @@ public class SysRequestController {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 
+    @PostMapping("/allAvgPro")
+    @ApiOperation(value = "所有请求的平均耗时-增强：增加筛选项")
+    public ApiResultVO<SysRequestAllAvgVO> allAvgPro(@RequestBody @Valid SysRequestPageDTO dto) {
+        return ApiResultVO.ok(baseService.allAvgPro(dto));
+    }
+
     @PostMapping("/allAvg")
     @ApiOperation(value = "所有请求的平均耗时")
     public ApiResultVO<SysRequestAllAvgVO> allAvg() {

@@ -11,5 +11,7 @@ public interface SysRequestService extends IService<SysRequestDO> {
 
     Page<SysRequestPageVO> myPage(SysRequestPageDTO dto);
 
+    SysRequestAllAvgVO allAvgPro(SysRequestPageDTO dto);
+
     SysRequestAllAvgVO allAvg();
 }
