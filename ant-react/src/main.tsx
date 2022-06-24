@@ -23,9 +23,11 @@ console.error = (message?: any, ...optionalParams: any[]) => {
             return
         }
     }
-    // if (typeof message === 'string' && message.startsWith("Warning: Tree missing follow keys:")) {
-    //     return;
-    // }
+    if (typeof message === 'string' && message.startsWith("Warning: Tree missing follow keys:")) {
+        // TODO：等官方修复，然后删除
+        console.log(message)
+        return;
+    }
     consoleOldError(message, ...optionalParams)
 }
 
