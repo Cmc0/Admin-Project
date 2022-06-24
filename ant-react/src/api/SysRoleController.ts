@@ -10,7 +10,7 @@ export function sysRoleDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestC
     return $http.myPost<string>('/sysRole/deleteByIdSet', form, config)
 }
 
-export interface SysRolePageVO {
+export interface SysRoleInfoByIdVO {
     createId?: number // 创建人id
     createTime?: string // 创建时间
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
@@ -28,7 +28,7 @@ export interface SysRolePageVO {
 
 // 角色-管理 通过主键id，查看详情
 export function sysRoleInfoById(form: NotNullId, config?: AxiosRequestConfig) {
-    return $http.myProPost<SysRolePageVO>('/sysRole/infoById', form, config)
+    return $http.myProPost<SysRoleInfoByIdVO>('/sysRole/infoById', form, config)
 }
 
 export interface SysRoleInsertOrUpdateDTO {

@@ -6,7 +6,7 @@ import com.admin.common.model.entity.SysRoleDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.role.model.dto.SysRoleInsertOrUpdateDTO;
 import com.admin.role.model.dto.SysRolePageDTO;
-import com.admin.role.model.vo.SysRolePageVO;
+import com.admin.role.model.vo.SysRoleInfoByIdVO;
 import com.admin.role.service.SysRoleService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -45,7 +45,7 @@ public class SysRoleController {
     @ApiOperation(value = "通过主键id，查看详情")
     @PostMapping("/infoById")
     @PreAuthorize("hasAuthority('sysRole:infoById')")
-    public ApiResultVO<SysRolePageVO> infoById(@RequestBody @Valid NotNullId notNullId) {
+    public ApiResultVO<SysRoleInfoByIdVO> infoById(@RequestBody @Valid NotNullId notNullId) {
         return ApiResultVO.ok(baseService.infoById(notNullId));
     }
 

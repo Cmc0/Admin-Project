@@ -13,7 +13,7 @@ import com.admin.common.util.MyEntityUtil;
 import com.admin.role.exception.BizCodeEnum;
 import com.admin.role.model.dto.SysRoleInsertOrUpdateDTO;
 import com.admin.role.model.dto.SysRolePageDTO;
-import com.admin.role.model.vo.SysRolePageVO;
+import com.admin.role.model.vo.SysRoleInfoByIdVO;
 import com.admin.role.service.SysRoleRefMenuService;
 import com.admin.role.service.SysRoleRefUserService;
 import com.admin.role.service.SysRoleService;
@@ -116,27 +116,27 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
      * 通过主键id，查看详情
      */
     @Override
-    public SysRolePageVO infoById(NotNullId notNullId) {
+    public SysRoleInfoByIdVO infoById(NotNullId notNullId) {
 
-        SysRolePageVO sysRolePageVO = BeanUtil.copyProperties(getById(notNullId.getId()), SysRolePageVO.class);
+        SysRoleInfoByIdVO sysRoleInfoByIdVO = BeanUtil.copyProperties(getById(notNullId.getId()), SysRoleInfoByIdVO.class);
 
-        if (sysRolePageVO == null) {
+        if (sysRoleInfoByIdVO == null) {
             return null;
         }
 
         // 完善子表的数据
         List<SysRoleRefMenuDO> menuList =
-            sysRoleRefMenuService.lambdaQuery().eq(SysRoleRefMenuDO::getRoleId, sysRolePageVO.getId())
+            sysRoleRefMenuService.lambdaQuery().eq(SysRoleRefMenuDO::getRoleId, sysRoleInfoByIdVO.getId())
                 .select(SysRoleRefMenuDO::getMenuId).list();
 
         List<SysRoleRefUserDO> userList =
-            sysRoleRefUserService.lambdaQuery().eq(SysRoleRefUserDO::getRoleId, sysRolePageVO.getId())
+            sysRoleRefUserService.lambdaQuery().eq(SysRoleRefUserDO::getRoleId, sysRoleInfoByIdVO.getId())
                 .select(SysRoleRefUserDO::getUserId).list();
 
-        sysRolePageVO.setMenuIdSet(menuList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet()));
-        sysRolePageVO.setUserIdSet(userList.stream().map(SysRoleRefUserDO::getUserId).collect(Collectors.toSet()));
+        sysRoleInfoByIdVO.setMenuIdSet(menuList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet()));
+        sysRoleInfoByIdVO.setUserIdSet(userList.stream().map(SysRoleRefUserDO::getUserId).collect(Collectors.toSet()));
 
-        return sysRolePageVO;
+        return sysRoleInfoByIdVO;
     }
 
     /**

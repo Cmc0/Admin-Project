@@ -5,7 +5,7 @@ import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.SysRoleDO;
 import com.admin.role.model.dto.SysRoleInsertOrUpdateDTO;
 import com.admin.role.model.dto.SysRolePageDTO;
-import com.admin.role.model.vo.SysRolePageVO;
+import com.admin.role.model.vo.SysRoleInfoByIdVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -15,7 +15,7 @@ public interface SysRoleService extends IService<SysRoleDO> {
 
     Page<SysRoleDO> myPage(SysRolePageDTO dto);
 
-    SysRolePageVO infoById(NotNullId notNullId);
+    SysRoleInfoByIdVO infoById(NotNullId notNullId);
 
     String deleteByIdSet(NotEmptyIdSet notEmptyIdSet);
 

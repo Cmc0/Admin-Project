@@ -9,7 +9,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysRolePageVO extends SysRoleDO {
+public class SysRoleInfoByIdVO extends SysRoleDO {
 
     @ApiModelProperty(value = "用户 idSet")
     private Set<Long> userIdSet;

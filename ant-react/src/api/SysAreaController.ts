@@ -24,7 +24,7 @@ export interface SysAreaInfoByIdVO {
     deptIdSet?: number[] // 部门 idSet
     enableFlag?: boolean // 启用/禁用
     id?: number // 主键id
-    name?: string // 区域名称
+    name?: string // 区域名
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     parentId?: number // 父节点id（顶级则为0）
     remark?: string // 描述/备注
@@ -64,7 +64,7 @@ export interface SysAreaPageDTO extends MyPageDTO {
 }
 
 export interface SysAreaDO {
-    name?: string // 区域名称
+    name?: string // 区域名
 }
 
 // 区域-管理 分页排序查询
