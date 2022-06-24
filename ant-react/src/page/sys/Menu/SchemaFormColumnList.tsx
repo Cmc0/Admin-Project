@@ -28,7 +28,7 @@ const SchemaFormColumnList = (treeList: SysMenuDO[], useForm: FormInstance<SysMe
         value: item.id,
         title: item.name,
         parentId: item.parentId,
-    }))
+    } as RequestOptionsType))
 
     const newTreeList = ListToTree(list);
 

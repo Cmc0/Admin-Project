@@ -3,6 +3,8 @@ import {ProSchemaValueEnumType} from "@ant-design/pro-components";
 import {sysDictPage} from "@/api/SysDictController";
 import {RequestOptionsType} from "@ant-design/pro-utils/lib/typing";
 import {sysUserPage} from "@/api/SysUserController";
+import {sysMenuPage} from "@/api/SysMenuController";
+import {ListToTree} from "./TreeUtil";
 
 export const YesNoDict = new Map<any, ProSchemaValueEnumType>();
 YesNoDict.set(true, {text: '是', status: 'success'})
@@ -42,6 +44,24 @@ export function GetUserDictList(addAdminFlag: boolean = true) {
                 } as RequestOptionsType));
             }
             resolve(dictList)
+        })
+    })
+}
+
+export function GetMenuDictList(addAdminFlag: boolean = true) {
+    return new Promise<RequestOptionsType[]>(async resolve => {
+        await sysMenuPage({pageSize: -1}).then(res => {
+            let dictList: RequestOptionsType[] = []
+            if (res.data) {
+                dictList = res.data.map(item => ({
+                    id: item.id,
+                    key: item.id,
+                    value: item.id,
+                    title: item.name,
+                    parentId: item.parentId,
+                } as RequestOptionsType));
+            }
+            resolve(ListToTree(dictList))
         })
     })
 }
