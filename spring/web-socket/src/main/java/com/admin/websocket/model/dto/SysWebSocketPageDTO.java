@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Min;
+import java.util.Date;
 
 /**
  * {@link com.admin.websocket.model.entity.SysWebSocketDO}
@@ -56,5 +57,11 @@ public class SysWebSocketPageDTO extends MyPageDTO {
     @Min(1)
     @ApiModelProperty(value = "类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
     private Byte category;
+
+    @ApiModelProperty(value = "创建开始时间")
+    private Date beginCreateTime;
+
+    @ApiModelProperty(value = "创建结束时间")
+    private Date endCreateTime;
 
 }

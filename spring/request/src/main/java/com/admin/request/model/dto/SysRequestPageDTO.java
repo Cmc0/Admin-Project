@@ -17,8 +17,11 @@ public class SysRequestPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "请求的uri")
     private String uri;
 
-    @ApiModelProperty(value = "耗时（字符串）")
-    private String timeStr;
+    @ApiModelProperty(value = "耗时开始（毫秒）")
+    private Long beginTimeNumber;
+
+    @ApiModelProperty(value = "耗时结束（毫秒）")
+    private Long endTimeNumber;
 
     @ApiModelProperty(value = "接口名（备用）")
     private String name;

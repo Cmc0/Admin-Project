@@ -50,6 +50,12 @@
         <if test="dto.category != null">
             AND a.category = #{dto.category}
         </if>
+        <if test="dto.beginCreateTime != null">
+            AND a.create_time <![CDATA[>=]]> #{dto.beginCreateTime}
+        </if>
+        <if test="dto.endCreateTime != null">
+            AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
+        </if>
     </select>
 
 </mapper>

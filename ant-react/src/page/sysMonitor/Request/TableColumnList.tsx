@@ -2,7 +2,7 @@ import {ActionType, ProColumns} from "@ant-design/pro-components";
 import React from "react";
 import {handlerRegion} from "../../../../util/StrUtil";
 import {GetUserDictList, RequestGetDictList} from "../../../../util/DictUtil";
-import {SysRequestPageVO} from "@/api/SysRequestController";
+import {SysRequestPageDTO, SysRequestPageVO} from "@/api/SysRequestController";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysRequestPageVO>[] => [
     {
@@ -34,8 +34,32 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
             return RequestGetDictList('request_category')
         }
     },
-    {title: '耗时', dataIndex: 'timeStr'},
-    {title: '创建时间', dataIndex: 'createTime', sorter: true, valueType: 'fromNow'},
+    {
+        title: '耗时', dataIndex: 'timeNumber', sorter: true, renderText: (text, record) => {
+            return record.timeStr
+        }, hideInSearch: true
+    },
+    {
+        title: '耗时(ms)', dataIndex: 'timeNumberRange', hideInTable: true, valueType: 'digitRange', search: {
+            transform: (value) => {
+                return {
+                    beginTimeNumber: value[0],
+                    endTimeNumber: value[1],
+                } as SysRequestPageDTO
+            }
+        }
+    },
+    {title: '创建时间', dataIndex: 'createTime', sorter: true, valueType: 'fromNow', hideInSearch: true},
+    {
+        title: '创建时间', dataIndex: 'createTimeRange', hideInTable: true, valueType: 'dateTimeRange', search: {
+            transform: (value) => {
+                return {
+                    beginCreateTime: value[0],
+                    endCreateTime: value[1],
+                } as SysRequestPageDTO
+            }
+        }
+    },
 ];
 
 export default TableColumnList

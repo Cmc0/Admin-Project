@@ -26,7 +26,6 @@ export interface SysRequestPageDTO extends MyPageDTO {
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
-    timeStr?: string // 耗时（字符串）
     uri?: string // 请求的uri
 }
 
