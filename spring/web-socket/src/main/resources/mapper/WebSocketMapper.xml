@@ -7,7 +7,6 @@
         SELECT a.id AS id,
         a.create_id AS createId,
         a.create_time AS createTime,
-        a.user_id AS userId,
         a.region AS region,
         a.ip AS ip,
         a.browser AS browser,
@@ -16,15 +15,15 @@
         a.type AS type,
         a.server AS server,
         a.category AS category,
-        IF(b.nickname IS NULL, IF(a.user_id = #{adminId} , #{adminNickname} , '-') , b.nickname) AS userName
+        IF(b.nickname IS NULL, IF(a.create_id = #{adminId} , #{adminNickname} , '-') , b.nickname) AS userNickname
         FROM sys_web_socket a
-        LEFT JOIN sys_user b ON b.id = a.user_id
+        LEFT JOIN sys_user b ON b.id = a.create_id
         WHERE a.del_flag = FALSE
         <if test="dto.id != null and dto.id != ''">
             AND a.id = #{dto.id}
         </if>
-        <if test="dto.userId != null and dto.userId != ''">
-            AND a.user_id = #{dto.userId}
+        <if test="dto.createId != null and dto.createId != ''">
+            AND a.create_id = #{dto.createId}
         </if>
         <if test="dto.region != null and dto.region != ''">
             AND a.region LIKE CONCAT('%', #{dto.region}, '%')

@@ -158,7 +158,10 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      */
     private void setWebSocketForRegister(SysWebSocketDO sysWebSocketDO) {
 
-        sysWebSocketDO.setUserId(UserUtil.getCurrentUserId());
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        sysWebSocketDO.setCreateId(currentUserId);
+        sysWebSocketDO.setUpdateId(currentUserId);
 
         String ip = ServletUtil.getClientIP(httpServletRequest);
         sysWebSocketDO.setIp(ip);
@@ -177,8 +180,8 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
         // 备注：这里不用担心 jwt不存在的问题，因为 JwtAuthorizationFilter已经处理过了，所以这里一定会有 jwt
         sysWebSocketDO.setJwtHash(MyJwtUtil
-            .generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY), sysWebSocketDO.getUserId(),
-                sysWebSocketDO.getCategory()));
+            .generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY),
+                sysWebSocketDO.getCreateId(), sysWebSocketDO.getCategory()));
 
     }
 
@@ -215,7 +218,8 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
     public void offlineByWebSocketIdSet(Set<Long> webSocketIdSet) {
 
         lambdaUpdate().in(BaseEntityTwo::getId, webSocketIdSet).eq(SysWebSocketDO::getEnableFlag, true)
-            .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date()).update(); // 更新
+            .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date())
+            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
 
     }
 

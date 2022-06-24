@@ -14,6 +14,7 @@ export function sysWebSocketChangeType(form: NotNullByteAndId, config?: AxiosReq
 export interface SysWebSocketPageDTO extends MyPageDTO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
     category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    createId?: number // 创建人id
     current?: number // 第几页
     enableFlag?: boolean // 连接中/断开连接
     id?: number // 主键id
@@ -25,7 +26,6 @@ export interface SysWebSocketPageDTO extends MyPageDTO {
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     server?: string // 本次 Websocket连接的服务器的 ip:port
     type?: number // 状态：1 在线 2 隐身
-    userId?: number // 用户id
 }
 
 export interface SysSysWebSocketPageVO {
@@ -46,8 +46,7 @@ export interface SysSysWebSocketPageVO {
     type?: string // 状态：1 在线 2 隐身
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
-    userId?: number // 用户id
-    userName?: string // 用户名
+    userNickname?: string // 用户昵称
     version?: number // 乐观锁
 }
 

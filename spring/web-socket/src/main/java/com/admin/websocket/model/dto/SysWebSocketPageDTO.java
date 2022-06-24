@@ -19,8 +19,8 @@ public class SysWebSocketPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
-    @ApiModelProperty(value = "用户id")
-    private Long userId;
+    @ApiModelProperty(value = "创建人id")
+    private Long createId;
 
     @ApiModelProperty(value = "IpUtil.getRegion() 获取到的 ip所处区域")
     private String region;

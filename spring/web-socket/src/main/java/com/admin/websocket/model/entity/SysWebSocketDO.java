@@ -18,9 +18,6 @@ import lombok.EqualsAndHashCode;
 @ApiModel(description = "WebSocket 连接记录主表")
 public class SysWebSocketDO extends BaseEntityThree {
 
-    @ApiModelProperty(value = "用户id")
-    private Long userId;
-
     /**
      * {@link IpUtil#getRegion()}
      */

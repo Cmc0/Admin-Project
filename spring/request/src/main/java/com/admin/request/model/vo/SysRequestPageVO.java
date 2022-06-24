@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysRequestPageVO extends SysRequestDO {
 
-    @ApiModelProperty(value = "用户名")
-    private String userName;
+    @ApiModelProperty(value = "用户昵称")
+    private String userNickname;
 
 }

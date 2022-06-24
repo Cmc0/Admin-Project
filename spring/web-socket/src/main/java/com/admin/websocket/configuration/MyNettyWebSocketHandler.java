@@ -98,7 +98,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<TextWeb
     private void online(SysWebSocketDO sysWebSocketDO, Channel channel) {
 
         // 绑定 userId
-        channel.attr(MyNettyChannelGroupHelper.USER_ID_KEY).set(sysWebSocketDO.getUserId());
+        channel.attr(MyNettyChannelGroupHelper.USER_ID_KEY).set(sysWebSocketDO.getCreateId());
         // 绑定 WebSocket 连接记录 主键id
         channel.attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).set(sysWebSocketDO.getId());
 

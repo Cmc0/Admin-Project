@@ -12,7 +12,7 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         valueType: 'index',
     },
     {title: 'id', dataIndex: 'id'},
-    {title: '用户名', dataIndex: 'userName'},
+    {title: '用户昵称', dataIndex: 'userNickname'},
     {title: 'ip', dataIndex: 'ip'},
     {
         title: 'ip区域',
@@ -42,7 +42,7 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
             return RequestGetDictList('request_category')
         }
     },
-    {title: '连接时间', dataIndex: 'createTime', sorter: true, valueType: 'fromNow'},
+    {title: '连接时间', dataIndex: 'createTime', sorter: true, valueType: 'fromNow', hideInSearch: true},
     {
         title: '操作',
         dataIndex: 'option',
@@ -54,7 +54,7 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
                         ToastSuccess(res.msg)
                         actionRef.current?.reload()
                     })
-                }, undefined, `确定强退【${entity.userName}】吗？`)
+                }, undefined, `确定强退【${entity.userNickname}】吗？`)
             }}>强退</a>,
         ],
     },
