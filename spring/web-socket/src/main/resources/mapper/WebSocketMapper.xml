@@ -20,7 +20,7 @@
         <if test="dto.id != null and dto.id != ''">
             AND a.id = #{dto.id}
         </if>
-        <if test="dto.createId != null and dto.createId != ''">
+        <if test="dto.createId != null">
             AND a.create_id = #{dto.createId}
         </if>
         <if test="dto.region != null and dto.region != ''">

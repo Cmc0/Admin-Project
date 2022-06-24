@@ -45,7 +45,7 @@
             <if test="dto.endCreateTime != null">
                 AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
             </if>
-            <if test="dto.createId != null and dto.createId != ''">
+            <if test="dto.createId != null">
                 AND a.create_id = #{dto.createId}
             </if>
             <if test="dto.category != null">
