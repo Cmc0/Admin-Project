@@ -47,4 +47,7 @@ public class SysRequestPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "ip")
     private String ip;
 
+    @ApiModelProperty(value = "请求是否成功")
+    private Boolean successFlag;
+
 }
