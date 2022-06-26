@@ -57,9 +57,9 @@ public class SysRequestAop {
         sysRequestDO.setErrorMsg("");
         sysRequestService.save(sysRequestDO); // 存库
 
-        Object object; // 执行方法，备注：如果执行方法时抛出了异常，那么代码不会往下执行
+        Object object;
         try {
-            object = proceedingJoinPoint.proceed();
+            object = proceedingJoinPoint.proceed(); // 执行方法，备注：如果执行方法时抛出了异常，那么代码不会往下执行
         } catch (Throwable throwable) {
             sysRequestDO.setErrorMsg(throwable.getMessage());
             sysRequestService.updateById(sysRequestDO); // 更新
