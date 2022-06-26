@@ -35,4 +35,10 @@ public class SysRequestDO extends BaseEntityThree {
     @ApiModelProperty(value = "IpUtil.getRegion() 获取到的 ip所处区域")
     private String region;
 
+    @ApiModelProperty(value = "请求是否成功")
+    private Boolean successFlag;
+
+    @ApiModelProperty(value = "失败信息")
+    private String errorMsg;
+
 }

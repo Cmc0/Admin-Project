@@ -46,9 +46,7 @@ public class IpFilter implements Filter {
             return;
         }
 
-        String ip = ServletUtil.getClientIP((HttpServletRequest)request);
-
-        String timeStr = ipCheckHandler(ip);
+        String timeStr = ipCheckHandler(ServletUtil.getClientIP((HttpServletRequest)request));
 
         if (timeStr == null) {
             chain.doFilter(request, response);
