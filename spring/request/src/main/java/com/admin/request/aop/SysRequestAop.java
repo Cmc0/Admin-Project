@@ -53,7 +53,7 @@ public class SysRequestAop {
         sysRequestDO.setCategory(RequestUtil.getSysRequestCategoryEnum(httpServletRequest));
         sysRequestDO.setIp(ServletUtil.getClientIP(httpServletRequest));
         sysRequestDO.setRegion(IpUtil.getRegion(sysRequestDO.getIp()));
-        sysRequestDO.setSuccessFlag(true);
+        sysRequestDO.setSuccessFlag(false);
         sysRequestDO.setErrorMsg("");
         sysRequestService.save(sysRequestDO); // 存库
 
@@ -65,7 +65,6 @@ public class SysRequestAop {
         try {
             object = proceedingJoinPoint.proceed(); // 执行方法，备注：如果执行方法时抛出了异常，那么代码不会往下执行
         } catch (Throwable throwable) {
-            sysRequestDO.setSuccessFlag(false); // 设置：请求失败
             sysRequestDO.setErrorMsg(throwable.getMessage());
             sysRequestService.updateById(sysRequestDO); // 更新
             throw throwable;
@@ -76,6 +75,7 @@ public class SysRequestAop {
 
         sysRequestDO.setTimeStr(timeStr);
         sysRequestDO.setTimeNumber(timeNumber);
+        sysRequestDO.setSuccessFlag(true); // 设置：请求成功
 
         // 登录时需要额外处理来获取 用户id
         if (uri.startsWith("/userLogin")) {
