@@ -92,6 +92,9 @@
             <if test="dto.category != null">
                 AND a.category = #{dto.category}
             </if>
+            <if test="dto.successFlag != null">
+                AND a.success_flag = #{dto.successFlag}
+            </if>
         </where>
     </select>
 
