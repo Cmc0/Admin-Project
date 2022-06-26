@@ -57,6 +57,10 @@ public class SysRequestAop {
         sysRequestDO.setErrorMsg("");
         sysRequestService.save(sysRequestDO); // 存库
 
+        Long id = sysRequestDO.getId();
+        sysRequestDO = new SysRequestDO();
+        sysRequestDO.setId(id);
+
         Object object;
         try {
             object = proceedingJoinPoint.proceed(); // 执行方法，备注：如果执行方法时抛出了异常，那么代码不会往下执行
