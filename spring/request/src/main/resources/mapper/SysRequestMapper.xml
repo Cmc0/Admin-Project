@@ -15,7 +15,9 @@
         a.name AS name,
         a.category AS category,
         a.region AS region,
-        a.ip AS ip
+        a.ip AS ip,
+        a.success_flag AS successFlag,
+        a.error_msg AS errorMsg
         FROM sys_request a
         <where>
             <if test="dto.uri != null and dto.uri != ''">

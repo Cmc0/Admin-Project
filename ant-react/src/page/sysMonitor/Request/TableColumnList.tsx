@@ -1,7 +1,7 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
 import React from "react";
 import {handlerRegion} from "../../../../util/StrUtil";
-import {GetUserDictList, RequestGetDictList} from "../../../../util/DictUtil";
+import {GetUserDictList, RequestGetDictList, YesNoBaseDict, YesNoDict} from "../../../../util/DictUtil";
 import {SysRequestPageDTO, SysRequestPageVO} from "@/api/SysRequestController";
 
 const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysRequestPageVO>[] => [
@@ -35,9 +35,18 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         }
     },
     {
-        title: '耗时', dataIndex: 'timeNumber', sorter: true, renderText: (text, record) => {
-            return record.timeStr
-        }, hideInSearch: true
+        title: '请求成功',
+        dataIndex: 'successFlag',
+        valueEnum: YesNoDict,
+    },
+    {
+        title: '耗时/失败信息', dataIndex: 'timeNumber', sorter: true, renderText: (text, record) => {
+            if (record.successFlag) {
+                return record.timeStr
+            }
+            return record.errorMsg
+        },
+        hideInSearch: true,
     },
     {
         title: '耗时(ms)', dataIndex: 'timeNumberRange', hideInTable: true, valueType: 'digitRange', search: {

@@ -188,7 +188,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 </a>
             )}
             headerContentRender={() => (
-                <div className={"hand"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                <div className={"hand m-l-5"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
                     <Badge status="processing"
                            text={
                                <Typography.Text

@@ -68,6 +68,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpda
         title: '修改时间',
         dataIndex: 'updateTime',
         hideInSearch: true,
+        valueType: 'fromNow',
     },
     {
         title: '操作',

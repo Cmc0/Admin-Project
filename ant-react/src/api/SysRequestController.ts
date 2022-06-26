@@ -40,11 +40,13 @@ export interface SysRequestPageVO {
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
     enableFlag?: boolean // 启用/禁用
+    errorMsg?: string // 失败信息
     id?: number // 主键id
     ip?: string // ip
     name?: string // 接口名（备用）
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     remark?: string // 描述/备注
+    successFlag?: boolean // 请求是否成功
     timeNumber?: number // 耗时（毫秒）
     timeStr?: string // 耗时（字符串）
     updateId?: number // 修改人id
