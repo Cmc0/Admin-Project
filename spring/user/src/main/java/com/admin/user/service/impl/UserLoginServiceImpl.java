@@ -77,7 +77,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
      */
     private String passwordByAccount(UserLoginByPasswordDTO dto) {
 
-        SysUserDO sysUserDO = lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount())
+        SysUserDO sysUserDO = lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount()).eq(SysUserDO::getEnableFlag, true)
             .select(SysUserDO::getPassword, BaseEntityThree::getDelFlag, BaseEntityThree::getEnableFlag,
                 SysUserDO::getJwtSecretSuf, BaseEntityTwo::getId).one();
 

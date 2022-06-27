@@ -1,13 +1,19 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {SysRoleDO, SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
 import {InDev} from "../../../../util/CommonUtil";
 import {SysRequestPageDTO} from "@/api/SysRequestController";
 import {Dropdown, Menu} from "antd";
 import {EllipsisOutlined} from "@ant-design/icons/lib";
+import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import {
+    sysUserDeleteByIdSet,
+    SysUserInsertOrUpdateDTO,
+    SysUserPageVO,
+    sysUserResetAvatar
+} from "@/api/SysUserController";
 
-const TableColumnList = (currentForm: React.MutableRefObject<SysRoleInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysRoleDO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [
     {
         title: '序号',
         dataIndex: 'index',
@@ -59,12 +65,26 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysRoleInsertOrUpda
                 currentForm.current = {id: entity.id}
                 setFormVisible(true)
             }}>编辑</a>,
-            <a key="2" className={"red3"} onClick={InDev}>注销</a>,
+            <a key="2" className={"red3"} onClick={() => {
+                execConfirm(() => {
+                    return sysUserDeleteByIdSet({idSet: [entity.id!]}).then(res => {
+                        ToastSuccess(res.msg)
+                        actionRef.current?.reload()
+                    })
+                }, undefined, `确定注销【${entity.nickname}】吗？`)
+            }}>注销</a>,
             ,
             <Dropdown key="3" overlay={<Menu items={[
                 {
                     key: '1',
-                    label: <a onClick={InDev}>重置头像</a>,
+                    label: <a onClick={() => {
+                        execConfirm(() => {
+                            return sysUserResetAvatar({idSet: [entity.id!]}).then(res => {
+                                ToastSuccess(res.msg)
+                                actionRef.current?.reload()
+                            })
+                        }, undefined, `确定重置【${entity.nickname}】的头像吗？`)
+                    }}>重置头像</a>,
                 },
                 {
                     key: '2',

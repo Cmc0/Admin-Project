@@ -112,9 +112,9 @@ export default function () {
                                                 actionRef.current?.reload()
                                             }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                                         })
-                                    }, undefined, `确定删除【${currentForm.current.nickname}】吗？`)
+                                    }, undefined, `确定注销【${currentForm.current.nickname}】吗？`)
                                 }}>
-                                删除
+                                注销
                             </Button> : null
                         ]
                     },
