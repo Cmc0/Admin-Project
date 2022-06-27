@@ -16,7 +16,6 @@ import {useAppDispatch} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
 import LoginTest from "@/page/Login/LoginTest";
-import {destroyAppLoading} from "@/main";
 
 type LoginType = 'password' | 'phone';
 
@@ -27,7 +26,6 @@ export function UseEffectLogin() {
             appDispatch(setLoadMenuFlag(false)) // 设置：是否加载过菜单为 false
             closeWebSocket() // 关闭 webSocket
         }
-        destroyAppLoading()
     }, [])
 }
 

@@ -23,7 +23,6 @@ import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/consta
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {TimeoutTwoSeconds} from "../../../util/HttpUtil";
-import {destroyAppLoading} from "@/main";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -74,13 +73,13 @@ export default function () {
 
     useEffect(() => {
 
+        // 开发时才会用到 ↓
         if (loadMenuFlag) {
-            // 开发时才会用到 ↓
             doSetElement(userMenuList)
             goFirstPage(userMenuList)
-            // 开发时才会用到 ↑
             return
         }
+        // 开发时才会用到 ↑
 
         sessionStorage.setItem(SessionStorageKey.LOAD_MENU_FLAG, String(false))
 
@@ -98,7 +97,6 @@ export default function () {
                 return
             }
             appDispatch(setUserMenuList(res.data))
-            destroyAppLoading()
             doSetElement(res.data)
             goFirstPage(res.data)
         })
