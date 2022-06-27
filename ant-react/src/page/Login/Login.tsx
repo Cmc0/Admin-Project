@@ -16,27 +16,35 @@ import {useAppDispatch} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
 import LoginTest from "@/page/Login/LoginTest";
+import {destroyAppLoading} from "@/main";
 
 type LoginType = 'password' | 'phone';
+
+export function UseEffectLogin() {
+    const appDispatch = useAppDispatch()
+    useEffect(() => {
+        if (!localStorage.getItem(LocalStorageKey.JWT)) {
+            appDispatch(setLoadMenuFlag(false)) // 设置：是否加载过菜单为 false
+            closeWebSocket() // 关闭 webSocket
+        }
+        destroyAppLoading()
+    }, [])
+}
 
 export default function () {
 
     const [loginType, setLoginType] = useState<LoginType>('password');
-    const jwt = localStorage.getItem(LocalStorageKey.JWT)
-    const appDispatch = useAppDispatch()
     const [useForm] = Form.useForm<UserLoginByPasswordDTO>();
 
     useEffect(() => {
-        if (!jwt) {
-            appDispatch(setLoadMenuFlag(false)) // 设置：是否加载过菜单为 false
-            closeWebSocket() // 关闭 webSocket
-        }
         window.PageTest = function () {
             LoginTest(useForm)
         }
     }, [])
 
-    if (jwt) {
+    UseEffectLogin()
+
+    if (localStorage.getItem(LocalStorageKey.JWT)) {
         return <Navigate to={"/"}/>
     }
 

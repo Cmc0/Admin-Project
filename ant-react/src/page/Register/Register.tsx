@@ -6,35 +6,29 @@ import {Form, Tabs} from "antd";
 import {LockOutlined, SafetyCertificateOutlined, UserOutlined} from "@ant-design/icons/lib";
 import {useEffect, useState} from "react";
 import {ToastSuccess} from "../../../util/ToastUtil";
-import LocalStorageKey from "@/model/constant/LocalStorageKey";
 import {getAppNav} from "@/App";
-import {closeWebSocket} from "../../../util/WebSocketUtil";
-import {useAppDispatch, useAppSelector} from "@/store";
-import {setLoadMenuFlag} from "@/store/userSlice";
+import {useAppSelector} from "@/store";
 import {InDev} from "../../../util/CommonUtil";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
 import RegisterTest from "@/page/Register/RegisterTest";
 import {UserRegisterByEmailDTO, userRegisterEmail, userRegisterEmailSendCode} from "@/api/UserRegisterController";
+import {UseEffectLogin} from "@/page/Login/Login";
 
 type RegisterType = 'email' | 'phone';
 
 export default function () {
 
     const [registerType, setRegisterType] = useState<RegisterType>('email');
-    const jwt = localStorage.getItem(LocalStorageKey.JWT)
-    const appDispatch = useAppDispatch()
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
     const [useForm] = Form.useForm<UserRegisterByEmailDTO>();
 
     useEffect(() => {
-        if (!jwt) {
-            appDispatch(setLoadMenuFlag(false)) // 设置：是否加载过菜单为 false
-            closeWebSocket() // 关闭 webSocket
-        }
         window.PageTest = function () {
             RegisterTest(useForm)
         }
     }, [])
+
+    UseEffectLogin()
 
     return (
         <div className={"vh100"}>

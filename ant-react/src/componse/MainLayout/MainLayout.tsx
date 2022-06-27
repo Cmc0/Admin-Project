@@ -23,6 +23,7 @@ import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/consta
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {TimeoutTwoSeconds} from "../../../util/HttpUtil";
+import {destroyAppLoading} from "@/main";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -97,6 +98,7 @@ export default function () {
                 return
             }
             appDispatch(setUserMenuList(res.data))
+            destroyAppLoading()
             doSetElement(res.data)
             goFirstPage(res.data)
         })
