@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ProTable} from "@ant-design/pro-components";
-import {Button, Form} from "antd";
+import {Button, Form, Space} from "antd";
 import {PlusOutlined} from "@ant-design/icons/lib";
 import {
     sysUserDeleteByIdSet,
@@ -31,6 +31,8 @@ export default function () {
 
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
 
+    const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
+
     const deptDictListRef = useRef<IMyTree[]>([])
     const jobDictListRef = useRef<IMyTree[]>([])
     const roleDictListRef = useRef<IMyOption[]>([])
@@ -57,6 +59,13 @@ export default function () {
                     showSizeChanger: true,
                 }}
                 columnEmptyText={false}
+                rowSelection={{}}
+                expandable={{
+                    expandedRowKeys,
+                    onExpandedRowsChange: (expandedRows) => {
+                        setExpandedRowKeys(expandedRows as number[])
+                    }
+                }}
                 revalidateOnFocus={false}
                 columns={TableColumnList(currentForm, setFormVisible, actionRef)}
                 options={{
@@ -73,6 +82,20 @@ export default function () {
                         }}>新建</Button>
                     ],
                 }}
+                tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
+                    <Space size={16}>
+                        <a className={"red3"} onClick={() => {
+                            execConfirm(() => {
+                                return sysUserDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
+                                    ToastSuccess(res.msg)
+                                    actionRef.current?.reload()
+                                    onCleanSelected()
+                                })
+                            }, undefined, `确定注销选中的【${selectedRowKeys.length}】项吗？`)
+                        }}>批量注销</a>
+                        <a onClick={onCleanSelected}>取消选择</a>
+                    </Space>
+                )}
             >
             </ProTable>
 

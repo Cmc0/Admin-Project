@@ -64,6 +64,7 @@ export default function () {
                 value: columnsStateMap,
                 onChange: setColumnsStateMap,
             }}
+            rowSelection={{}}
             expandable={{
                 expandedRowKeys,
                 onExpandedRowsChange: (expandedRows) => {
@@ -71,7 +72,6 @@ export default function () {
                 }
             }}
             revalidateOnFocus={false}
-            rowSelection={{}}
             columns={TableColumnList(currentForm, setFormVisible, actionRef)}
             options={{
                 fullScreen: true,
@@ -144,7 +144,7 @@ export default function () {
                         <ProFormDigit label="排序号" name="orderNo" min={Number.MIN_SAFE_INTEGER} className={"w100"}
                                       rules={[{required: true}]}/>
                     </ModalForm>
-                    <a onClick={() => {
+                    <a className={"red3"} onClick={() => {
                         execConfirm(() => {
                             return sysMenuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
                                 ToastSuccess(res.msg)
