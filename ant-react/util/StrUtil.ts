@@ -6,3 +6,13 @@ export function handlerRegion(region: string) {
         .filter((item) => item !== '0')
         .join(' ')
 }
+
+// 获取随机字符串
+export function randomStr(length: number = 6) {
+    const BASE_CHAR_NUMBER = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    let resStr = ''
+    for (let index = 0; index < length; index++) {
+        resStr += BASE_CHAR_NUMBER.charAt(Math.floor(Math.random() * 36))
+    }
+    return resStr
+}

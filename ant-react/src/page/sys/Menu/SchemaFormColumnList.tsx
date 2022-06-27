@@ -32,7 +32,8 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
             },
         },
         {
-            title: '菜单名', dataIndex: 'name', formItemProps: {
+            title: '菜单名', dataIndex: 'name',
+            formItemProps: {
                 rules: [
                     {
                         required: true,

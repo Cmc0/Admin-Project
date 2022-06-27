@@ -4,6 +4,9 @@ import {sysDictPage} from "@/api/SysDictController";
 import {sysUserPage} from "@/api/SysUserController";
 import {sysMenuPage} from "@/api/SysMenuController";
 import {ListToTree} from "./TreeUtil";
+import {sysDeptPage} from "@/api/SysDeptController";
+import {sysJobPage} from "@/api/SysJobController";
+import {sysRolePage} from "@/api/SysRoleController";
 
 export const YesNoDict = new Map<any, ProSchemaValueEnumType>();
 YesNoDict.set(true, {text: '是', status: 'success'})
@@ -77,6 +80,59 @@ export function GetMenuDictList(addAdminFlag: boolean = true) {
                 } as IMyTree));
             }
             resolve(ListToTree(dictList))
+        })
+    })
+}
+
+export function GetDeptDictList(addAdminFlag: boolean = true) {
+    return new Promise<IMyTree[]>(async resolve => {
+        await sysDeptPage({pageSize: -1}).then(res => {
+            let dictList: IMyTree[] = []
+            if (res.data) {
+                dictList = res.data.map(item => ({
+                    id: item.id,
+                    key: item.id,
+                    value: item.id,
+                    title: item.name,
+                    parentId: item.parentId,
+                    orderNo: item.orderNo
+                } as IMyTree));
+            }
+            resolve(ListToTree(dictList))
+        })
+    })
+}
+
+export function GetJobDictList(addAdminFlag: boolean = true) {
+    return new Promise<IMyTree[]>(async resolve => {
+        await sysJobPage({pageSize: -1}).then(res => {
+            let dictList: IMyTree[] = []
+            if (res.data) {
+                dictList = res.data.map(item => ({
+                    id: item.id,
+                    key: item.id,
+                    value: item.id,
+                    title: item.name,
+                    parentId: item.parentId,
+                    orderNo: item.orderNo
+                } as IMyTree));
+            }
+            resolve(ListToTree(dictList))
+        })
+    })
+}
+
+export function GetRoleDictList(addAdminFlag: boolean = true) {
+    return new Promise<IMyOption[]>(async resolve => {
+        await sysRolePage({pageSize: -1}).then(res => {
+            let dictList: IMyOption[] = []
+            if (res.data) {
+                dictList = res.data.map(item => ({
+                    label: item.name,
+                    value: item.id,
+                } as IMyOption));
+            }
+            resolve(dictList)
         })
     })
 }
