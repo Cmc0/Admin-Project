@@ -32,4 +32,7 @@ public class SysUserPageVO {
     @ApiModelProperty(value = "修改时间")
     private Date updateTime;
 
+    @ApiModelProperty(value = "最近活跃时间")
+    private Date lastActiveTime;
+
 }

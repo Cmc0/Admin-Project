@@ -33,6 +33,13 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         valueEnum: YesNoDict
     },
     {
+        title: '最近活跃',
+        dataIndex: 'lastActiveTime',
+        hideInSearch: true,
+        valueType: 'fromNow',
+        sorter: true,
+    },
+    {
         title: '创建时间',
         dataIndex: 'createTime',
         hideInSearch: true,

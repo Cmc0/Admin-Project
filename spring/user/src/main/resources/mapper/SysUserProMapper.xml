@@ -11,7 +11,8 @@
         a.email AS email,
         a.create_time AS createTime,
         a.update_time AS updateTime,
-        a.enable_flag AS enableFlag
+        a.enable_flag AS enableFlag,
+        ( SELECT MAX( b.create_time ) FROM sys_request b WHERE b.create_id = a.id ) AS lastActiveTime
         FROM sys_user a
         WHERE
         a.del_flag = FALSE
