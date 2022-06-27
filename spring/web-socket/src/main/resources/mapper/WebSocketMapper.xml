@@ -17,7 +17,7 @@
         a.category AS category
         FROM sys_web_socket a
         WHERE a.del_flag = FALSE
-        <if test="dto.id != null and dto.id != ''">
+        <if test="dto.id != null">
             AND a.id = #{dto.id}
         </if>
         <if test="dto.createId != null">

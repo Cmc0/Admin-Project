@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
 public class UserUpdateEmailDTO extends EmailNotBlankDTO {
 
     @NotBlank
-    @Pattern(regexp = BaseRegexConstant.CODE_NUMBER_6_REGEXP)
+    @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @ApiModelProperty(value = "邮箱验证码")
     private String code;
 

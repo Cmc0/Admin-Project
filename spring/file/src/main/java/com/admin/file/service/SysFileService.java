@@ -14,6 +14,6 @@ public interface SysFileService extends IService<SysFileDO> {
 
     void download(SysFileDownloadDTO dto);
 
-    String remove(SysFileRemoveDTO dto);
+    String remove(SysFileRemoveDTO dto, boolean selfFlag);
 
 }

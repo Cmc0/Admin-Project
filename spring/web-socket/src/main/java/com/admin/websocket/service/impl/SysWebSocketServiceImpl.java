@@ -53,12 +53,14 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      * 启动项目 或者springboot销毁时：断开当前 WebSocket 的所有连接
      */
     @Override
+    @Transactional
     public void offlineAllForCurrent() {
 
         log.info("下线数据库的 WebSocket 连接，条件：server = {}", NettyServer.ipAndPort);
 
-        lambdaUpdate().eq(SysWebSocketDO::getServer, NettyServer.ipAndPort).eq(BaseEntityThree::getEnableFlag, true)
-            .set(BaseEntityThree::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date()).update(); // 更新
+        lambdaUpdate().eq(SysWebSocketDO::getServer, NettyServer.ipAndPort).eq(SysWebSocketDO::getEnableFlag, true)
+            .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date())
+            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
 
     }
 
@@ -66,6 +68,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      * 强退，通过 idSet
      */
     @Override
+    @Transactional
     public String retreatAndNoticeByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         List<SysWebSocketDO> sysWebSocketDOList =
@@ -106,7 +109,8 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
             Set<Long> webSocketIdSet =
                 sysWebSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
 
-            lambdaUpdate().eq(BaseEntityThree::getEnableFlag, true).set(BaseEntityThree::getEnableFlag, false)
+            lambdaUpdate().eq(SysWebSocketDO::getEnableFlag, true).set(SysWebSocketDO::getEnableFlag, false)
+                .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe())
                 .set(BaseEntityTwo::getUpdateTime, new Date()).update(); // 更新
 
             // 并且给 消息中间件推送，进行下线操作
@@ -210,13 +214,26 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
     }
 
     /**
-     * 离线：数据库的连接数据
+     * 离线：数据库的连接数据，通过 webSocketIdSet
      */
     @Override
+    @Transactional
     public void offlineByWebSocketIdSet(Set<Long> webSocketIdSet) {
 
         lambdaUpdate().in(BaseEntityTwo::getId, webSocketIdSet).eq(SysWebSocketDO::getEnableFlag, true)
             .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date())
+            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
+
+    }
+
+    /**
+     * 离线：数据库的连接数据，通过 userIdSet
+     */
+    @Override
+    public void offlineByUserIdSet(Set<Long> userIdSet) {
+
+        lambdaUpdate().in(BaseEntity::getCreateId, userIdSet).eq(SysWebSocketDO::getEnableFlag, true)
+            .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntityTwo::getUpdateTime, new Date())
             .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
 
     }

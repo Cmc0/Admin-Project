@@ -43,7 +43,7 @@ public class SysFileController {
     @ApiOperation(value = "文件批量删除")
     @PostMapping("/remove")
     public ApiResultVO<String> remove(@RequestBody @Valid SysFileRemoveDTO dto) {
-        return ApiResultVO.ok(baseService.remove(dto));
+        return ApiResultVO.ok(baseService.remove(dto, true));
     }
 
 }

@@ -2,11 +2,11 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import SysMenuDO from "../model/entity/SysMenuDO";
 import LocalStorageKey from "../model/constant/LocalStorageKey";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
-import {UserBaseInfoVO} from "@/api/SysUserController";
+import {SysUserBaseInfoVO} from "@/api/SysUserController";
 
 interface IUserSlice {
   loadMenuFlag: boolean // 是否加载过菜单
-  userBaseInfo: UserBaseInfoVO // 用户基本信息
+  userBaseInfo: SysUserBaseInfoVO // 用户基本信息
   userMenuList: SysMenuDO[] // 用户菜单
 }
 
@@ -25,7 +25,7 @@ function setSessionStorageLoadMenuFlag(loadMenuFlag: boolean) {
   )
 }
 
-function setLocalStorageUserBaseInfo(userBaseInfo: UserBaseInfoVO) {
+function setLocalStorageUserBaseInfo(userBaseInfo: SysUserBaseInfoVO) {
   localStorage.setItem(
       LocalStorageKey.USER_BASE_INFO,
       JSON.stringify(userBaseInfo)
@@ -44,7 +44,7 @@ export const userSlice = createSlice({
         state.userMenuList = []
       }
     },
-    setUserBaseInfo: (state, action: PayloadAction<UserBaseInfoVO>) => {
+    setUserBaseInfo: (state, action: PayloadAction<SysUserBaseInfoVO>) => {
       state.userBaseInfo = action.payload
       setLocalStorageUserBaseInfo(action.payload)
     },

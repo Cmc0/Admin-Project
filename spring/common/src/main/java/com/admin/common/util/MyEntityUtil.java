@@ -14,7 +14,14 @@ public class MyEntityUtil {
      * 获取不为 null对象的 字符串
      */
     public static String getNotNullStr(String str) {
-        return StrUtil.isBlank(str) ? "" : str;
+        return getNotNullStr(str, "");
+    }
+
+    /**
+     * 如果为空，则返回默认值
+     */
+    public static String getNotNullStr(String str, String defaultStr) {
+        return StrUtil.isBlank(str) ? defaultStr : str;
     }
 
     /**

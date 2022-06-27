@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * {@link com.admin.common.model.entity.SysUserDO}
  */
@@ -12,8 +14,8 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysUserPageDTO extends MyPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
+    @ApiModelProperty(value = "昵称")
+    private String nickname;
 
     @ApiModelProperty(value = "邮箱")
     private String email;
@@ -23,5 +25,11 @@ public class SysUserPageDTO extends MyPageDTO {
 
     @ApiModelProperty(value = "是否追加 admin账号，备注：pageSize == -1 时生效")
     private boolean addAdminFlag;
+
+    @ApiModelProperty(value = "创建开始时间")
+    private Date beginCreateTime;
+
+    @ApiModelProperty(value = "创建结束时间")
+    private Date endCreateTime;
 
 }

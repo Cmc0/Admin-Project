@@ -27,4 +27,6 @@ public interface SysWebSocketService extends IService<SysWebSocketDO> {
     String changeType(NotNullByteAndId notNullByteAndId);
 
     void offlineByWebSocketIdSet(Set<Long> webSocketIdSet);
+
+    void offlineByUserIdSet(Set<Long> userIdSet);
 }

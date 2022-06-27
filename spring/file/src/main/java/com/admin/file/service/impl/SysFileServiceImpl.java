@@ -211,11 +211,12 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
 
     /**
      * 文件批量删除
+     * selfFlag：是否只能删除自己的文件
      */
     @SneakyThrows
     @Override
     @Transactional
-    public String remove(SysFileRemoveDTO dto) {
+    public String remove(SysFileRemoveDTO dto, boolean selfFlag) {
 
         Long userId = UserUtil.getCurrentUserId();
         String userIdStr = Convert.toStr(userId);

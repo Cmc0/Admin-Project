@@ -47,10 +47,6 @@ public class KafkaUtil {
      */
     public static void refreshNoReadNotifyCount(Set<Long> userIdSet) {
 
-        if (CollUtil.isEmpty(userIdSet)) {
-            return;
-        }
-
         WebSocketMessageEnum newNotify = WebSocketMessageEnum.NEW_NOTIFY;
         newNotify.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
         sendWebSocketMessageByKafka(newNotify);
@@ -61,10 +57,6 @@ public class KafkaUtil {
      * 消息推送：账号在其他地方登录，您被迫下线
      */
     public static void forcedOffline(Set<Long> webSocketIdSet, Set<Long> userIdSet) {
-
-        if (CollUtil.isEmpty(webSocketIdSet) && CollUtil.isEmpty(userIdSet)) {
-            return;
-        }
 
         WebSocketMessageEnum forcedOffline = WebSocketMessageEnum.FORCED_OFFLINE;
         forcedOffline.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet).set("userIdSet", userIdSet));
@@ -77,10 +69,6 @@ public class KafkaUtil {
      */
     public static void loginExpired(Set<Long> webSocketIdSet) {
 
-        if (CollUtil.isEmpty(webSocketIdSet)) {
-            return;
-        }
-
         WebSocketMessageEnum loginExpired = WebSocketMessageEnum.LOGIN_EXPIRED;
         loginExpired.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet));
         sendWebSocketMessageByKafka(loginExpired);
@@ -91,10 +79,6 @@ public class KafkaUtil {
      * 消息推送：账号已被注销
      */
     public static void delAccount(Set<Long> userIdSet) {
-
-        if (CollUtil.isEmpty(userIdSet)) {
-            return;
-        }
 
         WebSocketMessageEnum delAccount = WebSocketMessageEnum.DEL_ACCOUNT;
         delAccount.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));

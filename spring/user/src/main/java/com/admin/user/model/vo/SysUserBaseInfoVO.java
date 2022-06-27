@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class UserBaseInfoVO {
+public class SysUserBaseInfoVO {
 
     @ApiModelProperty(value = "头像url")
     private String avatarUrl;

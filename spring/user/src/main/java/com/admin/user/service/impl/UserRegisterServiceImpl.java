@@ -21,6 +21,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
      * 邮箱-注册
      */
     @Override
+    @Transactional
     public String userRegisterByEmail(UserRegisterByEmailDTO dto) {
 
         // 前端会在 SHA256加密 之后，再进行一次非对称加密，并且会携带 30s之后的时间戳
@@ -115,7 +117,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
             String subject = "邮箱注册";
 
             // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
-            String code = RandomUtil.randomNumbers(6).toUpperCase();
+            String code = RandomUtil.randomStringUpper(6).toUpperCase();
             strBuilder.append(code);
 
             MyMailUtil.send(dto.getEmail(), subject, strBuilder.toString(), false);

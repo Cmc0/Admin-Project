@@ -10,18 +10,25 @@
         a.id AS id,
         a.email AS email,
         a.create_time AS createTime,
+        a.update_time AS updateTime,
         a.enable_flag AS enableFlag
         FROM sys_user a
         WHERE
         a.del_flag = FALSE
-        <if test="dto.id != null and dto.id != ''">
-            AND a.id = #{dto.id}
+        <if test="dto.nickname != null and dto.nickname != ''">
+            AND a.nickname LIKE CONCAT('%', #{dto.nickname}, '%')
         </if>
         <if test="dto.email != null and dto.email != ''">
             AND a.email LIKE concat('%', #{dto.email}, '%')
         </if>
         <if test="dto.enableFlag != null">
             AND a.enable_flag = #{dto.enableFlag}
+        </if>
+        <if test="dto.beginCreateTime != null">
+            AND a.create_time <![CDATA[>=]]> #{dto.beginCreateTime}
+        </if>
+        <if test="dto.endCreateTime != null">
+            AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
         </if>
     </select>
 
