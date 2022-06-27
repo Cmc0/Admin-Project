@@ -184,12 +184,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setId(dto.getId());
-            sysUserDO.setUuid(IdUtil.simpleUUID());
-            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
             sysUserDO.setNickname(MyEntityUtil.getNotNullStr(dto.getNickname(), UserUtil.getDefaultNickname()));
             sysUserDO.setBio(MyEntityUtil.getNotNullStr(dto.getBio()));
             sysUserDO.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
-            if (dto.getId() == null) { // 新增时：才可以设置密码
+            if (dto.getId() == null) { // 如果是：新增
+                sysUserDO.setUuid(IdUtil.simpleUUID());
+                sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
                 if (passwordFlag) {
                     sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getPassword(), true));
                 } else {
