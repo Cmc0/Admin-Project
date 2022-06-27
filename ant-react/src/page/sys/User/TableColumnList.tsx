@@ -38,6 +38,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         hideInSearch: true,
         valueType: 'fromNow',
         sorter: true,
+        renderText: (text, record) => {
+            return text ? text : record.createTime
+        }
     },
     {
         title: '创建时间',
