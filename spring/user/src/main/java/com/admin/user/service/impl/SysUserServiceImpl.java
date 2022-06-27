@@ -172,8 +172,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
         try {
 
             // 判断邮箱是否存在
-            boolean exist =
-                lambdaQuery().eq(SysUserDO::getEmail, dto.getEmail()).eq(SysUserDO::getDelFlag, false).exists();
+            boolean exist = lambdaQuery().eq(SysUserDO::getEmail, dto.getEmail()).eq(SysUserDO::getDelFlag, false)
+                .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).exists();
             if (exist) {
                 ApiResultVO.error(BizCodeEnum.EMAIL_HAS_BEEN_REGISTERED);
             }
