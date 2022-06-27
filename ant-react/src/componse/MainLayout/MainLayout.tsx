@@ -188,7 +188,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 </a>
             )}
             headerContentRender={() => (
-                <div className={"hand m-l-16"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                <span className={"hand m-l-16"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
                     <Badge status="processing"
                            text={
                                <Typography.Text
@@ -197,7 +197,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                                    avg：{sysRequestAllAvgVO.avg}ms
                                </Typography.Text>
                            }/>
-                </div>
+                </span>
             )}
             rightContentRender={() => (
                 <Space size={20}>

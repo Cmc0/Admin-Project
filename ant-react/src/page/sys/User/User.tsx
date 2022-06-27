@@ -9,7 +9,8 @@ import {
     SysUserInsertOrUpdateDTO,
     sysUserPage,
     SysUserPageDTO,
-    SysUserPageVO
+    SysUserPageVO,
+    sysUserResetAvatar
 } from "@/api/SysUserController";
 import TableColumnList from "@/page/sys/User/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
@@ -84,6 +85,15 @@ export default function () {
                 }}
                 tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                     <Space size={16}>
+                        <a onClick={() => {
+                            execConfirm(() => {
+                                return sysUserResetAvatar({idSet: selectedRowKeys}).then(res => {
+                                    ToastSuccess(res.msg)
+                                    actionRef.current?.reload()
+                                    onCleanSelected()
+                                })
+                            }, undefined, `确定重置选中的【${selectedRowKeys.length}】项的头像吗？`)
+                        }}>重置头像</a>
                         <a className={"red3"} onClick={() => {
                             execConfirm(() => {
                                 return sysUserDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
