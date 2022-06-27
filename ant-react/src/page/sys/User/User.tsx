@@ -16,6 +16,8 @@ import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/User/SchemaFormColumnList";
 import {GetDeptDictList, GetJobDictList, GetRoleDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
+import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
+import {useAppSelector} from "@/store";
 
 export default function () {
 
@@ -26,6 +28,8 @@ export default function () {
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
     const currentForm = useRef<SysUserInsertOrUpdateDTO>({})
+
+    const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
 
     const deptDictListRef = useRef<IMyTree[]>([])
     const jobDictListRef = useRef<IMyTree[]>([])
@@ -137,7 +141,16 @@ export default function () {
                 onVisibleChange={setFormVisible}
                 columns={SchemaFormColumnList(useForm, deptDictListRef, jobDictListRef, roleDictListRef)}
                 onFinish={async (form) => {
-                    await sysUserInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+
+                    const formTemp = {...form}
+
+                    if (!currentForm.current.id) {
+                        const date = new Date()
+                        formTemp.origPassword = RSAEncryptPro(formTemp.password, rsaPublicKey, date)
+                        formTemp.password = PasswordRSAEncrypt(formTemp.password, rsaPublicKey, date)
+                    }
+
+                    await sysUserInsertOrUpdate({...currentForm.current, ...formTemp}).then(res => {
                         ToastSuccess(res.msg)
                         setTimeout(() => {
                             actionRef.current?.reload()
