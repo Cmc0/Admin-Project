@@ -151,7 +151,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Transactional
     public String insertOrUpdate(SysUserInsertOrUpdateDTO dto) {
 
-        if (dto.getId() == null) {
+        boolean passwordFlag = StrUtil.isNotBlank(dto.getPassword()) && StrUtil.isNotBlank(dto.getOrigPassword());
+
+        if (dto.getId() == null && passwordFlag) {
             // 非对称：解密 ↓
             String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
             dto.setOrigPassword(MyRsaUtil.rsaDecrypt(dto.getOrigPassword(), paramValue)); // 非对称：解密
@@ -187,8 +189,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             sysUserDO.setNickname(MyEntityUtil.getNotNullStr(dto.getNickname(), UserUtil.getDefaultNickname()));
             sysUserDO.setBio(MyEntityUtil.getNotNullStr(dto.getBio()));
             sysUserDO.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
-            if (dto.getId() == null) { // 新增时：才可以修改密码
-                sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getPassword(), true));
+            if (dto.getId() == null) { // 新增时：才可以设置密码
+                if (passwordFlag) {
+                    sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getPassword(), true));
+                } else {
+                    sysUserDO.setPassword(""); // 密码可以为空
+                }
             }
             sysUserDO.setEmail(dto.getEmail());
 

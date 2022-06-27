@@ -5,6 +5,7 @@ import {SysUserInsertOrUpdateDTO} from "@/api/SysUserController";
 import {IMyOption, IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import {TreeSelect} from "antd";
 import {randomNickname} from "../../../../util/UserUtil";
+import Validator from "../../../../util/ValidatorUtil";
 
 export const InitForm: SysUserInsertOrUpdateDTO = {
     enableFlag: true,
@@ -15,10 +16,11 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
         {
             dataIndex: 'nickname',
             formItemProps: {
+                required: true,
                 rules: [
                     {
-                        required: true,
-                    },
+                        validator: Validator.nicknameValidate
+                    }
                 ],
             },
             title: (props, type, dom) => <>
@@ -31,6 +33,36 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
         {
             title: '邮箱',
             dataIndex: 'email',
+            formItemProps: {
+                required: true,
+                rules: [
+                    {
+                        validator: Validator.emailValidate
+                    }
+                ],
+            },
+        },
+        {
+            valueType: 'dependency',
+            fieldProps: {
+                name: ['id'],
+            },
+            columns: ({id}: SysUserInsertOrUpdateDTO): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
+                return id
+                    ? [] : [
+                        {
+                            title: '密码',
+                            dataIndex: 'password',
+                            formItemProps: {
+                                rules: [
+                                    {
+                                        validator: Validator.passwordCanNullValidate
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+            }
         },
         {
             title: '关联角色',
