@@ -64,7 +64,19 @@ export interface SysAreaPageDTO extends MyPageDTO {
 }
 
 export interface SysAreaDO {
+    children?: SysAreaDO // 子节点
+    createId?: number // 创建人id
+    createTime?: string // 创建时间
+    delFlag?: boolean // 是否逻辑删除
+    enableFlag?: boolean // 启用/禁用
+    id?: number // 主键id
     name?: string // 区域名
+    orderNo?: number // 排序号（值越大越前面，默认为 0）
+    parentId?: number // 父节点id（顶级则为0）
+    remark?: string // 描述/备注
+    updateId?: number // 修改人id
+    updateTime?: string // 修改时间
+    version?: number // 乐观锁
 }
 
 // 区域-管理 分页排序查询

@@ -76,10 +76,12 @@ export function sysUserLogout(config?: AxiosRequestConfig) {
 
 export interface SysUserPageDTO extends MyPageDTO {
     addAdminFlag?: boolean // 是否追加 admin账号，备注：pageSize == -1 时生效
+    beginCreateTime?: string // 创建开始时间
     current?: number // 第几页
     email?: string // 邮箱
     enableFlag?: boolean // 正常/冻结
-    id?: number // 主键id
+    endCreateTime?: string // 创建结束时间
+    nickname?: string // 昵称
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
 }
@@ -91,6 +93,7 @@ export interface SysUserPageVO {
     enableFlag?: boolean // 正常/冻结
     id?: number // 主键id
     nickname?: string // 昵称
+    updateTime?: string // 修改时间
 }
 
 // 用户-管理 分页排序查询
