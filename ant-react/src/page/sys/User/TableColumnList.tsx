@@ -12,6 +12,7 @@ import {
     SysUserPageVO,
     sysUserResetAvatar
 } from "@/api/SysUserController";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [
     {
@@ -21,6 +22,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
     },
     {
         title: '头像', dataIndex: 'avatarUrl', valueType: 'avatar', hideInSearch: true,
+        renderText: (text) => {
+            return text ? text : CommonConstant.RANDOM_AVATAR_URL
+        }
     },
     {title: '昵称', dataIndex: 'nickname'},
     {

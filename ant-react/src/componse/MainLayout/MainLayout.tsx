@@ -249,7 +249,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             icon: <LogoutOutlined/>
                         },
                     ]}/>}>
-                        <Avatar className={"hand"} size="small" src={"https://joeschmoe.io/api/v1/random"}/>
+                        <Avatar className={"hand"} size="small" src={CommonConstant.RANDOM_AVATAR_URL}/>
                     </Dropdown>
                 </Space>
             )}
