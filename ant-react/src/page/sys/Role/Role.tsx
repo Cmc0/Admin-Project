@@ -39,7 +39,7 @@ export default function () {
         GetMenuDictList().then(res => {
             menuDictListRef.current = res
         })
-        GetUserDictList().then(res => {
+        GetUserDictList(false).then(res => {
             userDictListRef.current = res
         })
     }

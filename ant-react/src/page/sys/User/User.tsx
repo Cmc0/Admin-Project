@@ -83,7 +83,6 @@ export default function () {
                     fullScreen: true,
                 }}
                 request={(params, sort, filter) => {
-                    doGetDictList()
                     setLastUpdateTime(new Date())
                     return sysUserPage({...params, sort})
                 }}
