@@ -94,6 +94,7 @@ export interface SysUserPageVO {
     id?: number // 主键id
     lastActiveTime?: string // 最近活跃时间
     nickname?: string // 昵称
+    passwordFlag?: boolean // 是否有密码
     updateTime?: string // 修改时间
 }
 

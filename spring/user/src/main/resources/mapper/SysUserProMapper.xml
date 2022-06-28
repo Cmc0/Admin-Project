@@ -33,6 +33,9 @@
         <if test="dto.endCreateTime != null">
             AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
         </if>
+        <if test="dto.passwordFlag != null">
+            AND IF ( a.`password` = '', 0, 1 ) = #{dto.passwordFlag}
+        </if>
     </select>
 
 </mapper>

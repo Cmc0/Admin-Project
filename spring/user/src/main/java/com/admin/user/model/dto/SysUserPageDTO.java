@@ -32,4 +32,7 @@ public class SysUserPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "创建结束时间")
     private Date endCreateTime;
 
+    @ApiModelProperty(value = "是否有密码")
+    private Boolean passwordFlag;
+
 }

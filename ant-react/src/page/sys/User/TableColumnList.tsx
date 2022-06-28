@@ -36,6 +36,11 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         dataIndex: 'email',
     },
     {
+        title: '设置密码',
+        dataIndex: 'passwordFlag',
+        valueEnum: YesNoDict
+    },
+    {
         title: '账号正常',
         dataIndex: 'enableFlag',
         valueEnum: YesNoDict
