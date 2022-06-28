@@ -12,8 +12,10 @@
         a.create_time AS createTime,
         a.update_time AS updateTime,
         a.enable_flag AS enableFlag,
-        ( SELECT MAX( b.create_time ) FROM sys_request b WHERE b.create_id = a.id ) AS lastActiveTime
-        FROM sys_user a
+        ( SELECT MAX( b.create_time ) FROM sys_request b WHERE b.create_id = a.id ) AS lastActiveTime,
+        IF ( a.`password` = '', 0, 1 ) AS passwordFlag
+        FROM
+        sys_user a
         WHERE
         a.del_flag = FALSE
         <if test="dto.nickname != null and dto.nickname != ''">

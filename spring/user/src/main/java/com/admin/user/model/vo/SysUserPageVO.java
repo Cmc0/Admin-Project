@@ -24,7 +24,7 @@ public class SysUserPageVO {
     private String email;
 
     @ApiModelProperty(value = "正常/冻结")
-    private Boolean enableFlag;
+    private boolean enableFlag;
 
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
@@ -34,5 +34,8 @@ public class SysUserPageVO {
 
     @ApiModelProperty(value = "最近活跃时间")
     private Date lastActiveTime;
+
+    @ApiModelProperty(value = "是否有密码")
+    private boolean passwordFlag;
 
 }
