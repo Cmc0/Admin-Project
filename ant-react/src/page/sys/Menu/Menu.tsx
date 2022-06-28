@@ -77,10 +77,10 @@ export default function () {
                 fullScreen: true,
             }}
             request={(params, sort, filter) => {
+                doGetDictList()
                 return sysMenuTree({...params, sort})
             }}
             postData={(data) => {
-                doGetDictList()
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
                 return data
             }}
