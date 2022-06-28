@@ -132,20 +132,16 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     useEffect(() => {
         setPathname(window.location.pathname)
-
         doSysRequestAllAvg()
-
         const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 30 * 1000);
-
         return () => {
             clearInterval(sysRequestAllAvgInterval)
         }
 
     }, [])
 
-    return (
+    return <div className={"vh100"}>
         <ProLayout
-            className={"vh100"}
             title={CommonConstant.SYS_NAME}
             location={{
                 pathname
@@ -261,7 +257,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 <Outlet/>
             </PageContainer>
         </ProLayout>
-    )
+    </div>
 }
 
 function doSysWebSocketChangeType(value: TWebSocketType, setWebSocketType: Dispatch<SetStateAction<TWebSocketType>>) {
