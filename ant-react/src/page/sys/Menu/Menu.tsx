@@ -69,7 +69,7 @@ export default function () {
                 expandedRowKeys,
                 onExpandedRowsChange: (expandedRows) => {
                     setExpandedRowKeys(expandedRows as number[])
-                }
+                },
             }}
             revalidateOnFocus={false}
             columns={TableColumnList(currentForm, setFormVisible, actionRef)}
