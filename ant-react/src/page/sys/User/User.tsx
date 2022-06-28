@@ -68,7 +68,7 @@ export default function () {
                     }
                 }}
                 revalidateOnFocus={false}
-                columns={TableColumnList(currentForm, setFormVisible, actionRef)}
+                columns={TableColumnList(currentForm, setFormVisible, actionRef, rsaPublicKey)}
                 options={{
                     fullScreen: true,
                 }}

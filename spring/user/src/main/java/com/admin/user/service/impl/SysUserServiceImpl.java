@@ -352,7 +352,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
         for (Long item : notEmptyIdSet.getIdSet()) {
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setId(item);
-            sysUserDO.setJwtSecretSuf(IdUtil.fastUUID());
+            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
             updateList.add(sysUserDO);
         }
 

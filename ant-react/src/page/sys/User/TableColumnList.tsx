@@ -1,7 +1,6 @@
-import {ActionType, ProColumns} from "@ant-design/pro-components";
+import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {InDev} from "../../../../util/CommonUtil";
 import {SysRequestPageDTO} from "@/api/SysRequestController";
 import {Dropdown, Menu} from "antd";
 import {EllipsisOutlined} from "@ant-design/icons/lib";
@@ -10,11 +9,16 @@ import {
     sysUserDeleteByIdSet,
     SysUserInsertOrUpdateDTO,
     SysUserPageVO,
-    sysUserResetAvatar
+    sysUserResetAvatar,
+    sysUserUpdatePassword,
+    SysUserUpdatePasswordDTO
 } from "@/api/SysUserController";
 import CommonConstant from "@/model/constant/CommonConstant";
+import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 
-const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [
+const UpdatePasswordTitle = "修改密码"
+
+const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>, rsaPublicKey: string): ProColumns<SysUserPageVO>[] => [
     {
         title: '序号',
         dataIndex: 'index',
@@ -102,7 +106,32 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                 },
                 {
                     key: '2',
-                    label: <a onClick={InDev}>修改密码</a>
+                    label: <ModalForm<SysUserUpdatePasswordDTO>
+                        modalProps={{
+                            maskClosable: false
+                        }}
+                        isKeyPressSubmit
+                        width={450}
+                        title={UpdatePasswordTitle}
+                        trigger={<a>{UpdatePasswordTitle}</a>}
+                        onFinish={async (form) => {
+                            const formTemp = {...form}
+                            if (formTemp.newPassword) {
+                                const date = new Date()
+                                formTemp.newOrigPassword = RSAEncryptPro(formTemp.newPassword, rsaPublicKey, date)
+                                formTemp.newPassword = PasswordRSAEncrypt(formTemp.newPassword, rsaPublicKey, date)
+                            }
+                            await sysUserUpdatePassword({
+                                ...formTemp,
+                                idSet: [entity.id!]
+                            }).then(res => {
+                                ToastSuccess(res.msg)
+                            })
+                            return true
+                        }}
+                    >
+                        <ProFormText label="新密码" name="newPassword"/>
+                    </ModalForm>
                 },
             ]}>
             </Menu>}>

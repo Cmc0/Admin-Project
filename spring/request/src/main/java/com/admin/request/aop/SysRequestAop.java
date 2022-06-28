@@ -3,6 +3,7 @@ package com.admin.request.aop;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.jwt.JWT;
 import com.admin.common.model.constant.BaseConstant;
@@ -66,7 +67,7 @@ public class SysRequestAop {
             object = proceedingJoinPoint.proceed(); // 执行方法，备注：如果执行方法时抛出了异常，那么代码不会往下执行
         } catch (Throwable throwable) {
             sysRequestDO.setSuccessFlag(false); // 设置：请求失败
-            sysRequestDO.setErrorMsg(throwable.getMessage());
+            sysRequestDO.setErrorMsg(StrUtil.maxLength(throwable.getMessage(), 200));
             sysRequestService.updateById(sysRequestDO); // 更新
             throw throwable;
         }
