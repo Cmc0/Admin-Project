@@ -86,7 +86,7 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
                 type = getInterfaceType(componentProperty.items.type, componentProperty.items.format!, componentProperty, fileData) + '[]'
             } else if (componentProperty.items.$ref) {
                 const refSplitList = componentProperty.items.$ref.split('/');
-                type = refSplitList[refSplitList.length - 1];
+                type = refSplitList[refSplitList.length - 1] + '[]';
             }
         }
     }

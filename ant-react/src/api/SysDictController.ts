@@ -71,7 +71,7 @@ export function sysDictPage(form: SysDictPageDTO, config?: AxiosRequestConfig) {
 }
 
 export interface SysDictTreeVO {
-    children?: SysDictTreeVO // 字典子节点
+    children?: SysDictTreeVO[] // 字典子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除

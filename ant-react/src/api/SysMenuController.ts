@@ -20,7 +20,7 @@ export function sysMenuDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestC
 export interface SysMenuInfoByIdVO {
     authFlag?: boolean // 是否是权限菜单，权限菜单：不显示，只代表菜单权限
     auths?: string // 权限，多个可用逗号拼接，例如：menu:insertOrUpdate,menu:page,menu:deleteByIdSet,menu:infoById
-    children?: SysMenuDO // 子节点
+    children?: SysMenuDO[] // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除

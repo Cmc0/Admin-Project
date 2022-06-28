@@ -17,7 +17,7 @@ export function sysAreaDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestC
 }
 
 export interface SysAreaInfoByIdVO {
-    children?: SysAreaDO // 子节点
+    children?: SysAreaDO[] // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
@@ -63,7 +63,7 @@ export interface SysAreaPageDTO extends MyPageDTO {
 }
 
 export interface SysAreaDO {
-    children?: SysAreaDO // 子节点
+    children?: SysAreaDO[] // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除

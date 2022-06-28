@@ -17,7 +17,7 @@ export function sysDeptDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestC
 }
 
 export interface SysDeptDO {
-    children?: SysDeptDO // 子节点
+    children?: SysDeptDO[] // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除

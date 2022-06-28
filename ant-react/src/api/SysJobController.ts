@@ -17,7 +17,7 @@ export function sysJobDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestCo
 }
 
 export interface SysJobInfoByIdVO {
-    children?: SysJobDO // 子节点
+    children?: SysJobDO[] // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
