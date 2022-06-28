@@ -5,7 +5,7 @@ import {Card, Tabs} from "antd";
 
 export default function () {
     return (
-        <Card className={"h100"}>
+        <Card>
             <Tabs tabPosition='left'>
                 <Tabs.TabPane key={'1'} tab={
                     <span><UserOutlined/> 个人资料</span>
