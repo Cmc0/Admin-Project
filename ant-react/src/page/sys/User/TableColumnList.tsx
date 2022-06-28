@@ -2,7 +2,7 @@ import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-co
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {Dropdown, Menu} from "antd";
-import {EllipsisOutlined} from "@ant-design/icons/lib";
+import {EllipsisOutlined, EyeOutlined} from "@ant-design/icons/lib";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {
     sysUserDeleteByIdSet,
@@ -25,7 +25,12 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         valueType: 'index',
     },
     {
-        title: '头像', dataIndex: 'avatarUrl', valueType: 'avatar', hideInSearch: true,
+        title: '头像', dataIndex: 'avatarUrl', valueType: 'image', hideInSearch: true,
+        fieldProps: {
+            preview: {
+                mask: <EyeOutlined title={"预览"}/>
+            }
+        },
         renderText: (text) => {
             return text ? text : CommonConstant.RANDOM_AVATAR_URL
         }
