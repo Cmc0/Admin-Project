@@ -84,6 +84,7 @@ export interface SysUserPageDTO extends MyPageDTO {
     nickname?: string // 昵称
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
+    passwordFlag?: boolean // 是否有密码
 }
 
 export interface SysUserPageVO {
