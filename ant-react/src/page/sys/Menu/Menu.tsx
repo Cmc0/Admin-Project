@@ -44,14 +44,14 @@ export default function () {
 
     const menuDictListRef = useRef<IMyTree[]>([])
 
-    function doGetMenuDictList() {
+    function doGetDictList() {
         GetMenuDictList().then(res => {
             menuDictListRef.current = res
         })
     }
 
     useEffect(() => {
-        doGetMenuDictList()
+        doGetDictList()
     }, [])
 
     return <>
@@ -80,7 +80,7 @@ export default function () {
                 return sysMenuTree({...params, sort})
             }}
             postData={(data) => {
-                doGetMenuDictList()
+                doGetDictList()
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
                 return data
             }}

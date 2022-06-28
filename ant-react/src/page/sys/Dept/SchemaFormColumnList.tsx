@@ -2,24 +2,25 @@ import {IMyOption, IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
-import {SysJobInsertOrUpdateDTO} from "@/api/SysJobController";
+import {SysDeptInsertOrUpdateDTO} from "@/api/SysDeptController";
+import {TreeSelect} from "antd";
 
-export const InitForm: SysJobInsertOrUpdateDTO = {
+export const InitForm: SysDeptInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>, userDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (deptDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysDeptInsertOrUpdateDTO>, areaDictListRef: React.MutableRefObject<IMyTree[]>, userDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysDeptInsertOrUpdateDTO>[] => {
 
     const newTreeList = ListToTree(
-        jobDictListRef.current.filter(item =>
+        deptDictListRef.current.filter(item =>
             item.id !== currentForm.current.id // 不要本节点
         ));
 
     return [
         {
-            title: '上级岗位', dataIndex: 'parentId', valueType: "treeSelect",
+            title: '上级部门', dataIndex: 'parentId', valueType: "treeSelect",
             fieldProps: {
-                placeholder: '为空则表示顶级岗位',
+                placeholder: '为空则表示顶级部门',
                 allowClear: true,
                 showSearch: true,
                 treeNodeFilterProp: 'title',
@@ -27,7 +28,7 @@ const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>,
             },
         },
         {
-            title: '岗位名', dataIndex: 'name',
+            title: '部门名', dataIndex: 'name',
             formItemProps: {
                 rules: [
                     {
@@ -44,6 +45,20 @@ const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>,
                 showSearch: true,
                 options: userDictListRef.current,
             }
+        },
+        {
+            title: '关联区域',
+            dataIndex: 'areaIdSet',
+            valueType: 'treeSelect',
+            fieldProps: {
+                placeholder: '请选择',
+                allowClear: true,
+                treeNodeFilterProp: 'title',
+                maxTagCount: 2,
+                treeCheckable: true,
+                showCheckedStrategy: TreeSelect.SHOW_PARENT,
+                options: areaDictListRef.current
+            },
         },
         {
             title: '排序号',

@@ -42,7 +42,7 @@ export default function () {
     const jobDictListRef = useRef<IMyTree[]>([])
     const roleDictListRef = useRef<IMyOption[]>([])
 
-    useEffect(() => {
+    function doGetDictList() {
         GetDeptDictList().then(res => {
             deptDictListRef.current = res
         })
@@ -52,6 +52,10 @@ export default function () {
         GetRoleDictList().then(res => {
             roleDictListRef.current = res
         })
+    }
+
+    useEffect(() => {
+        doGetDictList()
     }, [])
 
     return (
@@ -79,6 +83,7 @@ export default function () {
                     fullScreen: true,
                 }}
                 request={(params, sort, filter) => {
+                    doGetDictList()
                     setLastUpdateTime(new Date())
                     return sysUserPage({...params, sort})
                 }}

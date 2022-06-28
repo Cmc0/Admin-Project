@@ -15,7 +15,7 @@ import TableColumnList from "@/page/sys/Role/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Role/SchemaFormColumnList";
-import {GetMenuDictList, IMyTree} from "../../../../util/DictUtil";
+import {GetMenuDictList, GetUserDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
 
 export default function () {
 
@@ -33,11 +33,19 @@ export default function () {
     const currentForm = useRef<SysRoleInsertOrUpdateDTO>({})
 
     const menuDictListRef = useRef<IMyTree[]>([])
+    const userDictListRef = useRef<IMyOption[]>([])
 
-    useEffect(() => {
+    function doGetDictList() {
         GetMenuDictList().then(res => {
             menuDictListRef.current = res
         })
+        GetUserDictList().then(res => {
+            userDictListRef.current = res
+        })
+    }
+
+    useEffect(() => {
+        doGetDictList()
     }, [])
 
     return (
@@ -60,6 +68,7 @@ export default function () {
                     fullScreen: true,
                 }}
                 request={(params, sort, filter) => {
+                    doGetDictList()
                     return sysRolePage({...params, sort})
                 }}
                 toolbar={{
@@ -136,7 +145,7 @@ export default function () {
                 }}
                 visible={formVisible}
                 onVisibleChange={setFormVisible}
-                columns={SchemaFormColumnList(menuDictListRef)}
+                columns={SchemaFormColumnList(menuDictListRef, userDictListRef)}
                 onFinish={async (form) => {
                     await sysRoleInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                         ToastSuccess(res.msg)

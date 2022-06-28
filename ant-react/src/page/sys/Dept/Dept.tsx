@@ -1,24 +1,24 @@
 import React, {useEffect, useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
+import {GetAreaDictList, GetDeptDictList, GetUserDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
 import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {
-    sysJobAddOrderNo,
-    sysJobDeleteByIdSet,
-    SysJobDO,
-    sysJobInfoById,
-    sysJobInsertOrUpdate,
-    SysJobInsertOrUpdateDTO,
-    SysJobPageDTO,
-    sysJobTree
-} from "@/api/SysJobController";
-import TableColumnList from "@/page/sys/Job/TableColumnList";
-import SchemaFormColumnList, {InitForm} from "@/page/sys/Job/SchemaFormColumnList";
-import {GetJobDictList, GetUserDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
+    sysDeptAddOrderNo,
+    sysDeptDeleteByIdSet,
+    SysDeptDO,
+    sysDeptInfoById,
+    sysDeptInsertOrUpdate,
+    SysDeptInsertOrUpdateDTO,
+    SysDeptPageDTO,
+    sysDeptTree
+} from "@/api/SysDeptController";
+import TableColumnList from "@/page/sys/Dept/TableColumnList";
+import SchemaFormColumnList, {InitForm} from "@/page/sys/Dept/SchemaFormColumnList";
 
 export default function () {
 
@@ -28,18 +28,22 @@ export default function () {
 
     const actionRef = useRef<ActionType>(null)
 
-    const [useForm] = Form.useForm<SysJobInsertOrUpdateDTO>();
+    const [useForm] = Form.useForm<SysDeptInsertOrUpdateDTO>();
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
-    const currentForm = useRef<SysJobInsertOrUpdateDTO>({})
+    const currentForm = useRef<SysDeptInsertOrUpdateDTO>({})
 
-    const jobDictListRef = useRef<IMyTree[]>([])
+    const deptDictListRef = useRef<IMyTree[]>([])
+    const areaDictListRef = useRef<IMyTree[]>([])
     const userDictListRef = useRef<IMyOption[]>([])
 
     function doGetDictList() {
-        GetJobDictList().then(res => {
-            jobDictListRef.current = res
+        GetDeptDictList().then(res => {
+            deptDictListRef.current = res
+        })
+        GetAreaDictList().then(res => {
+            areaDictListRef.current = res
         })
         GetUserDictList().then(res => {
             userDictListRef.current = res
@@ -51,7 +55,7 @@ export default function () {
     }, [])
 
     return <>
-        <ProTable<SysJobDO, SysJobPageDTO>
+        <ProTable<SysDeptDO, SysDeptPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
             pagination={false}
@@ -69,7 +73,7 @@ export default function () {
                 fullScreen: true,
             }}
             request={(params, sort, filter) => {
-                return sysJobTree({...params, sort})
+                return sysDeptTree({...params, sort})
             }}
             postData={(data) => {
                 doGetDictList()
@@ -105,14 +109,14 @@ export default function () {
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: jobDictListRef.current});
+                        CalcOrderNo(currentForm.current, {children: deptDictListRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                 <Space size={16}>
-                    <ModalForm<SysJobInsertOrUpdateDTO>
+                    <ModalForm<SysDeptInsertOrUpdateDTO>
                         modalProps={{
                             maskClosable: false
                         }}
@@ -121,7 +125,7 @@ export default function () {
                         title={AddOrderNo}
                         trigger={<a>{AddOrderNo}</a>}
                         onFinish={async (form) => {
-                            await sysJobAddOrderNo({
+                            await sysDeptAddOrderNo({
                                 idSet: selectedRowKeys,
                                 number: form.orderNo!
                             }).then(res => {
@@ -138,7 +142,7 @@ export default function () {
                     </ModalForm>
                     <a className={"red3"} onClick={() => {
                         execConfirm(() => {
-                            return sysJobDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
+                            return sysDeptDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
                                 ToastSuccess(res.msg)
                                 actionRef.current?.reload()
                                 onCleanSelected()
@@ -151,8 +155,8 @@ export default function () {
         >
         </ProTable>
 
-        <BetaSchemaForm<SysJobInsertOrUpdateDTO>
-            title={currentForm.current.id ? "编辑岗位" : "新建岗位"}
+        <BetaSchemaForm<SysDeptInsertOrUpdateDTO>
+            title={currentForm.current.id ? "编辑部门" : "新建部门"}
             layoutType={"ModalForm"}
             grid
             rowProps={{
@@ -184,7 +188,7 @@ export default function () {
                             danger
                             onClick={() => {
                                 execConfirm(async () => {
-                                    return sysJobDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                    return sysDeptDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
@@ -204,7 +208,7 @@ export default function () {
                 useForm.resetFields()
 
                 if (currentForm.current.id) {
-                    await sysJobInfoById({id: currentForm.current.id}).then(res => {
+                    await sysDeptInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res
                     })
                 }
@@ -214,9 +218,9 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(jobDictListRef, currentForm, userDictListRef)}
+            columns={SchemaFormColumnList(deptDictListRef, currentForm, areaDictListRef, userDictListRef)}
             onFinish={async (form) => {
-                await sysJobInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+                await sysDeptInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
