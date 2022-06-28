@@ -32,7 +32,7 @@ export interface SysWebSocketPageDTO extends MyPageDTO {
 
 export interface SysWebSocketPageVO {
     browser?: string // 浏览器和浏览器版本，用 / 分隔表示
-    category?: string // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
@@ -45,7 +45,7 @@ export interface SysWebSocketPageVO {
     region?: string // IpUtil.getRegion() 获取到的 ip所处区域
     remark?: string // 描述/备注
     server?: string // 本次 WebSocket 连接的服务器的 ip:port
-    type?: string // 状态：1 在线 2 隐身
+    type?: number // 状态：1 在线 2 隐身
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     version?: number // 乐观锁

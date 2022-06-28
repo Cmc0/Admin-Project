@@ -210,7 +210,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(jobDictListRef, useForm, currentForm)}
+            columns={SchemaFormColumnList(jobDictListRef, currentForm)}
             onFinish={async (form) => {
                 await sysJobInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

@@ -56,6 +56,7 @@ interface IOpenApiComponentSchemaProperty { // 例如：{ AddOrderNoDTO: { title
         type?: string
         format?: IOpenApiComponentSchemaPropertyFormat
     } // 如果是集合，才有此值
+    enum: string[] // 如果返回的是枚举值，才有值，并且 type是 string
 }
 
 interface IOpenApi {
@@ -79,6 +80,8 @@ function getInterfaceType(type: string, format: IOpenApiComponentSchemaPropertyF
     if (type === 'integer') {
         type = 'number'
     } else if (type === 'string' && format === 'byte') {
+        type = 'number'
+    } else if (type === 'string' && componentProperty.enum && componentProperty.enum.length) {
         type = 'number'
     } else if (type === 'array') {
         if (componentProperty.items) {

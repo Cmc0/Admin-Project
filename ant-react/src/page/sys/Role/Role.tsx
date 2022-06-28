@@ -136,7 +136,7 @@ export default function () {
                 }}
                 visible={formVisible}
                 onVisibleChange={setFormVisible}
-                columns={SchemaFormColumnList(useForm, menuDictListRef)}
+                columns={SchemaFormColumnList(menuDictListRef)}
                 onFinish={async (form) => {
                     await sysRoleInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                         ToastSuccess(res.msg)

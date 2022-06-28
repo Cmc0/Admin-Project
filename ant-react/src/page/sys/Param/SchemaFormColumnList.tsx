@@ -1,14 +1,13 @@
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
-import {FormInstance} from "antd/es";
 import {SysParamInsertOrUpdateDTO} from "@/api/SysParamController";
 
 export const InitForm: SysParamInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (useForm: FormInstance<SysParamInsertOrUpdateDTO>): ProFormColumnsType<SysParamInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (): ProFormColumnsType<SysParamInsertOrUpdateDTO>[] => {
 
     return [
         {

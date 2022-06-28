@@ -118,7 +118,7 @@ export default function () {
                 }}
                 visible={formVisible}
                 onVisibleChange={setFormVisible}
-                columns={SchemaFormColumnList(useForm)}
+                columns={SchemaFormColumnList()}
                 onFinish={async (form) => {
                     await sysParamInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                         ToastSuccess(res.msg)

@@ -2,14 +2,13 @@ import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
-import {FormInstance} from "antd/es";
 import {SysJobInsertOrUpdateDTO} from "@/api/SysJobController";
 
 export const InitForm: SysJobInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysJobInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
 
     const newTreeList = ListToTree(
         jobDictListRef.current.filter(item =>

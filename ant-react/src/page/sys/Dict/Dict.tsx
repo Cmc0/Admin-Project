@@ -1,34 +1,25 @@
-import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
-import {Button, Dropdown, Form, Menu, Space} from "antd";
-import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import React, {useEffect, useRef, useState} from "react";
+import {ActionType, BetaSchemaForm, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
+import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
-import TableColumnList from "@/page/sys/Menu/TableColumnList";
-import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
-import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import CommonConstant from "@/model/constant/CommonConstant";
-import {
-    sysMenuAddOrderNo,
-    sysMenuDeleteByIdSet,
-    SysMenuDO,
-    sysMenuInfoById,
-    sysMenuInsertOrUpdate,
-    SysMenuInsertOrUpdateDTO,
-    SysMenuPageDTO,
-    sysMenuTree
-} from "@/api/SysMenuController";
 import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
-import {GetMenuDictList, IMyTree} from "../../../../util/DictUtil";
+import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
+import {
+    sysDictAddOrderNo,
+    sysDictDeleteByIdSet,
+    sysDictInfoById,
+    sysDictInsertOrUpdate,
+    SysDictInsertOrUpdateDTO,
+    SysDictPageDTO,
+    sysDictTree,
+    SysDictTreeVO
+} from "@/api/SysDictController";
+import TableColumnList from "@/page/sys/Dict/TableColumnList";
+import SchemaFormColumnList, {InitForm} from "@/page/sys/Dict/SchemaFormColumnList";
 
 export default function () {
-
-    const [columnsStateMap, setColumnsStateMap] = useState<Record<string, ColumnsState>>(
-        {
-            firstFlag: {show: false,},
-            authFlag: {show: false,},
-            linkFlag: {show: false,},
-            updateTime: {show: false,},
-        });
 
     const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
 
@@ -36,34 +27,30 @@ export default function () {
 
     const actionRef = useRef<ActionType>(null)
 
-    const [useForm] = Form.useForm<SysMenuInsertOrUpdateDTO>();
+    const [useForm] = Form.useForm<SysDictInsertOrUpdateDTO>();
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
-    const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
+    const currentForm = useRef<SysDictInsertOrUpdateDTO>({})
 
-    const menuDictListRef = useRef<IMyTree[]>([])
+    const sysDictTreeRef = useRef<SysDictTreeVO[]>([])
 
-    function doGetMenuDictList() {
-        GetMenuDictList().then(res => {
-            menuDictListRef.current = res
+    function doGetSysDictTree() {
+        sysDictTree({}).then(res => {
+            sysDictTreeRef.current = res.data || []
         })
     }
 
     useEffect(() => {
-        doGetMenuDictList()
+        doGetSysDictTree()
     }, [])
 
     return <>
-        <ProTable<SysMenuDO, SysMenuPageDTO>
+        <ProTable<SysDictTreeVO, SysDictPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
             pagination={false}
             columnEmptyText={false}
-            columnsState={{
-                value: columnsStateMap,
-                onChange: setColumnsStateMap,
-            }}
             rowSelection={{}}
             expandable={{
                 expandedRowKeys,
@@ -77,10 +64,10 @@ export default function () {
                 fullScreen: true,
             }}
             request={(params, sort, filter) => {
-                return sysMenuTree({...params, sort})
+                return sysDictTree({...params, sort})
             }}
             postData={(data) => {
-                doGetMenuDictList()
+                doGetSysDictTree()
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
                 return data
             }}
@@ -112,15 +99,15 @@ export default function () {
                     </Dropdown>,
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
-                        currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: menuDictListRef.current});
+                        currentForm.current = {type: 1}
+                        CalcOrderNo(currentForm.current, {children: sysDictTreeRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
             }}
             tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                 <Space size={16}>
-                    <ModalForm<SysMenuInsertOrUpdateDTO>
+                    <ModalForm<SysDictInsertOrUpdateDTO>
                         modalProps={{
                             maskClosable: false
                         }}
@@ -129,7 +116,7 @@ export default function () {
                         title={AddOrderNo}
                         trigger={<a>{AddOrderNo}</a>}
                         onFinish={async (form) => {
-                            await sysMenuAddOrderNo({
+                            await sysDictAddOrderNo({
                                 idSet: selectedRowKeys,
                                 number: form.orderNo!
                             }).then(res => {
@@ -146,7 +133,7 @@ export default function () {
                     </ModalForm>
                     <a className={"red3"} onClick={() => {
                         execConfirm(() => {
-                            return sysMenuDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
+                            return sysDictDeleteByIdSet({idSet: selectedRowKeys}).then(res => {
                                 ToastSuccess(res.msg)
                                 actionRef.current?.reload()
                                 onCleanSelected()
@@ -159,8 +146,8 @@ export default function () {
         >
         </ProTable>
 
-        <BetaSchemaForm<SysMenuInsertOrUpdateDTO>
-            title={currentForm.current.id ? "编辑菜单" : "新建菜单"}
+        <BetaSchemaForm<SysDictInsertOrUpdateDTO>
+            title={currentForm.current.id ? `编辑${currentForm.current.type === 1 ? '字典' : '字典项'}` : `新建${currentForm.current.type === 1 ? '字典' : '字典项'}`}
             layoutType={"ModalForm"}
             grid
             rowProps={{
@@ -174,11 +161,6 @@ export default function () {
             }}
             form={useForm}
             isKeyPressSubmit
-            onValuesChange={(changedValues, allValues) => {
-                if (allValues.path && allValues.path.startsWith("http")) {
-                    useForm.setFieldsValue({linkFlag: true})
-                }
-            }}
             submitter={{
                 render: (props, dom) => {
                     return [
@@ -197,7 +179,7 @@ export default function () {
                             danger
                             onClick={() => {
                                 execConfirm(async () => {
-                                    return sysMenuDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
+                                    return sysDictDeleteByIdSet({idSet: [currentForm.current.id!]}).then(res => {
                                         setFormVisible(false)
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
@@ -217,7 +199,7 @@ export default function () {
                 useForm.resetFields()
 
                 if (currentForm.current.id) {
-                    await sysMenuInfoById({id: currentForm.current.id}).then(res => {
+                    await sysDictInfoById({id: currentForm.current.id}).then(res => {
                         currentForm.current = res
                     })
                 }
@@ -227,9 +209,9 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(menuDictListRef, useForm, currentForm)}
+            columns={SchemaFormColumnList()}
             onFinish={async (form) => {
-                await sysMenuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
+                await sysDictInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()

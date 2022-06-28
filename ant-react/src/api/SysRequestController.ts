@@ -36,7 +36,7 @@ export function sysRequestAllAvgPro(form: SysRequestPageDTO, config?: AxiosReque
 }
 
 export interface SysRequestPageVO {
-    category?: string // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
