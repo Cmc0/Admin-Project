@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ProTable} from "@ant-design/pro-components";
 import {Button, Form, Space} from "antd";
-import {LoadingOutlined, PlusOutlined, ReloadOutlined} from "@ant-design/icons/lib";
+import {PlusOutlined} from "@ant-design/icons/lib";
 import {
     sysUserDeleteByIdSet,
     sysUserInfoById,
@@ -19,7 +19,6 @@ import SchemaFormColumnList, {InitForm} from "@/page/sys/User/SchemaFormColumnLi
 import {GetDeptDictList, GetJobDictList, GetRoleDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
-import moment from "moment";
 
 export default function () {
 
@@ -34,9 +33,6 @@ export default function () {
     const currentForm = useRef<SysUserInsertOrUpdateDTO>({})
 
     const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
-
-    const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
-    const [polling, setPolling] = useState<number | undefined>(CommonConstant.POLLING_TIME);
 
     const deptDictListRef = useRef<IMyTree[]>([])
     const jobDictListRef = useRef<IMyTree[]>([])
@@ -67,8 +63,6 @@ export default function () {
                     showQuickJumper: true,
                     showSizeChanger: true,
                 }}
-                headerTitle={`上次更新时间：${moment(lastUpdateTime).format('HH:mm:ss')}`}
-                polling={polling}
                 columnEmptyText={false}
                 rowSelection={{}}
                 expandable={{
@@ -83,7 +77,6 @@ export default function () {
                     fullScreen: true,
                 }}
                 request={(params, sort, filter) => {
-                    setLastUpdateTime(new Date())
                     return sysUserPage({...params, sort})
                 }}
                 toolbar={{
@@ -92,20 +85,6 @@ export default function () {
                             currentForm.current = {}
                             setFormVisible(true)
                         }}>新建</Button>,
-                        <Button
-                            key="2"
-                            type="primary"
-                            onClick={() => {
-                                if (polling) {
-                                    setPolling(undefined);
-                                    return;
-                                }
-                                setPolling(CommonConstant.POLLING_TIME);
-                            }}
-                        >
-                            {polling ? <LoadingOutlined/> : <ReloadOutlined/>}
-                            {polling ? '停止轮询' : '开始轮询'}
-                        </Button>
                     ],
                 }}
                 tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
