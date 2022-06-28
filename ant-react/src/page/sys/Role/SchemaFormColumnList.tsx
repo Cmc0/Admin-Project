@@ -39,6 +39,8 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
             valueType: 'select',
             fieldProps: {
                 showSearch: true,
+                mode: "multiple",
+                // @ts-ignore
                 options: userDictListRef.current,
             }
         },
