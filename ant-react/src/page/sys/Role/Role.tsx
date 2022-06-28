@@ -60,7 +60,7 @@ export default function () {
                     fullScreen: true,
                 }}
                 request={(params, sort, filter) => {
-                    return sysRolePage({...params, enableFlag: true, sort})
+                    return sysRolePage({...params, sort})
                 }}
                 toolbar={{
                     actions: [

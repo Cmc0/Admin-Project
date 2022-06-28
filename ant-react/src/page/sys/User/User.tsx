@@ -80,7 +80,7 @@ export default function () {
                 }}
                 request={(params, sort, filter) => {
                     setLastUpdateTime(new Date())
-                    return sysUserPage({...params, enableFlag: true, sort})
+                    return sysUserPage({...params, sort})
                 }}
                 toolbar={{
                     actions: [

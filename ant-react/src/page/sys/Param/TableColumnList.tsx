@@ -11,11 +11,12 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysParamInsertOrUpd
         valueType: 'index',
     },
     {title: '参数名', dataIndex: 'name'},
-    {title: '参数值', dataIndex: 'value', ellipsis: true},
+    {title: '参数值', dataIndex: 'value', ellipsis: true, hideInSearch: true},
     {title: '备注', dataIndex: 'remark'},
     {
         title: '启用',
         dataIndex: 'enableFlag',
+        valueType: 'select',
         valueEnum: YesNoDict
     },
     {

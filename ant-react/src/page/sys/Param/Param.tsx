@@ -42,7 +42,7 @@ export default function () {
                     fullScreen: true,
                 }}
                 request={(params, sort, filter) => {
-                    return sysParamPage({...params, enableFlag: true, sort})
+                    return sysParamPage({...params, sort})
                 }}
                 toolbar={{
                     actions: [
