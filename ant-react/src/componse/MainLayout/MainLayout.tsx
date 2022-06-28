@@ -234,6 +234,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                         {
                             key: '2',
                             label: <a
+                                className={"red3"}
                                 onClick={() => {
                                     execConfirm(() => {
                                         return sysUserLogout().then((res) => {
@@ -245,10 +246,12 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             >
                                 退出登录
                             </a>,
-                            icon: <LogoutOutlined/>
+                            icon: <LogoutOutlined className={"red3"}/>
                         },
                     ]}/>}>
-                        <Avatar className={"hand"} size="small" src={CommonConstant.RANDOM_AVATAR_URL}/>
+                        <div className={"h100 hand"}>
+                            <Avatar size="small" src={CommonConstant.RANDOM_AVATAR_URL}/>
+                        </div>
                     </Dropdown>
                 </Space>
             )}
