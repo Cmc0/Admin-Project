@@ -16,6 +16,7 @@ import {
 import CommonConstant from "@/model/constant/CommonConstant";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
+import ValidatorUtil from "../../../../util/ValidatorUtil";
 
 const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [
     {
@@ -160,6 +161,7 @@ export function UpdatePasswordModalForm(props: IUpdatePasswordModalForm) {
             return true
         }}
     >
-        <ProFormText label="新密码" tooltip={"可以为空"} name="newPassword"/>
+        <ProFormText label="新密码" tooltip={"可以为空"} name="newPassword"
+                     rules={[{validator: ValidatorUtil.passwordCanNullValidate}]}/>
     </ModalForm>
 }

@@ -13,6 +13,7 @@ import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
 import RegisterTest from "@/page/Register/RegisterTest";
 import {UserRegisterByEmailDTO, userRegisterEmail, userRegisterEmailSendCode} from "@/api/UserRegisterController";
 import {UseEffectLogin} from "@/page/Login/Login";
+import ValidatorUtil from "../../../util/ValidatorUtil";
 
 type RegisterType = 'email' | 'phone';
 
@@ -75,33 +76,26 @@ export default function () {
                                 fieldProps={{
                                     size: 'large',
                                     prefix: <UserOutlined/>,
+                                    allowClear: true,
                                 }}
                                 placeholder={'邮箱'}
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: '请输入邮箱',
-                                    },
-                                ]}
+                                rules={[{validator: ValidatorUtil.emailValidate}]}
                             />
                             <ProFormText.Password
                                 name="password"
                                 fieldProps={{
                                     size: 'large',
                                     prefix: <LockOutlined/>,
-                                    allowClear: true
+                                    allowClear: true,
                                 }}
                                 placeholder={'密码'}
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: '请输入密码',
-                                    },
-                                ]}
+                                rules={[{validator: ValidatorUtil.passwordValidate}]}
                             />
                             <ProFormCaptcha
                                 fieldProps={{
                                     size: 'large',
+                                    maxLength: 6,
+                                    allowClear: true,
                                     prefix: <SafetyCertificateOutlined/>,
                                 }}
                                 captchaProps={{
@@ -109,12 +103,7 @@ export default function () {
                                 }}
                                 placeholder={'请输入验证码'}
                                 name="code"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: '请输入验证码',
-                                    },
-                                ]}
+                                rules={[{validator: ValidatorUtil.codeValidate}]}
                                 onGetCaptcha={async () => {
                                     await useForm.validateFields(['email']).then(async res => {
                                         await userRegisterEmailSendCode({email: res.email!}).then(res => {
