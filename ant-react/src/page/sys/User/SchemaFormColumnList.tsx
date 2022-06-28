@@ -81,7 +81,7 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
                 placeholder: '请选择',
                 allowClear: true,
                 treeNodeFilterProp: 'title',
-                maxTagCount: 2,
+                maxTagCount: 'responsive',
                 treeCheckable: true,
                 showCheckedStrategy: TreeSelect.SHOW_ALL,
                 // @ts-ignore
@@ -96,7 +96,7 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
                 placeholder: '请选择',
                 allowClear: true,
                 treeNodeFilterProp: 'title',
-                maxTagCount: 2,
+                maxTagCount: 'responsive',
                 treeCheckable: true,
                 showCheckedStrategy: TreeSelect.SHOW_ALL,
                 // @ts-ignore

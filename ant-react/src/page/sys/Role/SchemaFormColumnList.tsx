@@ -27,7 +27,7 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
                 placeholder: '请选择',
                 allowClear: true,
                 treeNodeFilterProp: 'title',
-                maxTagCount: 2,
+                maxTagCount: 'responsive',
                 treeCheckable: true,
                 showCheckedStrategy: TreeSelect.SHOW_PARENT,
                 options: menuDictListRef.current
@@ -40,6 +40,7 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
             fieldProps: {
                 showSearch: true,
                 mode: "multiple",
+                maxTagCount: 'responsive',
                 // @ts-ignore
                 options: userDictListRef.current,
             }
