@@ -15,20 +15,20 @@ export const InitForm: SysMenuInsertOrUpdateDTO = {
 
 const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
-    const newTreeList = ListToTree(
-        menuDictListRef.current.filter(item =>
-            item.id !== currentForm.current.id // 不要本节点
-        ));
-
     return [
         {
             title: '上级菜单', dataIndex: 'parentId', valueType: "treeSelect",
+            request: async () => {
+                return ListToTree(
+                    menuDictListRef.current.filter(item =>
+                        item.id !== currentForm.current.id // 不要本节点
+                    ));
+            },
             fieldProps: {
                 placeholder: '为空则表示顶级菜单',
                 allowClear: true,
                 showSearch: true,
                 treeNodeFilterProp: 'title',
-                options: newTreeList
             },
         },
         {

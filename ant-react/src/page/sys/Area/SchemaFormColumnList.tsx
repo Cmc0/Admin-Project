@@ -10,21 +10,20 @@ export const InitForm: SysAreaInsertOrUpdateDTO = {
 }
 
 const SchemaFormColumnList = (areaDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysAreaInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>): ProFormColumnsType<SysAreaInsertOrUpdateDTO>[] => {
-
-    const newTreeList = ListToTree(
-        areaDictListRef.current.filter(item =>
-            item.id !== currentForm.current.id // 不要本节点
-        ));
-
     return [
         {
             title: '上级区域', dataIndex: 'parentId', valueType: "treeSelect",
+            request: async () => {
+                return ListToTree(
+                    areaDictListRef.current.filter(item =>
+                        item.id !== currentForm.current.id // 不要本节点
+                    ));
+            },
             fieldProps: {
                 placeholder: '为空则表示顶级区域',
                 allowClear: true,
                 showSearch: true,
                 treeNodeFilterProp: 'title',
-                options: newTreeList
             },
         },
         {

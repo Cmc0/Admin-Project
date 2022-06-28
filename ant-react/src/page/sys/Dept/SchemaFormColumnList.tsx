@@ -10,21 +10,20 @@ export const InitForm: SysDeptInsertOrUpdateDTO = {
 }
 
 const SchemaFormColumnList = (deptDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysDeptInsertOrUpdateDTO>, areaDictListRef: React.MutableRefObject<IMyTree[]>, userDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysDeptInsertOrUpdateDTO>[] => {
-
-    const newTreeList = ListToTree(
-        deptDictListRef.current.filter(item =>
-            item.id !== currentForm.current.id // 不要本节点
-        ));
-
     return [
         {
             title: '上级部门', dataIndex: 'parentId', valueType: "treeSelect",
+            request: async () => {
+                return ListToTree(
+                    deptDictListRef.current.filter(item =>
+                        item.id !== currentForm.current.id // 不要本节点
+                    ));
+            },
             fieldProps: {
                 placeholder: '为空则表示顶级部门',
                 allowClear: true,
                 showSearch: true,
                 treeNodeFilterProp: 'title',
-                options: newTreeList
             },
         },
         {

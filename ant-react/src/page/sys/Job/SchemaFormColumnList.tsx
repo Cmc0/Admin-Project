@@ -9,21 +9,20 @@ export const InitForm: SysJobInsertOrUpdateDTO = {
 }
 
 const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>, userDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
-
-    const newTreeList = ListToTree(
-        jobDictListRef.current.filter(item =>
-            item.id !== currentForm.current.id // 不要本节点
-        ));
-
     return [
         {
             title: '上级岗位', dataIndex: 'parentId', valueType: "treeSelect",
+            request: async () => {
+                return ListToTree(
+                    jobDictListRef.current.filter(item =>
+                        item.id !== currentForm.current.id // 不要本节点
+                    ));
+            },
             fieldProps: {
                 placeholder: '为空则表示顶级岗位',
                 allowClear: true,
                 showSearch: true,
                 treeNodeFilterProp: 'title',
-                options: newTreeList
             },
         },
         {
