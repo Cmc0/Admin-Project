@@ -13,6 +13,10 @@ import {
     SysRequestPageVO
 } from "@/api/SysRequestController";
 
+export function GetAvgType(avg: number) {
+    return avg < 800 ? 'success' : (avg > 1600 ? 'danger' : 'warning')
+}
+
 export default function () {
 
     const actionRef = useRef<ActionType>(null)
@@ -35,7 +39,7 @@ export default function () {
                            text={
                                <Typography.Text
                                    strong
-                                   type={sysRequestAllAvgVO.avg! < 800 ? 'success' : (sysRequestAllAvgVO.avg! > 1600 ? 'danger' : 'warning')}>
+                                   type={GetAvgType(sysRequestAllAvgVO.avg!)}>
                                    avg：{sysRequestAllAvgVO.avg}ms
                                </Typography.Text>
                            }/>

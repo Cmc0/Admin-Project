@@ -22,6 +22,7 @@ import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/consta
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {TimeoutTwoSeconds} from "../../../util/HttpUtil";
+import {GetAvgType} from "@/page/sysMonitor/Request/Request";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -192,7 +193,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                            text={
                                <Typography.Text
                                    strong
-                                   type={sysRequestAllAvgVO.avg! < 800 ? 'success' : (sysRequestAllAvgVO.avg! > 1600 ? 'danger' : 'warning')}>
+                                   type={GetAvgType(sysRequestAllAvgVO.avg!)}>
                                    avg：{sysRequestAllAvgVO.avg}ms
                                </Typography.Text>
                            }/>
