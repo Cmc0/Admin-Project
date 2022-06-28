@@ -7,7 +7,6 @@ import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntityThree;
-import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysParamDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.SysParamUtil;
@@ -50,7 +49,6 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
 
         return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysParamDO::getName, dto.getName())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntityThree::getRemark, dto.getRemark())
-            .eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag()).page(dto.getPage());
 
     }

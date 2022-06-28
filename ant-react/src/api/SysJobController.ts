@@ -56,7 +56,6 @@ export function sysJobInsertOrUpdate(form: SysJobInsertOrUpdateDTO, config?: Axi
 export interface SysJobPageDTO extends MyPageDTO {
     current?: number // 第几页
     enableFlag?: boolean // 启用/禁用
-    id?: number // 主键id
     name?: string // 岗位名
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数

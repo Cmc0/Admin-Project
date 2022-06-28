@@ -12,9 +12,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysAreaPageDTO extends MyPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
-
     @ApiModelProperty(value = "启用/禁用")
     private Boolean enableFlag;
 

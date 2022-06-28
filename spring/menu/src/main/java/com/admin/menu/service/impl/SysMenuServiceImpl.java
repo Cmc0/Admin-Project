@@ -143,7 +143,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             .like(StrUtil.isNotBlank(dto.getPath()), SysMenuDO::getPath, dto.getPath())
             .like(StrUtil.isNotBlank(dto.getAuths()), SysMenuDO::getAuths, dto.getAuths())
             .like(StrUtil.isNotBlank(dto.getRedirect()), SysMenuDO::getRedirect, dto.getRedirect())
-            .eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
             .eq(StrUtil.isNotBlank(dto.getRouter()), SysMenuDO::getRouter, dto.getRouter())
             .eq(dto.getParentId() != null, SysMenuDO::getParentId, dto.getParentId())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())

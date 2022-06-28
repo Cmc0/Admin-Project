@@ -45,7 +45,6 @@ export function sysParamInsertOrUpdate(form: SysParamInsertOrUpdateDTO, config?:
 export interface SysParamPageDTO extends MyPageDTO {
     current?: number // 第几页
     enableFlag?: boolean // 启用/禁用
-    id?: number // 主键id
     name?: string // 配置名，以 id为不变值进行使用，不要用此属性
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数

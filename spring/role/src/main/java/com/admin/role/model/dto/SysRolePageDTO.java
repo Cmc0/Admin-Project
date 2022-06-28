@@ -12,9 +12,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysRolePageDTO extends MyPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
-
     @ApiModelProperty(value = "角色名（不能重复）")
     private String name;
 

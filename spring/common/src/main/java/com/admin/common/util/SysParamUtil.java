@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.mapper.SysParamMapper;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysParamDO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
@@ -63,7 +64,8 @@ public class SysParamUtil {
     public static Map<String, String> updateRedisCache() {
 
         List<SysParamDO> paramRedisList =
-            ChainWrappers.lambdaQueryChain(sysParamMapper).select(BaseEntityTwo::getId, SysParamDO::getValue).list();
+            ChainWrappers.lambdaQueryChain(sysParamMapper).select(BaseEntityTwo::getId, SysParamDO::getValue)
+                .eq(BaseEntityThree::getEnableFlag, true).list();
 
         // 转换为 map，目的：提供速度
         // 注意：Collectors.toMap()方法，key不能重复，不然会报错

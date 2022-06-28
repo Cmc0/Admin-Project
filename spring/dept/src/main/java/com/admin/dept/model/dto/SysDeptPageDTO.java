@@ -12,9 +12,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysDeptPageDTO extends MyPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
-
     @ApiModelProperty(value = "部门名")
     private String name;
 

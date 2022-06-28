@@ -12,9 +12,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysParamPageDTO extends MyPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
-
     @ApiModelProperty(value = "配置名，以 id为不变值进行使用，不要用此属性")
     private String name;
 

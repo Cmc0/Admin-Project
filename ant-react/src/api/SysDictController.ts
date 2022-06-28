@@ -58,7 +58,6 @@ export interface SysDictPageDTO extends MyPageDTO {
     current?: number // 第几页
     dictKey?: string // 字典 key（不能重复），字典项要冗余这个 key，目的：方便操作
     enableFlag?: boolean // 启用/禁用
-    id?: number // 主键id
     name?: string // 字典/字典项 名
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数

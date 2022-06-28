@@ -12,9 +12,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysDictPageDTO extends MyPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
-
     @ApiModelProperty(value = "字典 key（不能重复），字典项要冗余这个 key，目的：方便操作")
     private String dictKey;
 

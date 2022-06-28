@@ -50,7 +50,6 @@ export interface SysRolePageDTO extends MyPageDTO {
     current?: number // 第几页
     defaultFlag?: boolean // 是否是默认角色，备注：只会有一个默认角色
     enableFlag?: boolean // 启用/禁用
-    id?: number // 主键id
     name?: string // 角色名（不能重复）
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数

@@ -83,7 +83,6 @@ export interface SysMenuPageDTO extends MyPageDTO {
     current?: number // 第几页
     enableFlag?: boolean // 启用/禁用
     firstFlag?: boolean // 是否是起始页面，备注：只能存在一个 firstFlag === true 的菜单
-    id?: number // 主键id
     linkFlag?: boolean // 是否外链，即，打开页面会在一个新的窗口打开，可以配合 router
     name?: string // 菜单名
     order?: MyOrderDTO // 排序字段

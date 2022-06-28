@@ -56,7 +56,6 @@ export function sysDeptInsertOrUpdate(form: SysDeptInsertOrUpdateDTO, config?: A
 export interface SysDeptPageDTO extends MyPageDTO {
     current?: number // 第几页
     enableFlag?: boolean // 启用/禁用
-    id?: number // 主键id
     name?: string // 部门名
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
