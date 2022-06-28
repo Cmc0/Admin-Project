@@ -125,7 +125,7 @@ export default function () {
                             maskClosable: false
                         }}
                         isKeyPressSubmit
-                        width={450}
+                        width={CommonConstant.MODAL_FORM_WIDTH}
                         title={AddOrderNo}
                         trigger={<a>{AddOrderNo}</a>}
                         onFinish={async (form) => {

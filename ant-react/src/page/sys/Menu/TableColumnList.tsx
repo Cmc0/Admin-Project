@@ -107,7 +107,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpda
                                 maskClosable: false
                             }}
                             isKeyPressSubmit
-                            width={450}
+                            width={CommonConstant.MODAL_FORM_WIDTH}
                             title={QuicklyAddAuth}
                             trigger={<a>{QuicklyAddAuth}</a>}
                             onFinish={async (form) => {

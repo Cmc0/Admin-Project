@@ -116,7 +116,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                             maskClosable: false
                         }}
                         isKeyPressSubmit
-                        width={450}
+                        width={CommonConstant.MODAL_FORM_WIDTH}
                         title={UpdatePasswordTitle}
                         trigger={<a>{UpdatePasswordTitle}</a>}
                         onFinish={async (form) => {
@@ -131,11 +131,14 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                                 idSet: [entity.id!]
                             }).then(res => {
                                 ToastSuccess(res.msg)
+                                setTimeout(() => {
+                                    actionRef.current?.reload()
+                                }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
                             })
                             return true
                         }}
                     >
-                        <ProFormText label="新密码" name="newPassword"/>
+                        <ProFormText label="新密码" tooltip={"可以为空"} name="newPassword"/>
                     </ModalForm>
                 },
             ]}>

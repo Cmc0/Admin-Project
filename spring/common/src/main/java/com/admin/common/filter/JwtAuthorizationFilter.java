@@ -8,7 +8,6 @@ import cn.hutool.jwt.JWTValidator;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
-import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.RequestUtil;
 import com.admin.common.util.ResponseUtil;
@@ -81,11 +80,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return null;
         }
 
-        SysRequestCategoryEnum sysRequestCategoryEnum = RequestUtil.getSysRequestCategoryEnum(request);
+        String jwtHash =
+            MyJwtUtil.generateRedisJwtHash(authorization, userId, RequestUtil.getSysRequestCategoryEnum(request));
 
         // 判断 jwtHash是否存在于 redis中
-        Boolean hasKey = MyJwtUtil.jsonRedisTemplate
-            .hasKey(MyJwtUtil.generateRedisJwtHash(authorization, userId, sysRequestCategoryEnum));
+        Boolean hasKey = MyJwtUtil.jsonRedisTemplate.hasKey(jwtHash);
         if (hasKey == null || !hasKey) {
             return loginExpired(response); // 提示登录过期，请重新登录
         }
@@ -107,6 +106,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         // 验证算法
         if (!jwtOf.verify()) {
+            MyJwtUtil.jsonRedisTemplate.delete(jwtHash);
             return null;
         }
 
@@ -114,6 +114,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // 校验时间字段：如果过期了，这里会抛出 ValidateException异常
             JWTValidator.of(jwtOf).validateDate(new Date());
         } catch (ValidateException e) {
+            MyJwtUtil.jsonRedisTemplate.delete(jwtHash);
             return loginExpired(response); // 提示登录过期，请重新登录
         }
 
