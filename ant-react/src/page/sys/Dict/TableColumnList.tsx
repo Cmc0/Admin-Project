@@ -1,5 +1,5 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
-import {Dropdown, Menu} from "antd";
+import {Dropdown, Menu, Tag} from "antd";
 import {EllipsisOutlined} from "@ant-design/icons/lib";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
@@ -21,6 +21,11 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysDictInsertOrUpda
     },
     {
         title: '字典Key', dataIndex: 'dictKey', hideInTable: true
+    },
+    {
+        title: '类别', dataIndex: "type",
+        render: (dom, entity) =>
+            <Tag color={entity.type === 1 ? 'purple' : 'green'}>{entity.type === 1 ? '字典' : '字典项'}</Tag>
     },
     {title: '排序号', dataIndex: 'orderNo', hideInSearch: true},
     {
