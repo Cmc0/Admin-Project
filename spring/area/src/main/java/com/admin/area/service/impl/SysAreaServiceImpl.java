@@ -167,6 +167,8 @@ public class SysAreaServiceImpl extends ServiceImpl<SysAreaMapper, SysAreaDO> im
 
         sysAreaInfoByIdVO.setDeptIdSet(deptIdSet);
 
+        MyEntityUtil.handleParentId(sysAreaInfoByIdVO);
+
         return sysAreaInfoByIdVO;
     }
 

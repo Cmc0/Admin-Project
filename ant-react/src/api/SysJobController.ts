@@ -63,7 +63,7 @@ export interface SysJobPageDTO extends MyPageDTO {
 }
 
 export interface SysJobDO {
-    children?: SysJobDO // 子节点
+    children?: SysJobDO[] // 子节点
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除

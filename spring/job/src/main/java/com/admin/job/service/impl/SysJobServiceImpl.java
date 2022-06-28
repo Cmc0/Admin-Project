@@ -173,6 +173,8 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
 
         sysJobInfoByIdVO.setUserIdSet(userIdSet);
 
+        MyEntityUtil.handleParentId(sysJobInfoByIdVO);
+
         return sysJobInfoByIdVO;
     }
 

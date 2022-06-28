@@ -178,9 +178,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptDO> im
     @Override
     public SysDeptDO infoById(NotNullId notNullId) {
 
-        SysDeptInfoByIdVO deptInfoByIdVO = BeanUtil.copyProperties(getById(notNullId.getId()), SysDeptInfoByIdVO.class);
+        SysDeptInfoByIdVO sysDeptInfoByIdVO =
+            BeanUtil.copyProperties(getById(notNullId.getId()), SysDeptInfoByIdVO.class);
 
-        if (deptInfoByIdVO == null) {
+        if (sysDeptInfoByIdVO == null) {
             return null;
         }
 
@@ -198,10 +199,12 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptDO> im
         Set<Long> userIdSet =
             sysDeptRefUserDOList.stream().map(SysDeptRefUserDO::getUserId).collect(Collectors.toSet());
 
-        deptInfoByIdVO.setAreaIdSet(areaIdSet);
-        deptInfoByIdVO.setUserIdSet(userIdSet);
+        sysDeptInfoByIdVO.setAreaIdSet(areaIdSet);
+        sysDeptInfoByIdVO.setUserIdSet(userIdSet);
 
-        return deptInfoByIdVO;
+        MyEntityUtil.handleParentId(sysDeptInfoByIdVO);
+
+        return sysDeptInfoByIdVO;
     }
 
     /**

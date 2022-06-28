@@ -1,0 +1,65 @@
+import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
+import React from "react";
+import {ListToTree} from "../../../../util/TreeUtil";
+import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
+import {FormInstance} from "antd/es";
+import {SysJobInsertOrUpdateDTO} from "@/api/SysJobController";
+
+export const InitForm: SysJobInsertOrUpdateDTO = {
+    enableFlag: true,
+}
+
+const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysJobInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
+
+    const newTreeList = ListToTree(
+        jobDictListRef.current.filter(item =>
+            item.id !== currentForm.current.id // 不要本节点
+        ));
+
+    return [
+        {
+            title: '上级岗位', dataIndex: 'parentId', valueType: "treeSelect",
+            fieldProps: {
+                placeholder: '为空则表示顶级岗位',
+                allowClear: true,
+                showSearch: true,
+                treeNodeFilterProp: 'title',
+                options: newTreeList
+            },
+        },
+        {
+            title: '岗位名', dataIndex: 'name',
+            formItemProps: {
+                rules: [
+                    {
+                        required: true,
+                    },
+                ],
+            }
+        },
+        {
+            title: '排序号',
+            dataIndex: 'orderNo',
+            valueType: 'digit',
+            fieldProps: {className: 'w100', min: Number.MIN_SAFE_INTEGER}
+        },
+        {
+            title: '启用',
+            dataIndex: 'enableFlag',
+            valueEnum: YesNoDict,
+            valueType: 'switch',
+        },
+        {
+            title: '备注',
+            dataIndex: 'remark',
+            valueType: 'textarea',
+            fieldProps: {
+                showCount: true,
+                maxLength: 300,
+                allowClear: true,
+            }
+        }
+    ]
+}
+
+export default SchemaFormColumnList
