@@ -1,5 +1,4 @@
 import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
-import SysMenuDO from "@/model/entity/SysMenuDO";
 import {Dropdown, Menu, Space} from "antd";
 import {EllipsisOutlined, HomeTwoTone} from "@ant-design/icons/lib";
 import MyIcon from "@/componse/MyIcon/MyIcon";
@@ -9,7 +8,12 @@ import React from "react";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {CalcOrderNo, defaultOrderNo} from "../../../../util/TreeUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
-import {sysMenuDeleteByIdSet, sysMenuInsertOrUpdate, SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
+import {
+    sysMenuDeleteByIdSet,
+    SysMenuDO,
+    sysMenuInsertOrUpdate,
+    SysMenuInsertOrUpdateDTO
+} from "@/api/SysMenuController";
 
 const QuicklyAddAuth = "快速添加权限"
 

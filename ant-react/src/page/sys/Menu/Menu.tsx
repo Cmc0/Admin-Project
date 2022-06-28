@@ -1,4 +1,3 @@
-import SysMenuDO from "@/model/entity/SysMenuDO";
 import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
@@ -11,6 +10,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {
     sysMenuAddOrderNo,
     sysMenuDeleteByIdSet,
+    SysMenuDO,
     sysMenuInfoById,
     sysMenuInsertOrUpdate,
     SysMenuInsertOrUpdateDTO,
