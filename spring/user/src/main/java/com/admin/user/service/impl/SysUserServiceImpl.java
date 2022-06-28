@@ -380,18 +380,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Transactional
     public String updatePassword(SysUserUpdatePasswordDTO dto) {
 
-        // 非对称：解密 ↓
-        String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
-        dto.setNewOrigPassword(MyRsaUtil.rsaDecrypt(dto.getNewOrigPassword(), paramValue)); // 非对称：解密
-        dto.setNewPassword(MyRsaUtil.rsaDecrypt(dto.getNewPassword(), paramValue)); // 非对称：解密
-        // 非对称：解密 ↑
+        boolean passwordFlag = StrUtil.isNotBlank(dto.getNewPassword()) && StrUtil.isNotBlank(dto.getNewOrigPassword());
 
-        if (!ReUtil.isMatch(BaseRegexConstant.PASSWORD_REGEXP, dto.getNewOrigPassword())) {
-            ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
+        if (passwordFlag) {
+            // 非对称：解密 ↓
+            String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
+            dto.setNewOrigPassword(MyRsaUtil.rsaDecrypt(dto.getNewOrigPassword(), paramValue)); // 非对称：解密
+            dto.setNewPassword(MyRsaUtil.rsaDecrypt(dto.getNewPassword(), paramValue)); // 非对称：解密
+            // 非对称：解密 ↑
+
+            if (!ReUtil.isMatch(BaseRegexConstant.PASSWORD_REGEXP, dto.getNewOrigPassword())) {
+                ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
+            }
+
+            lambdaUpdate().in(BaseEntityTwo::getId, dto.getIdSet())
+                .set(SysUserDO::getPassword, PasswordConvertUtil.convert(dto.getNewPassword(), true)).update();
+        } else {
+
+            lambdaUpdate().in(BaseEntityTwo::getId, dto.getIdSet()).set(SysUserDO::getPassword, "").update();
         }
-
-        lambdaUpdate().in(BaseEntityTwo::getId, dto.getIdSet())
-            .set(SysUserDO::getPassword, PasswordConvertUtil.convert(dto.getNewPassword(), true)).update();
 
         refreshJwtSecretSuf(new NotEmptyIdSet(dto.getIdSet())); // 刷新：jwt私钥后缀
 
