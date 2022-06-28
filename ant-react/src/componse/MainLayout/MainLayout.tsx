@@ -23,6 +23,7 @@ import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {TimeoutTwoSeconds} from "../../../util/HttpUtil";
 import {GetAvgType} from "@/page/sysMonitor/Request/Request";
+import {MenuDataItem} from '@ant-design/pro-components';
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -151,13 +152,12 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    let userMenuListTemp: SysMenuDO[] = JSON.parse(JSON.stringify(props.userMenuList));
-                    userMenuListTemp = userMenuListTemp.filter(item => item.showFlag);
+                    const userMenuListTemp: MenuDataItem[] = JSON.parse(JSON.stringify(props.userMenuList));
                     userMenuListTemp.forEach(item => {
-                        // @ts-ignore
-                        item.icon = <MyIcon icon={item.icon}/>
+                        item.icon = <MyIcon icon={item.icon as string}/>
+                        item.hideInMenu = !item.showFlag
                     })
-                    return ListToTree(userMenuListTemp, true, 0, 'routes');
+                    return ListToTree(userMenuListTemp, true, 0);
                 },
             }}
             fixSiderbar={true}
@@ -227,7 +227,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <Dropdown overlayClassName={"body-bc"} overlay={<Menu items={[
                         {
                             key: '1',
-                            label: <a onClick={InDev}>
+                            label: <a onClick={() => getAppNav()(CommonConstant.USER_CENTER_PATH)}>
                                 个人中心
                             </a>,
                             icon: <UserOutlined/>
