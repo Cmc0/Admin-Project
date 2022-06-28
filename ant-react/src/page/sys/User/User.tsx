@@ -12,7 +12,7 @@ import {
     SysUserPageVO,
     sysUserResetAvatar
 } from "@/api/SysUserController";
-import TableColumnList from "@/page/sys/User/TableColumnList";
+import TableColumnList, {UpdatePasswordModalForm} from "@/page/sys/User/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/User/SchemaFormColumnList";
@@ -29,9 +29,9 @@ export default function () {
 
     const [formVisible, setFormVisible] = useState<boolean>(false);
 
-    const currentForm = useRef<SysUserInsertOrUpdateDTO>({})
-
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
+
+    const currentForm = useRef<SysUserInsertOrUpdateDTO>({})
 
     const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
 
@@ -74,7 +74,7 @@ export default function () {
                     }
                 }}
                 revalidateOnFocus={false}
-                columns={TableColumnList(currentForm, setFormVisible, actionRef, rsaPublicKey)}
+                columns={TableColumnList(currentForm, setFormVisible, actionRef)}
                 options={{
                     fullScreen: true,
                 }}
@@ -106,12 +106,12 @@ export default function () {
                 }}
                 tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                     <Space size={16}>
+                        <UpdatePasswordModalForm idSet={selectedRowKeys as number[]} actionRef={actionRef}/>
                         <a onClick={() => {
                             execConfirm(() => {
                                 return sysUserResetAvatar({idSet: selectedRowKeys}).then(res => {
                                     ToastSuccess(res.msg)
                                     actionRef.current?.reload()
-                                    onCleanSelected()
                                 })
                             }, undefined, `确定重置选中的【${selectedRowKeys.length}】项的头像吗？`)
                         }}>重置头像</a>

@@ -15,10 +15,9 @@ import {
 } from "@/api/SysUserController";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
+import {useAppSelector} from "@/store";
 
-const UpdatePasswordTitle = "修改密码"
-
-const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>, rsaPublicKey: string): ProColumns<SysUserPageVO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [
     {
         title: '序号',
         dataIndex: 'index',
@@ -111,35 +110,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                 },
                 {
                     key: '2',
-                    label: <ModalForm<SysUserUpdatePasswordDTO>
-                        modalProps={{
-                            maskClosable: false
-                        }}
-                        isKeyPressSubmit
-                        width={CommonConstant.MODAL_FORM_WIDTH}
-                        title={UpdatePasswordTitle}
-                        trigger={<a>{UpdatePasswordTitle}</a>}
-                        onFinish={async (form) => {
-                            const formTemp = {...form}
-                            if (formTemp.newPassword) {
-                                const date = new Date()
-                                formTemp.newOrigPassword = RSAEncryptPro(formTemp.newPassword, rsaPublicKey, date)
-                                formTemp.newPassword = PasswordRSAEncrypt(formTemp.newPassword, rsaPublicKey, date)
-                            }
-                            await sysUserUpdatePassword({
-                                ...formTemp,
-                                idSet: [entity.id!]
-                            }).then(res => {
-                                ToastSuccess(res.msg)
-                                setTimeout(() => {
-                                    actionRef.current?.reload()
-                                }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
-                            })
-                            return true
-                        }}
-                    >
-                        <ProFormText label="新密码" tooltip={"可以为空"} name="newPassword"/>
-                    </ModalForm>
+                    label: <UpdatePasswordModalForm idSet={[entity.id!]} actionRef={actionRef}/>
                 },
             ]}>
             </Menu>}>
@@ -150,3 +121,45 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
 ];
 
 export default TableColumnList
+
+const UpdatePasswordTitle = "修改密码"
+
+interface IUpdatePasswordModalForm {
+    idSet: number[]
+    actionRef: React.RefObject<ActionType>
+}
+
+export function UpdatePasswordModalForm(props: IUpdatePasswordModalForm) {
+
+    const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
+
+    return <ModalForm<SysUserUpdatePasswordDTO>
+        modalProps={{
+            maskClosable: false
+        }}
+        isKeyPressSubmit
+        width={CommonConstant.MODAL_FORM_WIDTH}
+        title={UpdatePasswordTitle}
+        trigger={<a>{UpdatePasswordTitle}</a>}
+        onFinish={async (form) => {
+            const formTemp = {...form}
+            if (formTemp.newPassword) {
+                const date = new Date()
+                formTemp.newOrigPassword = RSAEncryptPro(formTemp.newPassword, rsaPublicKey, date)
+                formTemp.newPassword = PasswordRSAEncrypt(formTemp.newPassword, rsaPublicKey, date)
+            }
+            await sysUserUpdatePassword({
+                ...formTemp,
+                idSet: props.idSet
+            }).then(res => {
+                ToastSuccess(res.msg)
+                setTimeout(() => {
+                    props.actionRef.current?.reload()
+                }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+            })
+            return true
+        }}
+    >
+        <ProFormText label="新密码" tooltip={"可以为空"} name="newPassword"/>
+    </ModalForm>
+}
