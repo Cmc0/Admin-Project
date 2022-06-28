@@ -223,7 +223,10 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     <Dropdown overlayClassName={"body-bc"} overlay={<Menu items={[
                         {
                             key: '1',
-                            label: <a onClick={() => getAppNav()(CommonConstant.USER_CENTER_PATH)}>
+                            label: <a onClick={() => {
+                                setPathname(CommonConstant.USER_CENTER_PATH)
+                                getAppNav()(CommonConstant.USER_CENTER_PATH)
+                            }}>
                                 个人中心
                             </a>,
                             icon: <UserOutlined/>
