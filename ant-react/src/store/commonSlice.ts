@@ -17,7 +17,6 @@ export const commonSlice = createSlice({
     name: 'commonSlice',
     initialState,
     reducers: {
-
         setWebSocketMessage(state, action: PayloadAction<IWebSocketMessage>) {
             state.webSocketMessage = action.payload
         },
