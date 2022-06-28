@@ -4,6 +4,7 @@
 
     <!-- 分页排序查询 -->
     <select id="myPage" resultType="com.admin.user.model.vo.SysUserPageVO">
+        SELECT * FROM(
         SELECT
         a.nickname AS nickname,
         a.avatar_url AS avatarUrl,
@@ -12,10 +13,11 @@
         a.create_time AS createTime,
         a.update_time AS updateTime,
         a.enable_flag AS enableFlag,
-        ( SELECT MAX( b.create_time ) FROM sys_request b WHERE b.create_id = a.id ) AS lastActiveTime,
+        MAX( b.create_time ) AS lastActiveTime,
         IF ( a.`password` = '', 0, 1 ) AS passwordFlag
         FROM
         sys_user a
+        LEFT JOIN sys_request b ON b.create_id = a.id
         WHERE
         a.del_flag = FALSE
         <if test="dto.nickname != null and dto.nickname != ''">
@@ -33,9 +35,20 @@
         <if test="dto.endCreateTime != null">
             AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
         </if>
-        <if test="dto.passwordFlag != null">
-            AND IF ( a.`password` = '', 0, 1 ) = #{dto.passwordFlag}
-        </if>
+        GROUP BY
+        a.id
+        ) a
+        <where>
+            <if test="dto.passwordFlag != null">
+                AND a.passwordFlag = #{dto.passwordFlag}
+            </if>
+            <if test="dto.beginLastActiveTime != null">
+                AND a.lastActiveTime <![CDATA[>=]]> #{dto.beginLastActiveTime}
+            </if>
+            <if test="dto.endLastActiveTime != null">
+                AND a.lastActiveTime <![CDATA[<=]]> #{dto.endLastActiveTime}
+            </if>
+        </where>
     </select>
 
 </mapper>

@@ -35,4 +35,10 @@ public class SysUserPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "是否有密码")
     private Boolean passwordFlag;
 
+    @ApiModelProperty(value = "最近活跃开始时间")
+    private Date beginLastActiveTime;
+
+    @ApiModelProperty(value = "最近活跃结束时间")
+    private Date endLastActiveTime;
+
 }

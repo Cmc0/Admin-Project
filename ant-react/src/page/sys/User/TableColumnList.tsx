@@ -7,7 +7,7 @@ import {EllipsisOutlined} from "@ant-design/icons/lib";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {
     sysUserDeleteByIdSet,
-    SysUserInsertOrUpdateDTO,
+    SysUserInsertOrUpdateDTO, SysUserPageDTO,
     SysUserPageVO,
     sysUserResetAvatar,
     sysUserUpdatePassword,
@@ -56,6 +56,16 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         }
     },
     {
+        title: '最近活跃', dataIndex: 'lastActiveTimeRange', hideInTable: true, valueType: 'dateTimeRange', search: {
+            transform: (value) => {
+                return {
+                    beginLastActiveTime: value[0],
+                    endLastActiveTime: value[1],
+                } as SysUserPageDTO
+            }
+        }
+    },
+    {
         title: '创建时间',
         dataIndex: 'createTime',
         hideInSearch: true,
@@ -68,7 +78,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                 return {
                     beginCreateTime: value[0],
                     endCreateTime: value[1],
-                } as SysRequestPageDTO
+                } as SysUserPageDTO
             }
         }
     },
