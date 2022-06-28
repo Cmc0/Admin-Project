@@ -92,6 +92,7 @@ export interface SysUserPageVO {
     email?: string // 邮箱，备注：会脱敏
     enableFlag?: boolean // 正常/冻结
     id?: number // 主键id
+    lastActiveTime?: string // 最近活跃时间
     nickname?: string // 昵称
     updateTime?: string // 修改时间
 }
