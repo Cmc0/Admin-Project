@@ -147,7 +147,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpda
                                     ToastSuccess(res.msg)
                                     setTimeout(() => {
                                         actionRef.current?.reload()
-                                    }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+                                    }, CommonConstant.MODAL_ANIM_TIME)
                                 })
                                 return true
                             }}

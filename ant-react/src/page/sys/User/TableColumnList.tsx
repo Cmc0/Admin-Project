@@ -1,13 +1,13 @@
 import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
 import {YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
-import {SysRequestPageDTO} from "@/api/SysRequestController";
 import {Dropdown, Menu} from "antd";
 import {EllipsisOutlined} from "@ant-design/icons/lib";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {
     sysUserDeleteByIdSet,
-    SysUserInsertOrUpdateDTO, SysUserPageDTO,
+    SysUserInsertOrUpdateDTO,
+    SysUserPageDTO,
     SysUserPageVO,
     sysUserResetAvatar,
     sysUserUpdatePassword,
@@ -166,7 +166,7 @@ export function UpdatePasswordModalForm(props: IUpdatePasswordModalForm) {
                 ToastSuccess(res.msg)
                 setTimeout(() => {
                     props.actionRef.current?.reload()
-                }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+                }, CommonConstant.MODAL_ANIM_TIME)
             })
             return true
         }}

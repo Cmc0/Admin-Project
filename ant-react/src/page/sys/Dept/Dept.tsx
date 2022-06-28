@@ -132,7 +132,7 @@ export default function () {
                                 ToastSuccess(res.msg)
                                 setTimeout(() => {
                                     actionRef.current?.reload()
-                                }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+                                }, CommonConstant.MODAL_ANIM_TIME)
                             })
                             return true
                         }}
@@ -193,7 +193,7 @@ export default function () {
                                         ToastSuccess(res.msg)
                                         setTimeout(() => {
                                             actionRef.current?.reload()
-                                        }, CommonConstant.MODAL_ANIM_TIME) // 要等 modal关闭动画完成
+                                        }, CommonConstant.MODAL_ANIM_TIME + 100)
                                     })
                                 }, undefined, `确定删除【${currentForm.current.name}】吗？`)
                             }}>
@@ -224,7 +224,7 @@ export default function () {
                     ToastSuccess(res.msg)
                     setTimeout(() => {
                         actionRef.current?.reload()
-                    }, CommonConstant.MODAL_ANIM_TIME + 100) // 要等 modal关闭动画完成
+                    }, CommonConstant.MODAL_ANIM_TIME + 100)
                 })
                 return true
             }}
