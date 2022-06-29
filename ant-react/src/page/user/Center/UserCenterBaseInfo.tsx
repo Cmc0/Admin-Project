@@ -101,6 +101,8 @@ export default function () {
                                     formData.append('folderName', 'avatar')
                                     sysFileUpload(formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
                                         doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: res.data})
+                                    }).catch(() => {
+                                        setFileLoading(false)
                                     })
                                 }}
                                 onChange={(info) => {
