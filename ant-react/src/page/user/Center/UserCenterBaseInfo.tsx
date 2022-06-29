@@ -12,11 +12,12 @@ import {UploadFile} from "antd/es/upload/interface";
 import {CheckImageFileSize, CheckImageFileType, GetPublicDownFileUrl} from "../../../../util/FileUtil";
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
 import {useAppDispatch} from "@/store";
-import {Avatar, Image, Space, Upload} from "antd";
+import {Avatar, Form, Image, Space, Upload} from "antd";
 import {sysFileUpload} from "@/api/SysFileController";
 import {setUserBaseInfo} from "@/store/userSlice";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import MyIcon from "@/componse/MyIcon/MyIcon";
+import ValidatorUtil from "../../../../util/ValidatorUtil";
 
 export default function () {
 
@@ -26,6 +27,8 @@ export default function () {
     const [fileLoading, setFileLoading] = useState<boolean>(false)
 
     const actionRef = useRef<ActionType>()
+
+    const [useForm] = Form.useForm<SysUserUpdateBaseInfoDTO>();
 
     const currentForm = useRef<SysUserUpdateBaseInfoDTO>({})
 
@@ -40,6 +43,9 @@ export default function () {
 
     return (
         <ProDescriptions<SysUserBaseInfoVO>
+            formProps={{
+                form: useForm
+            }}
             title="个人资料"
             actionRef={actionRef}
             request={() => {
@@ -117,7 +123,15 @@ export default function () {
                 },
                 {
                     title: '昵称',
-                    dataIndex: 'nickname'
+                    dataIndex: 'nickname',
+                    formItemProps: {
+                        required: true,
+                        rules: [
+                            {
+                                validator: ValidatorUtil.nicknameValidate
+                            }
+                        ],
+                    },
                 },
                 {
                     title: '个人简介',
