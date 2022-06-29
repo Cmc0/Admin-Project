@@ -3,8 +3,6 @@ package com.admin.common.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.IoUtil;
-import lombok.SneakyThrows;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Set;
@@ -25,7 +23,13 @@ public class MyFileTypeUtil {
      */
     public static String getType(InputStream inputStream) {
 
-        String type = FileTypeUtil.getType(inputStream).toLowerCase();
+        String type = FileTypeUtil.getType(inputStream);
+
+        if (type == null) {
+            return null;
+        }
+
+        type = type.toLowerCase();
 
         IoUtil.close(inputStream); // 这里直接关闭流，因为这个 流已经不完整了
 
