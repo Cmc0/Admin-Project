@@ -11,7 +11,7 @@ import {default as React, useRef, useState} from "react";
 import {UploadFile} from "antd/es/upload/interface";
 import {Button, Upload} from "antd";
 import {sysFileUpload} from "@/api/SysFileController";
-import {CheckImageFileSize, CheckImageFileType} from "../../../../util/FileUtil";
+import {CheckImageFileSize, CheckImageFileType, GetPublicDownFileUrl} from "../../../../util/FileUtil";
 import {ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import {RcFile} from "antd/lib/upload";
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
@@ -81,7 +81,7 @@ export default function () {
                         },
                     },
                     renderText: (text) => {
-                        return text ? text : CommonConstant.RANDOM_AVATAR_URL
+                        return text ? GetPublicDownFileUrl(text) : CommonConstant.RANDOM_AVATAR_URL
                     },
                     renderFormItem: () =>
                         <Upload

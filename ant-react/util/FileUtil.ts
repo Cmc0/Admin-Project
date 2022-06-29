@@ -49,3 +49,11 @@ export function CheckImageFileType(imageFileType: string) {
 export function CheckImageFileSize(imageFileSize: number, maxSize: number = 2097152) {
     return imageFileSize <= maxSize
 }
+
+// 通过 url，获取文件的 url，前提是：url以 /public/ 开头
+export function GetPublicDownFileUrl(url?: string) {
+    if (!url) {
+        return ''
+    }
+    return import.meta.env.VITE_API_BASE_URL + '/sysFile/publicDownload?url=' + url
+}

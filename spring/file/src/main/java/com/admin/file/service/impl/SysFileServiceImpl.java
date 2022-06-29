@@ -79,10 +79,12 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         }
 
         // 新的文件名
-        String newFileName = IdUtil.simpleUUID() + StrUtil.subAfter(originalFilename, ".", true);
+        String newFileName = IdUtil.simpleUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        path = path + newFileName;
 
         // 上传
-        upload(dto.getBucketName(), path + newFileName, fileType, dto.getFile().getInputStream());
+        upload(dto.getBucketName(), path, fileType, dto.getFile().getInputStream());
 
         String url = StrBuilder.create().append("/").append(dto.getBucketName()).append("/").append(path).toString();
 
