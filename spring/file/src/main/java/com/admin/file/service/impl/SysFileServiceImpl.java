@@ -11,7 +11,6 @@ import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.MyEntityUtil;
-import com.admin.common.util.MyFileTypeUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.file.mapper.SysFileMapper;
 import com.admin.file.model.dto.SysFileDownloadDTO;
@@ -52,7 +51,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
 
         Assert.notNull(dto.getFile());
 
-        SysFileUploadTypeEnum sysFileUploadTypeEnum = SysFileUploadTypeEnum.getByCode(dto.getType());
+        SysFileUploadTypeEnum sysFileUploadTypeEnum = dto.getType();
         if (sysFileUploadTypeEnum == null) {
             ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
         }
