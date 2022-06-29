@@ -62,7 +62,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
             ApiResultVO.error("操作失败：文件名不能为空");
         }
 
-        String fileType = sysFileUploadTypeEnum.checkFileType(dto.getFile().getInputStream());
+        String fileType = sysFileUploadTypeEnum.checkFileType(dto.getFile());
         if (fileType == null) {
             ApiResultVO.error("操作失败：暂不支持此文件类型【" + originalFilename + "】，请重新选择");
         }

@@ -21,9 +21,9 @@ public class MyFileTypeUtil {
     /**
      * 获取文件类型
      */
-    public static String getType(InputStream inputStream) {
+    public static String getType(InputStream inputStream, String fileName) {
 
-        String type = FileTypeUtil.getType(inputStream);
+        String type = FileTypeUtil.getType(inputStream, fileName);
 
         if (type == null) {
             return null;

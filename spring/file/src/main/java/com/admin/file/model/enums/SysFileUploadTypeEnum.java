@@ -1,12 +1,11 @@
 package com.admin.file.model.enums;
 
 import com.admin.common.util.MyFileTypeUtil;
-import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.Set;
 
 /**
@@ -25,9 +24,10 @@ public enum SysFileUploadTypeEnum {
     /**
      * 检查：文件类型，并返回文件类型，返回 null，则表示不支持此文件类型
      */
-    public String checkFileType(InputStream inputStream) {
+    @SneakyThrows
+    public String checkFileType(MultipartFile file) {
 
-        String fileType = MyFileTypeUtil.getType(inputStream);
+        String fileType = MyFileTypeUtil.getType(file.getInputStream(), file.getOriginalFilename());
 
         if (fileType == null) {
             return null;
