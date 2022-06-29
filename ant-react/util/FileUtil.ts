@@ -38,16 +38,16 @@ export function sysFileDownload(form: SysFileDownloadDTO) {
     })
 }
 
-export const ImageFileTypeList = ['image/jpeg', 'image/png']
+export const AvatarFileTypeList = ["image/jpeg", "image/png", "image/jpg"]
 
-// 检查：图片文件的文件类型
-export function CheckImageFileType(imageFileType: string) {
-    return ImageFileTypeList.includes(imageFileType)
+// 检查：头像的文件类型
+export function CheckAvatarFileType(avatarFileType: string) {
+    return AvatarFileTypeList.includes(avatarFileType)
 }
 
-// 检查：图片文件的文件类型，2097152（字节）= 2MB
-export function CheckImageFileSize(imageFileSize: number, maxSize: number = 2097152) {
-    return imageFileSize <= maxSize
+// 检查：文件的文件类型，2097152（字节）= 2MB
+export function CheckFileSize(fileSize: number, maxSize: number = 2097152) {
+    return fileSize <= maxSize
 }
 
 // 通过 url，获取文件的 url，前提是：url以 /public/ 开头

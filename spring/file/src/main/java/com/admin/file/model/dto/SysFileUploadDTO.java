@@ -13,11 +13,11 @@ public class SysFileUploadDTO {
     @ApiModelProperty(value = "文件")
     private MultipartFile file;
 
-    @ApiModelProperty(value = "桶名")
-    private String bucketName;
-
-    @ApiModelProperty(value = "文件夹名")
-    private String folderName;
+    /**
+     * {@link com.admin.file.model.enums.SysFileUploadTypeEnum}
+     */
+    @ApiModelProperty(value = "文件上传的类型")
+    private Integer type;
 
     @ApiModelProperty(value = "备注")
     private String remark;

@@ -1,12 +1,18 @@
 package com.admin.common.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileTypeUtil;
+import cn.hutool.core.io.IoUtil;
 import lombok.SneakyThrows;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.Set;
 
 public class MyFileTypeUtil {
+
+    // 头像的文件类型
+    public final static Set<String> AVATAR_FILE_TYPE_SET = CollUtil.newHashSet("image/jpeg", "image/png", "image/jpg");
 
     private final static String IMAGE_TYPE = "image/";
     private final static String AUDIO_TYPE = "audio/";
@@ -17,40 +23,30 @@ public class MyFileTypeUtil {
     /**
      * 获取文件类型
      */
-    @SneakyThrows
-    public static String getType(MultipartFile multipartFile) {
-        return getType(multipartFile.getInputStream());
-    }
-
-    /**
-     * 获取文件类型
-     */
     public static String getType(InputStream inputStream) {
 
-        String type = FileTypeUtil.getType(inputStream);
+        String type = FileTypeUtil.getType(inputStream).toLowerCase();
 
-        if ("JPG".equalsIgnoreCase(type) || "JPEG".equalsIgnoreCase(type) || "GIF".equalsIgnoreCase(type) || "PNG"
-            .equalsIgnoreCase(type) || "BMP".equalsIgnoreCase(type) || "PCX".equalsIgnoreCase(type) || "TGA"
-            .equalsIgnoreCase(type) || "PSD".equalsIgnoreCase(type) || "TIFF".equalsIgnoreCase(type)) {
+        IoUtil.close(inputStream); // 这里直接关闭流，因为这个 流已经不完整了
+
+        if ("jpg".equals(type) || "jpeg".equals(type) || "gif".equals(type) || "png".equals(type) || "bmp".equals(type)
+            || "pcx".equals(type) || "tga".equals(type) || "psd".equals(type) || "tiff".equals(type)) {
             return IMAGE_TYPE + type;
         }
-        if ("mp3".equalsIgnoreCase(type) || "OGG".equalsIgnoreCase(type) || "WAV".equalsIgnoreCase(type) || "REAL"
-            .equalsIgnoreCase(type) || "APE".equalsIgnoreCase(type) || "MODULE".equalsIgnoreCase(type) || "MIDI"
-            .equalsIgnoreCase(type) || "VQF".equalsIgnoreCase(type) || "CD".equalsIgnoreCase(type)) {
+        if ("mp3".equals(type) || "ogg".equals(type) || "wav".equals(type) || "real".equals(type) || "ape".equals(type)
+            || "module".equals(type) || "midi".equals(type) || "vqf".equals(type) || "cd".equals(type)) {
             return AUDIO_TYPE + type;
         }
-        if ("mp4".equalsIgnoreCase(type) || "avi".equalsIgnoreCase(type) || "MPEG-1".equalsIgnoreCase(type) || "RM"
-            .equalsIgnoreCase(type) || "ASF".equalsIgnoreCase(type) || "WMV".equalsIgnoreCase(type) || "qlv"
-            .equalsIgnoreCase(type) || "MPEG-2".equalsIgnoreCase(type) || "MPEG4".equalsIgnoreCase(type) || "mov"
-            .equalsIgnoreCase(type) || "3gp".equalsIgnoreCase(type)) {
+        if ("mp4".equals(type) || "avi".equals(type) || "mpeg-1".equals(type) || "rm".equals(type) || "asf".equals(type)
+            || "wmv".equals(type) || "qlv".equals(type) || "mpeg-2".equals(type) || "mpeg4".equals(type) || "mov"
+            .equals(type) || "3gp".equals(type)) {
             return VIDEO_TYPE + type;
         }
-        if ("doc".equalsIgnoreCase(type) || "docx".equalsIgnoreCase(type) || "ppt".equalsIgnoreCase(type) || "pptx"
-            .equalsIgnoreCase(type) || "xls".equalsIgnoreCase(type) || "xlsx".equalsIgnoreCase(type) || "zip"
-            .equalsIgnoreCase(type) || "jar".equalsIgnoreCase(type)) {
+        if ("doc".equals(type) || "docx".equals(type) || "ppt".equals(type) || "pptx".equals(type) || "xls".equals(type)
+            || "xlsx".equals(type) || "zip".equals(type) || "jar".equals(type)) {
             return APPLICATION_TYPE + type;
         }
-        if ("txt".equalsIgnoreCase(type)) {
+        if ("txt".equals(type)) {
             return TXT_TYPE + type;
         }
 

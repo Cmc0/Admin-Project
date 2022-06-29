@@ -9,7 +9,7 @@ import {DeleteOutlined, EyeOutlined} from "@ant-design/icons/lib";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {default as React, useRef, useState} from "react";
 import {UploadFile} from "antd/es/upload/interface";
-import {CheckImageFileSize, CheckImageFileType, GetPublicDownFileUrl} from "../../../../util/FileUtil";
+import {CheckAvatarFileType, CheckFileSize, GetPublicDownFileUrl} from "../../../../util/FileUtil";
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
 import {useAppDispatch} from "@/store";
 import {Avatar, Form, Image, Space, Upload} from "antd";
@@ -83,11 +83,11 @@ export default function () {
                                 maxCount={1}
                                 showUploadList={false}
                                 beforeUpload={(file) => {
-                                    if (!CheckImageFileType(file.type)) {
+                                    if (!CheckAvatarFileType(file.type)) {
                                         ToastError("暂不支持此文件类型：" + file.type + "，请重新选择")
                                         return false
                                     }
-                                    if (!CheckImageFileSize(file.size!, 2097152)) {
+                                    if (!CheckFileSize(file.size!, 2097152)) {
                                         ToastError("图片大于 2MB，请重新选择")
                                         return false
                                     }
@@ -97,8 +97,7 @@ export default function () {
                                     setFileLoading(true)
                                     const formData = new FormData()
                                     formData.append('file', options.file)
-                                    formData.append('bucketName', 'public')
-                                    formData.append('folderName', 'avatar')
+                                    formData.append('type', '1')
                                     sysFileUpload(formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
                                         doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: res.data})
                                     }).catch(() => {
