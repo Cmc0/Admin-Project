@@ -12,7 +12,7 @@ import {UploadFile} from "antd/es/upload/interface";
 import {CheckImageFileSize, CheckImageFileType, GetPublicDownFileUrl} from "../../../../util/FileUtil";
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
 import {useAppDispatch} from "@/store";
-import {Image, Space, Upload} from "antd";
+import {Avatar, Image, Space, Upload} from "antd";
 import {sysFileUpload} from "@/api/SysFileController";
 import {setUserBaseInfo} from "@/store/userSlice";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
@@ -64,13 +64,12 @@ export default function () {
                 {
                     title: '头像',
                     dataIndex: 'avatarUrl',
-                    valueType: 'image',
                     editable: false,
                     render: (dom: React.ReactNode, entity) => {
                         return <Space size={16}>
-                            <Image
+                            <Avatar src={<Image
                                 src={currentForm.current.avatarUrl ? GetPublicDownFileUrl(currentForm.current.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}
-                                height={64} preview={{mask: <EyeOutlined title={"预览"}/>}}/>
+                                height={32} preview={{mask: <EyeOutlined title={"预览"}/>}}/>}/>
                             <Upload
                                 disabled={fileLoading}
                                 accept={CommonConstant.IMAGE_FILE_ACCEPT_TYPE}
@@ -119,6 +118,16 @@ export default function () {
                 {
                     title: '昵称',
                     dataIndex: 'nickname'
+                },
+                {
+                    title: '个人简介',
+                    dataIndex: 'bio',
+                    valueType: 'textarea',
+                    fieldProps: {
+                        showCount: true,
+                        maxLength: 100,
+                        allowClear: true,
+                    }
                 },
             ]}
         />
