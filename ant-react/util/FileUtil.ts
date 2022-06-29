@@ -40,7 +40,7 @@ export function sysFileDownload(form: SysFileDownloadDTO) {
 }
 
 // 1 头像
-type TSysFileUploadProType = '1'
+type TSysFileUploadProType = 'AVATAR'
 
 // 文件-管理 文件上传，二次封装
 export function SysFileUploadPro(file: string | RcFile | Blob, type: TSysFileUploadProType) {

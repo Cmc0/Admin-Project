@@ -15,12 +15,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 public enum SysFileUploadTypeEnum {
-    AVATAR(1, "public", "avatar", MyFileTypeUtil.AVATAR_FILE_TYPE_SET) // 头像
+    AVATAR("public", "avatar", MyFileTypeUtil.AVATAR_FILE_TYPE_SET) // 头像
     ;
 
-    @EnumValue
-    @JsonValue
-    private int code;
     private String bucketName; // 桶名
     private String folderName; // 文件夹名
     private Set<String> acceptFileTypeSet; // 支持上传的文件类型（字母必须全小写），为 null则表示支持所有文件，为 空集合则表示不支持所有文件

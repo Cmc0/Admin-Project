@@ -13,7 +13,6 @@ import {CheckAvatarFileType, CheckFileSize, GetPublicDownFileUrl, SysFileUploadP
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
 import {useAppDispatch} from "@/store";
 import {Avatar, Form, Image, Space, Upload} from "antd";
-import {sysFileUpload} from "@/api/SysFileController";
 import {setUserBaseInfo} from "@/store/userSlice";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import MyIcon from "@/componse/MyIcon/MyIcon";
@@ -95,7 +94,7 @@ export default function () {
                                 }}
                                 customRequest={(options) => {
                                     setFileLoading(true)
-                                    SysFileUploadPro(options.file, '1').then(url => {
+                                    SysFileUploadPro(options.file, 'AVATAR').then(url => {
                                         doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: url})
                                     }).catch(() => {
                                         setFileLoading(false)
