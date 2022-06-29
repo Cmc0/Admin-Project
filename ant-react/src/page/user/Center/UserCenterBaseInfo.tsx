@@ -9,7 +9,7 @@ import {DeleteOutlined, EyeOutlined} from "@ant-design/icons/lib";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {default as React, useRef, useState} from "react";
 import {UploadFile} from "antd/es/upload/interface";
-import {CheckAvatarFileType, CheckFileSize, GetPublicDownFileUrl} from "../../../../util/FileUtil";
+import {CheckAvatarFileType, CheckFileSize, GetPublicDownFileUrl, SysFileUploadPro} from "../../../../util/FileUtil";
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
 import {useAppDispatch} from "@/store";
 import {Avatar, Form, Image, Space, Upload} from "antd";
@@ -95,11 +95,8 @@ export default function () {
                                 }}
                                 customRequest={(options) => {
                                     setFileLoading(true)
-                                    const formData = new FormData()
-                                    formData.append('file', options.file)
-                                    formData.append('type', '1')
-                                    sysFileUpload(formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
-                                        doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: res.data})
+                                    SysFileUploadPro(options.file, '1').then(url => {
+                                        doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: url})
                                     }).catch(() => {
                                         setFileLoading(false)
                                     })
