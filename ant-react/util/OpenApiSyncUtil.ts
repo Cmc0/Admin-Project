@@ -27,7 +27,8 @@ interface IOpenApiPathResResponses {
 interface IOpenApiPathRes {
     tags: string[] // 分组/所属文件
     summary: string // 接口描述
-    requestBody?: IOpenApiPathResRequestBody // 入参
+    requestBody?: IOpenApiPathResRequestBody // 入参，json格式
+    parameters?: any[] // 入参，formData格式
     responses: IOpenApiPathResResponses // 返回值
     uri: string // 例如：/menu/addOrderNo
 }
@@ -235,6 +236,7 @@ function start() {
                 let pageFlag = false // 是否是 page请求
                 let treeFlag = false // 是否是 tree请求
                 let infoByIdFlag = false // 是否是 infoById请求
+                let formDataFlag = false // 是否是 FormData格式的入参
 
                 const apiName = toHump(subItem.uri.slice(1), /\/(\w)/g)
 
@@ -249,6 +251,8 @@ function start() {
                     if (requestBodyFlag) {
                         fileData = writeInterface(requestBodyName, fileData, requestBody)
                     }
+                } else if (subItem.parameters) {
+                    formDataFlag = true
                 }
 
                 if (subItem.responses) {
@@ -279,6 +283,8 @@ function start() {
 
                 if (requestBodyName) {
                     fileData += 'form: ' + requestBodyName + ', '
+                } else if (formDataFlag) {
+                    fileData += 'form: FormData, '
                 }
 
                 fileData += 'config?: AxiosRequestConfig'
@@ -305,7 +311,7 @@ function start() {
 
                 fileData += `('${subItem.uri}'`
 
-                if (requestBodyName) {
+                if (requestBodyName || formDataFlag) {
                     fileData += ', form, config'
                 } else {
                     fileData += ', undefined, config'
