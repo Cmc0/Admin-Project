@@ -31,10 +31,10 @@ export default function () {
 
     function doSysUserUpdateBaseInfo(form: SysUserUpdateBaseInfoDTO) {
         return sysUserUpdateBaseInfo(form).then(res => {
+            currentForm.current = form
             ToastSuccess(res.msg)
-            setFileLoading(false)
             appDispatch(setUserBaseInfo(form))
-            actionRef.current?.reload()
+            setFileLoading(false)
         })
     }
 
@@ -54,8 +54,8 @@ export default function () {
                 })
             }}
             editable={{
-                onSave: async (key, record, originRow) => {
-                    console.log(key, record, originRow);
+                onSave: async (key, record) => {
+                    await doSysUserUpdateBaseInfo({...record, avatarUrl: currentForm.current.avatarUrl})
                     return true;
                 },
             }}
@@ -66,12 +66,11 @@ export default function () {
                     dataIndex: 'avatarUrl',
                     valueType: 'image',
                     editable: false,
-                    renderText: (text) => {
-                        return text ? GetPublicDownFileUrl(text) : CommonConstant.RANDOM_AVATAR_URL
-                    },
                     render: (dom: React.ReactNode, entity) => {
                         return <Space size={16}>
-                            <Image src={dom as string} height={32} preview={{mask: <EyeOutlined title={"预览"}/>}}/>
+                            <Image
+                                src={currentForm.current.avatarUrl ? GetPublicDownFileUrl(currentForm.current.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}
+                                height={64} preview={{mask: <EyeOutlined title={"预览"}/>}}/>
                             <Upload
                                 disabled={fileLoading}
                                 accept={CommonConstant.IMAGE_FILE_ACCEPT_TYPE}
@@ -107,6 +106,9 @@ export default function () {
                                             icon={fileLoading ? 'LoadingOutlined' : 'UploadOutlined'}/></a>
                             </Upload>
                             {entity.avatarUrl && <a onClick={() => {
+                                if (fileLoading) {
+                                    return
+                                }
                                 execConfirm(() => {
                                     return doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: ''})
                                 }, undefined, '确定移除头像吗？')

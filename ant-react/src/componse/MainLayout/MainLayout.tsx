@@ -24,6 +24,7 @@ import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {TimeoutTwoSeconds} from "../../../util/HttpUtil";
 import {GetAvgType} from "@/page/sysMonitor/Request/Request";
 import {MenuDataItem} from '@ant-design/pro-components';
+import {GetPublicDownFileUrl} from "../../../util/FileUtil";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -118,6 +119,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
     const [webSocketType, setWebSocketType] = useState<TWebSocketType>(GetWebSocketType())
     const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
+    const userBaseInfo = useAppSelector((state) => state.user.userBaseInfo)
 
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
@@ -250,7 +252,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
                         },
                     ]}/>}>
                         <div className={"h100 hand"}>
-                            <Avatar size="small" src={CommonConstant.RANDOM_AVATAR_URL}/>
+                            <Avatar size="small"
+                                    src={userBaseInfo.avatarUrl ? GetPublicDownFileUrl(userBaseInfo.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}/>
                         </div>
                     </Dropdown>
                 </Space>
