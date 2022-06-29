@@ -141,6 +141,9 @@ export default function () {
                         showCount: true,
                         maxLength: 100,
                         allowClear: true,
+                    },
+                    render: (dom) => {
+                        return dom
                     }
                 },
             ]}
