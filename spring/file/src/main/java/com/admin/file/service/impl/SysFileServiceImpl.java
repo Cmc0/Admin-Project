@@ -75,7 +75,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         // 检验文件类型
         String fileType = MyFileTypeUtil.getType(dto.getFile());
         if (fileType == null) {
-            ApiResultVO.error("操作失败：暂不支持此文件类型【" + originalFilename + "】");
+            ApiResultVO.error("操作失败：暂不支持此文件类型【" + originalFilename + "】，请重新选择");
         }
 
         // 新的文件名

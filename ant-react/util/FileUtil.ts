@@ -37,3 +37,15 @@ export function sysFileDownload(form: SysFileDownloadDTO) {
         download(res.data, res.headers['content-disposition'])
     })
 }
+
+export const ImageFileTypeList = ['image/jpeg', 'image/png']
+
+// 检查：图片文件的文件类型
+export function CheckImageFileType(imageFileType: string) {
+    return ImageFileTypeList.includes(imageFileType)
+}
+
+// 检查：图片文件的文件类型，2097152（字节）= 2MB
+export function CheckImageFileSize(imageFileSize: number, maxSize: number = 2097152) {
+    return imageFileSize <= maxSize
+}
