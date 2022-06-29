@@ -77,15 +77,15 @@ export default function () {
                                 height={32} preview={{mask: <EyeOutlined title={"预览"}/>}}/>}/>
                             <Upload
                                 disabled={fileLoading}
-                                // accept={CommonConstant.IMAGE_FILE_ACCEPT_TYPE}
+                                accept={CommonConstant.IMAGE_FILE_ACCEPT_TYPE}
                                 fileList={fileList}
                                 maxCount={1}
                                 showUploadList={false}
                                 beforeUpload={(file) => {
-                                    // if (!CheckAvatarFileType(file.type)) {
-                                    //     ToastError("暂不支持此文件类型：" + file.type + "，请重新选择")
-                                    //     return false
-                                    // }
+                                    if (!CheckAvatarFileType(file.type)) {
+                                        ToastError("暂不支持此文件类型：" + file.type + "，请重新选择")
+                                        return false
+                                    }
                                     if (!CheckFileSize(file.size!, 2097152)) {
                                         ToastError("图片大于 2MB，请重新选择")
                                         return false
