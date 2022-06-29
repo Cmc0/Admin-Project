@@ -116,6 +116,17 @@ export function sysUserResetAvatar(form: NotEmptyIdSet, config?: AxiosRequestCon
     return $http.myPost<string>('/sysUser/resetAvatar', form, config)
 }
 
+export interface SysUserUpdateBaseInfoDTO {
+    avatarUrl?: string // 头像url
+    bio?: string // 个人简介
+    nickname?: string // 昵称
+}
+
+// 用户-管理 用户基本信息：修改
+export function sysUserUpdateBaseInfo(form: SysUserUpdateBaseInfoDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/updateBaseInfo', form, config)
+}
+
 export interface SysUserUpdatePasswordDTO {
     idSet?: number[] // 主键 idSet
     newOrigPassword?: string // 前端加密之后的原始密码，新密码

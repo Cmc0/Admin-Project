@@ -30,6 +30,7 @@ import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.dto.SysUserUpdateBaseInfoDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserBaseInfoVO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
@@ -118,6 +119,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
         }
 
         return sysUserBaseInfoVO;
+    }
+
+    /**
+     * 用户基本信息：修改
+     */
+    @Override
+    @Transactional
+    public String updateBaseInfo(SysUserUpdateBaseInfoDTO dto) {
+
+        Long userId = UserUtil.getCurrentUserId();
+
+        if (BaseConstant.ADMIN_ID.equals(userId)) {
+            ApiResultVO.error(BaseBizCodeEnum.THE_ADMIN_ACCOUNT_DOES_NOT_SUPPORT_THIS_OPERATION);
+        }
+
+        SysUserDO sysUserDO = new SysUserDO();
+        sysUserDO.setId(userId);
+        sysUserDO.setNickname(dto.getNickname());
+        sysUserDO.setBio(MyEntityUtil.getNotNullStr(dto.getBio()));
+        sysUserDO.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
+
+        updateById(sysUserDO);
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**

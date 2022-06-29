@@ -5,6 +5,7 @@ import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.dto.SysUserUpdateBaseInfoDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserBaseInfoVO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
@@ -17,6 +18,8 @@ public interface SysUserService extends IService<SysUserDO> {
     String logout();
 
     SysUserBaseInfoVO baseInfo();
+
+    String updateBaseInfo(SysUserUpdateBaseInfoDTO dto);
 
     Page<SysUserPageVO> myPage(SysUserPageDTO dto);
 
@@ -31,4 +34,5 @@ public interface SysUserService extends IService<SysUserDO> {
     String resetAvatar(NotEmptyIdSet notEmptyIdSet);
 
     String updatePassword(SysUserUpdatePasswordDTO dto);
+
 }

@@ -5,10 +5,11 @@ import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.dto.SysUserUpdateBaseInfoDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
+import com.admin.user.model.vo.SysUserBaseInfoVO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
-import com.admin.user.model.vo.SysUserBaseInfoVO;
 import com.admin.user.service.SysUserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -40,6 +41,12 @@ public class SysUserController {
     @PostMapping(value = "/baseInfo")
     public ApiResultVO<SysUserBaseInfoVO> baseInfo() {
         return ApiResultVO.ok(baseService.baseInfo());
+    }
+
+    @ApiOperation(value = "用户基本信息：修改")
+    @PostMapping(value = "/updateBaseInfo")
+    public ApiResultVO<String> updateBaseInfo(@RequestBody @Valid SysUserUpdateBaseInfoDTO dto) {
+        return ApiResultVO.ok(baseService.updateBaseInfo(dto));
     }
 
     @ApiOperation(value = "分页排序查询")

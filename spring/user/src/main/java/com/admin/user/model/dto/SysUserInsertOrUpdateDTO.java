@@ -31,6 +31,7 @@ public class SysUserInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     private String origPassword;
 
     @NotBlank
+    @Pattern(regexp = BaseRegexConstant.NICK_NAME_REGEXP)
     @ApiModelProperty(value = "昵称")
     private String nickname;
 
