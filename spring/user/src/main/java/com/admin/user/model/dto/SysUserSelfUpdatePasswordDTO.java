@@ -11,20 +11,16 @@ import javax.validation.constraints.Pattern;
 public class SysUserSelfUpdatePasswordDTO {
 
     @NotBlank
-    @ApiModelProperty(value = "前端加密之后的，旧密码")
-    private String oldPassword;
-
-    @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
-    @NotBlank
-    @ApiModelProperty(value = "邮箱验证码")
-    private String code;
-
-    @NotBlank
     @ApiModelProperty(value = "前端加密之后的，新密码")
     private String newPassword;
 
     @NotBlank
     @ApiModelProperty(value = "前端加密之后的原始密码，新密码")
     private String newOrigPassword;
+
+    @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
+    @NotBlank
+    @ApiModelProperty(value = "邮箱验证码")
+    private String code;
 
 }

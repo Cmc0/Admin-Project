@@ -56,12 +56,8 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
 
         try {
 
-            // 从 redis中根据 redisKey，拿到验证码（随机值）
-            String redisCode = jsonRedisTemplate.opsForValue().get(redisKey);
-
-            CodeUtil.checkCode(dto.getCode(), redisCode);
-
-            jsonRedisTemplate.delete(redisKey); // 验证通过，删除 redis中的验证码
+            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
+            jsonRedisTemplate.delete(redisKey);
 
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setUuid(IdUtil.simpleUUID());

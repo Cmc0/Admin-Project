@@ -159,17 +159,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         // 非对称：解密 ↓
         String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
-        dto.setOldPassword(MyRsaUtil.rsaDecrypt(dto.getOldPassword(), paramValue)); // 非对称：解密
         dto.setNewPassword(MyRsaUtil.rsaDecrypt(dto.getNewPassword(), paramValue)); // 非对称：解密
         dto.setNewOrigPassword(MyRsaUtil.rsaDecrypt(dto.getNewOrigPassword(), paramValue)); // 非对称：解密
         // 非对称：解密 ↑
 
         if (!ReUtil.isMatch(BaseRegexConstant.PASSWORD_REGEXP, dto.getNewOrigPassword())) {
             ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
-        }
-
-        if (!PasswordConvertUtil.match(sysUserDO.getPassword(), dto.getOldPassword())) {
-            ApiResultVO.error(BizCodeEnum.PASSWORD_NOT_VALID);
         }
 
         String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
@@ -179,9 +174,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         try {
 
-            String redisCode = jsonRedisTemplate.opsForValue().get(redisKey);
-
-            CodeUtil.checkCode(dto.getCode(), redisCode);
+            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
+            jsonRedisTemplate.delete(redisKey);
 
             sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getNewPassword(), true));
             sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
@@ -241,7 +235,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Override
     @Transactional
     public String selfDelete(SysUserSelfDeleteDTO dto) {
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        String currentUserEmail = UserUtil.getCurrentUserEmail();
+
+        String redisKey = BaseConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail;
+
+        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        lock.lock();
+
+        try {
+
+            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
+            jsonRedisTemplate.delete(redisKey);
+
+            deleteByIdSet(new NotEmptyIdSet(CollUtil.newHashSet(UserUtil.getCurrentUserIdNotAdmin())));
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**

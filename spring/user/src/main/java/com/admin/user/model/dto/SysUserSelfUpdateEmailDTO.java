@@ -23,8 +23,4 @@ public class SysUserSelfUpdateEmailDTO extends EmailNotBlankDTO {
     @ApiModelProperty(value = "旧邮箱，验证码")
     private String oldCode;
 
-    @NotBlank
-    @ApiModelProperty(value = "前端加密之后的密码")
-    private String password;
-
 }
