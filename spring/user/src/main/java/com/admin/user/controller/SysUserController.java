@@ -1,5 +1,6 @@
 package com.admin.user.controller;
 
+import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
@@ -66,8 +67,8 @@ public class SysUserController {
 
     @ApiOperation(value = "当前用户：修改邮箱，发送，邮箱验证码")
     @PostMapping(value = "/selfUpdateEmail/sendEmailCode")
-    public ApiResultVO<String> selfUpdateEmailSendEmailCode() {
-        return ApiResultVO.ok(baseService.selfUpdateEmailSendEmailCode());
+    public ApiResultVO<String> selfUpdateEmailSendEmailCode(@RequestBody @Valid EmailNotBlankDTO dto) {
+        return ApiResultVO.ok(baseService.selfUpdateEmailSendEmailCode(dto));
     }
 
     @ApiOperation(value = "当前用户：刷新jwt私钥后缀")

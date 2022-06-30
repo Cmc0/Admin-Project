@@ -56,7 +56,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
         }
 
         ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_OR_PASSWORD_NOT_VALID);
-        return null; // 这里不会执行，只是为了语法检测
+        return null; // 这里不会执行，只是为了通过语法检查
     }
 
     /**

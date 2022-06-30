@@ -9,6 +9,7 @@ import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
+import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -31,6 +32,7 @@ import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
 import com.admin.user.model.vo.SysUserSelfBaseInfoVO;
 import com.admin.user.service.SysUserService;
+import com.admin.user.service.UserRegisterService;
 import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -67,6 +69,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     SysFileService sysFileService;
     @Resource
     SysWebSocketService sysWebSocketService;
+    @Resource
+    UserRegisterService userRegisterService;
 
     /**
      * 退出登录
@@ -213,7 +217,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         MyMailUtil.send(currentUserEmail, subject, strBuilder.toString(), false);
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
 
     /**
@@ -230,8 +234,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 当前用户：修改邮箱，发送，邮箱验证码
      */
     @Override
-    public String selfUpdateEmailSendEmailCode() {
-        return null;
+    public String selfUpdateEmailSendEmailCode(EmailNotBlankDTO dto) {
+        return userRegisterService.userRegisterByEmailSendCode(dto);
     }
 
     /**
@@ -257,7 +261,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      */
     @Override
     public String selfDeleteSendEmailCode() {
-        return null;
+
+        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
 
     /**

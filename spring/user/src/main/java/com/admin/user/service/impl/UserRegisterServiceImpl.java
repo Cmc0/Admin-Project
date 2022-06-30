@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
+import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
@@ -117,11 +118,10 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
 
             MyMailUtil.send(dto.getEmail(), subject, strBuilder.toString(), false);
 
+            return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
         } finally {
             lock.unlock();
         }
-
-        return "发送成功";
     }
 
 }

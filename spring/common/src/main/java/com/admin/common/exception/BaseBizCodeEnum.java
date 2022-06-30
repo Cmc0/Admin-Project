@@ -17,6 +17,7 @@ import lombok.ToString;
 @Getter
 public enum BaseBizCodeEnum implements IBizCode {
     API_RESULT_OK(200, "操作成功"), //
+    API_RESULT_SEND_OK(200, "发送成功"), //
     API_RESULT_SYS_ERROR(100010, "系统异常，请联系管理员"), //
     PARAMETER_CHECK_ERROR(100011, "参数校验出现问题"), //
     ILLEGAL_REQUEST(100021, "非法请求"), //

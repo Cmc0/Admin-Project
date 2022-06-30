@@ -1,5 +1,6 @@
 package com.admin.user.service;
 
+import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.SysUserDO;
@@ -24,7 +25,7 @@ public interface SysUserService extends IService<SysUserDO> {
 
     String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto);
 
-    String selfUpdateEmailSendEmailCode();
+    String selfUpdateEmailSendEmailCode(EmailNotBlankDTO dto);
 
     String selfRefreshJwtSecretSuf();
 
