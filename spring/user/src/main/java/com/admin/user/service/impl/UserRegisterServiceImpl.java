@@ -1,11 +1,8 @@
 package com.admin.user.service.impl;
 
-import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
-import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> implements UserRegisterService {
@@ -89,38 +85,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
      */
     @Override
     public String userRegisterByEmailSendCode(EmailNotBlankDTO dto) {
-
-        RLock lock =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail());
-        lock.lock();
-
-        try {
-
-            // 判断邮箱是否存在
-            boolean exist =
-                lambdaQuery().eq(SysUserDO::getEmail, dto.getEmail()).eq(SysUserDO::getDelFlag, false).exists();
-            if (exist) {
-                ApiResultVO.error(BizCodeEnum.EMAIL_HAS_BEEN_REGISTERED);
-            }
-
-            StrBuilder strBuilder = new StrBuilder("尊敬的用户您好，您本次注册的验证码是（10分钟内有效）：");
-            String subject = "邮箱注册";
-
-            // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
-            String code = RandomUtil.randomStringUpper(6);
-            strBuilder.append(code);
-
-            // 保存到 redis中，设置10分钟过期
-            jsonRedisTemplate.opsForValue()
-                .set(BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail(), code, BaseConstant.MINUTE_10_EXPIRE_TIME,
-                    TimeUnit.MILLISECONDS);
-
-            MyMailUtil.send(dto.getEmail(), subject, strBuilder.toString(), false);
-
-            return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
-        } finally {
-            lock.unlock();
-        }
+        return MyEmailUtil.userRegisterSend(dto.getEmail());
     }
 
 }

@@ -30,4 +30,7 @@ public class AdminProperties {
     @ApiModelProperty(value = "返回 WebSocket 连接地址时，使用的 ip/域名")
     private String webSocketAddress = "127.0.0.1";
 
+    @ApiModelProperty(value = "平台名称")
+    private String platformName = "Admin Project 运营平台";
+
 }

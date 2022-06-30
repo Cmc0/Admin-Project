@@ -32,6 +32,7 @@ public enum BaseBizCodeEnum implements IBizCode {
     PLEASE_GET_THE_VERIFICATION_CODE_FIRST(100151, "操作失败：请先获取验证码"), //
     CODE_IS_INCORRECT(100161, "验证码有误，请重新输入"), //
     EMAIL_ADDRESS_NOT_SET(100171, "操作失败：未设置邮箱地址"), //
+    EMAIL_HAS_BEEN_REGISTERED(100181, "该邮箱已被注册"), //
     ;
 
     private int code;

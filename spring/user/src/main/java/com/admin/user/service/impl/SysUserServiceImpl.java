@@ -2,14 +2,15 @@ package com.admin.user.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.text.StrBuilder;
-import cn.hutool.core.util.*;
+import cn.hutool.core.util.DesensitizedUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
-import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -199,24 +199,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      */
     @Override
     public String selfUpdatePasswordSendEmailCode() {
-
-        String currentUserEmail = UserUtil.getCurrentUserEmail();
-
-        StrBuilder strBuilder = new StrBuilder("尊敬的用户您好，您正在进行修改密码操作，您本次修改密码的验证码是（10分钟内有效）：");
-        String subject = "修改密码";
-
-        // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
-        String code = RandomUtil.randomStringUpper(6);
-        strBuilder.append(code);
-
-        // 保存到 redis中，设置10分钟过期
-        jsonRedisTemplate.opsForValue()
-            .set(BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + currentUserEmail, code,
-                BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
-
-        MyMailUtil.send(currentUserEmail, subject, strBuilder.toString(), false);
-
-        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+        return MyEmailUtil.selfUpdatePasswordSend();
     }
 
     /**
@@ -232,23 +215,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 当前用户：修改邮箱，发送，邮箱验证码
      */
     @Override
-    public String selfUpdateEmailSendEmailCode(EmailNotBlankDTO dto) {
-        String currentUserEmail = UserUtil.getCurrentUserEmail();
-
-        StrBuilder strBuilder = new StrBuilder("尊敬的用户您好，您本次修改邮箱的验证码是（10分钟内有效）：");
-        String subject = "修改邮箱";
-
-        // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
-        String code = RandomUtil.randomStringUpper(6);
-        strBuilder.append(code);
-
-        // 保存到 redis中，设置10分钟过期
-        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail, code,
-            BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
-
-        MyMailUtil.send(currentUserEmail, subject, strBuilder.toString(), false);
-
-        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+    public String selfUpdateEmailSendEmailCode() {
+        return MyEmailUtil.selfUpdateEmailSend();
     }
 
     /**
