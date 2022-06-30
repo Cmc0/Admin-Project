@@ -60,7 +60,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
         lambdaUpdate().eq(SysWebSocketDO::getServer, NettyServer.ipAndPort).eq(SysWebSocketDO::getEnableFlag, true)
             .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date())
-            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
+            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdDefault()).update(); // 更新
 
     }
 
@@ -110,7 +110,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
                 sysWebSocketDOList.stream().map(BaseEntityTwo::getId).collect(Collectors.toSet());
 
             lambdaUpdate().eq(SysWebSocketDO::getEnableFlag, true).set(SysWebSocketDO::getEnableFlag, false)
-                .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe())
+                .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdDefault())
                 .set(BaseEntityTwo::getUpdateTime, new Date()).update(); // 更新
 
             // 并且给 消息中间件推送，进行下线操作
@@ -222,7 +222,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
         lambdaUpdate().in(BaseEntityTwo::getId, webSocketIdSet).eq(SysWebSocketDO::getEnableFlag, true)
             .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntity::getUpdateTime, new Date())
-            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
+            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdDefault()).update(); // 更新
 
     }
 
@@ -234,7 +234,7 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
         lambdaUpdate().in(BaseEntity::getCreateId, userIdSet).eq(SysWebSocketDO::getEnableFlag, true)
             .set(SysWebSocketDO::getEnableFlag, false).set(BaseEntityTwo::getUpdateTime, new Date())
-            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdSafe()).update(); // 更新
+            .set(BaseEntity::getUpdateId, UserUtil.getCurrentUserIdDefault()).update(); // 更新
 
     }
 

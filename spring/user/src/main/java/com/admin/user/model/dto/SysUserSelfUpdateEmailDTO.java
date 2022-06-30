@@ -11,19 +11,20 @@ import javax.validation.constraints.Pattern;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserRegisterByEmailDTO extends EmailNotBlankDTO {
+public class SysUserSelfUpdateEmailDTO extends EmailNotBlankDTO {
 
     @NotBlank
     @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
-    @ApiModelProperty(value = "邮箱验证码")
-    private String code;
+    @ApiModelProperty(value = "新邮箱，验证码")
+    private String newCode;
 
     @NotBlank
     @ApiModelProperty(value = "前端加密之后的密码")
     private String password;
 
+    @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @NotBlank
-    @ApiModelProperty(value = "前端加密之后的原始密码")
-    private String origPassword;
+    @ApiModelProperty(value = "旧邮箱，验证码")
+    private String oldCode;
 
 }

@@ -2,6 +2,7 @@ package com.admin.common.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.*;
 import com.admin.common.model.constant.BaseConstant;
@@ -59,7 +60,7 @@ public class UserUtil {
      */
     public static Long getCurrentUserId() {
 
-        Long userId = getCurrentUserIdNoCheck();
+        Long userId = getCurrentUserIdWillNull();
 
         if (userId == null) {
             ApiResultVO.error(BaseBizCodeEnum.NOT_LOGGED_IN_YET);
@@ -69,11 +70,26 @@ public class UserUtil {
     }
 
     /**
+     * 获取当前 userId，如果是 admin账号，则会报错，只会返回 用户id，不会返回 null
+     * 因为 admin不支持一些操作，例如：修改密码，修改邮箱等
+     */
+    public static Long getCurrentUserIdNotAdmin() {
+
+        Long currentUserId = getCurrentUserId();
+
+        if (BaseConstant.ADMIN_ID.equals(currentUserId)) {
+            ApiResultVO.error(BaseBizCodeEnum.THE_ADMIN_ACCOUNT_DOES_NOT_SUPPORT_THIS_OPERATION);
+        }
+
+        return currentUserId;
+    }
+
+    /**
      * 这里只会返回实际的 userId 或者 -1，备注：-1表示没有 用户id，则是大多数情况下，表示的是 系统
      */
-    public static Long getCurrentUserIdSafe() {
+    public static Long getCurrentUserIdDefault() {
 
-        Long userId = getCurrentUserIdNoCheck();
+        Long userId = getCurrentUserIdWillNull();
 
         if (userId == null) {
             userId = BaseConstant.SYS_ID;
@@ -86,7 +102,7 @@ public class UserUtil {
      * 获取当前 userId，注意：这里获取 userId之后需要做 非空判断
      * 这里只会返回实际的 userId或者 null
      */
-    private static Long getCurrentUserIdNoCheck() {
+    private static Long getCurrentUserIdWillNull() {
 
         Long userId = null;
 
@@ -273,6 +289,24 @@ public class UserUtil {
      */
     public static String getDefaultNickname() {
         return "用户昵称" + RandomUtil.randomStringUpper(6);
+    }
+
+    /**
+     * 获取：当前用户的 邮箱地址，只会返回 正确的邮箱地址
+     */
+    public static String getCurrentUserEmail() {
+
+        Long currentUserIdNotAdmin = getCurrentUserIdNotAdmin();
+
+        SysUserDO sysUserDO =
+            ChainWrappers.lambdaQueryChain(sysUserMapper).eq(BaseEntityTwo::getId, currentUserIdNotAdmin)
+                .select(SysUserDO::getEmail).one();
+
+        if (StrUtil.isBlank(sysUserDO.getEmail())) {
+            ApiResultVO.error(BaseBizCodeEnum.EMAIL_ADDRESS_NOT_SET);
+        }
+
+        return sysUserDO.getEmail();
     }
 
 }

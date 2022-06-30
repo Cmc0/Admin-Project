@@ -1,7 +1,10 @@
 package com.admin.request.service.impl;
 
+import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.util.UserUtil;
 import com.admin.request.mapper.SysRequestMapper;
 import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.dto.SysRequestSelfLoginRecordPageDTO;
 import com.admin.request.model.entity.SysRequestDO;
 import com.admin.request.model.vo.SysRequestAllAvgVO;
 import com.admin.request.model.vo.SysRequestPageVO;
@@ -35,5 +38,26 @@ public class SysRequestServiceImpl extends ServiceImpl<SysRequestMapper, SysRequ
     @Override
     public SysRequestAllAvgVO allAvg() {
         return baseMapper.allAvg();
+    }
+
+    /**
+     * 当前用户：登录记录
+     */
+    @Override
+    public Page<SysRequestPageVO> selfLoginRecord(SysRequestSelfLoginRecordPageDTO dto) {
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        SysRequestPageDTO sysRequestPageDTO = new SysRequestPageDTO();
+        sysRequestPageDTO.setUri(BaseConstant.USER_LOGIN_PATH);
+        sysRequestPageDTO.setCreateId(currentUserId);
+        sysRequestPageDTO.setCategory(dto.getCategory());
+        sysRequestPageDTO.setRegion(dto.getRegion());
+        sysRequestPageDTO.setIp(dto.getIp());
+        sysRequestPageDTO.setCurrent(dto.getCurrent());
+        sysRequestPageDTO.setPageSize(dto.getPageSize());
+        sysRequestPageDTO.setOrder(dto.getOrder());
+
+        return myPage(sysRequestPageDTO);
     }
 }

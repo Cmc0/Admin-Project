@@ -55,7 +55,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
             return passwordByAccount(dto);
         }
 
-        ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+        ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_OR_PASSWORD_NOT_VALID);
         return null; // 这里不会执行，只是为了语法检测
     }
 
@@ -65,7 +65,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
     private String passwordForAdmin(UserLoginByPasswordDTO dto) {
 
         if (!BaseConfiguration.adminProperties.getAdminPassword().equals(dto.getPassword())) {
-            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_OR_PASSWORD_NOT_VALID);
         }
 
         // admin jwt 一天过期
@@ -78,12 +78,12 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
     private String passwordByAccount(UserLoginByPasswordDTO dto) {
 
         SysUserDO sysUserDO = lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount()).eq(SysUserDO::getDelFlag, false)
-            .select(SysUserDO::getPassword, BaseEntityThree::getDelFlag, BaseEntityThree::getEnableFlag,
-                SysUserDO::getJwtSecretSuf, BaseEntityTwo::getId).one();
+            .select(SysUserDO::getPassword, BaseEntityThree::getEnableFlag, SysUserDO::getJwtSecretSuf,
+                BaseEntityTwo::getId).one();
 
         // 账户是否存在
         if (sysUserDO == null) {
-            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_OR_PASSWORD_NOT_VALID);
         }
 
         if (StrUtil.isBlank(sysUserDO.getPassword())) {
@@ -92,11 +92,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
 
         // 校验密码，成功之后，再判断是否被冻结，免得透露用户被封号的信息
         if (!PasswordConvertUtil.match(sysUserDO.getPassword(), dto.getPassword())) {
-            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
-        }
-
-        if (sysUserDO.getDelFlag()) {
-            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_AND_PASSWORD_NOT_VALID);
+            ApiResultVO.error(BizCodeEnum.ACCOUNT_NUMBER_OR_PASSWORD_NOT_VALID);
         }
 
         if (!sysUserDO.getEnableFlag()) {

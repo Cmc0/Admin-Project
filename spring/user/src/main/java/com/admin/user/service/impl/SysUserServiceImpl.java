@@ -2,10 +2,8 @@ package com.admin.user.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.DesensitizedUtil;
-import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.util.*;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
@@ -28,13 +26,10 @@ import com.admin.job.service.SysJobRefUserService;
 import com.admin.role.service.SysRoleRefUserService;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
-import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
-import com.admin.user.model.dto.SysUserPageDTO;
-import com.admin.user.model.dto.SysUserUpdateBaseInfoDTO;
-import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
-import com.admin.user.model.vo.SysUserBaseInfoVO;
+import com.admin.user.model.dto.*;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
+import com.admin.user.model.vo.SysUserSelfBaseInfoVO;
 import com.admin.user.service.SysUserService;
 import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -50,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +72,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 退出登录
      */
     @Override
-    public String logout() {
+    public String selfLogout() {
 
         // 清除 redis中的 jwtHash
         String jwtHash = MyJwtUtil.generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY),
@@ -91,19 +87,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 用户基本信息
      */
     @Override
-    public SysUserBaseInfoVO baseInfo() {
+    public SysUserSelfBaseInfoVO selfBaseInfo() {
 
         Long userId = UserUtil.getCurrentUserId();
 
-        SysUserBaseInfoVO sysUserBaseInfoVO = new SysUserBaseInfoVO();
+        SysUserSelfBaseInfoVO sysUserSelfBaseInfoVO = new SysUserSelfBaseInfoVO();
 
         if (BaseConstant.ADMIN_ID.equals(userId)) {
-            sysUserBaseInfoVO.setAvatarUrl("");
-            sysUserBaseInfoVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
-            sysUserBaseInfoVO.setBio("");
-            sysUserBaseInfoVO.setEmail("");
-            sysUserBaseInfoVO.setPasswordFlag(true);
-            return sysUserBaseInfoVO;
+            sysUserSelfBaseInfoVO.setAvatarUrl("");
+            sysUserSelfBaseInfoVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
+            sysUserSelfBaseInfoVO.setBio("");
+            sysUserSelfBaseInfoVO.setEmail("");
+            sysUserSelfBaseInfoVO.setPasswordFlag(true);
+            return sysUserSelfBaseInfoVO;
         }
 
         SysUserDO sysUserDO = lambdaQuery().eq(BaseEntityTwo::getId, userId)
@@ -111,14 +107,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
                 SysUserDO::getEmail, SysUserDO::getPassword).one();
 
         if (sysUserDO != null) {
-            sysUserBaseInfoVO.setAvatarUrl(sysUserDO.getAvatarUrl());
-            sysUserBaseInfoVO.setNickname(sysUserDO.getNickname());
-            sysUserBaseInfoVO.setBio(sysUserDO.getBio());
-            sysUserBaseInfoVO.setEmail(DesensitizedUtil.email(sysUserDO.getEmail())); // 脱敏
-            sysUserBaseInfoVO.setPasswordFlag(StrUtil.isNotBlank(sysUserDO.getPassword()));
+            sysUserSelfBaseInfoVO.setAvatarUrl(sysUserDO.getAvatarUrl());
+            sysUserSelfBaseInfoVO.setNickname(sysUserDO.getNickname());
+            sysUserSelfBaseInfoVO.setBio(sysUserDO.getBio());
+            sysUserSelfBaseInfoVO.setEmail(DesensitizedUtil.email(sysUserDO.getEmail())); // 脱敏
+            sysUserSelfBaseInfoVO.setPasswordFlag(StrUtil.isNotBlank(sysUserDO.getPassword()));
         }
 
-        return sysUserBaseInfoVO;
+        return sysUserSelfBaseInfoVO;
     }
 
     /**
@@ -126,22 +122,124 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      */
     @Override
     @Transactional
-    public String updateBaseInfo(SysUserUpdateBaseInfoDTO dto) {
+    public String selfUpdateBaseInfo(SysUserSelfUpdateBaseInfoDTO dto) {
 
-        Long userId = UserUtil.getCurrentUserId();
-
-        if (BaseConstant.ADMIN_ID.equals(userId)) {
-            ApiResultVO.error(BaseBizCodeEnum.THE_ADMIN_ACCOUNT_DOES_NOT_SUPPORT_THIS_OPERATION);
-        }
+        Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
 
         SysUserDO sysUserDO = new SysUserDO();
-        sysUserDO.setId(userId);
+        sysUserDO.setId(currentUserIdNotAdmin);
         sysUserDO.setNickname(dto.getNickname());
         sysUserDO.setBio(MyEntityUtil.getNotNullStr(dto.getBio()));
         sysUserDO.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
 
         updateById(sysUserDO);
 
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 当前用户：修改密码
+     */
+    @Override
+    @Transactional
+    public String selfUpdatePassword(SysUserSelfUpdatePasswordDTO dto) {
+
+        Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
+
+        SysUserDO sysUserDO = lambdaQuery().eq(BaseEntityTwo::getId, currentUserIdNotAdmin)
+            .select(SysUserDO::getPassword, SysUserDO::getEmail, BaseEntityTwo::getId).one();
+
+        if (StrUtil.isBlank(sysUserDO.getEmail())) {
+            ApiResultVO.error(BaseBizCodeEnum.EMAIL_ADDRESS_NOT_SET);
+        }
+
+        // 非对称：解密 ↓
+        String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
+        dto.setOldPassword(MyRsaUtil.rsaDecrypt(dto.getOldPassword(), paramValue)); // 非对称：解密
+        dto.setNewPassword(MyRsaUtil.rsaDecrypt(dto.getNewPassword(), paramValue)); // 非对称：解密
+        dto.setNewOrigPassword(MyRsaUtil.rsaDecrypt(dto.getNewOrigPassword(), paramValue)); // 非对称：解密
+        // 非对称：解密 ↑
+
+        if (!ReUtil.isMatch(BaseRegexConstant.PASSWORD_REGEXP, dto.getNewOrigPassword())) {
+            ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
+        }
+
+        if (!PasswordConvertUtil.match(sysUserDO.getPassword(), dto.getOldPassword())) {
+            ApiResultVO.error(BizCodeEnum.PASSWORD_NOT_VALID);
+        }
+
+        String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
+
+        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        lock.lock();
+
+        try {
+
+            String redisCode = jsonRedisTemplate.opsForValue().get(redisKey);
+
+            CodeUtil.checkCode(dto.getCode(), redisCode);
+
+            sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getNewPassword(), true));
+            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
+
+            updateById(sysUserDO); // 操作数据库
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 当前用户：修改密码，发送，邮箱验证码
+     */
+    @Override
+    public String selfUpdatePasswordSendEmailCode() {
+
+        String currentUserEmail = UserUtil.getCurrentUserEmail();
+
+        StrBuilder strBuilder = new StrBuilder("尊敬的用户您好，您正在进行修改密码操作，您本次修改密码的验证码是（10分钟内有效）：");
+        String subject = "修改密码";
+
+        // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
+        String code = RandomUtil.randomStringUpper(6);
+        strBuilder.append(code);
+
+        // 保存到 redis中，设置10分钟过期
+        jsonRedisTemplate.opsForValue()
+            .set(BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + currentUserEmail, code,
+                BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+        MyMailUtil.send(currentUserEmail, subject, strBuilder.toString(), false);
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 当前用户：修改邮箱
+     */
+    @Override
+    @Transactional
+    public String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto) {
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 当前用户：刷新jwt私钥后缀
+     */
+    @Override
+    @Transactional
+    public String selfRefreshJwtSecretSuf() {
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 当前用户：注销
+     */
+    @Override
+    @Transactional
+    public String selfDelete(SysUserSelfDeleteDTO dto) {
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 

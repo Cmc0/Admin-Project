@@ -1,6 +1,7 @@
 package com.admin.request.service;
 
 import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.dto.SysRequestSelfLoginRecordPageDTO;
 import com.admin.request.model.entity.SysRequestDO;
 import com.admin.request.model.vo.SysRequestAllAvgVO;
 import com.admin.request.model.vo.SysRequestPageVO;
@@ -14,4 +15,6 @@ public interface SysRequestService extends IService<SysRequestDO> {
     SysRequestAllAvgVO allAvgPro(SysRequestPageDTO dto);
 
     SysRequestAllAvgVO allAvg();
+
+    Page<SysRequestPageVO> selfLoginRecord(SysRequestSelfLoginRecordPageDTO dto);
 }

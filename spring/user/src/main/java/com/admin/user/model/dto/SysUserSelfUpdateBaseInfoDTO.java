@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
  * {@link com.admin.common.model.entity.SysUserDO}
  */
 @Data
-public class SysUserUpdateBaseInfoDTO {
+public class SysUserSelfUpdateBaseInfoDTO {
 
     @ApiModelProperty(value = "头像url")
     private String avatarUrl;

@@ -2,6 +2,7 @@ package com.admin.request.controller;
 
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.request.model.dto.SysRequestPageDTO;
+import com.admin.request.model.dto.SysRequestSelfLoginRecordPageDTO;
 import com.admin.request.model.vo.SysRequestAllAvgVO;
 import com.admin.request.model.vo.SysRequestPageVO;
 import com.admin.request.service.SysRequestService;
@@ -42,6 +43,13 @@ public class SysRequestController {
     @ApiOperation(value = "所有请求的平均耗时")
     public ApiResultVO<SysRequestAllAvgVO> allAvg() {
         return ApiResultVO.ok(baseService.allAvg());
+    }
+
+    @PostMapping("/selfLoginRecord")
+    @ApiOperation(value = "当前用户：登录记录")
+    public ApiResultVO<Page<SysRequestPageVO>> selfLoginRecord(
+        @RequestBody @Valid SysRequestSelfLoginRecordPageDTO dto) {
+        return ApiResultVO.ok(baseService.selfLoginRecord(dto));
     }
 
 }

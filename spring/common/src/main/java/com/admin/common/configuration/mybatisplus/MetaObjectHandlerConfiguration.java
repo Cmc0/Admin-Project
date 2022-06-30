@@ -14,13 +14,13 @@ public class MetaObjectHandlerConfiguration implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
 
         Date date = new Date();
-        Long currentUserIdSafe = UserUtil.getCurrentUserIdSafe();
+        Long currentUserIdDefault = UserUtil.getCurrentUserIdDefault();
 
         // 插入的实体类有值时，这里不会生效
         this.strictInsertFill(metaObject, "createTime", Date.class, date);
-        this.strictInsertFill(metaObject, "createId", Long.class, currentUserIdSafe);
+        this.strictInsertFill(metaObject, "createId", Long.class, currentUserIdDefault);
         this.strictInsertFill(metaObject, "updateTime", Date.class, date);
-        this.strictInsertFill(metaObject, "updateId", Long.class, currentUserIdSafe);
+        this.strictInsertFill(metaObject, "updateId", Long.class, currentUserIdDefault);
         this.strictInsertFill(metaObject, "version", Integer.class, 0);
         this.strictInsertFill(metaObject, "orderNo", Integer.class, 0);
         this.strictInsertFill(metaObject, "remark", String.class, "");
@@ -34,7 +34,7 @@ public class MetaObjectHandlerConfiguration implements MetaObjectHandler {
 
         // 插入的实体类有值时，这里不会生效
         this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
-        this.strictUpdateFill(metaObject, "updateId", Long.class, UserUtil.getCurrentUserIdSafe());
+        this.strictUpdateFill(metaObject, "updateId", Long.class, UserUtil.getCurrentUserIdDefault());
 
     }
 

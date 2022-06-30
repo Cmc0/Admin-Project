@@ -1,13 +1,13 @@
 package com.admin.user.model.vo;
 
-import com.admin.user.model.dto.SysUserUpdateBaseInfoDTO;
+import com.admin.user.model.dto.SysUserSelfUpdateBaseInfoDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysUserBaseInfoVO extends SysUserUpdateBaseInfoDTO {
+public class SysUserSelfBaseInfoVO extends SysUserSelfUpdateBaseInfoDTO {
 
     @ApiModelProperty(value = "邮箱，会脱敏")
     private String email;

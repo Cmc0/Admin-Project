@@ -79,7 +79,7 @@ public class SysRequestAop {
         sysRequestDO.setTimeNumber(timeNumber);
 
         // 登录时需要额外处理来获取 用户id
-        if (uri.startsWith("/userLogin")) {
+        if (uri.startsWith(BaseConstant.USER_LOGIN_PATH)) {
             ApiResultVO<String> apiResult = (ApiResultVO)object;
             JWT jwtOf = JWT.of(apiResult.getData().replace(BaseConstant.JWT_PREFIX, ""));
             Long userId = Convert.toLong(jwtOf.getPayload("userId"));

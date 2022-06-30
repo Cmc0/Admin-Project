@@ -1,5 +1,6 @@
 package com.admin.user.controller;
 
+import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.user.model.dto.UserLoginByPasswordDTO;
 import com.admin.user.service.UserLoginService;
@@ -14,7 +15,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/userLogin")
+@RequestMapping(value = BaseConstant.USER_LOGIN_PATH)
 @Api(tags = "用户-登录")
 public class UserLoginController {
 

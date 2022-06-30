@@ -127,7 +127,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                 },
                 {
                     key: '2',
-                    label: <UpdatePasswordModalForm idSet={[entity.id!]} actionRef={actionRef}/>
+                    label: <SysUserUpdatePasswordModalForm idSet={[entity.id!]} actionRef={actionRef}/>
                 },
             ]}>
             </Menu>}>
@@ -139,14 +139,14 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
 
 export default TableColumnList
 
-const UpdatePasswordTitle = "修改密码"
+const SysUserUpdatePasswordTitle = "修改密码"
 
-interface IUpdatePasswordModalForm {
+interface ISysUserUpdatePasswordModalForm {
     idSet: number[]
     actionRef: React.RefObject<ActionType>
 }
 
-export function UpdatePasswordModalForm(props: IUpdatePasswordModalForm) {
+export function SysUserUpdatePasswordModalForm(props: ISysUserUpdatePasswordModalForm) {
 
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
 
@@ -156,8 +156,8 @@ export function UpdatePasswordModalForm(props: IUpdatePasswordModalForm) {
         }}
         isKeyPressSubmit
         width={CommonConstant.MODAL_FORM_WIDTH}
-        title={UpdatePasswordTitle}
-        trigger={<a>{UpdatePasswordTitle}</a>}
+        title={SysUserUpdatePasswordTitle}
+        trigger={<a>{SysUserUpdatePasswordTitle}</a>}
         onFinish={async (form) => {
             const formTemp = {...form}
             if (formTemp.newPassword) {

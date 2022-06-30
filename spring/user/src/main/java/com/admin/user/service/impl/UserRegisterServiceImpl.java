@@ -4,7 +4,6 @@ import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
@@ -19,7 +18,6 @@ import com.admin.user.service.UserRegisterService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,17 +60,9 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
         try {
 
             // 从 redis中根据 redisKey，拿到验证码（随机值）
-            ValueOperations<String, String> ops = jsonRedisTemplate.opsForValue();
-            String redisCode = ops.get(redisKey);
+            String redisCode = jsonRedisTemplate.opsForValue().get(redisKey);
 
-            // 如果不存在验证码，则提示：操作失败：请先获取验证码
-            if (StrUtil.isBlank(redisCode)) {
-                ApiResultVO.error(BizCodeEnum.PLEASE_GET_THE_VERIFICATION_CODE_FIRST);
-            }
-            // 如果验证码不匹配，则提示：验证码有误，请重试
-            if (!dto.getCode().equalsIgnoreCase(redisCode)) {
-                ApiResultVO.error(BizCodeEnum.CODE_IS_INCORRECT);
-            }
+            CodeUtil.checkCode(dto.getCode(), redisCode);
 
             jsonRedisTemplate.delete(redisKey); // 验证通过，删除 redis中的验证码
 
@@ -117,15 +107,15 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
             String subject = "邮箱注册";
 
             // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
-            String code = RandomUtil.randomStringUpper(6).toUpperCase();
+            String code = RandomUtil.randomStringUpper(6);
             strBuilder.append(code);
-
-            MyMailUtil.send(dto.getEmail(), subject, strBuilder.toString(), false);
 
             // 保存到 redis中，设置10分钟过期
             jsonRedisTemplate.opsForValue()
                 .set(BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail(), code, BaseConstant.MINUTE_10_EXPIRE_TIME,
                     TimeUnit.MILLISECONDS);
+
+            MyMailUtil.send(dto.getEmail(), subject, strBuilder.toString(), false);
 
         } finally {
             lock.unlock();

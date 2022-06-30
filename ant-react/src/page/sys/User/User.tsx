@@ -12,7 +12,7 @@ import {
     SysUserPageVO,
     sysUserResetAvatar
 } from "@/api/SysUserController";
-import TableColumnList, {UpdatePasswordModalForm} from "@/page/sys/User/TableColumnList";
+import TableColumnList, {SysUserUpdatePasswordModalForm} from "@/page/sys/User/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/User/SchemaFormColumnList";
@@ -89,7 +89,7 @@ export default function () {
                 }}
                 tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                     <Space size={16}>
-                        <UpdatePasswordModalForm idSet={selectedRowKeys as number[]} actionRef={actionRef}/>
+                        <SysUserUpdatePasswordModalForm idSet={selectedRowKeys as number[]} actionRef={actionRef}/>
                         <a onClick={() => {
                             execConfirm(() => {
                                 return sysUserResetAvatar({idSet: selectedRowKeys}).then(res => {
