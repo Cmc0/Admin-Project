@@ -24,9 +24,13 @@ public interface SysUserService extends IService<SysUserDO> {
 
     String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto);
 
+    String selfUpdateEmailSendEmailCode();
+
     String selfRefreshJwtSecretSuf();
 
     String selfDelete(SysUserSelfDeleteDTO dto);
+
+    String selfDeleteSendEmailCode();
 
     Page<SysUserPageVO> myPage(SysUserPageDTO dto);
 

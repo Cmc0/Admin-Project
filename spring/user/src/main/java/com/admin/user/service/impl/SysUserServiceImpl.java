@@ -222,7 +222,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Override
     @Transactional
     public String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto) {
+
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 当前用户：修改邮箱，发送，邮箱验证码
+     */
+    @Override
+    public String selfUpdateEmailSendEmailCode() {
+        return null;
     }
 
     /**
@@ -241,6 +250,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Transactional
     public String selfDelete(SysUserSelfDeleteDTO dto) {
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 当前用户：注销，发送，邮箱验证码
+     */
+    @Override
+    public String selfDeleteSendEmailCode() {
+        return null;
     }
 
     /**

@@ -64,6 +64,12 @@ public class SysUserController {
         return ApiResultVO.ok(baseService.selfUpdateEmail(dto));
     }
 
+    @ApiOperation(value = "当前用户：修改邮箱，发送，邮箱验证码")
+    @PostMapping(value = "/selfUpdateEmail/sendEmailCode")
+    public ApiResultVO<String> selfUpdateEmailSendEmailCode() {
+        return ApiResultVO.ok(baseService.selfUpdateEmailSendEmailCode());
+    }
+
     @ApiOperation(value = "当前用户：刷新jwt私钥后缀")
     @PostMapping(value = "/selfRefreshJwtSecretSuf")
     public ApiResultVO<String> selfRefreshJwtSecretSuf() {
@@ -74,6 +80,12 @@ public class SysUserController {
     @PostMapping(value = "/selfDelete")
     public ApiResultVO<String> selfDelete(SysUserSelfDeleteDTO dto) {
         return ApiResultVO.ok(baseService.selfDelete(dto));
+    }
+
+    @ApiOperation(value = "当前用户：注销，发送，邮箱验证码")
+    @PostMapping(value = "/selfDelete/sendEmailCode")
+    public ApiResultVO<String> selfDeleteSendEmailCode() {
+        return ApiResultVO.ok(baseService.selfDeleteSendEmailCode());
     }
 
     @ApiOperation(value = "分页排序查询")
