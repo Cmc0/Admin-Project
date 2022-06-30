@@ -225,6 +225,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Override
     @Transactional
     public String selfRefreshJwtSecretSuf() {
+
+        SysUserDO sysUserDO = new SysUserDO();
+        sysUserDO.setId(UserUtil.getCurrentUserIdNotAdmin());
+        sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
+
+        updateById(sysUserDO);
+
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
