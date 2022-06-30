@@ -10,7 +10,7 @@ import java.util.Set;
 public class MyFileTypeUtil {
 
     // 头像的文件类型
-    public final static Set<String> AVATAR_FILE_TYPE_SET = CollUtil.newHashSet("image/jpeg", "image/png", "image/jpg");
+    public final static Set<String> AVATAR_FILE_TYPE_SET = CollUtil.newHashSet("jpeg", "png", "jpg");
 
     private final static String IMAGE_TYPE = "image/";
     private final static String AUDIO_TYPE = "audio/";
@@ -19,19 +19,27 @@ public class MyFileTypeUtil {
     private final static String TXT_TYPE = "text/";
 
     /**
-     * 获取文件类型
+     * 获取文件类型（不含点），可能返回 null或者空字符串，只要 fileName不为 null，则不会返回 null
      */
     public static String getType(InputStream inputStream, String fileName) {
 
         String type = FileTypeUtil.getType(inputStream, fileName);
 
+        IoUtil.close(inputStream); // 这里直接关闭流，因为这个 流已经不完整了
+
+        return type;
+    }
+
+    /**
+     * 通过：文件类型（不含点），获取 contentType
+     */
+    public static String getContentType(String type, String defaultValue) {
+
         if (type == null) {
-            return null;
+            return defaultValue;
         }
 
         type = type.toLowerCase();
-
-        IoUtil.close(inputStream); // 这里直接关闭流，因为这个 流已经不完整了
 
         if ("jpg".equals(type) || "jpeg".equals(type) || "gif".equals(type) || "png".equals(type) || "bmp".equals(type)
             || "pcx".equals(type) || "tga".equals(type) || "psd".equals(type) || "tiff".equals(type)) {
@@ -54,7 +62,7 @@ public class MyFileTypeUtil {
             return TXT_TYPE + type;
         }
 
-        return null;
+        return defaultValue;
     }
 
 }

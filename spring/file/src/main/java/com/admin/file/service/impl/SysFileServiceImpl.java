@@ -11,6 +11,7 @@ import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.MyEntityUtil;
+import com.admin.common.util.MyFileTypeUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.file.mapper.SysFileMapper;
 import com.admin.file.model.dto.SysFileDownloadDTO;
@@ -79,7 +80,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         String path = userId + "/" + CollUtil.join(splitList, "/") + "/";
 
         // 新的文件名
-        String newFileName = IdUtil.simpleUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
+        String newFileName = IdUtil.simpleUUID() + "." + fileType;
 
         path = path + newFileName;
 
@@ -87,7 +88,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         checkAndCreateBucket(sysFileUploadTypeEnum.getBucketName());
 
         // 上传
-        upload(sysFileUploadTypeEnum.getBucketName(), path, fileType, dto.getFile().getInputStream());
+        upload(sysFileUploadTypeEnum.getBucketName(), path,
+            MyFileTypeUtil.getContentType(fileType, dto.getFile().getContentType()), dto.getFile().getInputStream());
 
         String url =
             StrBuilder.create().append("/").append(sysFileUploadTypeEnum.getBucketName()).append("/").append(path)
@@ -118,8 +120,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
      * 备注：path 相同会被覆盖掉
      */
     @SneakyThrows
-    private void upload(String bucketName, String objectName, String fileType, InputStream inputStream) {
-        minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).contentType(fileType).object(objectName)
+    private void upload(String bucketName, String objectName, String contentType, InputStream inputStream) {
+        minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).contentType(contentType).object(objectName)
             .stream(inputStream, -1, ObjectWriteArgs.MAX_PART_SIZE).build());
     }
 
