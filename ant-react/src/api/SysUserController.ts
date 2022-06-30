@@ -1,22 +1,10 @@
+import EmailNotBlankDTO from "@/model/dto/EmailNotBlankDTO";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
-import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import {AxiosRequestConfig} from "axios";
+import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import $http from "../../util/HttpUtil";
-
-export interface SysUserBaseInfoVO {
-    avatarUrl?: string // 头像url
-    bio?: string // 个人简介
-    email?: string // 邮箱，会脱敏
-    nickname?: string // 昵称
-    passwordFlag?: boolean // 是否有密码，用于前端显示，修改密码/设置密码
-}
-
-// 用户-管理 用户基本信息
-export function sysUserBaseInfo(config?: AxiosRequestConfig) {
-    return $http.myPost<SysUserBaseInfoVO>('/sysUser/baseInfo', undefined, config)
-}
 
 // 用户-管理 批量注销用户
 export function sysUserDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
@@ -69,11 +57,6 @@ export function sysUserInsertOrUpdate(form: SysUserInsertOrUpdateDTO, config?: A
     return $http.myPost<string>('/sysUser/insertOrUpdate', form, config)
 }
 
-// 用户-管理 退出登录
-export function sysUserLogout(config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysUser/logout', undefined, config)
-}
-
 export interface SysUserPageDTO extends MyPageDTO {
     addAdminFlag?: boolean // 是否追加 admin账号，备注：pageSize == -1 时生效
     beginCreateTime?: string // 创建开始时间
@@ -116,15 +99,82 @@ export function sysUserResetAvatar(form: NotEmptyIdSet, config?: AxiosRequestCon
     return $http.myPost<string>('/sysUser/resetAvatar', form, config)
 }
 
-export interface SysUserUpdateBaseInfoDTO {
+export interface SysUserSelfBaseInfoVO {
+    avatarUrl?: string // 头像url
+    bio?: string // 个人简介
+    email?: string // 邮箱，会脱敏
+    nickname?: string // 昵称
+    passwordFlag?: boolean // 是否有密码，用于前端显示，修改密码/设置密码
+}
+
+// 用户-管理 当前用户：用户基本信息
+export function sysUserSelfBaseInfo(config?: AxiosRequestConfig) {
+    return $http.myPost<SysUserSelfBaseInfoVO>('/sysUser/selfBaseInfo', undefined, config)
+}
+
+// 用户-管理 当前用户：注销
+export function sysUserSelfDelete(form: FormData, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfDelete', form, config)
+}
+
+// 用户-管理 当前用户：注销，发送，邮箱验证码
+export function sysUserSelfDeleteSendEmailCode(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfDelete/sendEmailCode', undefined, config)
+}
+
+// 用户-管理 当前用户：退出登录
+export function sysUserSelfLogout(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfLogout', undefined, config)
+}
+
+// 用户-管理 当前用户：刷新jwt私钥后缀
+export function sysUserSelfRefreshJwtSecretSuf(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfRefreshJwtSecretSuf', undefined, config)
+}
+
+export interface SysUserSelfUpdateBaseInfoDTO {
     avatarUrl?: string // 头像url
     bio?: string // 个人简介
     nickname?: string // 昵称
 }
 
-// 用户-管理 用户基本信息：修改
-export function sysUserUpdateBaseInfo(form: SysUserUpdateBaseInfoDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysUser/updateBaseInfo', form, config)
+// 用户-管理 当前用户：修改用户基本信息
+export function sysUserSelfUpdateBaseInfo(form: SysUserSelfUpdateBaseInfoDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdateBaseInfo', form, config)
+}
+
+export interface SysUserSelfUpdateEmailDTO {
+    email?: string // 邮箱
+    newCode?: string // 新邮箱，验证码
+    oldCode?: string // 旧邮箱，验证码
+    password?: string // 前端加密之后的密码
+}
+
+// 用户-管理 当前用户：修改邮箱
+export function sysUserSelfUpdateEmail(form: SysUserSelfUpdateEmailDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdateEmail', form, config)
+}
+
+// 用户-管理 当前用户：修改邮箱，发送，邮箱验证码
+export function sysUserSelfUpdateEmailSendEmailCode(form: EmailNotBlankDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdateEmail/sendEmailCode', form, config)
+}
+
+export interface SysUserSelfUpdatePasswordDTO {
+    code?: string // 邮箱验证码
+    newOrigPassword?: string // 前端加密之后的原始密码，新密码
+    newPassword?: string // 前端加密之后的，新密码
+    oldPassword?: string // 前端加密之后的，旧密码
+}
+
+// 用户-管理 当前用户：修改密码
+export function sysUserSelfUpdatePassword(form: SysUserSelfUpdatePasswordDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdatePassword', form, config)
+}
+
+// 用户-管理 当前用户：修改密码，发送，邮箱验证码
+export function sysUserSelfUpdatePasswordSendEmailCode(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdatePassword/sendEmailCode', undefined, config)
 }
 
 export interface SysUserUpdatePasswordDTO {

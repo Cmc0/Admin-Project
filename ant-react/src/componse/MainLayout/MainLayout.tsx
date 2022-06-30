@@ -16,7 +16,7 @@ import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
-import {sysUserBaseInfo, sysUserLogout} from "@/api/SysUserController";
+import {sysUserSelfBaseInfo, sysUserSelfLogout} from "@/api/SysUserController";
 import {SysMenuDO, sysMenuListForUser} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
@@ -87,7 +87,7 @@ export default function () {
 
         connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
-        sysUserBaseInfo().then(res => {
+        sysUserSelfBaseInfo().then(res => {
             appDispatch(setUserBaseInfo(res.data))
         })
 
@@ -239,7 +239,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                                 className={"red3"}
                                 onClick={() => {
                                     execConfirm(() => {
-                                        return sysUserLogout().then((res) => {
+                                        return sysUserSelfLogout().then((res) => {
                                             ToastSuccess(res.msg)
                                             logout()
                                         })

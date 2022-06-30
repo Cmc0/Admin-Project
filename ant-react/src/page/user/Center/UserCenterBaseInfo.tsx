@@ -1,8 +1,8 @@
 import {
-    sysUserBaseInfo,
-    SysUserBaseInfoVO,
-    sysUserUpdateBaseInfo,
-    SysUserUpdateBaseInfoDTO
+    sysUserSelfBaseInfo,
+    SysUserSelfBaseInfoVO,
+    sysUserSelfUpdateBaseInfo,
+    SysUserSelfUpdateBaseInfoDTO
 } from "@/api/SysUserController";
 import {ActionType, ProDescriptions} from "@ant-design/pro-components";
 import {DeleteOutlined, EyeOutlined} from "@ant-design/icons/lib";
@@ -28,12 +28,12 @@ export default function () {
 
     const actionRef = useRef<ActionType>()
 
-    const [useForm] = Form.useForm<SysUserUpdateBaseInfoDTO>();
+    const [useForm] = Form.useForm<SysUserSelfUpdateBaseInfoDTO>();
 
-    const currentForm = useRef<SysUserUpdateBaseInfoDTO>({})
+    const currentForm = useRef<SysUserSelfUpdateBaseInfoDTO>({})
 
-    function doSysUserUpdateBaseInfo(form: SysUserUpdateBaseInfoDTO) {
-        return sysUserUpdateBaseInfo(form).then(res => {
+    function doSysUserSelfUpdateBaseInfo(form: SysUserSelfUpdateBaseInfoDTO) {
+        return sysUserSelfUpdateBaseInfo(form).then(res => {
             currentForm.current = form
             ToastSuccess(res.msg)
             appDispatch(setUserBaseInfo(form))
@@ -42,7 +42,7 @@ export default function () {
     }
 
     return (
-        <ProDescriptions<SysUserBaseInfoVO>
+        <ProDescriptions<SysUserSelfBaseInfoVO>
             formProps={{
                 form: useForm
             }}
@@ -50,7 +50,7 @@ export default function () {
             actionRef={actionRef}
             request={() => {
                 return new Promise<RequestData>((resolve) => {
-                    sysUserBaseInfo().then(res => {
+                    sysUserSelfBaseInfo().then(res => {
                         currentForm.current = res.data
                         resolve({
                             success: true,
@@ -61,7 +61,7 @@ export default function () {
             }}
             editable={{
                 onSave: async (key, record) => {
-                    await doSysUserUpdateBaseInfo({...record, avatarUrl: currentForm.current.avatarUrl})
+                    await doSysUserSelfUpdateBaseInfo({...record, avatarUrl: currentForm.current.avatarUrl})
                     return true;
                 },
             }}
@@ -96,7 +96,7 @@ export default function () {
                                 customRequest={(options) => {
                                     setFileLoading(true)
                                     SysFileUploadPro(options.file, 'AVATAR').then(url => {
-                                        doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: url})
+                                        doSysUserSelfUpdateBaseInfo({...currentForm.current, avatarUrl: url})
                                     }).catch(() => {
                                         setFileLoading(false)
                                     })
@@ -113,7 +113,7 @@ export default function () {
                                     return
                                 }
                                 execConfirm(() => {
-                                    return doSysUserUpdateBaseInfo({...currentForm.current, avatarUrl: ''})
+                                    return doSysUserSelfUpdateBaseInfo({...currentForm.current, avatarUrl: ''})
                                 }, undefined, '确定移除头像吗？')
                             }}><DeleteOutlined title={"移除头像"} className={"red3"}/></a>}
                         </Space>

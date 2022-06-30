@@ -60,3 +60,17 @@ export interface SysRequestPageVO {
 export function sysRequestPage(form: SysRequestPageDTO, config?: AxiosRequestConfig) {
     return $http.myProPagePost<SysRequestPageVO>('/sysRequest/page', form, config)
 }
+
+export interface SysRequestSelfLoginRecordPageDTO extends MyPageDTO {
+    category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    current?: number // 第几页
+    ip?: string // ip
+    order?: MyOrderDTO // 排序字段
+    pageSize?: number // 每页显示条数
+    region?: string // IpUtil.getRegion() 获取到的 ip所处区域
+}
+
+// 接口请求-管理 当前用户：登录记录
+export function sysRequestSelfLoginRecord(form: SysRequestSelfLoginRecordPageDTO, config?: AxiosRequestConfig) {
+    return $http.myProPagePost<SysRequestPageVO>('/sysRequest/selfLoginRecord', form, config)
+}
