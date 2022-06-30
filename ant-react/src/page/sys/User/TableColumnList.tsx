@@ -16,7 +16,7 @@ import {
 import CommonConstant from "@/model/constant/CommonConstant";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
-import ValidatorUtil from "../../../../util/ValidatorUtil";
+import {ValidatorUtil} from "../../../../util/ValidatorUtil";
 import {GetPublicDownFileUrl} from "../../../../util/FileUtil";
 
 const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [

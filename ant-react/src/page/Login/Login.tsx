@@ -16,6 +16,7 @@ import {useAppDispatch} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
 import LoginTest from "@/page/Login/LoginTest";
+import {ValidatorUtil} from "../../../util/ValidatorUtil";
 
 type LoginType = 'password' | 'phone';
 
@@ -106,10 +107,13 @@ export default function () {
                                 }}
                                 placeholder={'邮箱'}
                                 rules={[
-                                    {
-                                        required: true,
-                                        message: "请输入邮箱",
-                                    },
+                                    import.meta.env.DEV ?
+                                        {
+                                            required: true,
+                                            message: "请输入邮箱",
+                                        } : {
+                                            validator: ValidatorUtil.emailValidate
+                                        }
                                 ]}
                             />
                             <ProFormText.Password

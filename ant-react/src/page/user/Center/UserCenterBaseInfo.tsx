@@ -16,7 +16,7 @@ import {Avatar, Form, Image, Space, Upload} from "antd";
 import {setUserBaseInfo} from "@/store/userSlice";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import MyIcon from "@/componse/MyIcon/MyIcon";
-import ValidatorUtil from "../../../../util/ValidatorUtil";
+import {ValidatorUtil} from "../../../../util/ValidatorUtil";
 
 export default function () {
 

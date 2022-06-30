@@ -5,7 +5,7 @@ import {SysUserInsertOrUpdateDTO} from "@/api/SysUserController";
 import {IMyOption, IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import {TreeSelect} from "antd";
 import {randomNickname} from "../../../../util/UserUtil";
-import ValidatorUtil from "../../../../util/ValidatorUtil";
+import {ValidatorUtil} from "../../../../util/ValidatorUtil";
 
 export const InitForm: SysUserInsertOrUpdateDTO = {
     enableFlag: true,

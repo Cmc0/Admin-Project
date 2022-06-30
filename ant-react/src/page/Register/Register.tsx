@@ -13,7 +13,7 @@ import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
 import RegisterTest from "@/page/Register/RegisterTest";
 import {UserRegisterByEmailDTO, userRegisterEmail, userRegisterEmailSendCode} from "@/api/UserRegisterController";
 import {UseEffectLogin} from "@/page/Login/Login";
-import ValidatorUtil from "../../../util/ValidatorUtil";
+import {ValidatorUtil} from "../../../util/ValidatorUtil";
 
 type RegisterType = 'email' | 'phone';
 

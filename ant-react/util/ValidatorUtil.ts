@@ -6,17 +6,17 @@ interface IValidate {
   emptyErrorMsg: string
 }
 
-export const validate: Record<string, IValidate> = {
-  email: {
-    emptyErrorMsg: '请输入邮箱',
-    errorMsg: '邮箱格式错误',
-    validate(value: string) {
-      return /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)
+const validate: Record<string, IValidate> = {
+    email: {
+        emptyErrorMsg: '请输入邮箱',
+        errorMsg: '邮箱格式错误',
+        validate(value: string) {
+            return /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)
+        },
     },
-  },
-  password: {
-    emptyErrorMsg: '请输入密码',
-    errorMsg:
+    password: {
+        emptyErrorMsg: '请输入密码',
+        errorMsg:
         '密码格式错误：必须包含大小写字母和数字，可以使用特殊字符，长度8-20',
     validate(value: string) {
       return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/.test(value)
@@ -47,36 +47,34 @@ export const validate: Record<string, IValidate> = {
   },
 }
 
-const install: Record<string,
+export const ValidatorUtil: Record<string,
     (rule: Rule, fieldValue: string) => Promise<void>> = {}
 
 Object.keys(validate).forEach((item) => {
-  install[item + 'Validate'] = (
-      rule: Rule,
-      fieldValue: string,
-  ): Promise<void> => {
-    if (!fieldValue) {
-      return Promise.reject(new Error(validate[item].emptyErrorMsg))
-    }
-    if (!validate[item].validate(fieldValue)) {
-      return Promise.reject(new Error(validate[item].errorMsg))
-    }
-    return Promise.resolve()
+    ValidatorUtil[item + 'Validate'] = (
+        rule: Rule,
+        fieldValue: string,
+    ): Promise<void> => {
+        if (!fieldValue) {
+            return Promise.reject(new Error(validate[item].emptyErrorMsg))
+        }
+        if (!validate[item].validate(fieldValue)) {
+            return Promise.reject(new Error(validate[item].errorMsg))
+        }
+        return Promise.resolve()
   }
 
   // 可以为空的校验
-  install[item + 'CanNullValidate'] = (
-      rule: Rule,
-      fieldValue: string,
-  ): Promise<void> => {
-    if (!fieldValue) {
-      return Promise.resolve()
-    }
-    if (!validate[item].validate(fieldValue)) {
-      return Promise.reject(new Error(validate[item].errorMsg))
-    }
-    return Promise.resolve()
+    ValidatorUtil[item + 'CanNullValidate'] = (
+        rule: Rule,
+        fieldValue: string,
+    ): Promise<void> => {
+        if (!fieldValue) {
+            return Promise.resolve()
+        }
+        if (!validate[item].validate(fieldValue)) {
+            return Promise.reject(new Error(validate[item].errorMsg))
+        }
+        return Promise.resolve()
   }
 })
-
-export default install
