@@ -225,7 +225,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Override
     @Transactional
     public String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto) {
-
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
@@ -234,7 +233,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      */
     @Override
     public String selfUpdateEmailSendEmailCode(EmailNotBlankDTO dto) {
-        return userRegisterService.userRegisterByEmailSendCode(dto);
+        String currentUserEmail = UserUtil.getCurrentUserEmail();
+
+        StrBuilder strBuilder = new StrBuilder("尊敬的用户您好，您本次修改邮箱的验证码是（10分钟内有效）：");
+        String subject = "修改邮箱";
+
+        // 生成随机码，注意：这里是写死的，只生成6位数，如果需要改，则 controller层 code的正则表达式校验也需要改
+        String code = RandomUtil.randomStringUpper(6);
+        strBuilder.append(code);
+
+        // 保存到 redis中，设置10分钟过期
+        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail, code,
+            BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+        MyMailUtil.send(currentUserEmail, subject, strBuilder.toString(), false);
+
+        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
 
     /**

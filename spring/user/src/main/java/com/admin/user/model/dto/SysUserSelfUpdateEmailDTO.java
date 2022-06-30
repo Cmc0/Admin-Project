@@ -13,18 +13,18 @@ import javax.validation.constraints.Pattern;
 @Data
 public class SysUserSelfUpdateEmailDTO extends EmailNotBlankDTO {
 
-    @NotBlank
     @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
+    @NotBlank
     @ApiModelProperty(value = "新邮箱，验证码")
     private String newCode;
-
-    @NotBlank
-    @ApiModelProperty(value = "前端加密之后的密码")
-    private String password;
 
     @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @NotBlank
     @ApiModelProperty(value = "旧邮箱，验证码")
     private String oldCode;
+
+    @NotBlank
+    @ApiModelProperty(value = "前端加密之后的密码")
+    private String password;
 
 }

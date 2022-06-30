@@ -55,10 +55,12 @@ public interface BaseConstant {
 
     String PRE_REDIS_XXL_JOB_COOKIE_CACHE = "PRE_REDIS_XXL_JOB_COOKIE_CACHE"; // xxl-job 登录 cookie缓存
 
-    // 当前用户修改密码 相关 ↓
+    // 当前用户修改 相关 ↓
     // 当前用户：修改密码，发送的邮箱验证码，和分布式锁名前缀，锁邮箱
     String PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE = "PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE:";
-    // 当前用户修改密码 相关 ↑
+    // 当前用户：修改邮箱，发送的邮箱验证码，和分布式锁名前缀，锁邮箱
+    String PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE = "PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE:";
+    // 当前用户修改 相关 ↑
 
     // 注册相关 ↓
     String PRE_LOCK_EMAIL_CODE = "PRE_LOCK_EMAIL_CODE:"; // 邮箱发送的验证码，和分布式锁名前缀，锁邮箱
