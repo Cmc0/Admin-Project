@@ -1,5 +1,6 @@
 package com.admin.file.model.enums;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.util.MyFileTypeUtil;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 public enum SysFileUploadTypeEnum {
-    AVATAR("public", "avatar", MyFileTypeUtil.AVATAR_FILE_TYPE_SET) // 头像
+    AVATAR("public", "avatar", CollUtil.newHashSet("jpeg", "png", "jpg")) // 头像
     ;
 
     private String bucketName; // 桶名

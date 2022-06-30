@@ -88,8 +88,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         checkAndCreateBucket(sysFileUploadTypeEnum.getBucketName());
 
         // 上传
-        upload(sysFileUploadTypeEnum.getBucketName(), path,
-            MyFileTypeUtil.getContentType(fileType, dto.getFile().getContentType()), dto.getFile().getInputStream());
+        upload(sysFileUploadTypeEnum.getBucketName(), path, MyFileTypeUtil.getContentType(fileType),
+            dto.getFile().getInputStream());
 
         String url =
             StrBuilder.create().append("/").append(sysFileUploadTypeEnum.getBucketName()).append("/").append(path)
