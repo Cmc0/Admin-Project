@@ -78,11 +78,10 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
 
             save(sysUserDO); // 保存
 
+            return "注册成功";
         } finally {
             lock.unlock();
         }
-
-        return "注册成功";
     }
 
     /**

@@ -189,7 +189,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             updateById(sysUserDO); // 操作数据库
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-
         } finally {
             lock.unlock();
         }
