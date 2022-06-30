@@ -17,6 +17,7 @@ import {setUserBaseInfo} from "@/store/userSlice";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
+import {USER_CENTER_KEY_ONE} from "@/page/user/Center/Center";
 
 export default function () {
 
@@ -45,7 +46,7 @@ export default function () {
             formProps={{
                 form: useForm
             }}
-            title="个人资料"
+            title={USER_CENTER_KEY_ONE}
             actionRef={actionRef}
             request={() => {
                 return new Promise<RequestData>((resolve) => {
