@@ -53,8 +53,8 @@ public class MyEmailUtil {
     private final static String SELF_UPDATE_EMAIL_SEND_SUBJECT = "修改邮箱";
     private final static String SELF_UPDATE_EMAIL_SEND_TEMP = "尊敬的用户您好，您本次修改邮箱的验证码是（10分钟内有效）：{}";
     // 当前用户：注销，发送邮箱，模板
-    private final static String SELF_DELETE_SEND_SUBJECT = "用户注销";
-    private final static String SELF_DELETE_SEND_TEMP = "尊敬的用户您好，您本次用户注销的验证码是（10分钟内有效）：{}";
+    private final static String SELF_DELETE_SEND_SUBJECT = "账号注销";
+    private final static String SELF_DELETE_SEND_TEMP = "尊敬的用户您好，您账号注销的验证码是（10分钟内有效）：{}";
 
     /**
      * 当前用户：注销，发送邮箱
