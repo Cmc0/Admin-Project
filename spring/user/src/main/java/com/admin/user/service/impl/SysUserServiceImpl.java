@@ -249,8 +249,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      */
     @Override
     public String selfDeleteSendEmailCode() {
-
-        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+        return MyEmailUtil.selfDeleteSend();
     }
 
     /**

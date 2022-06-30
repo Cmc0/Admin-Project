@@ -52,6 +52,29 @@ public class MyEmailUtil {
     // 当前用户：修改邮箱，发送邮箱，模板
     private final static String SELF_UPDATE_EMAIL_SEND_SUBJECT = "修改邮箱";
     private final static String SELF_UPDATE_EMAIL_SEND_TEMP = "尊敬的用户您好，您本次修改邮箱的验证码是（10分钟内有效）：{}";
+    // 当前用户：注销，发送邮箱，模板
+    private final static String SELF_DELETE_SEND_SUBJECT = "用户注销";
+    private final static String SELF_DELETE_SEND_TEMP = "尊敬的用户您好，您本次用户注销的验证码是（10分钟内有效）：{}";
+
+    /**
+     * 当前用户：注销，发送邮箱
+     */
+    public static String selfDeleteSend() {
+
+        String currentUserEmail = UserUtil.getCurrentUserEmail();
+
+        String code = RandomUtil.randomStringUpper(6);
+        String content = StrUtil.format(SELF_DELETE_SEND_TEMP, code);
+
+        // 保存到 redis中，设置10分钟过期
+        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail, code,
+            BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+        MyEmailUtil.send(currentUserEmail, SELF_DELETE_SEND_SUBJECT, content, false);
+
+        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+
+    }
 
     /**
      * 当前用户：修改邮箱，发送邮箱
