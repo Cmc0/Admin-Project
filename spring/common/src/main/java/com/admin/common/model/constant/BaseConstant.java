@@ -5,6 +5,8 @@ package com.admin.common.model.constant;
  */
 public interface BaseConstant {
 
+    String NEGATIVE_ONE_STR = "-1";
+
     // mq 相关 ↓
     String MQ_WEB_SOCKET_TOPIC = "cmc-admin-web-socket-topic"; // WebSocket的 topic
     // mq 相关 ↑

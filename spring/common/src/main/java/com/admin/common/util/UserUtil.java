@@ -1,6 +1,7 @@
 package com.admin.common.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
@@ -10,6 +11,7 @@ import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.*;
 import com.admin.common.model.vo.ApiResultVO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -175,7 +177,7 @@ public class UserUtil {
 
         // 再添加 menuIdSet 的所有子级菜单
         for (Long item : menuIdSet) {
-            getMenuListByUserIdNext(menuList, sysMenuDOList, item);
+            getMenuListByUserIdNext(menuList, sysMenuDOList, item.toString());
         }
 
         // 得到完整的 menuIdSet
@@ -198,17 +200,51 @@ public class UserUtil {
     }
 
     /**
+     * 通过 userId，获取关联的 roleIdSet，redis缓存，备注：包含默认角色的 id
+     */
+    public static Set<String> getRefRoleIdSetByUserIdFromRedis(String userId) {
+
+        Set<String> roleIdSet;
+
+        BoundHashOperations<String, String, Set<String>> ops =
+            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+
+        Long size = ops.size();
+        if (size == null || size == 0) {
+            roleIdSet = updateRoleRefUserForRedis().get(userId); // 更新缓存，备注：返回值可能会为 null
+        } else {
+            roleIdSet = ops.get(userId); // 获取：用户绑定的 roleIdSet
+        }
+
+        if (roleIdSet == null) {
+            roleIdSet = new HashSet<>();
+        }
+
+        // 获取：默认角色的 id
+        Object object = jsonRedisTemplate.opsForValue().get(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        String defaultRoleId = Convert.toStr(object);
+        if (defaultRoleId == null) {
+            defaultRoleId = updateDefaultRoleIdForRedis(); // 更新缓存
+        }
+        if (!BaseConstant.NEGATIVE_ONE_STR.equals(defaultRoleId)) {
+            roleIdSet.add(defaultRoleId);
+        }
+
+        return roleIdSet;
+    }
+
+    /**
      * 更新 redis缓存：角色关联用户
      */
-    public static Map<Long, Set<Long>> updateRoleRefUserForRedis() {
+    public static Map<String, Set<String>> updateRoleRefUserForRedis() {
 
         List<SysRoleRefUserDO> sysRoleRefUserDOList = ChainWrappers.lambdaQueryChain(sysRoleRefUserMapper)
             .select(SysRoleRefUserDO::getRoleId, SysRoleRefUserDO::getUserId).list();
 
-        // 用户对应的，角色 idSet
-        Map<Long, Set<Long>> userRefRoleIdSetMap = sysRoleRefUserDOList.stream().collect(Collectors
-            .groupingBy(SysRoleRefUserDO::getUserId,
-                Collectors.mapping(SysRoleRefUserDO::getRoleId, Collectors.toSet())));
+        // 用户对应的，角色 idSet，map
+        Map<String, Set<String>> userRefRoleIdSetMap = sysRoleRefUserDOList.stream().collect(Collectors
+            .groupingBy(it -> it.getUserId().toString(),
+                Collectors.mapping(it -> it.getRoleId().toString(), Collectors.toSet())));
 
         // 删除缓存
         jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
@@ -221,19 +257,17 @@ public class UserUtil {
     /**
      * 更新 redis缓存：默认角色 id
      */
-    public static long updateDefaultRoleIdForRedis() {
+    public static String updateDefaultRoleIdForRedis() {
 
-        long defaultRoleId = -1L; // -1 表示没有 默认角色
+        String defaultRoleId = BaseConstant.NEGATIVE_ONE_STR; // -1 表示没有 默认角色
 
         SysRoleDO sysRoleDO = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
             .eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).one();
 
         if (sysRoleDO != null) {
-            defaultRoleId = sysRoleDO.getId();
+            defaultRoleId = sysRoleDO.getId().toString();
         }
 
-        // 删除缓存
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         // 设置缓存
         jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, defaultRoleId);
 
@@ -241,17 +275,46 @@ public class UserUtil {
     }
 
     /**
+     * 通过 roleIdSet，获取关联的 menuIdSet，redis缓存
+     */
+    public static Set<String> getRefMenuIdSetByRoleIdSetFromRedis(Set<String> roleIdSet) {
+
+        Set<String> menuIdSet = null;
+
+        BoundHashOperations<String, String, Set<String>> ops =
+            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+
+        Long size = ops.size();
+        if (size == null || size == 0) {
+            Map<String, Set<String>> roleRefMenuIdSetMap = updateRoleRefMenuForRedis(); // 更新缓存
+            menuIdSet = roleRefMenuIdSetMap.entrySet().stream().filter(it -> roleIdSet.contains(it.getKey()))
+                .flatMap(it -> it.getValue().stream()).collect(Collectors.toSet());
+        } else {
+            List<Set<String>> multiGetList = ops.multiGet(roleIdSet);
+            if (multiGetList != null) {
+                menuIdSet = multiGetList.stream().flatMap(Collection::stream).collect(Collectors.toSet());
+            }
+        }
+
+        if (menuIdSet == null) {
+            menuIdSet = new HashSet<>();
+        }
+
+        return menuIdSet;
+    }
+
+    /**
      * 更新 redis缓存：角色关联菜单
      */
-    public static Map<Long, Set<Long>> updateRoleRefMenuForRedis() {
+    public static Map<String, Set<String>> updateRoleRefMenuForRedis() {
 
         List<SysRoleRefMenuDO> sysRoleRefMenuDOList = ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper)
             .select(SysRoleRefMenuDO::getRoleId, SysRoleRefMenuDO::getMenuId).list();
 
-        // 角色对应的，菜单 idSet
-        Map<Long, Set<Long>> roleRefMenuIdSetMap = sysRoleRefMenuDOList.stream().collect(Collectors
-            .groupingBy(SysRoleRefMenuDO::getRoleId,
-                Collectors.mapping(SysRoleRefMenuDO::getMenuId, Collectors.toSet())));
+        // 角色对应的，菜单 idSet，map
+        Map<String, Set<String>> roleRefMenuIdSetMap = sysRoleRefMenuDOList.stream().collect(Collectors
+            .groupingBy(it -> it.getRoleId().toString(),
+                Collectors.mapping(it -> it.getMenuId().toString(), Collectors.toSet())));
 
         // 删除缓存
         jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
@@ -259,6 +322,21 @@ public class UserUtil {
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE).putAll(roleRefMenuIdSetMap);
 
         return roleRefMenuIdSetMap;
+    }
+
+    /**
+     * 获取：菜单id - 权限 的集合，redis缓存
+     */
+    public static List<SysMenuDO> getMenuIdAndAuthsListFromRedis() {
+
+        List<SysMenuDO> rangeList =
+            (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).range(0, -1);
+
+        if (rangeList == null) {
+            return updateMenuIdAndAuthsListForRedis(); // 更新缓存
+        } else {
+            return rangeList;
+        }
     }
 
     /**
@@ -286,30 +364,16 @@ public class UserUtil {
 
         List<SysMenuDO> resList = new ArrayList<>();
 
-        // 获取用户绑定的 角色
-        List<SysRoleRefUserDO> sysRoleRefUserDOList =
-            ChainWrappers.lambdaQueryChain(sysRoleRefUserMapper).eq(SysRoleRefUserDO::getUserId, userId)
-                .select(SysRoleRefUserDO::getRoleId).list();
-
-        Set<Long> roleIdSet =
-            sysRoleRefUserDOList.stream().map(SysRoleRefUserDO::getRoleId).collect(Collectors.toSet());
-
-        // 查询是否有 默认角色，条件：没被禁用的
-        SysRoleDO sysRoleDO = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
-            .eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).one();
-        if (sysRoleDO != null) {
-            roleIdSet.add(sysRoleDO.getId()); // 添加到 roleIdSet里面
-        }
+        // 通过 userId，获取关联的 roleIdSet，redis缓存，备注：包含默认角色的 id
+        Set<String> roleIdSet = getRefRoleIdSetByUserIdFromRedis(userId.toString());
 
         if (roleIdSet.size() == 0) {
             return resList; // 结束方法
         }
 
-        // 获取：角色绑定的菜单
-        List<SysRoleRefMenuDO> sysRoleRefMenuDOList =
-            ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper).in(SysRoleRefMenuDO::getRoleId, roleIdSet)
-                .select(SysRoleRefMenuDO::getMenuId).list();
-        if (sysRoleRefMenuDOList.size() == 0) {
+        // 通过 roleIdSet，获取关联的 menuIdSet，redis缓存
+        Set<String> menuIdSet = getRefMenuIdSetByRoleIdSetFromRedis(roleIdSet);
+        if (menuIdSet.size() == 0) {
             return resList; // 结束方法
         }
 
@@ -317,9 +381,7 @@ public class UserUtil {
         /** 这里和{@link com.admin.menu.service.SysMenuService#menuListForUser}需要进行同步修改 */
         List<SysMenuDO> sysMenuDOList;
         if (type == 2) { // 2 给 security获取权限时使用
-            sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
-                .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
-                .eq(BaseEntityThree::getEnableFlag, true).list();
+            sysMenuDOList = getMenuIdAndAuthsListFromRedis();
         } else { // 默认是 1
             sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
@@ -331,12 +393,9 @@ public class UserUtil {
             return resList; // 结束方法
         }
 
-        Set<Long> menuIdSet =
-            sysRoleRefMenuDOList.stream().map(SysRoleRefMenuDO::getMenuId).collect(Collectors.toSet());
-
         // 开始进行匹配，组装返回值
         for (SysMenuDO item : sysMenuDOList) {
-            if (menuIdSet.contains(item.getId())) {
+            if (menuIdSet.contains(item.getId().toString())) {
                 resList.add(item); // 先添加 menuIdSet里面的 菜单
             }
         }
@@ -347,7 +406,7 @@ public class UserUtil {
         // 根据底级节点 list，逆向生成整棵树 list
         resList = MyTreeUtil.getFullTreeList(resList, sysMenuDOList);
 
-        for (Long item : menuIdSet) { // 再添加 menuIdSet的所有子级菜单
+        for (String item : menuIdSet) { // 再添加 menuIdSet的所有子级菜单
             getMenuListByUserIdNext(resList, sysMenuDOList, item);
         }
 
@@ -358,15 +417,15 @@ public class UserUtil {
      * 通过用户 id，获取 菜单集合，后续操作
      */
     private static void getMenuListByUserIdNext(List<SysMenuDO> resList, List<SysMenuDO> allBaseMenuList,
-        Long parentId) {
+        String parentId) {
 
         for (SysMenuDO item : allBaseMenuList) {
-            if (item.getParentId().equals(parentId)) {
+            if (item.getParentId().toString().equals(parentId)) {
                 long count = resList.stream().filter(it -> it.getId().equals(item.getId())).count();
                 if (count == 0) { // 不能重复添加到 返回值里
                     resList.add(item);
                 }
-                getMenuListByUserIdNext(resList, allBaseMenuList, item.getId()); // 继续匹配下一级
+                getMenuListByUserIdNext(resList, allBaseMenuList, item.getId().toString()); // 继续匹配下一级
             }
         }
 
