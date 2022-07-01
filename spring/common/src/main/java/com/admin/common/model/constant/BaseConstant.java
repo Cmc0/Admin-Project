@@ -68,9 +68,9 @@ public interface BaseConstant {
 
     // 用户获取权限相关 缓存 ↓
     String PRE_REDIS_ROLE_REF_USER_CACHE = "PRE_REDIS_ROLE_REF_USER_CACHE"; // 角色关联用户，缓存
-    String PRE_REDIS_DEFAULT_ROLE_CACHE = "PRE_REDIS_DEFAULT_ROLE_CACHE"; // 默认角色，缓存
+    String PRE_REDIS_DEFAULT_ROLE_ID_CACHE = "PRE_REDIS_DEFAULT_ROLE_CACHE"; // 默认角色 id，缓存
     String PRE_REDIS_ROLE_REF_MENU_CACHE = "PRE_REDIS_ROLE_REF_MENU_CACHE"; // 角色关联菜单，缓存
-    String PRE_REDIS_MENU_ID_AND_AUTH_LIST_CACHE = "PRE_REDIS_MENU_ID_AND_AUTH_LIST_CACHE"; // 菜单id - 权限 的集合，缓存
+    String PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE = "PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE"; // 菜单id - 权限 的集合，缓存
     // 用户获取权限相关 缓存 ↑
 
     // 注册相关 ↓

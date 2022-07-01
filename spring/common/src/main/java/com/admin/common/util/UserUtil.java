@@ -55,10 +55,10 @@ public class UserUtil {
         sysUserMapper = value;
     }
 
-    private static JsonRedisTemplate<String> jsonRedisTemplate;
+    private static JsonRedisTemplate<Object> jsonRedisTemplate;
 
     @Resource
-    private void setJsonRedisTemplate(JsonRedisTemplate<String> value) {
+    private void setJsonRedisTemplate(JsonRedisTemplate<Object> value) {
         jsonRedisTemplate = value;
     }
 
@@ -200,37 +200,82 @@ public class UserUtil {
     /**
      * 更新 redis缓存：角色关联用户
      */
-    public static void updateRoleRefUserForRedis() {
+    public static Map<Long, Set<Long>> updateRoleRefUserForRedis() {
 
+        List<SysRoleRefUserDO> sysRoleRefUserDOList = ChainWrappers.lambdaQueryChain(sysRoleRefUserMapper)
+            .select(SysRoleRefUserDO::getRoleId, SysRoleRefUserDO::getUserId).list();
+
+        // 用户对应的，角色 idSet
+        Map<Long, Set<Long>> userRefRoleIdSetMap = sysRoleRefUserDOList.stream().collect(Collectors
+            .groupingBy(SysRoleRefUserDO::getUserId,
+                Collectors.mapping(SysRoleRefUserDO::getRoleId, Collectors.toSet())));
+
+        // 删除缓存
         jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        // 设置缓存
+        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE).putAll(userRefRoleIdSetMap);
 
+        return userRefRoleIdSetMap;
     }
 
     /**
-     * 更新 redis缓存：默认角色
+     * 更新 redis缓存：默认角色 id
      */
-    public static void updateDefaultRoleForRedis() {
+    public static long updateDefaultRoleIdForRedis() {
 
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_DEFAULT_ROLE_CACHE);
+        long defaultRoleId = -1L; // -1 表示没有 默认角色
 
+        SysRoleDO sysRoleDO = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
+            .eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).one();
+
+        if (sysRoleDO != null) {
+            defaultRoleId = sysRoleDO.getId();
+        }
+
+        // 删除缓存
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        // 设置缓存
+        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, defaultRoleId);
+
+        return defaultRoleId;
     }
 
     /**
      * 更新 redis缓存：角色关联菜单
      */
-    public static void updateRoleRefMenuForRedis() {
+    public static Map<Long, Set<Long>> updateRoleRefMenuForRedis() {
 
+        List<SysRoleRefMenuDO> sysRoleRefMenuDOList = ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper)
+            .select(SysRoleRefMenuDO::getRoleId, SysRoleRefMenuDO::getMenuId).list();
+
+        // 角色对应的，菜单 idSet
+        Map<Long, Set<Long>> roleRefMenuIdSetMap = sysRoleRefMenuDOList.stream().collect(Collectors
+            .groupingBy(SysRoleRefMenuDO::getRoleId,
+                Collectors.mapping(SysRoleRefMenuDO::getMenuId, Collectors.toSet())));
+
+        // 删除缓存
         jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        // 设置缓存
+        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE).putAll(roleRefMenuIdSetMap);
 
+        return roleRefMenuIdSetMap;
     }
 
     /**
      * 更新 redis缓存：菜单id - 权限 的集合
      */
-    public static void updateMenuIdAndAuthListForRedis() {
+    public static List<SysMenuDO> updateMenuIdAndAuthsListForRedis() {
 
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTH_LIST_CACHE);
+        List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
+            .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
+            .eq(BaseEntityThree::getEnableFlag, true).list();
 
+        // 删除缓存
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        // 设置缓存
+        jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).leftPushAll(sysMenuDOList);
+
+        return sysMenuDOList;
     }
 
     /**
