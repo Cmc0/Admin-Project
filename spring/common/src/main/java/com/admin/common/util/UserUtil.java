@@ -1,5 +1,6 @@
 package com.admin.common.util;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.RandomUtil;
@@ -332,8 +333,9 @@ public class UserUtil {
         Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
 
         if (hasKey != null && hasKey) {
-            return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
-                .range(0, -1);
+            return Objects.requireNonNull(
+                jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).range(0, -1))
+                .stream().map(it -> BeanUtil.toBean(it, SysMenuDO.class)).collect(Collectors.toList());
         } else {
             return updateMenuIdAndAuthsListForRedis(); // 更新缓存
         }
