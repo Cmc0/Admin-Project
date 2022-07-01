@@ -353,22 +353,17 @@ public class UserUtil {
      * 更新 redis缓存：菜单id - 权限 的集合
      */
     public static List<SysMenuDO> updateMenuIdAndAuthsListForRedis() {
+
+        List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
+            .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
+            .eq(BaseEntityThree::getEnableFlag, true).list();
+
+        // 备注：这里加个分布式锁，目的：防止多次执行 rightPush
         RLock lock =
             redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
         lock.lock();
 
         try {
-
-            Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
-            if (hasKey != null && hasKey) {
-                return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
-                    .range(0, -1);
-            }
-
-            List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
-                .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
-                .eq(SysMenuDO::getAuthFlag, true).eq(BaseEntityThree::getEnableFlag, true).list();
-
             // 删除缓存
             jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
             // 设置缓存
