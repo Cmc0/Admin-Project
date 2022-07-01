@@ -1,4 +1,4 @@
-import EmailNotBlankDTO from "@/model/dto/EmailNotBlankDTO";
+import MyCodeToKeyDTO from "@/model/dto/MyCodeToKeyDTO";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
@@ -144,10 +144,9 @@ export function sysUserSelfUpdateBaseInfo(form: SysUserSelfUpdateBaseInfoDTO, co
 }
 
 export interface SysUserSelfUpdateEmailDTO {
+    code?: string // 新邮箱，验证码
     email?: string // 邮箱
-    newCode?: string // 新邮箱，验证码
-    oldCode?: string // 旧邮箱，验证码
-    password?: string // 前端加密之后的密码
+    key?: string // 旧邮箱，验证码兑换的 key
 }
 
 // 用户-管理 当前用户：修改邮箱
@@ -156,15 +155,19 @@ export function sysUserSelfUpdateEmail(form: SysUserSelfUpdateEmailDTO, config?:
 }
 
 // 用户-管理 当前用户：修改邮箱，发送，邮箱验证码
-export function sysUserSelfUpdateEmailSendEmailCode(form: EmailNotBlankDTO, config?: AxiosRequestConfig) {
-    return $http.myPost<string>('/sysUser/selfUpdateEmail/sendEmailCode', form, config)
+export function sysUserSelfUpdateEmailSendEmailCode(config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdateEmail/sendEmailCode', undefined, config)
+}
+
+// 用户-管理 当前用户：修改邮箱，发送，邮箱验证码，验证码兑换 key
+export function sysUserSelfUpdateEmailSendEmailCodeCodeToKey(form: MyCodeToKeyDTO, config?: AxiosRequestConfig) {
+    return $http.myPost<string>('/sysUser/selfUpdateEmail/sendEmailCode/codeToKey', form, config)
 }
 
 export interface SysUserSelfUpdatePasswordDTO {
     code?: string // 邮箱验证码
     newOrigPassword?: string // 前端加密之后的原始密码，新密码
     newPassword?: string // 前端加密之后的，新密码
-    oldPassword?: string // 前端加密之后的，旧密码
 }
 
 // 用户-管理 当前用户：修改密码
