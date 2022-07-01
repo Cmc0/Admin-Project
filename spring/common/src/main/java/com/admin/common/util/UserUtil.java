@@ -3,6 +3,7 @@ package com.admin.common.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.*;
 import com.admin.common.model.constant.BaseConstant;
@@ -52,6 +53,13 @@ public class UserUtil {
     @Resource
     private void setSysUserMapper(SysUserMapper value) {
         sysUserMapper = value;
+    }
+
+    private static JsonRedisTemplate<String> jsonRedisTemplate;
+
+    @Resource
+    private void setJsonRedisTemplate(JsonRedisTemplate<String> value) {
+        jsonRedisTemplate = value;
     }
 
     /**
@@ -187,6 +195,42 @@ public class UserUtil {
 
         userIdSet.removeAll(Collections.singleton(null));
         return userIdSet;
+    }
+
+    /**
+     * 更新 redis缓存：角色关联用户
+     */
+    public static void updateRoleRefUserForRedis() {
+
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+
+    }
+
+    /**
+     * 更新 redis缓存：默认角色
+     */
+    public static void updateDefaultRoleForRedis() {
+
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_DEFAULT_ROLE_CACHE);
+
+    }
+
+    /**
+     * 更新 redis缓存：角色关联菜单
+     */
+    public static void updateRoleRefMenuForRedis() {
+
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+
+    }
+
+    /**
+     * 更新 redis缓存：菜单id - 权限 的集合
+     */
+    public static void updateMenuIdAndAuthListForRedis() {
+
+        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTH_LIST_CACHE);
+
     }
 
     /**

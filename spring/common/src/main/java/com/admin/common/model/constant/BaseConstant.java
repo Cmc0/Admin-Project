@@ -66,11 +66,16 @@ public interface BaseConstant {
     String PRE_LOCK_SELF_DELETE_EMAIL_CODE = "PRE_LOCK_SELF_DELETE_EMAIL_CODE:";
     // 当前用户修改 相关 ↑
 
+    // 用户获取权限相关 缓存 ↓
+    String PRE_REDIS_ROLE_REF_USER_CACHE = "PRE_REDIS_ROLE_REF_USER_CACHE"; // 角色关联用户，缓存
+    String PRE_REDIS_DEFAULT_ROLE_CACHE = "PRE_REDIS_DEFAULT_ROLE_CACHE"; // 默认角色，缓存
+    String PRE_REDIS_ROLE_REF_MENU_CACHE = "PRE_REDIS_ROLE_REF_MENU_CACHE"; // 角色关联菜单，缓存
+    String PRE_REDIS_MENU_ID_AND_AUTH_LIST_CACHE = "PRE_REDIS_MENU_ID_AND_AUTH_LIST_CACHE"; // 菜单id - 权限 的集合，缓存
+    // 用户获取权限相关 缓存 ↑
+
     // 注册相关 ↓
     String PRE_LOCK_EMAIL_CODE = "PRE_LOCK_EMAIL_CODE:"; // 邮箱发送的验证码，和分布式锁名前缀，锁邮箱
     // 注册相关 ↑
-
-    String PRE_LOCK_LOGIN = "PRE_LOCK_LOGIN:"; // 用户如果互斥，则需要登录时加锁，锁 用户id
 
     String PRE_REDIS_RSA_ENCRYPT = "PRE_REDIS_RSA_ENCRYPT:"; // 非对称加密存入 redis中 key前缀
 
