@@ -16,11 +16,10 @@ public class SysUserSelfUpdateEmailDTO extends EmailNotBlankDTO {
     @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @NotBlank
     @ApiModelProperty(value = "新邮箱，验证码")
-    private String newCode;
+    private String code;
 
-    @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @NotBlank
-    @ApiModelProperty(value = "旧邮箱，验证码")
-    private String oldCode;
+    @ApiModelProperty(value = "旧邮箱，验证码兑换的 key")
+    private String key;
 
 }

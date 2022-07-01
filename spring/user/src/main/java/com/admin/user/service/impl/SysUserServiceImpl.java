@@ -11,6 +11,7 @@ import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
+import com.admin.common.model.dto.MyCodeToKeyDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -202,7 +204,42 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Override
     @Transactional
     public String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto) {
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
+
+        String keyRedisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + dto.getKey();
+
+        String codeRedisKey = BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
+
+        RLock keyLock = redissonClient.getLock(BaseConstant.PRE_REDISSON + keyRedisKey);
+        RLock codeLock = redissonClient.getLock(BaseConstant.PRE_REDISSON + codeRedisKey);
+
+        // 连锁
+        RLock multiLock = redissonClient.getMultiLock(keyLock, codeLock);
+        multiLock.lock();
+
+        try {
+
+            // 先检查 key
+            if (!dto.getKey().equals(jsonRedisTemplate.opsForValue().get(keyRedisKey))) {
+                ApiResultVO.error(BaseBizCodeEnum.OPERATION_TIMED_OUT_PLEASE_TRY_AGAIN);
+            }
+            jsonRedisTemplate.delete(keyRedisKey);
+
+            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(codeRedisKey));
+            jsonRedisTemplate.delete(codeRedisKey);
+
+            SysUserDO sysUserDO = new SysUserDO();
+            sysUserDO.setId(currentUserIdNotAdmin);
+            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
+            sysUserDO.setEmail(dto.getEmail());
+
+            updateById(sysUserDO);
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
+        }
     }
 
     /**
@@ -211,6 +248,36 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     @Override
     public String selfUpdateEmailSendEmailCode() {
         return MyEmailUtil.selfUpdateEmailSend();
+    }
+
+    /**
+     * 当前用户：修改邮箱，发送，邮箱验证码，验证码兑换 key
+     */
+    @Override
+    public String selfUpdateEmailSendEmailCodeCodeToKey(MyCodeToKeyDTO dto) {
+
+        String currentUserEmail = UserUtil.getCurrentUserEmail();
+
+        String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail;
+
+        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        lock.lock();
+
+        try {
+
+            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
+
+            String uuid = IdUtil.simpleUUID();
+
+            // 十分钟过期
+            jsonRedisTemplate.opsForValue()
+                .set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + uuid, "当前用户：修改邮箱，邮箱验证码兑换 key",
+                    BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+            return uuid;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
