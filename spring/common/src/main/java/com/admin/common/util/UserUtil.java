@@ -273,7 +273,7 @@ public class UserUtil {
         // 删除缓存
         jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
         // 设置缓存
-        jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).leftPushAll(sysMenuDOList);
+        jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).rightPushAll(sysMenuDOList);
 
         return sysMenuDOList;
     }
