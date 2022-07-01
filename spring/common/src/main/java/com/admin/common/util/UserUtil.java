@@ -70,7 +70,7 @@ public class UserUtil {
     private static RedissonClient redissonClient;
 
     @Resource
-    private void setJsonRedisTemplate(RedissonClient value) {
+    private void setRedissonClient(RedissonClient value) {
         redissonClient = value;
     }
 
