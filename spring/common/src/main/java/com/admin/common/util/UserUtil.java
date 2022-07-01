@@ -1,8 +1,8 @@
 package com.admin.common.util;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
@@ -12,6 +12,8 @@ import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.*;
 import com.admin.common.model.vo.ApiResultVO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -63,6 +65,13 @@ public class UserUtil {
     @Resource
     private void setJsonRedisTemplate(JsonRedisTemplate<Object> value) {
         jsonRedisTemplate = value;
+    }
+
+    private static RedissonClient redissonClient;
+
+    @Resource
+    private void setJsonRedisTemplate(RedissonClient value) {
+        redissonClient = value;
     }
 
     /**
@@ -333,9 +342,8 @@ public class UserUtil {
         Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
 
         if (hasKey != null && hasKey) {
-            return Objects.requireNonNull(
-                jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).range(0, -1))
-                .stream().map(it -> BeanUtil.toBean(it, SysMenuDO.class)).collect(Collectors.toList());
+            return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
+                .range(0, -1);
         } else {
             return updateMenuIdAndAuthsListForRedis(); // 更新缓存
         }
@@ -345,17 +353,32 @@ public class UserUtil {
      * 更新 redis缓存：菜单id - 权限 的集合
      */
     public static List<SysMenuDO> updateMenuIdAndAuthsListForRedis() {
+        RLock lock =
+            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        lock.lock();
 
-        List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
-            .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
-            .eq(BaseEntityThree::getEnableFlag, true).list();
+        try {
 
-        // 删除缓存
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
-        // 设置缓存
-        jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).rightPushAll(sysMenuDOList);
+            Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+            if (hasKey != null && hasKey) {
+                return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
+                    .range(0, -1);
+            }
 
-        return sysMenuDOList;
+            List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
+                .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
+                .eq(SysMenuDO::getAuthFlag, true).eq(BaseEntityThree::getEnableFlag, true).list();
+
+            // 删除缓存
+            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+            // 设置缓存
+            jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
+                .rightPushAll(ArrayUtil.toArray(sysMenuDOList, SysMenuDO.class));
+
+            return sysMenuDOList;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
