@@ -206,14 +206,14 @@ public class UserUtil {
 
         Set<String> roleIdSet;
 
-        BoundHashOperations<String, String, Set<String>> ops =
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
 
-        Long size = ops.size();
-        if (size == null || size == 0) {
-            roleIdSet = updateRoleRefUserForRedis().get(userId); // 更新缓存，备注：返回值可能会为 null
-        } else {
+        if (hasKey != null && hasKey) {
+            BoundHashOperations<String, String, Set<String>> ops =
+                jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
             roleIdSet = ops.get(userId); // 获取：用户绑定的 roleIdSet
+        } else {
+            roleIdSet = updateRoleRefUserForRedis().get(userId); // 更新缓存
         }
 
         if (roleIdSet == null) {
@@ -329,13 +329,13 @@ public class UserUtil {
      */
     public static List<SysMenuDO> getMenuIdAndAuthsListFromRedis() {
 
-        List<SysMenuDO> rangeList =
-            (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE).range(0, -1);
+        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
 
-        if (rangeList == null) {
-            return updateMenuIdAndAuthsListForRedis(); // 更新缓存
+        if (hasKey != null && hasKey) {
+            return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
+                .range(0, -1);
         } else {
-            return rangeList;
+            return updateMenuIdAndAuthsListForRedis(); // 更新缓存
         }
     }
 

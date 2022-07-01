@@ -46,16 +46,16 @@ public class SysParamUtil {
             return null;
         }
 
-        BoundHashOperations<String, String, String> ops =
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
+        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_PARAM_CACHE);
 
-        Long size = ops.size();
-        if (size == null || size == 0) {
-            // 更新 redis中【系统参数】的缓存，并返回 值，备注：值可能会为 null
-            return updateRedisCache().get(idStr);
+        if (hasKey != null && hasKey) {
+            BoundHashOperations<String, String, String> ops =
+                jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
+            return ops.get(idStr);
         }
 
-        return ops.get(idStr);
+        // 更新 redis中【系统参数】的缓存，并返回 值，备注：返回值可能会为 null
+        return updateRedisCache().get(idStr);
     }
 
     /**
