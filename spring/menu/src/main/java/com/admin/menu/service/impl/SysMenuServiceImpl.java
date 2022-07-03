@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -223,12 +220,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
                     SysMenuDO::getRouter, SysMenuDO::getName, SysMenuDO::getFirstFlag, SysMenuDO::getLinkFlag,
                     SysMenuDO::getShowFlag, SysMenuDO::getAuths, SysMenuDO::getAuthFlag)
-                .eq(BaseEntityThree::getEnableFlag, true)
-                .orderByDesc(SysMenuDO::getOrderNo).list();
+                .eq(BaseEntityThree::getEnableFlag, true).orderByDesc(SysMenuDO::getOrderNo).list();
         }
 
         // 获取当前用户绑定的菜单
-        return UserUtil.getMenuListByUserId(userId, 1);
+        return UserUtil.getMenuListByUserId(userId, 1).stream()
+            .sorted(Comparator.comparing(BaseEntityFour::getOrderNo, Comparator.reverseOrder()))
+            .collect(Collectors.toList());
     }
 
     /**
