@@ -406,7 +406,7 @@ public class UserUtil {
             sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
                     SysMenuDO::getRouter, SysMenuDO::getName, SysMenuDO::getFirstFlag, SysMenuDO::getLinkFlag,
-                    SysMenuDO::getShowFlag, SysMenuDO::getAuths, SysMenuDO::getAuthFlag)
+                    SysMenuDO::getShowFlag, SysMenuDO::getAuths, SysMenuDO::getAuthFlag, BaseEntityFour::getOrderNo)
                 .eq(BaseEntityThree::getEnableFlag, true).orderByDesc(BaseEntityFour::getOrderNo).list();
         }
         if (sysMenuDOList.size() == 0) {
