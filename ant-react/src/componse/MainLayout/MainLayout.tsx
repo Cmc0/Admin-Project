@@ -158,7 +158,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             fixSiderbar={true}
             fixedHeader={true}
-            menuItemRender={(item: SysMenuDO, dom: React.ReactNode) => (
+            menuItemRender={(item: MenuDataItem, defaultDom: React.ReactNode) => (
                 <a
                     onClick={() => {
                         if (item.path && item.router) {
@@ -176,7 +176,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     }}
                 >
                     <>
-                        {dom}
+                        {defaultDom}
                         {(item.router && !RouterMapKeyList.includes(item.router)) &&
                         <WarningFilled className={"warning2 m-l-4"}/>
                         }
@@ -249,7 +249,10 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             icon: <LogoutOutlined className={"red3"}/>
                         },
                     ]}/>}>
-                        <div className={"h100 hand"}>
+                        <div className={"h100 hand"} onClick={() => {
+                            setPathname(CommonConstant.USER_CENTER_PATH)
+                            getAppNav()(CommonConstant.USER_CENTER_PATH)
+                        }}>
                             <Avatar size="small"
                                     src={userBaseInfo.avatarUrl ? GetPublicDownFileUrl(userBaseInfo.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}/>
                         </div>
