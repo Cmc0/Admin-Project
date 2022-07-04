@@ -126,7 +126,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
 
         SysUserDO sysUserDO = lambdaQuery().eq(BaseEntityTwo::getId, currentUserIdNotAdmin)
-            .select(SysUserDO::getPassword, SysUserDO::getEmail, BaseEntityTwo::getId).one();
+            .select(SysUserDO::getEmail, BaseEntityTwo::getId).one();
 
         if (StrUtil.isBlank(sysUserDO.getEmail())) {
             ApiResultVO.error(BaseBizCodeEnum.EMAIL_ADDRESS_NOT_SET);
