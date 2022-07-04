@@ -7,11 +7,9 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.configuration.BaseConfiguration;
-import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
-import com.admin.common.model.dto.MyCodeToKeyDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -29,12 +27,12 @@ import com.admin.job.service.SysJobRefUserService;
 import com.admin.role.service.SysRoleRefUserService;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
-import com.admin.user.model.dto.*;
+import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
+import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
-import com.admin.user.model.vo.SysUserSelfBaseInfoVO;
 import com.admin.user.service.SysUserService;
-import com.admin.user.service.UserRegisterService;
 import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,21 +42,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO> implements SysUserService {
 
-    @Resource
-    HttpServletRequest httpServletRequest;
-    @Resource
-    JsonRedisTemplate<String> jsonRedisTemplate;
     @Resource
     RedissonClient redissonClient;
     @Resource
@@ -71,265 +63,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     SysFileService sysFileService;
     @Resource
     SysWebSocketService sysWebSocketService;
-    @Resource
-    UserRegisterService userRegisterService;
-
-    /**
-     * 退出登录
-     */
-    @Override
-    public String selfLogout() {
-
-        // 清除 redis中的 jwtHash
-        String jwtHash = MyJwtUtil.generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY),
-            UserUtil.getCurrentUserId(), RequestUtil.getSysRequestCategoryEnum(httpServletRequest));
-
-        jsonRedisTemplate.delete(jwtHash);
-
-        return "登出成功";
-    }
-
-    /**
-     * 用户基本信息
-     */
-    @Override
-    public SysUserSelfBaseInfoVO selfBaseInfo() {
-
-        Long userId = UserUtil.getCurrentUserId();
-
-        SysUserSelfBaseInfoVO sysUserSelfBaseInfoVO = new SysUserSelfBaseInfoVO();
-
-        if (BaseConstant.ADMIN_ID.equals(userId)) {
-            sysUserSelfBaseInfoVO.setAvatarUrl("");
-            sysUserSelfBaseInfoVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
-            sysUserSelfBaseInfoVO.setBio("");
-            sysUserSelfBaseInfoVO.setEmail("");
-            sysUserSelfBaseInfoVO.setPasswordFlag(true);
-            return sysUserSelfBaseInfoVO;
-        }
-
-        SysUserDO sysUserDO = lambdaQuery().eq(BaseEntityTwo::getId, userId)
-            .select(SysUserDO::getAvatarUrl, SysUserDO::getNickname, SysUserDO::getEmail, SysUserDO::getBio,
-                SysUserDO::getEmail, SysUserDO::getPassword).one();
-
-        if (sysUserDO != null) {
-            sysUserSelfBaseInfoVO.setAvatarUrl(sysUserDO.getAvatarUrl());
-            sysUserSelfBaseInfoVO.setNickname(sysUserDO.getNickname());
-            sysUserSelfBaseInfoVO.setBio(sysUserDO.getBio());
-            sysUserSelfBaseInfoVO.setEmail(DesensitizedUtil.email(sysUserDO.getEmail())); // 脱敏
-            sysUserSelfBaseInfoVO.setPasswordFlag(StrUtil.isNotBlank(sysUserDO.getPassword()));
-        }
-
-        return sysUserSelfBaseInfoVO;
-    }
-
-    /**
-     * 用户基本信息：修改
-     */
-    @Override
-    @Transactional
-    public String selfUpdateBaseInfo(SysUserSelfUpdateBaseInfoDTO dto) {
-
-        Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
-
-        SysUserDO sysUserDO = new SysUserDO();
-        sysUserDO.setId(currentUserIdNotAdmin);
-        sysUserDO.setNickname(dto.getNickname());
-        sysUserDO.setBio(MyEntityUtil.getNotNullStr(dto.getBio()));
-        sysUserDO.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
-
-        updateById(sysUserDO);
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-    }
-
-    /**
-     * 当前用户：修改密码
-     */
-    @Override
-    @Transactional
-    public String selfUpdatePassword(SysUserSelfUpdatePasswordDTO dto) {
-
-        Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
-
-        SysUserDO sysUserDO = lambdaQuery().eq(BaseEntityTwo::getId, currentUserIdNotAdmin)
-            .select(SysUserDO::getPassword, SysUserDO::getEmail, BaseEntityTwo::getId).one();
-
-        if (StrUtil.isBlank(sysUserDO.getEmail())) {
-            ApiResultVO.error(BaseBizCodeEnum.EMAIL_ADDRESS_NOT_SET);
-        }
-
-        // 非对称：解密 ↓
-        String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
-        dto.setNewPassword(MyRsaUtil.rsaDecrypt(dto.getNewPassword(), paramValue)); // 非对称：解密
-        dto.setNewOrigPassword(MyRsaUtil.rsaDecrypt(dto.getNewOrigPassword(), paramValue)); // 非对称：解密
-        // 非对称：解密 ↑
-
-        if (!ReUtil.isMatch(BaseRegexConstant.PASSWORD_REGEXP, dto.getNewOrigPassword())) {
-            ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
-        }
-
-        String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
-
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
-        lock.lock();
-
-        try {
-
-            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
-            jsonRedisTemplate.delete(redisKey);
-
-            sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getNewPassword(), true));
-            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
-
-            updateById(sysUserDO); // 操作数据库
-
-            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * 当前用户：修改密码，发送，邮箱验证码
-     */
-    @Override
-    public String selfUpdatePasswordSendEmailCode() {
-        return MyEmailUtil.selfUpdatePasswordSend();
-    }
-
-    /**
-     * 当前用户：修改邮箱
-     */
-    @Override
-    @Transactional
-    public String selfUpdateEmail(SysUserSelfUpdateEmailDTO dto) {
-
-        Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
-
-        String keyRedisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + dto.getKey();
-
-        String codeRedisKey = BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
-
-        RLock keyLock = redissonClient.getLock(BaseConstant.PRE_REDISSON + keyRedisKey);
-        RLock codeLock = redissonClient.getLock(BaseConstant.PRE_REDISSON + codeRedisKey);
-
-        // 连锁
-        RLock multiLock = redissonClient.getMultiLock(keyLock, codeLock);
-        multiLock.lock();
-
-        try {
-
-            // 先检查 key
-            if (!dto.getKey().equals(jsonRedisTemplate.opsForValue().get(keyRedisKey))) {
-                ApiResultVO.error(BaseBizCodeEnum.OPERATION_TIMED_OUT_PLEASE_TRY_AGAIN);
-            }
-            jsonRedisTemplate.delete(keyRedisKey);
-
-            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(codeRedisKey));
-            jsonRedisTemplate.delete(codeRedisKey);
-
-            SysUserDO sysUserDO = new SysUserDO();
-            sysUserDO.setId(currentUserIdNotAdmin);
-            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
-            sysUserDO.setEmail(dto.getEmail());
-
-            updateById(sysUserDO);
-
-            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-        } finally {
-            multiLock.unlock();
-        }
-    }
-
-    /**
-     * 当前用户：修改邮箱，发送，邮箱验证码
-     */
-    @Override
-    public String selfUpdateEmailSendEmailCode() {
-        return MyEmailUtil.selfUpdateEmailSend();
-    }
-
-    /**
-     * 当前用户：修改邮箱，发送，邮箱验证码，验证码兑换 key
-     */
-    @Override
-    public String selfUpdateEmailSendEmailCodeCodeToKey(MyCodeToKeyDTO dto) {
-
-        String currentUserEmail = UserUtil.getCurrentUserEmail();
-
-        String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail;
-
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
-        lock.lock();
-
-        try {
-
-            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
-
-            String uuid = IdUtil.simpleUUID();
-
-            // 十分钟过期
-            jsonRedisTemplate.opsForValue()
-                .set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + uuid, "当前用户：修改邮箱，邮箱验证码兑换 key",
-                    BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
-
-            return uuid;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * 当前用户：刷新jwt私钥后缀
-     */
-    @Override
-    @Transactional
-    public String selfRefreshJwtSecretSuf() {
-
-        SysUserDO sysUserDO = new SysUserDO();
-        sysUserDO.setId(UserUtil.getCurrentUserIdNotAdmin());
-        sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
-
-        updateById(sysUserDO);
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-    }
-
-    /**
-     * 当前用户：注销
-     */
-    @Override
-    @Transactional
-    public String selfDelete(SysUserSelfDeleteDTO dto) {
-
-        String currentUserEmail = UserUtil.getCurrentUserEmail();
-
-        String redisKey = BaseConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail;
-
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
-        lock.lock();
-
-        try {
-
-            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
-            jsonRedisTemplate.delete(redisKey);
-
-            deleteByIdSet(new NotEmptyIdSet(CollUtil.newHashSet(UserUtil.getCurrentUserIdNotAdmin())));
-
-            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * 当前用户：注销，发送，邮箱验证码
-     */
-    @Override
-    public String selfDeleteSendEmailCode() {
-        return MyEmailUtil.selfDeleteSend();
-    }
 
     /**
      * 分页排序查询

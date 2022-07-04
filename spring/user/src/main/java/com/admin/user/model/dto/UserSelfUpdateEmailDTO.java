@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysUserSelfUpdateEmailDTO extends EmailNotBlankDTO {
+public class UserSelfUpdateEmailDTO extends EmailNotBlankDTO {
 
     @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @NotBlank

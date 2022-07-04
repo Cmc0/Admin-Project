@@ -8,7 +8,15 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class SysUserSelfDeleteDTO {
+public class UserSelfUpdatePasswordDTO {
+
+    @NotBlank
+    @ApiModelProperty(value = "前端加密之后的，新密码")
+    private String newPassword;
+
+    @NotBlank
+    @ApiModelProperty(value = "前端加密之后的原始密码，新密码")
+    private String newOrigPassword;
 
     @Pattern(regexp = BaseRegexConstant.CODE_6_REGEXP)
     @NotBlank
