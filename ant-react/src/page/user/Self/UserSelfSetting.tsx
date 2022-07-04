@@ -116,13 +116,13 @@ export function UserSelfUpdateEmailModalForm() {
                         );
                     }
                     return <Button loading={submitFlag} type="primary" onClick={() => props.onSubmit?.()}>
-                        修改邮箱
+                        {UserSelfUpdateEmailTitle}
                     </Button>
                 },
             }}
             onFinish={async (form) => {
                 if (!keyRef.current) {
-                    ToastError('非法操作，请重新进行身份验证')
+                    ToastError(`非法操作，请重新进行${UserSelfUpdateEmailStepOneName}`)
                     return true
                 }
                 setSubmitFlag(true)
@@ -172,7 +172,7 @@ export function UserSelfUpdateEmailModalForm() {
                 />
             </StepsForm.StepForm>
             <StepsForm.StepForm
-                title={"修改邮箱"}
+                title={UserSelfUpdateEmailTitle}
             >
                 <ProFormText
                     name="email"
@@ -180,8 +180,8 @@ export function UserSelfUpdateEmailModalForm() {
                         allowClear: true,
                     }}
                     required
-                    label="邮箱"
-                    placeholder={'请输入邮箱'}
+                    label="新邮箱"
+                    placeholder={'请输入新邮箱'}
                     rules={[{validator: ValidatorUtil.emailValidate}]}
                 />
                 <ProFormCaptcha
