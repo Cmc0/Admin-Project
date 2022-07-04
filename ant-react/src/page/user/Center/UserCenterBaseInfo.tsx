@@ -1,9 +1,3 @@
-import {
-    sysUserSelfBaseInfo,
-    SysUserSelfBaseInfoVO,
-    sysUserSelfUpdateBaseInfo,
-    SysUserSelfUpdateBaseInfoDTO
-} from "@/api/SysUserController";
 import {ActionType, ProDescriptions} from "@ant-design/pro-components";
 import {DeleteOutlined, EyeOutlined} from "@ant-design/icons/lib";
 import CommonConstant from "@/model/constant/CommonConstant";
@@ -18,6 +12,12 @@ import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil"
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
 import {USER_CENTER_KEY_ONE} from "@/page/user/Center/Center";
+import {
+    userSelfBaseInfo,
+    UserSelfBaseInfoVO,
+    userSelfUpdateBaseInfo,
+    UserSelfUpdateBaseInfoDTO
+} from "@/api/UserSelfController";
 
 export default function () {
 
@@ -28,12 +28,12 @@ export default function () {
 
     const actionRef = useRef<ActionType>()
 
-    const [useForm] = Form.useForm<SysUserSelfUpdateBaseInfoDTO>();
+    const [useForm] = Form.useForm<UserSelfUpdateBaseInfoDTO>();
 
-    const currentForm = useRef<SysUserSelfUpdateBaseInfoDTO>({})
+    const currentForm = useRef<UserSelfUpdateBaseInfoDTO>({})
 
-    function doSysUserSelfUpdateBaseInfo(form: SysUserSelfUpdateBaseInfoDTO) {
-        return sysUserSelfUpdateBaseInfo(form).then(res => {
+    function doSysUserSelfUpdateBaseInfo(form: UserSelfUpdateBaseInfoDTO) {
+        return userSelfUpdateBaseInfo(form).then(res => {
             currentForm.current = form
             ToastSuccess(res.msg)
             appDispatch(setUserBaseInfo(form))
@@ -42,7 +42,7 @@ export default function () {
     }
 
     return (
-        <ProDescriptions<SysUserSelfBaseInfoVO>
+        <ProDescriptions<UserSelfBaseInfoVO>
             formProps={{
                 form: useForm
             }}
@@ -50,7 +50,7 @@ export default function () {
             actionRef={actionRef}
             request={() => {
                 return new Promise<RequestData>((resolve) => {
-                    sysUserSelfBaseInfo().then(res => {
+                    userSelfBaseInfo().then(res => {
                         currentForm.current = res.data
                         resolve({
                             success: true,

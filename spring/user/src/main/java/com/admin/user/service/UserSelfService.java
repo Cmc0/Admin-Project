@@ -11,26 +11,26 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface UserSelfService extends IService<SysUserDO> {
 
-    String selfLogout();
+    String userSelfLogout();
 
-    UserSelfBaseInfoVO selfBaseInfo();
+    UserSelfBaseInfoVO userSelfBaseInfo();
 
-    String selfUpdateBaseInfo(UserSelfUpdateBaseInfoDTO dto);
+    String userSelfUpdateBaseInfo(UserSelfUpdateBaseInfoDTO dto);
 
-    String selfUpdatePassword(UserSelfUpdatePasswordDTO dto);
+    String userSelfUpdatePassword(UserSelfUpdatePasswordDTO dto);
 
-    String selfUpdatePasswordSendEmailCode();
+    String userSelfUpdatePasswordSendEmailCode();
 
-    String selfUpdateEmail(UserSelfUpdateEmailDTO dto);
+    String userSelfUpdateEmail(UserSelfUpdateEmailDTO dto);
 
-    String selfUpdateEmailSendEmailCode();
+    String userSelfUpdateEmailSendEmailCode();
 
-    String selfUpdateEmailSendEmailCodeCodeToKey(MyCodeToKeyDTO dto);
+    String userSelfUpdateEmailSendEmailCodeCodeToKey(MyCodeToKeyDTO dto);
 
-    String selfRefreshJwtSecretSuf();
+    String userSelfRefreshJwtSecretSuf();
 
-    String selfDelete(UserSelfDeleteDTO dto);
+    String userSelfDelete(UserSelfDeleteDTO dto);
 
-    String selfDeleteSendEmailCode();
+    String userSelfDeleteSendEmailCode();
 
 }

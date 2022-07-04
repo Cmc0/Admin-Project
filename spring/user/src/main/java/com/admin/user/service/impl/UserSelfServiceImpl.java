@@ -51,7 +51,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      * 当前用户：退出登录
      */
     @Override
-    public String selfLogout() {
+    public String userSelfLogout() {
 
         // 清除 redis中的 jwtHash
         String jwtHash = MyJwtUtil.generateRedisJwtHash(httpServletRequest.getHeader(BaseConstant.JWT_HEADER_KEY),
@@ -66,7 +66,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      * 获取：当前用户，基本信息
      */
     @Override
-    public UserSelfBaseInfoVO selfBaseInfo() {
+    public UserSelfBaseInfoVO userSelfBaseInfo() {
 
         Long userId = UserUtil.getCurrentUserId();
 
@@ -101,7 +101,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      */
     @Override
     @Transactional
-    public String selfUpdateBaseInfo(UserSelfUpdateBaseInfoDTO dto) {
+    public String userSelfUpdateBaseInfo(UserSelfUpdateBaseInfoDTO dto) {
 
         Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
 
@@ -121,7 +121,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      */
     @Override
     @Transactional
-    public String selfUpdatePassword(UserSelfUpdatePasswordDTO dto) {
+    public String userSelfUpdatePassword(UserSelfUpdatePasswordDTO dto) {
 
         Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
 
@@ -167,7 +167,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      * 当前用户：修改密码，发送，邮箱验证码
      */
     @Override
-    public String selfUpdatePasswordSendEmailCode() {
+    public String userSelfUpdatePasswordSendEmailCode() {
         return MyEmailUtil.selfUpdatePasswordSend();
     }
 
@@ -176,7 +176,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      */
     @Override
     @Transactional
-    public String selfUpdateEmail(UserSelfUpdateEmailDTO dto) {
+    public String userSelfUpdateEmail(UserSelfUpdateEmailDTO dto) {
 
         Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
 
@@ -219,7 +219,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      * 当前用户：修改邮箱，发送，邮箱验证码
      */
     @Override
-    public String selfUpdateEmailSendEmailCode() {
+    public String userSelfUpdateEmailSendEmailCode() {
         return MyEmailUtil.selfUpdateEmailSend();
     }
 
@@ -227,7 +227,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      * 当前用户：修改邮箱，发送，邮箱验证码，验证码兑换 key
      */
     @Override
-    public String selfUpdateEmailSendEmailCodeCodeToKey(MyCodeToKeyDTO dto) {
+    public String userSelfUpdateEmailSendEmailCodeCodeToKey(MyCodeToKeyDTO dto) {
 
         String currentUserEmail = UserUtil.getCurrentUserEmail();
 
@@ -258,7 +258,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      */
     @Override
     @Transactional
-    public String selfRefreshJwtSecretSuf() {
+    public String userSelfRefreshJwtSecretSuf() {
 
         SysUserDO sysUserDO = new SysUserDO();
         sysUserDO.setId(UserUtil.getCurrentUserIdNotAdmin());
@@ -274,7 +274,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      */
     @Override
     @Transactional
-    public String selfDelete(UserSelfDeleteDTO dto) {
+    public String userSelfDelete(UserSelfDeleteDTO dto) {
 
         String currentUserEmail = UserUtil.getCurrentUserEmail();
 
@@ -300,7 +300,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
      * 当前用户：注销，发送，邮箱验证码
      */
     @Override
-    public String selfDeleteSendEmailCode() {
+    public String userSelfDeleteSendEmailCode() {
         return MyEmailUtil.selfDeleteSend();
     }
 

@@ -16,7 +16,6 @@ import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
-import {sysUserSelfBaseInfo, sysUserSelfLogout} from "@/api/SysUserController";
 import {SysMenuDO, sysMenuListForUser} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
@@ -24,6 +23,7 @@ import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {GetAvgType} from "@/page/sysMonitor/Request/Request";
 import {MenuDataItem} from '@ant-design/pro-components';
 import {GetPublicDownFileUrl} from "../../../util/FileUtil";
+import {userSelfBaseInfo, userSelfLogout} from "@/api/UserSelfController";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -86,7 +86,7 @@ export default function () {
 
         connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
-        sysUserSelfBaseInfo().then(res => {
+        userSelfBaseInfo().then(res => {
             appDispatch(setUserBaseInfo(res.data))
         })
 
@@ -237,7 +237,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                                 className={"red3"}
                                 onClick={() => {
                                     execConfirm(() => {
-                                        return sysUserSelfLogout().then((res) => {
+                                        return userSelfLogout().then((res) => {
                                             ToastSuccess(res.msg)
                                             logout()
                                         })

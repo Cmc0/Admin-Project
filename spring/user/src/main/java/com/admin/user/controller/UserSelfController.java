@@ -27,69 +27,69 @@ public class UserSelfController {
     UserSelfService baseService;
 
     @ApiOperation(value = "当前用户：退出登录")
-    @PostMapping(value = "/selfLogout")
-    public ApiResultVO<String> selfLogout() {
-        return ApiResultVO.ok(baseService.selfLogout());
+    @PostMapping(value = "/logout")
+    public ApiResultVO<String> userSelfLogout() {
+        return ApiResultVO.ok(baseService.userSelfLogout());
     }
 
     @ApiOperation(value = "获取：当前用户，基本信息")
-    @PostMapping(value = "/selfBaseInfo")
-    public ApiResultVO<UserSelfBaseInfoVO> selfBaseInfo() {
-        return ApiResultVO.ok(baseService.selfBaseInfo());
+    @PostMapping(value = "/baseInfo")
+    public ApiResultVO<UserSelfBaseInfoVO> userSelfBaseInfo() {
+        return ApiResultVO.ok(baseService.userSelfBaseInfo());
     }
 
     @ApiOperation(value = "当前用户：基本信息：修改")
-    @PostMapping(value = "/selfUpdateBaseInfo")
-    public ApiResultVO<String> selfUpdateBaseInfo(@RequestBody @Valid UserSelfUpdateBaseInfoDTO dto) {
-        return ApiResultVO.ok(baseService.selfUpdateBaseInfo(dto));
+    @PostMapping(value = "/updateBaseInfo")
+    public ApiResultVO<String> userSelfUpdateBaseInfo(@RequestBody @Valid UserSelfUpdateBaseInfoDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfUpdateBaseInfo(dto));
     }
 
     @ApiOperation(value = "当前用户：修改密码")
-    @PostMapping(value = "/selfUpdatePassword")
-    public ApiResultVO<String> selfUpdatePassword(@RequestBody @Valid UserSelfUpdatePasswordDTO dto) {
-        return ApiResultVO.ok(baseService.selfUpdatePassword(dto));
+    @PostMapping(value = "/updatePassword")
+    public ApiResultVO<String> userSelfUpdatePassword(@RequestBody @Valid UserSelfUpdatePasswordDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfUpdatePassword(dto));
     }
 
     @ApiOperation(value = "当前用户：修改密码，发送，邮箱验证码")
-    @PostMapping(value = "/selfUpdatePassword/sendEmailCode")
-    public ApiResultVO<String> selfUpdatePasswordSendEmailCode() {
-        return ApiResultVO.ok(baseService.selfUpdatePasswordSendEmailCode());
+    @PostMapping(value = "/updatePassword/sendEmailCode")
+    public ApiResultVO<String> userSelfUpdatePasswordSendEmailCode() {
+        return ApiResultVO.ok(baseService.userSelfUpdatePasswordSendEmailCode());
     }
 
     @ApiOperation(value = "当前用户：修改邮箱")
-    @PostMapping(value = "/selfUpdateEmail")
-    public ApiResultVO<String> selfUpdateEmail(@RequestBody @Valid UserSelfUpdateEmailDTO dto) {
-        return ApiResultVO.ok(baseService.selfUpdateEmail(dto));
+    @PostMapping(value = "/updateEmail")
+    public ApiResultVO<String> userSelfUpdateEmail(@RequestBody @Valid UserSelfUpdateEmailDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfUpdateEmail(dto));
     }
 
     @ApiOperation(value = "当前用户：修改邮箱，发送，邮箱验证码")
-    @PostMapping(value = "/selfUpdateEmail/sendEmailCode")
-    public ApiResultVO<String> selfUpdateEmailSendEmailCode() {
-        return ApiResultVO.ok(baseService.selfUpdateEmailSendEmailCode());
+    @PostMapping(value = "/updateEmail/sendEmailCode")
+    public ApiResultVO<String> userSelfUpdateEmailSendEmailCode() {
+        return ApiResultVO.ok(baseService.userSelfUpdateEmailSendEmailCode());
     }
 
     @ApiOperation(value = "当前用户：修改邮箱，发送，邮箱验证码，验证码兑换 key")
-    @PostMapping(value = "/selfUpdateEmail/sendEmailCode/codeToKey")
-    public ApiResultVO<String> selfUpdateEmailSendEmailCodeCodeToKey(@RequestBody @Valid MyCodeToKeyDTO dto) {
-        return ApiResultVO.ok(baseService.selfUpdateEmailSendEmailCodeCodeToKey(dto));
+    @PostMapping(value = "/updateEmail/sendEmailCode/codeToKey")
+    public ApiResultVO<String> userSelfUpdateEmailSendEmailCodeCodeToKey(@RequestBody @Valid MyCodeToKeyDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfUpdateEmailSendEmailCodeCodeToKey(dto));
     }
 
     @ApiOperation(value = "当前用户：刷新jwt私钥后缀")
-    @PostMapping(value = "/selfRefreshJwtSecretSuf")
-    public ApiResultVO<String> selfRefreshJwtSecretSuf() {
-        return ApiResultVO.ok(baseService.selfRefreshJwtSecretSuf());
+    @PostMapping(value = "/refreshJwtSecretSuf")
+    public ApiResultVO<String> userSelfRefreshJwtSecretSuf() {
+        return ApiResultVO.ok(baseService.userSelfRefreshJwtSecretSuf());
     }
 
     @ApiOperation(value = "当前用户：注销")
-    @PostMapping(value = "/selfDelete")
-    public ApiResultVO<String> selfDelete(UserSelfDeleteDTO dto) {
-        return ApiResultVO.ok(baseService.selfDelete(dto));
+    @PostMapping(value = "/delete")
+    public ApiResultVO<String> userSelfDelete(UserSelfDeleteDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfDelete(dto));
     }
 
     @ApiOperation(value = "当前用户：注销，发送，邮箱验证码")
-    @PostMapping(value = "/selfDelete/sendEmailCode")
-    public ApiResultVO<String> selfDeleteSendEmailCode() {
-        return ApiResultVO.ok(baseService.selfDeleteSendEmailCode());
+    @PostMapping(value = "/delete/sendEmailCode")
+    public ApiResultVO<String> userSelfDeleteSendEmailCode() {
+        return ApiResultVO.ok(baseService.userSelfDeleteSendEmailCode());
     }
 
 }
