@@ -6,8 +6,9 @@ import {ModalForm, ProFormCaptcha, ProFormInstance, ProFormText, StepsForm} from
 import CommonConstant from "@/model/constant/CommonConstant";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
-import {ToastError, ToastSuccess} from "../../../../util/ToastUtil";
+import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import {
+    userSelfRefreshJwtSecretSuf,
     userSelfUpdateEmail,
     UserSelfUpdateEmailDTO,
     userSelfUpdateEmailSendEmailCode,
@@ -236,7 +237,11 @@ export default function () {
                     description: '刷新之后，执行任意操作，都会要求重新登录，用于：不修改密码，退出所有登录',
                     actions: [
                         <a key="1" onClick={() => {
-
+                            execConfirm(() => {
+                                return userSelfRefreshJwtSecretSuf().then(res => {
+                                    ToastSuccess(res.msg)
+                                })
+                            }, undefined, '确定执行【刷新令牌】操作吗？')
                         }}>
                             执行刷新
                         </a>
