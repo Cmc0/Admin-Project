@@ -25,6 +25,7 @@ import {SysMenuDO, SysMenuPageDTO} from "@/api/SysMenuController";
 import {handlerRegion} from "../../../../util/StrUtil";
 import {sysRequestSelfLoginRecord} from "@/api/SysRequestController";
 import {RequestGetDictList} from "../../../../util/DictUtil";
+import {InDev} from "../../../../util/CommonUtil";
 
 interface IUserSelfSetting {
     title: string
@@ -261,7 +262,7 @@ export default function () {
                     title: '账号注销',
                     actions: [
                         <a className={"red3"} key="1" onClick={() => {
-
+                            InDev()
                         }}>
                             立即注销
                         </a>
