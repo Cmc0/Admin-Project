@@ -210,6 +210,9 @@ export function UserSelfUpdateEmailModalForm() {
 }
 
 export default function () {
+
+    const userSelfBaseInfo = useAppSelector((state) => state.user.userSelfBaseInfo)
+
     return (
         <List<IUserSelfSetting>
             header={USER_CENTER_KEY_TWO}
@@ -223,7 +226,7 @@ export default function () {
                 },
                 {
                     title: '邮箱',
-                    description: '1*********@qq.com',
+                    description: userSelfBaseInfo.email,
                     actions: [
                         <UserSelfUpdateEmailModalForm key={"1"}/>
                     ]

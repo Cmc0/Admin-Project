@@ -1,7 +1,7 @@
 const LocalStorageKey = {
     JWT: "JWT",
     WEB_SOCKET_TYPE: 'WEB_SOCKET_TYPE', // webSocket 在线状态
-    USER_BASE_INFO: 'USER_BASE_INFO', // 用户基本信息
+    USER_SELF_BASE_INFO: 'USER_SELF_BASE_INFO', // 当前用户，基本信息
 }
 
 export default LocalStorageKey

@@ -12,7 +12,7 @@ import {useAppDispatch, useAppSelector} from "@/store";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
 import {setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
-import {setUserBaseInfo, setUserMenuList} from '@/store/userSlice';
+import {setUserMenuList, setUserSelfBaseInfo} from '@/store/userSlice';
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
@@ -87,7 +87,7 @@ export default function () {
         connectWebSocket(doSetSocketMessage, doSetSocketStatus) // 连接 webSocket
 
         userSelfBaseInfo().then(res => {
-            appDispatch(setUserBaseInfo(res.data))
+            appDispatch(setUserSelfBaseInfo(res.data))
         })
 
         // 加载菜单
@@ -118,7 +118,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const webSocketStatus = useAppSelector((state) => state.common.webSocketStatus)
     const [webSocketType, setWebSocketType] = useState<TWebSocketType>(GetWebSocketType())
     const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
-    const userBaseInfo = useAppSelector((state) => state.user.userBaseInfo)
+    const userSelfBaseInfo = useAppSelector((state) => state.user.userSelfBaseInfo)
 
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
@@ -254,7 +254,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             getAppNav()(CommonConstant.USER_CENTER_PATH)
                         }}>
                             <Avatar size="small"
-                                    src={userBaseInfo.avatarUrl ? GetPublicDownFileUrl(userBaseInfo.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}/>
+                                    src={userSelfBaseInfo.avatarUrl ? GetPublicDownFileUrl(userSelfBaseInfo.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}/>
                         </div>
                     </Dropdown>
                 </Space>

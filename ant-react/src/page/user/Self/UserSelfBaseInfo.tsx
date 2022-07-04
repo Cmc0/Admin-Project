@@ -7,7 +7,7 @@ import {CheckAvatarFileType, CheckFileSize, GetPublicDownFileUrl, SysFileUploadP
 import {RequestData} from "@ant-design/pro-descriptions/lib/useFetchData";
 import {useAppDispatch} from "@/store";
 import {Avatar, Form, Image, Space, Upload} from "antd";
-import {setUserBaseInfo} from "@/store/userSlice";
+import {setUserSelfBaseInfo} from "@/store/userSlice";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import MyIcon from "@/componse/MyIcon/MyIcon";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
@@ -36,7 +36,7 @@ export default function () {
         return userSelfUpdateBaseInfo(form).then(res => {
             currentForm.current = form
             ToastSuccess(res.msg)
-            appDispatch(setUserBaseInfo(form))
+            appDispatch(setUserSelfBaseInfo(form))
             setFileLoading(false)
         })
     }

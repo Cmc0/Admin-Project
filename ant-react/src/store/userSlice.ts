@@ -1,19 +1,19 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import LocalStorageKey from "../model/constant/LocalStorageKey";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
-import {SysUserSelfBaseInfoVO} from "@/api/SysUserController";
 import {SysMenuDO} from "@/api/SysMenuController";
+import {UserSelfBaseInfoVO} from "@/api/UserSelfController";
 
 interface IUserSlice {
   loadMenuFlag: boolean // 是否加载过菜单
-  userBaseInfo: SysUserSelfBaseInfoVO // 用户基本信息
+  userSelfBaseInfo: UserSelfBaseInfoVO // 当前用户，基本信息
   userMenuList: SysMenuDO[] // 用户菜单
 }
 
 const initialState: IUserSlice = {
   loadMenuFlag: false,
-  userBaseInfo: JSON.parse(
-      localStorage.getItem(LocalStorageKey.USER_BASE_INFO) || '{}'
+  userSelfBaseInfo: JSON.parse(
+      localStorage.getItem(LocalStorageKey.USER_SELF_BASE_INFO) || '{}'
   ),
   userMenuList: [] as SysMenuDO[],
 }
@@ -25,9 +25,9 @@ function setSessionStorageLoadMenuFlag(loadMenuFlag: boolean) {
   )
 }
 
-function setLocalStorageUserBaseInfo(userBaseInfo: SysUserSelfBaseInfoVO) {
+function setLocalStorageUserBaseInfo(userBaseInfo: UserSelfBaseInfoVO) {
   localStorage.setItem(
-      LocalStorageKey.USER_BASE_INFO,
+      LocalStorageKey.USER_SELF_BASE_INFO,
       JSON.stringify(userBaseInfo)
   )
 }
@@ -40,12 +40,12 @@ export const userSlice = createSlice({
       state.loadMenuFlag = action.payload
       setSessionStorageLoadMenuFlag(action.payload)
       if (!action.payload) {
-        state.userBaseInfo = {} // 重置，备注：这里会由 Login页面，自动清除 localStorage，sessionStorage
+        state.userSelfBaseInfo = {} // 重置，备注：这里会由 Login页面，自动清除 localStorage，sessionStorage
         state.userMenuList = []
       }
     },
-    setUserBaseInfo: (state, action: PayloadAction<SysUserSelfBaseInfoVO>) => {
-      state.userBaseInfo = action.payload
+    setUserSelfBaseInfo: (state, action: PayloadAction<UserSelfBaseInfoVO>) => {
+      state.userSelfBaseInfo = action.payload
       setLocalStorageUserBaseInfo(action.payload)
     },
     setUserMenuList: (state, action: PayloadAction<SysMenuDO[]>) => {
@@ -56,7 +56,7 @@ export const userSlice = createSlice({
   }
 })
 
-export const {setLoadMenuFlag, setUserBaseInfo, setUserMenuList} =
+export const {setLoadMenuFlag, setUserSelfBaseInfo, setUserMenuList} =
     userSlice.actions
 
 export default userSlice.reducer
