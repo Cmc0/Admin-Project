@@ -1,33 +1,41 @@
-import {USER_CENTER_KEY_TWO} from "./Center";
-import {List} from "antd";
+import {USER_CENTER_KEY_TWO} from "./Self";
+import {Form, List} from "antd";
 import React, {ReactNode} from "react";
 import {useAppSelector} from "@/store";
-import {ModalForm, ProFormText} from "@ant-design/pro-components";
+import {ModalForm, ProFormCaptcha, ProFormText} from "@ant-design/pro-components";
 import {SysUserUpdatePasswordDTO} from "@/api/SysUserController";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
+import {ToastSuccess} from "../../../../util/ToastUtil";
+import {
+    userSelfUpdatePassword,
+    UserSelfUpdatePasswordDTO,
+    userSelfUpdatePasswordSendEmailCode
+} from "@/api/UserSelfController";
 
-interface IUserCenterSetting {
+interface IUserSelfSetting {
     title: string
     description?: string
     actions: ReactNode[];
 }
 
-const UserCenterUpdatePasswordTitle = "修改密码"
+const UserSelfUpdatePasswordTitle = "修改密码"
 
-export function UserCenterUpdatePasswordModalForm() {
+export function UserSelfUpdatePasswordModalForm() {
 
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
+    const [useForm] = Form.useForm<UserSelfUpdatePasswordDTO>();
 
     return <ModalForm<SysUserUpdatePasswordDTO>
         modalProps={{
             maskClosable: false
         }}
+        form={useForm}
         isKeyPressSubmit
         width={CommonConstant.MODAL_FORM_WIDTH}
-        title={UserCenterUpdatePasswordTitle}
-        trigger={<a>{UserCenterUpdatePasswordTitle}</a>}
+        title={UserSelfUpdatePasswordTitle}
+        trigger={<a>{UserSelfUpdatePasswordTitle}</a>}
         onFinish={async (form) => {
             const formTemp = {...form}
             if (formTemp.newPassword) {
@@ -35,9 +43,28 @@ export function UserCenterUpdatePasswordModalForm() {
                 formTemp.newOrigPassword = RSAEncryptPro(formTemp.newPassword, rsaPublicKey, date)
                 formTemp.newPassword = PasswordRSAEncrypt(formTemp.newPassword, rsaPublicKey, date)
             }
+            await userSelfUpdatePassword(formTemp).then(res => {
+                ToastSuccess(res.msg)
+            })
             return true
         }}
     >
+        <ProFormCaptcha
+            fieldProps={{
+                maxLength: 6,
+                allowClear: true,
+            }}
+            required
+            label="验证码"
+            placeholder={'请输入验证码'}
+            name="code"
+            rules={[{validator: ValidatorUtil.codeValidate}]}
+            onGetCaptcha={async () => {
+                await userSelfUpdatePasswordSendEmailCode().then(res => {
+                    ToastSuccess(res.msg)
+                })
+            }}
+        />
         <ProFormText label="新密码" name="newPassword" required
                      rules={[{validator: ValidatorUtil.passwordValidate}]}/>
     </ModalForm>
@@ -45,14 +72,14 @@ export function UserCenterUpdatePasswordModalForm() {
 
 export default function () {
     return (
-        <List<IUserCenterSetting>
+        <List<IUserSelfSetting>
             header={USER_CENTER_KEY_TWO}
             rowKey={"title"}
             dataSource={[
                 {
                     title: '密码',
                     actions: [
-                        <UserCenterUpdatePasswordModalForm key="1"/>,
+                        <UserSelfUpdatePasswordModalForm key="1"/>,
                     ]
                 },
                 {
