@@ -1,5 +1,6 @@
 package com.admin.user.controller;
 
+import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.dto.MyCodeToKeyDTO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.user.model.dto.UserSelfDeleteDTO;
@@ -71,7 +72,8 @@ public class UserSelfController {
     @ApiOperation(value = "当前用户：修改邮箱，发送，邮箱验证码，验证码兑换 key")
     @PostMapping(value = "/updateEmail/sendEmailCode/codeToKey")
     public ApiResultVO<String> userSelfUpdateEmailSendEmailCodeCodeToKey(@RequestBody @Valid MyCodeToKeyDTO dto) {
-        return ApiResultVO.ok(baseService.userSelfUpdateEmailSendEmailCodeCodeToKey(dto));
+        return ApiResultVO
+            .ok(BaseBizCodeEnum.API_RESULT_OK.getMsg(), baseService.userSelfUpdateEmailSendEmailCodeCodeToKey(dto));
     }
 
     @ApiOperation(value = "当前用户：刷新jwt私钥后缀")
