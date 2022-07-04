@@ -107,7 +107,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // 验证算法
         if (!jwtOf.verify()) {
             MyJwtUtil.jsonRedisTemplate.delete(jwtHash);
-            return loginExpired(response);
+            return loginExpired(response); // 提示登录过期，请重新登录
         }
 
         try {
