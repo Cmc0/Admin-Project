@@ -291,19 +291,19 @@ public class UserUtil {
 
         Set<String> menuIdSet = null;
 
-        BoundHashOperations<String, String, Set<String>> ops =
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
 
-        Long size = ops.size();
-        if (size == null || size == 0) {
-            Map<String, Set<String>> roleRefMenuIdSetMap = updateRoleRefMenuForRedis(); // 更新缓存
-            menuIdSet = roleRefMenuIdSetMap.entrySet().stream().filter(it -> roleIdSet.contains(it.getKey()))
-                .flatMap(it -> it.getValue().stream()).collect(Collectors.toSet());
-        } else {
+        if (hasKey != null && hasKey) {
+            BoundHashOperations<String, String, Set<String>> ops =
+                jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
             List<Set<String>> multiGetList = ops.multiGet(roleIdSet);
             if (multiGetList != null) {
                 menuIdSet = multiGetList.stream().flatMap(Collection::stream).collect(Collectors.toSet());
             }
+        } else {
+            Map<String, Set<String>> roleRefMenuIdSetMap = updateRoleRefMenuForRedis(); // 更新缓存
+            menuIdSet = roleRefMenuIdSetMap.entrySet().stream().filter(it -> roleIdSet.contains(it.getKey()))
+                .flatMap(it -> it.getValue().stream()).collect(Collectors.toSet());
         }
 
         if (menuIdSet == null) {

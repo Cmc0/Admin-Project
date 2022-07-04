@@ -21,7 +21,6 @@ import {SysMenuDO, sysMenuListForUser} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
-import {TimeoutTwoSeconds} from "../../../util/HttpUtil";
 import {GetAvgType} from "@/page/sysMonitor/Request/Request";
 import {MenuDataItem} from '@ant-design/pro-components';
 import {GetPublicDownFileUrl} from "../../../util/FileUtil";
@@ -123,7 +122,6 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
-            timeout: TimeoutTwoSeconds,
             headers: {
                 hiddenErrorMsg: true,
             },
@@ -135,7 +133,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
     useEffect(() => {
         setPathname(window.location.pathname)
         doSysRequestAllAvg()
-        const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 30 * 1000);
+        const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 120 * 1000);
         return () => {
             clearInterval(sysRequestAllAvgInterval)
         }
