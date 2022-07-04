@@ -99,7 +99,6 @@ export function UserSelfUpdateEmailModalForm() {
                         onCancel={() => setVisible(false)}
                         visible={visible}
                         footer={submitter}
-                        destroyOnClose
                         maskClosable={false}
                     >
                         {dom}
