@@ -19,6 +19,7 @@ import {
 import {logout} from "../../../../util/UserUtil";
 import MyCodeToKeyDTO from "@/model/dto/MyCodeToKeyDTO";
 import {userRegisterEmailSendCode} from "@/api/UserRegisterController";
+import {ApiResultVO} from "../../../../util/HttpUtil";
 
 interface IUserSelfSetting {
     title: string
@@ -132,8 +133,10 @@ export function UserSelfUpdateEmailModalForm() {
                     nextFlag = true
                     setSubmitFlag(false)
                     setVisible(false)
-                }).catch((err) => {
-                    console.log(err)
+                }).catch((err: ApiResultVO) => {
+                    if (err.code === 100191) {
+                        nextFlag = true // 重置表单，并返回第一个步骤
+                    }
                     setSubmitFlag(false)
                 })
                 return nextFlag
