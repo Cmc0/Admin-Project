@@ -25,6 +25,10 @@ import java.util.stream.Collectors;
 @Component
 public class UserUtil {
 
+    private static final List<String> REDIS_CACHE_KEY_LIST = CollUtil
+        .newArrayList(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE, BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE,
+            BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE, BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+
     private static SysMenuMapper sysMenuMapper;
 
     @Resource
@@ -212,11 +216,14 @@ public class UserUtil {
     /**
      * 通过 userId，获取关联的 roleIdSet，redis缓存，备注：包含默认角色的 id
      */
-    public static Set<String> getRefRoleIdSetByUserIdFromRedis(String userId) {
+    public static Set<String> getRefRoleIdSetByUserIdFromRedis(String userId, boolean allCacheExistFlag) {
 
         Set<String> roleIdSet;
 
-        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        Boolean hasKey = true;
+        if (!allCacheExistFlag) {
+            hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        }
 
         if (hasKey != null && hasKey) {
             BoundHashOperations<String, String, Set<String>> ops =
@@ -287,11 +294,14 @@ public class UserUtil {
     /**
      * 通过 roleIdSet，获取关联的 menuIdSet，redis缓存
      */
-    public static Set<String> getRefMenuIdSetByRoleIdSetFromRedis(Set<String> roleIdSet) {
+    public static Set<String> getRefMenuIdSetByRoleIdSetFromRedis(Set<String> roleIdSet, boolean allCacheExistFlag) {
 
         Set<String> menuIdSet = null;
 
-        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        Boolean hasKey = true;
+        if (!allCacheExistFlag) {
+            hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        }
 
         if (hasKey != null && hasKey) {
             BoundHashOperations<String, String, Set<String>> ops =
@@ -336,10 +346,15 @@ public class UserUtil {
 
     /**
      * 获取：菜单id - 权限 的集合，redis缓存
+     *
+     * @param allCacheExistFlag
      */
-    public static List<SysMenuDO> getMenuIdAndAuthsListFromRedis() {
+    public static List<SysMenuDO> getMenuIdAndAuthsListFromRedis(boolean allCacheExistFlag) {
 
-        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        Boolean hasKey = true;
+        if (!allCacheExistFlag) {
+            hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        }
 
         if (hasKey != null && hasKey) {
             return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
@@ -384,15 +399,21 @@ public class UserUtil {
 
         List<SysMenuDO> resList = new ArrayList<>();
 
+        boolean allCacheExistFlag = false;
+        Long existingKeysCount = jsonRedisTemplate.countExistingKeys(REDIS_CACHE_KEY_LIST);
+        if (existingKeysCount != null) {
+            allCacheExistFlag = REDIS_CACHE_KEY_LIST.size() == existingKeysCount;
+        }
+
         // 通过 userId，获取关联的 roleIdSet，redis缓存，备注：包含默认角色的 id
-        Set<String> roleIdSet = getRefRoleIdSetByUserIdFromRedis(userId.toString());
+        Set<String> roleIdSet = getRefRoleIdSetByUserIdFromRedis(userId.toString(), allCacheExistFlag);
 
         if (roleIdSet.size() == 0) {
             return resList; // 结束方法
         }
 
         // 通过 roleIdSet，获取关联的 menuIdSet，redis缓存
-        Set<String> menuIdSet = getRefMenuIdSetByRoleIdSetFromRedis(roleIdSet);
+        Set<String> menuIdSet = getRefMenuIdSetByRoleIdSetFromRedis(roleIdSet, allCacheExistFlag);
         if (menuIdSet.size() == 0) {
             return resList; // 结束方法
         }
@@ -401,7 +422,7 @@ public class UserUtil {
         /** 这里和{@link com.admin.menu.service.SysMenuService#menuListForUser}需要进行同步修改 */
         List<SysMenuDO> sysMenuDOList;
         if (type == 2) { // 2 给 security获取权限时使用
-            sysMenuDOList = getMenuIdAndAuthsListFromRedis();
+            sysMenuDOList = getMenuIdAndAuthsListFromRedis(allCacheExistFlag);
         } else { // 默认是 1
             sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
                 .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getPath, SysMenuDO::getIcon,
