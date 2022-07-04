@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class IpFilter implements Filter {
 
     @Resource
-    JsonRedisTemplate<Object> jsonRedisTemplate;
+    JsonRedisTemplate<String> jsonRedisTemplate;
 
     @SneakyThrows
     @Override
@@ -63,7 +63,7 @@ public class IpFilter implements Filter {
     private String ipCheckHandler(String ip) {
 
         // 判断是否在 黑名单里
-        ValueOperations<String, Object> ops = jsonRedisTemplate.opsForValue();
+        ValueOperations<String, String> ops = jsonRedisTemplate.opsForValue();
 
         String blackListIpKey = BaseConstant.PRE_REDIS_IP_BLACKLIST + ip;
 
@@ -81,7 +81,7 @@ public class IpFilter implements Filter {
     /**
      * 给 redis中 ip设置 请求次数
      */
-    private String setRedisTotal(String ip, ValueOperations<String, Object> ops, String blackListIpKey) {
+    private String setRedisTotal(String ip, ValueOperations<String, String> ops, String blackListIpKey) {
 
         // ip 请求速率：多少秒钟，一个 ip可以请求多少次，用冒号隔开的
         String ipTotalCheckValue = SysParamUtil.getValueById(BaseConstant.IP_REQUESTS_PER_SECOND_ID);
