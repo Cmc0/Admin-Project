@@ -2,7 +2,7 @@ import {USER_CENTER_KEY_TWO} from "./Self";
 import {Button, List, Modal} from "antd";
 import React, {ReactNode, useRef, useState} from "react";
 import {useAppSelector} from "@/store";
-import {ModalForm, ProFormCaptcha, ProFormInstance, ProFormText, StepsForm} from "@ant-design/pro-components";
+import {ModalForm, ProFormCaptcha, ProFormInstance, ProFormText, ProTable, StepsForm} from "@ant-design/pro-components";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
@@ -21,6 +21,10 @@ import {logout} from "../../../../util/UserUtil";
 import MyCodeToKeyDTO from "@/model/dto/MyCodeToKeyDTO";
 import {userRegisterEmailSendCode} from "@/api/UserRegisterController";
 import {ApiResultVO} from "../../../../util/HttpUtil";
+import {SysMenuDO, SysMenuPageDTO} from "@/api/SysMenuController";
+import {handlerRegion} from "../../../../util/StrUtil";
+import {sysRequestSelfLoginRecord} from "@/api/SysRequestController";
+import {RequestGetDictList} from "../../../../util/DictUtil";
 
 interface IUserSelfSetting {
     title: string
@@ -250,11 +254,7 @@ export default function () {
                 {
                     title: '登录记录',
                     actions: [
-                        <a key="1" onClick={() => {
-
-                        }}>
-                            查看记录
-                        </a>
+                        <RequestSelfLoginRecordModal key={"1"}/>
                     ]
                 },
                 {
@@ -277,5 +277,76 @@ export default function () {
                 </List.Item>
             )}
         />
+    )
+}
+
+const RequestSelfLoginRecordModalTitle = "登录记录"
+
+function RequestSelfLoginRecordModal() {
+
+    const [visible, setVisible] = useState(false);
+
+    return (<>
+            <a onClick={() => {
+                setVisible(true)
+            }}>查看记录</a>
+            <Modal
+                width={1200}
+                title={RequestSelfLoginRecordModalTitle}
+                onCancel={() => setVisible(false)}
+                visible={visible}
+                maskClosable={false}
+                footer={false}
+                className={"noFooterModal"}
+            >
+                <ProTable<SysMenuDO, SysMenuPageDTO>
+                    rowKey={"id"}
+                    columnEmptyText={false}
+                    revalidateOnFocus={false}
+                    scroll={{y: 365}}
+                    columns={[
+                        {
+                            title: '序号',
+                            dataIndex: 'index',
+                            valueType: 'index',
+                        },
+                        {
+                            title: '创建时间',
+                            dataIndex: 'createTime',
+                            sorter: true,
+                            valueType: 'fromNow',
+                            hideInSearch: true
+                        },
+                        {title: 'ip', dataIndex: 'ip'},
+                        {
+                            title: 'ip区域',
+                            dataIndex: 'region',
+                            renderText: (text) => {
+                                return handlerRegion(text)
+                            }
+                        },
+                        {
+                            title: '来源',
+                            dataIndex: 'category',
+                            valueType: 'select',
+                            request: () => {
+                                return RequestGetDictList('request_category')
+                            }
+                        },
+                    ]}
+                    pagination={{
+                        showQuickJumper: true,
+                        showSizeChanger: true,
+                    }}
+                    options={{
+                        fullScreen: true,
+                    }}
+                    request={(params, sort, filter) => {
+                        return sysRequestSelfLoginRecord({...params, sort})
+                    }}
+                >
+                </ProTable>
+            </Modal>
+        </>
     )
 }
