@@ -18,7 +18,7 @@ import {
     sysMenuTree
 } from "@/api/SysMenuController";
 import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
-import {GetMenuDictList, IMyTree} from "../../../../util/DictUtil";
+import {GetMenuDictList, GetRoleDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
 
 export default function () {
 
@@ -43,10 +43,14 @@ export default function () {
     const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
 
     const menuDictListRef = useRef<IMyTree[]>([])
+    const roleDictListRef = useRef<IMyOption[]>([])
 
     function doGetDictList() {
         GetMenuDictList().then(res => {
             menuDictListRef.current = res
+        })
+        GetRoleDictList().then(res => {
+            roleDictListRef.current = res
         })
     }
 
@@ -227,7 +231,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(menuDictListRef, useForm, currentForm)}
+            columns={SchemaFormColumnList(menuDictListRef, useForm, currentForm, roleDictListRef)}
             onFinish={async (form) => {
                 await sysMenuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

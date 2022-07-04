@@ -13,7 +13,7 @@ export const InitForm: SysMenuInsertOrUpdateDTO = {
     showFlag: true,
 }
 
-const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     return [
         {
@@ -46,6 +46,15 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
             dataIndex: 'orderNo',
             valueType: 'digit',
             fieldProps: {className: 'w100', min: Number.MIN_SAFE_INTEGER}
+        },
+        {
+            title: '关联角色',
+            dataIndex: 'roleIdSet',
+            valueType: 'select',
+            fieldProps: {
+                showSearch: true,
+                options: roleDictListRef.current,
+            }
         },
         {
             valueType: 'dependency',
