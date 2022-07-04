@@ -346,8 +346,6 @@ public class UserUtil {
 
     /**
      * 获取：菜单id - 权限 的集合，redis缓存
-     *
-     * @param allCacheExistFlag
      */
     public static List<SysMenuDO> getMenuIdAndAuthsListFromRedis(boolean allCacheExistFlag) {
 
