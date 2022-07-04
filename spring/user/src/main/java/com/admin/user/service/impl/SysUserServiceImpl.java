@@ -453,6 +453,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             sysRoleRefUserService.saveBatch(insertList);
         }
 
+        UserUtil.updateRoleRefUserForRedis(); // 更新：redis中的缓存
+
         // 新增数据到：岗位用户关联表
         if (CollUtil.isNotEmpty(dto.getJobIdSet())) {
             List<SysJobRefUserDO> insertList = new ArrayList<>();

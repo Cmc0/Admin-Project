@@ -74,6 +74,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
 
         SysMenuDO sysMenuDO = getEntityByDTO(dto);
         saveOrUpdate(sysMenuDO);
+        UserUtil.updateMenuIdAndAuthsListForRedis(); // 更新：redis中的缓存
 
         insertOrUpdateSub(sysMenuDO.getId(), dto); // 新增 子表数据
 
@@ -96,6 +97,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             }
             sysRoleRefMenuService.saveBatch(insertList);
         }
+
+        UserUtil.updateRoleRefMenuForRedis(); // 更新：redis中的缓存
 
     }
 

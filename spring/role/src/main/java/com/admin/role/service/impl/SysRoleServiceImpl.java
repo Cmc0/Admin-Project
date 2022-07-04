@@ -10,6 +10,7 @@ import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.*;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.MyEntityUtil;
+import com.admin.common.util.UserUtil;
 import com.admin.role.exception.BizCodeEnum;
 import com.admin.role.model.dto.SysRoleInsertOrUpdateDTO;
 import com.admin.role.model.dto.SysRolePageDTO;
@@ -55,6 +56,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         if (dto.isDefaultFlag()) {
             lambdaUpdate().set(SysRoleDO::getDefaultFlag, false).eq(SysRoleDO::getDefaultFlag, true)
                 .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
+            UserUtil.updateDefaultRoleIdForRedis(); // 更新：redis中的缓存
         }
 
         SysRoleDO sysRoleDO = new SysRoleDO();
@@ -84,6 +86,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
             sysRoleRefMenuService.saveBatch(insertList);
         }
 
+        UserUtil.updateRoleRefMenuForRedis(); // 更新：redis中的缓存
+
         if (CollUtil.isNotEmpty(dto.getUserIdSet())) {
             List<SysRoleRefUserDO> insertList = new ArrayList<>();
             for (Long userId : dto.getUserIdSet()) {
@@ -94,6 +98,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
             }
             sysRoleRefUserService.saveBatch(insertList);
         }
+
+        UserUtil.updateRoleRefUserForRedis(); // 更新：redis中的缓存
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
