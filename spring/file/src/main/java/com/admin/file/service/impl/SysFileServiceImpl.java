@@ -235,7 +235,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
                 ApiResultVO.error("操作失败：url不合法：" + item);
             }
             // 只能删除自己的文件
-            if (!userIdStr.equals(splitTrimList.get(1))) {
+            if (selfFlag && !userIdStr.equals(splitTrimList.get(1))) {
                 ApiResultVO.error("操作失败：只能删除自己的文件：" + item);
             }
             String bucketName = splitTrimList.get(0);

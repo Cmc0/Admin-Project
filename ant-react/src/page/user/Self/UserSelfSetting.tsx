@@ -13,6 +13,7 @@ import {
     UserSelfUpdatePasswordDTO,
     userSelfUpdatePasswordSendEmailCode
 } from "@/api/UserSelfController";
+import {logout} from "../../../../util/UserUtil";
 
 interface IUserSelfSetting {
     title: string
@@ -45,6 +46,7 @@ export function UserSelfUpdatePasswordModalForm() {
             }
             await userSelfUpdatePassword(formTemp).then(res => {
                 ToastSuccess(res.msg)
+                logout()
             })
             return true
         }}
