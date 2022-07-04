@@ -57,7 +57,6 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
         try {
 
             CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
-            jsonRedisTemplate.delete(redisKey);
 
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setUuid(IdUtil.simpleUUID());
@@ -69,6 +68,8 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
             sysUserDO.setEmail(dto.getEmail());
 
             save(sysUserDO); // 保存
+
+            jsonRedisTemplate.delete(redisKey);
 
             return "注册成功";
         } finally {

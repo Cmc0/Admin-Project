@@ -150,12 +150,13 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         try {
 
             CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
-            jsonRedisTemplate.delete(redisKey);
 
             sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getNewPassword(), true));
             sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
 
             updateById(sysUserDO); // 操作数据库
+
+            jsonRedisTemplate.delete(redisKey);
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
@@ -288,9 +289,10 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         try {
 
             CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
-            jsonRedisTemplate.delete(redisKey);
 
             sysUserService.deleteByIdSet(new NotEmptyIdSet(CollUtil.newHashSet(UserUtil.getCurrentUserIdNotAdmin())));
+
+            jsonRedisTemplate.delete(redisKey);
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
