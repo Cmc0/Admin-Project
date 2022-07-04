@@ -194,12 +194,14 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         try {
 
             // 先检查 key
-            if (!dto.getKey().equals(jsonRedisTemplate.opsForValue().get(keyRedisKey))) {
+            Boolean hasKey = jsonRedisTemplate.hasKey(keyRedisKey);
+            if (hasKey == null || !hasKey) {
                 ApiResultVO.error(BaseBizCodeEnum.OPERATION_TIMED_OUT_PLEASE_TRY_AGAIN);
             }
-            jsonRedisTemplate.delete(keyRedisKey);
 
             CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(codeRedisKey));
+
+            jsonRedisTemplate.delete(keyRedisKey);
             jsonRedisTemplate.delete(codeRedisKey);
 
             SysUserDO sysUserDO = new SysUserDO();

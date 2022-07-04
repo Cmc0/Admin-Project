@@ -73,7 +73,7 @@ $http.interceptors.response.use(
                     ToastError(res.msg, 5)
                 }
             }
-            return Promise.reject(new Error(res.msg || 'Error')) // 这里会 触发 catch
+            return Promise.reject(res) // 这里会 触发 catch
         } else {
             return response
         }

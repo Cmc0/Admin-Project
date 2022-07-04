@@ -1,5 +1,5 @@
 import {USER_CENTER_KEY_TWO} from "./Self";
-import {Button, List} from "antd";
+import {Button, List, Modal} from "antd";
 import React, {ReactNode, useRef, useState} from "react";
 import {useAppSelector} from "@/store";
 import {ModalForm, ProFormCaptcha, ProFormInstance, ProFormText, StepsForm} from "@ant-design/pro-components";
@@ -83,17 +83,28 @@ export function UserSelfUpdateEmailModalForm() {
     const keyRef = useRef<string>('');
     const [submitFlag, setSubmitFlag] = useState<boolean>(false);
     const formRef = useRef<ProFormInstance<UserSelfUpdateEmailDTO>>();
+    const [visible, setVisible] = useState(false);
 
-    return <ModalForm
-        modalProps={{
-            maskClosable: false
-        }}
-        submitter={false}
-        isKeyPressSubmit
-        title={UserSelfUpdateEmailTitle}
-        trigger={<a>{UserSelfUpdateEmailTitle}</a>}
-    >
+    return <>
+        <a onClick={() => {
+            setVisible(true)
+        }}>{UserSelfUpdateEmailTitle}</a>
         <StepsForm<UserSelfUpdateEmailDTO>
+            stepsFormRender={(dom, submitter) => {
+                return (
+                    <Modal
+                        width={CommonConstant.MODAL_STEPS_FORM_WIDTH}
+                        title={UserSelfUpdateEmailTitle}
+                        onCancel={() => setVisible(false)}
+                        visible={visible}
+                        footer={submitter}
+                        destroyOnClose
+                        maskClosable={false}
+                    >
+                        {dom}
+                    </Modal>
+                );
+            }}
             formRef={formRef}
             submitter={{
                 render: (props) => {
@@ -120,7 +131,9 @@ export function UserSelfUpdateEmailModalForm() {
                     ToastSuccess(res.msg)
                     nextFlag = true
                     setSubmitFlag(false)
-                }).catch(() => {
+                    setVisible(false)
+                }).catch((err) => {
+                    console.log(err)
                     setSubmitFlag(false)
                 })
                 return nextFlag
@@ -191,7 +204,7 @@ export function UserSelfUpdateEmailModalForm() {
                 />
             </StepsForm.StepForm>
         </StepsForm>
-    </ModalForm>
+    </>
 }
 
 export default function () {
