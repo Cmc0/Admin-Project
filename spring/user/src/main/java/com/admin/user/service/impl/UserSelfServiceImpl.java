@@ -201,15 +201,15 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
             CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(codeRedisKey));
 
-            jsonRedisTemplate.delete(keyRedisKey);
-            jsonRedisTemplate.delete(codeRedisKey);
-
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setId(currentUserIdNotAdmin);
             sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
             sysUserDO.setEmail(dto.getEmail());
 
             updateById(sysUserDO);
+
+            jsonRedisTemplate.delete(keyRedisKey);
+            jsonRedisTemplate.delete(codeRedisKey);
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
