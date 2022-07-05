@@ -8,6 +8,8 @@ import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../../util/ToastUtil";
 import {
+    userSelfDelete,
+    userSelfDeleteSendEmailCode,
     userSelfRefreshJwtSecretSuf,
     userSelfUpdateEmail,
     UserSelfUpdateEmailDTO,
@@ -25,7 +27,6 @@ import {SysMenuDO, SysMenuPageDTO} from "@/api/SysMenuController";
 import {handlerRegion} from "../../../../util/StrUtil";
 import {sysRequestSelfLoginRecord} from "@/api/SysRequestController";
 import {RequestGetDictList} from "../../../../util/DictUtil";
-import {InDev} from "../../../../util/CommonUtil";
 
 interface IUserSelfSetting {
     title: string
@@ -137,6 +138,7 @@ export function UserSelfUpdateEmailModalForm() {
                     nextFlag = true
                     setSubmitFlag(false)
                     setVisible(false)
+                    logout()
                 }).catch((err: ApiResultVO) => {
                     if (err.code === 100191) {
                         nextFlag = true // 重置表单，并返回第一个步骤
@@ -252,19 +254,15 @@ export default function () {
                     ]
                 },
                 {
-                    title: '登录记录',
+                    title: RequestSelfLoginRecordModalTitle,
                     actions: [
                         <RequestSelfLoginRecordModal key={"1"}/>
                     ]
                 },
                 {
-                    title: '账号注销',
+                    title: UserSelfDeleteModalTitle,
                     actions: [
-                        <a className={"red3"} key="1" onClick={() => {
-                            InDev()
-                        }}>
-                            立即注销
-                        </a>
+                        <UserSelfDeleteModalForm key={"1"}/>
                     ]
                 },
             ]}
@@ -278,6 +276,45 @@ export default function () {
             )}
         />
     )
+}
+
+const UserSelfDeleteModalTitle = "账号注销"
+const UserSelfDeleteModalTargetName = "立即注销"
+
+export function UserSelfDeleteModalForm() {
+
+    return <ModalForm<UserSelfUpdatePasswordDTO>
+        modalProps={{
+            maskClosable: false
+        }}
+        isKeyPressSubmit
+        width={CommonConstant.MODAL_FORM_WIDTH}
+        title={UserSelfDeleteModalTitle}
+        trigger={<a className={"red3"}>{UserSelfDeleteModalTargetName}</a>}
+        onFinish={async (form) => {
+            await userSelfDelete({code: form.code}).then(res => {
+                ToastSuccess(res.msg)
+            })
+            return true
+        }}
+    >
+        <ProFormCaptcha
+            fieldProps={{
+                maxLength: 6,
+                allowClear: true,
+            }}
+            required
+            label="验证码"
+            placeholder={'请输入验证码'}
+            name="code"
+            rules={[{validator: ValidatorUtil.codeValidate}]}
+            onGetCaptcha={async () => {
+                await userSelfDeleteSendEmailCode().then(res => {
+                    ToastSuccess(res.msg)
+                })
+            }}
+        />
+    </ModalForm>
 }
 
 const RequestSelfLoginRecordModalTitle = "登录记录"

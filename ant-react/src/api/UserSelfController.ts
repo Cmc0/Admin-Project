@@ -15,8 +15,12 @@ export function userSelfBaseInfo(config?: AxiosRequestConfig) {
     return $http.myPost<UserSelfBaseInfoVO>('/userSelf/baseInfo', undefined, config)
 }
 
+export interface UserSelfDeleteDTO {
+    code?: string // 邮箱验证码
+}
+
 // 用户-自我-管理 当前用户：注销
-export function userSelfDelete(form: FormData, config?: AxiosRequestConfig) {
+export function userSelfDelete(form: UserSelfDeleteDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/userSelf/delete', form, config)
 }
 

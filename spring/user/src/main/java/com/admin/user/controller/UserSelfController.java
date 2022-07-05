@@ -84,7 +84,7 @@ public class UserSelfController {
 
     @ApiOperation(value = "当前用户：注销")
     @PostMapping(value = "/delete")
-    public ApiResultVO<String> userSelfDelete(UserSelfDeleteDTO dto) {
+    public ApiResultVO<String> userSelfDelete(@RequestBody @Valid UserSelfDeleteDTO dto) {
         return ApiResultVO.ok(baseService.userSelfDelete(dto));
     }
 
