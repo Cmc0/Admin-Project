@@ -7,8 +7,8 @@ import React from "react";
 
 export default function () {
 
-    const userMenuList = useAppSelector(
-        (state) => state.user.userMenuList
+    const userSelfMenuList = useAppSelector(
+        (state) => state.user.userSelfMenuList
     ).filter((item) => item.router)
 
     return (
@@ -27,7 +27,7 @@ export default function () {
                     path={CommonConstant.MAIN_PATH}
                     element={<LoadElement element="MainLayout"/>}
                 >
-                    {userMenuList.map((item, index) => (
+                    {userSelfMenuList.map((item, index) => (
                         <Route
                             key={index}
                             path={item.path}

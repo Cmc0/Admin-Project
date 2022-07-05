@@ -12,11 +12,11 @@ import {useAppDispatch, useAppSelector} from "@/store";
 import {connectWebSocket, IWebSocketMessage} from "../../../util/WebSocketUtil";
 import {setWebSocketMessage, setWebSocketStatus} from '@/store/commonSlice';
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
-import {setUserMenuList, setUserSelfBaseInfo} from '@/store/userSlice';
+import {setUserSelfBaseInfo, setUserSelfMenuList} from '@/store/userSlice';
 import {ListToTree} from "../../../util/TreeUtil";
 import {RouterMapKeyList} from "@/router/RouterMap";
 import MyIcon from "@/componse/MyIcon/MyIcon";
-import {SysMenuDO, sysMenuListForUser} from "@/api/SysMenuController";
+import {SysMenuDO, sysMenuUserSelfMenuList} from "@/api/SysMenuController";
 import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
@@ -51,7 +51,7 @@ function goFirstPage(menuList: SysMenuDO[]) {
 export default function () {
 
     const appDispatch = useAppDispatch()
-    const userMenuList = useAppSelector((state) => state.user.userMenuList)
+    const userSelfMenuList = useAppSelector((state) => state.user.userSelfMenuList)
     const loadMenuFlag = useAppSelector((state) => state.user.loadMenuFlag)
     const [element, setElement] = useState<React.ReactNode>(null);
 
@@ -66,9 +66,9 @@ export default function () {
     }
 
     // 设置 element
-    function doSetElement(userMenuList: SysMenuDO[]) {
+    function doSetElement(userSelfMenuList: SysMenuDO[]) {
         if (element == null) {
-            setElement(<MainLayoutElement userMenuList={userMenuList}/>)
+            setElement(<MainLayoutElement userSelfMenuList={userSelfMenuList}/>)
         }
     }
 
@@ -76,8 +76,8 @@ export default function () {
 
         // 开发时才会用到 ↓
         if (loadMenuFlag) {
-            doSetElement(userMenuList)
-            goFirstPage(userMenuList)
+            doSetElement(userSelfMenuList)
+            goFirstPage(userSelfMenuList)
             return
         }
         // 开发时才会用到 ↑
@@ -91,13 +91,13 @@ export default function () {
         })
 
         // 加载菜单
-        sysMenuListForUser().then(res => {
+        sysMenuUserSelfMenuList().then(res => {
             if (!res.data || !res.data.length) {
                 ToastError('暂未配置菜单，请联系管理员', 5)
                 logout()
                 return
             }
-            appDispatch(setUserMenuList(res.data))
+            appDispatch(setUserSelfMenuList(res.data))
             doSetElement(res.data)
             goFirstPage(res.data)
         })
@@ -108,7 +108,7 @@ export default function () {
 }
 
 interface IMainLayoutElement {
-    userMenuList: SysMenuDO[]
+    userSelfMenuList: SysMenuDO[]
 }
 
 // MainLayout组件页面
@@ -148,12 +148,12 @@ function MainLayoutElement(props: IMainLayoutElement) {
             }}
             menu={{
                 request: async () => {
-                    const userMenuListTemp: MenuDataItem[] = JSON.parse(JSON.stringify(props.userMenuList));
-                    userMenuListTemp.forEach(item => {
+                    const userSelfMenuListTemp: MenuDataItem[] = JSON.parse(JSON.stringify(props.userSelfMenuList));
+                    userSelfMenuListTemp.forEach(item => {
                         item.icon = <MyIcon icon={item.icon as string}/>
                         item.hideInMenu = !item.showFlag
                     })
-                    return ListToTree(userMenuListTemp, true, 0);
+                    return ListToTree(userSelfMenuListTemp, true, 0);
                 },
             }}
             fixSiderbar={true}

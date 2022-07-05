@@ -7,7 +7,7 @@ import {UserSelfBaseInfoVO} from "@/api/UserSelfController";
 interface IUserSlice {
   loadMenuFlag: boolean // 是否加载过菜单
   userSelfBaseInfo: UserSelfBaseInfoVO // 当前用户，基本信息
-  userMenuList: SysMenuDO[] // 用户菜单
+  userSelfMenuList: SysMenuDO[] // 用户菜单
 }
 
 const initialState: IUserSlice = {
@@ -15,7 +15,7 @@ const initialState: IUserSlice = {
   userSelfBaseInfo: JSON.parse(
       localStorage.getItem(LocalStorageKey.USER_SELF_BASE_INFO) || '{}'
   ),
-  userMenuList: [] as SysMenuDO[],
+  userSelfMenuList: [] as SysMenuDO[],
 }
 
 function setSessionStorageLoadMenuFlag(loadMenuFlag: boolean) {
@@ -41,22 +41,22 @@ export const userSlice = createSlice({
       setSessionStorageLoadMenuFlag(action.payload)
       if (!action.payload) {
         state.userSelfBaseInfo = {} // 重置，备注：这里会由 Login页面，自动清除 localStorage，sessionStorage
-        state.userMenuList = []
+        state.userSelfMenuList = []
       }
     },
     setUserSelfBaseInfo: (state, action: PayloadAction<UserSelfBaseInfoVO>) => {
       state.userSelfBaseInfo = action.payload
       setLocalStorageUserBaseInfo(action.payload)
     },
-    setUserMenuList: (state, action: PayloadAction<SysMenuDO[]>) => {
-      state.userMenuList = action.payload
+    setUserSelfMenuList: (state, action: PayloadAction<SysMenuDO[]>) => {
+      state.userSelfMenuList = action.payload
       state.loadMenuFlag = true
       setSessionStorageLoadMenuFlag(true)
     }
   }
 })
 
-export const {setLoadMenuFlag, setUserSelfBaseInfo, setUserMenuList} =
+export const {setLoadMenuFlag, setUserSelfBaseInfo, setUserSelfMenuList} =
     userSlice.actions
 
 export default userSlice.reducer

@@ -22,7 +22,7 @@ public interface SysMenuService extends IService<SysMenuDO> {
 
     String deleteByIdSet(NotEmptyIdSet notEmptyIdSet);
 
-    List<SysMenuDO> menuListForUser();
+    List<SysMenuDO> userSelfMenuList();
 
     SysMenuInfoByIdVO infoById(NotNullId notNullId);
 

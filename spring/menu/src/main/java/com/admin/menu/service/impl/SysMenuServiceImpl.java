@@ -210,10 +210,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     }
 
     /**
-     * 获取当前用户绑定的菜单
+     * 获取：当前用户绑定的菜单
      */
     @Override
-    public List<SysMenuDO> menuListForUser() {
+    public List<SysMenuDO> userSelfMenuList() {
         Long userId = UserUtil.getCurrentUserId();
 
         if (BaseConstant.ADMIN_ID.equals(userId)) {
