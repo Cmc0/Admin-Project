@@ -44,10 +44,10 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
         }
 
         SysUserDO sysUserDO =
-            lambdaQuery().eq(BaseEntityTwo::getId, dto.getAccount()).select(SysUserDO::getEmail, BaseEntityTwo::getId)
+            lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount()).select(SysUserDO::getEmail, BaseEntityTwo::getId)
                 .one();
 
-        if (StrUtil.isBlank(sysUserDO.getEmail())) {
+        if (sysUserDO == null || StrUtil.isBlank(sysUserDO.getEmail())) {
             ApiResultVO.error(BaseBizCodeEnum.EMAIL_DOES_NOT_EXIST_PLEASE_RE_ENTER);
         }
 
