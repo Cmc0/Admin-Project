@@ -79,7 +79,7 @@ export function UserSelfUpdatePasswordModalForm() {
                 })
             }}
         />
-        <ProFormText.Password
+        <ProFormText
             label="新密码"
             placeholder={'请输入新密码'}
             name="newPassword"

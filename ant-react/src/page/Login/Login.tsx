@@ -130,6 +130,7 @@ export default function () {
                                     prefix: <LockOutlined/>,
                                     allowClear: true,
                                     autoComplete: "new-password",
+                                    visibilityToggle: false,
                                 }}
                                 placeholder={'密码'}
                                 rules={[
@@ -219,7 +220,7 @@ function UserSelfForgotPasswordModalForm() {
                 })
             }}
         />
-        <ProFormText.Password
+        <ProFormText
             label="新密码"
             placeholder={'请输入新密码'}
             name="newPassword"
