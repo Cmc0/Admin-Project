@@ -43,9 +43,8 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
             ApiResultVO.error(BaseBizCodeEnum.EMAIL_FORMAT_IS_INCORRECT);
         }
 
-        SysUserDO sysUserDO =
-            lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount()).select(SysUserDO::getEmail, BaseEntityTwo::getId)
-                .one();
+        SysUserDO sysUserDO = lambdaQuery().eq(SysUserDO::getEmail, dto.getAccount()).eq(SysUserDO::getDelFlag, false)
+            .select(SysUserDO::getEmail, BaseEntityTwo::getId).one();
 
         if (sysUserDO == null || StrUtil.isBlank(sysUserDO.getEmail())) {
             ApiResultVO.error(BaseBizCodeEnum.EMAIL_DOES_NOT_EXIST_PLEASE_RE_ENTER);
