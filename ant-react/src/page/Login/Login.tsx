@@ -18,11 +18,10 @@ import {InDev} from "../../../util/CommonUtil";
 import LoginTest from "@/page/Login/LoginTest";
 import {ValidatorUtil} from "../../../util/ValidatorUtil";
 import {
-    userSelfUpdatePassword,
-    UserSelfUpdatePasswordDTO,
-    userSelfUpdatePasswordSendEmailCode
-} from "@/api/UserSelfController";
-import {logout} from "../../../util/UserUtil";
+    userForgotPassword,
+    userForgotPasswordSendEmailCode,
+    UserSelfForgotPasswordDTO
+} from "@/api/UserForgotPasswordController";
 
 type LoginType = 'password' | 'phone';
 
@@ -152,9 +151,7 @@ export default function () {
                                         <Typography.Text type="secondary"> 7天免登录</Typography.Text>
                                     </span>
                     </ProFormCheckbox>
-                    <a title={"忘记密码"} onClick={InDev}>
-                        忘记密码
-                    </a>
+                    <UserSelfForgotPasswordModalForm/>
                 </div>
             </LoginFormPage>
         </div>
@@ -163,14 +160,16 @@ export default function () {
 
 const userSelfForgotPasswordModalTitle = "忘记密码"
 
-function userSelfForgotPasswordModalForm() {
+function UserSelfForgotPasswordModalForm() {
 
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
+    const [useForm] = Form.useForm<UserSelfForgotPasswordDTO>();
 
-    return <ModalForm<UserSelfUpdatePasswordDTO>
+    return <ModalForm<UserSelfForgotPasswordDTO>
         modalProps={{
             maskClosable: false
         }}
+        form={useForm}
         isKeyPressSubmit
         width={CommonConstant.MODAL_FORM_WIDTH}
         title={userSelfForgotPasswordModalTitle}
@@ -182,13 +181,22 @@ function userSelfForgotPasswordModalForm() {
                 formTemp.newOrigPassword = RSAEncryptPro(formTemp.newPassword, rsaPublicKey, date)
                 formTemp.newPassword = PasswordRSAEncrypt(formTemp.newPassword, rsaPublicKey, date)
             }
-            await userSelfUpdatePassword(formTemp).then(res => {
+            await userForgotPassword(formTemp).then(res => {
                 ToastSuccess(res.msg)
-                logout()
             })
             return true
         }}
     >
+        <ProFormText
+            name="account"
+            fieldProps={{
+                allowClear: true,
+            }}
+            required
+            label="邮箱"
+            placeholder={'请输入邮箱'}
+            rules={[{validator: ValidatorUtil.emailValidate}]}
+        />
         <ProFormCaptcha
             fieldProps={{
                 maxLength: 6,
@@ -200,12 +208,14 @@ function userSelfForgotPasswordModalForm() {
             name="code"
             rules={[{validator: ValidatorUtil.codeValidate}]}
             onGetCaptcha={async () => {
-                await userSelfUpdatePasswordSendEmailCode().then(res => {
-                    ToastSuccess(res.msg)
+                await useForm.validateFields(['account']).then(async res => {
+                    await userForgotPasswordSendEmailCode({email: res.account!}).then(res => {
+                        ToastSuccess(res.msg)
+                    })
                 })
             }}
         />
-        <ProFormText label="新密码" name="newPassword" required
-                     rules={[{validator: ValidatorUtil.passwordValidate}]}/>
+        <ProFormText.Password label="新密码" name="newPassword" required
+                              rules={[{validator: ValidatorUtil.passwordValidate}]}/>
     </ModalForm>
 }

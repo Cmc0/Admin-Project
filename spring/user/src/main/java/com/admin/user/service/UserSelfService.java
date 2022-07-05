@@ -30,8 +30,4 @@ public interface UserSelfService extends IService<SysUserDO> {
     String userSelfDelete(UserSelfDeleteDTO dto);
 
     String userSelfDeleteSendEmailCode();
-
-    String userSelfForgotPassword(UserSelfForgotPasswordDTO dto);
-
-    String userSelfForgotPasswordSendEmailCode(EmailNotBlankDTO dto);
 }

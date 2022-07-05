@@ -92,16 +92,4 @@ public class UserSelfController {
         return ApiResultVO.ok(baseService.userSelfDeleteSendEmailCode());
     }
 
-    @ApiOperation(value = "忘记密码")
-    @PostMapping(value = "/forgotPassword")
-    public ApiResultVO<String> userSelfForgotPassword(@RequestBody @Valid UserSelfForgotPasswordDTO dto) {
-        return ApiResultVO.ok(baseService.userSelfForgotPassword(dto));
-    }
-
-    @ApiOperation(value = "忘记密码，发送，邮箱验证码")
-    @PostMapping(value = "/forgotPassword/sendEmailCode")
-    public ApiResultVO<String> userSelfForgotPasswordSendEmailCode(@RequestBody @Valid EmailNotBlankDTO dto) {
-        return ApiResultVO.ok(baseService.userSelfForgotPasswordSendEmailCode(dto));
-    }
-
 }
