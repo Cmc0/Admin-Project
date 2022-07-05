@@ -34,7 +34,6 @@ public interface BaseConstant {
 
     // properties 相关 ↓
     String ADMIN = "admin"; // 本系统相关配置前缀
-    String XXL_JOB = "xxl.job"; // xxl-job相关的配置前缀
     // properties 相关 ↑
 
     // id 相关 ↓
@@ -54,6 +53,10 @@ public interface BaseConstant {
 
     // redis 相关 ↓ 【PRE_REDIS】开头和 【PRE_LOCK】开头，以及【_CACHE】结尾
     String PRE_REDISSON = "PRE_REDISSON:"; // 锁前缀，所有的分布式锁，都要加这个前缀
+
+    // 登录失败次数过多，被锁定的账号，redis key前缀，锁 userId
+    String PRE_REDIS_LOGIN_BLACKLIST = "PRE_REDIS_LOGIN_BLACKLIST:";
+    String PRE_REDIS_LOGIN_ERROR_COUNT = "PRE_REDIS_LOGIN_ERROR_COUNT:"; // 登录失败，次数统计，redis key前缀
 
     String PRE_REDIS_XXL_JOB_COOKIE_CACHE = "PRE_REDIS_XXL_JOB_COOKIE_CACHE"; // xxl-job 登录 cookie缓存
 

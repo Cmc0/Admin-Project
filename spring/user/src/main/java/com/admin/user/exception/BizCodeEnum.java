@@ -15,6 +15,7 @@ public enum BizCodeEnum implements IBizCode {
     NO_PASSWORD_SET(300041, "未设置密码，请点击【忘记密码】，进行密码设置"), //
     ACCOUNT_IS_DISABLED(300051, "账户被冻结，请联系管理员"), //
     PASSWORD_RESTRICTIONS(300061, "密码限制：必须包含大小写字母和数字，可以使用特殊字符，长度8-20"), //
+    TOO_MANY_LOGIN_FAILURES(300071, "密码错误次数过多，已被冻结，请点击忘记密码，进行密码修改"), //
     ;
 
     private int code;
