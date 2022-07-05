@@ -215,7 +215,13 @@ function UserSelfForgotPasswordModalForm() {
                 })
             }}
         />
-        <ProFormText.Password label="新密码" name="newPassword" required
-                              rules={[{validator: ValidatorUtil.passwordValidate}]}/>
+        <ProFormText.Password
+            label="新密码"
+            name="newPassword"
+            required
+            fieldProps={{
+                allowClear: true,
+            }}
+            rules={[{validator: ValidatorUtil.passwordValidate}]}/>
     </ModalForm>
 }
