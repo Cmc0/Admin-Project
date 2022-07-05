@@ -123,7 +123,7 @@ export function sysMenuTree(form: SysMenuPageDTO, config?: AxiosRequestConfig) {
     return $http.myProTreePost<SysMenuDO>('/sysMenu/tree', form, config)
 }
 
-// 菜单-管理 获取当前用户绑定的菜单
+// 菜单-管理 获取：当前用户绑定的菜单
 export function sysMenuUserSelfMenuList(config?: AxiosRequestConfig) {
     return $http.myProTreePost<SysMenuDO>('/sysMenu/userSelfMenuList', undefined, config)
 }
