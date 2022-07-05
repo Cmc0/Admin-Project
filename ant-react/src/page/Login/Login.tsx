@@ -110,6 +110,7 @@ export default function () {
                                 fieldProps={{
                                     size: 'large',
                                     prefix: <UserOutlined/>,
+                                    autoComplete: "new-password",
                                 }}
                                 placeholder={'邮箱'}
                                 rules={[
@@ -127,7 +128,8 @@ export default function () {
                                 fieldProps={{
                                     size: 'large',
                                     prefix: <LockOutlined/>,
-                                    allowClear: true
+                                    allowClear: true,
+                                    autoComplete: "new-password",
                                 }}
                                 placeholder={'密码'}
                                 rules={[
@@ -191,6 +193,7 @@ function UserSelfForgotPasswordModalForm() {
             name="account"
             fieldProps={{
                 allowClear: true,
+                autoComplete: "new-password",
             }}
             required
             label="邮箱"
@@ -201,6 +204,7 @@ function UserSelfForgotPasswordModalForm() {
             fieldProps={{
                 maxLength: 6,
                 allowClear: true,
+                autoComplete: "new-password",
             }}
             required
             label="验证码"
@@ -217,10 +221,12 @@ function UserSelfForgotPasswordModalForm() {
         />
         <ProFormText.Password
             label="新密码"
+            placeholder={'请输入新密码'}
             name="newPassword"
             required
             fieldProps={{
                 allowClear: true,
+                autoComplete: "new-password",
             }}
             rules={[{validator: ValidatorUtil.passwordValidate}]}/>
     </ModalForm>

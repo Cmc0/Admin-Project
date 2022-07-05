@@ -10,7 +10,6 @@ import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
-import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.MyCodeToKeyDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -19,7 +18,10 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
-import com.admin.user.model.dto.*;
+import com.admin.user.model.dto.UserSelfDeleteDTO;
+import com.admin.user.model.dto.UserSelfUpdateBaseInfoDTO;
+import com.admin.user.model.dto.UserSelfUpdateEmailDTO;
+import com.admin.user.model.dto.UserSelfUpdatePasswordDTO;
 import com.admin.user.model.vo.UserSelfBaseInfoVO;
 import com.admin.user.service.SysUserService;
 import com.admin.user.service.UserSelfService;
@@ -247,6 +249,8 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
             jsonRedisTemplate.opsForValue()
                 .set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + uuid, "当前用户：修改邮箱，邮箱验证码兑换 key",
                     BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+            jsonRedisTemplate.delete(redisKey);
 
             return uuid;
         } finally {

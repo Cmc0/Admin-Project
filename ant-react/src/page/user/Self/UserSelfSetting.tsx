@@ -66,6 +66,7 @@ export function UserSelfUpdatePasswordModalForm() {
             fieldProps={{
                 maxLength: 6,
                 allowClear: true,
+                autoComplete: "new-password",
             }}
             required
             label="验证码"
@@ -78,11 +79,16 @@ export function UserSelfUpdatePasswordModalForm() {
                 })
             }}
         />
-        <ProFormText.Password label="新密码" name="newPassword" required
-                              fieldProps={{
-                                  allowClear: true,
-                              }}
-                              rules={[{validator: ValidatorUtil.passwordValidate}]}/>
+        <ProFormText.Password
+            label="新密码"
+            placeholder={'请输入新密码'}
+            name="newPassword"
+            required
+            fieldProps={{
+                allowClear: true,
+                autoComplete: "new-password",
+            }}
+            rules={[{validator: ValidatorUtil.passwordValidate}]}/>
     </ModalForm>
 }
 

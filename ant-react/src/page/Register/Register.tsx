@@ -77,6 +77,7 @@ export default function () {
                                     size: 'large',
                                     prefix: <UserOutlined/>,
                                     allowClear: true,
+                                    autoComplete: "new-password",
                                 }}
                                 placeholder={'邮箱'}
                                 rules={[{validator: ValidatorUtil.emailValidate}]}
@@ -87,6 +88,7 @@ export default function () {
                                     size: 'large',
                                     prefix: <LockOutlined/>,
                                     allowClear: true,
+                                    autoComplete: "new-password",
                                 }}
                                 placeholder={'密码'}
                                 rules={[{validator: ValidatorUtil.passwordValidate}]}
@@ -97,6 +99,7 @@ export default function () {
                                     maxLength: 6,
                                     allowClear: true,
                                     prefix: <SafetyCertificateOutlined/>,
+                                    autoComplete: "new-password",
                                 }}
                                 captchaProps={{
                                     size: 'large',
