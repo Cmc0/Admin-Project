@@ -55,6 +55,41 @@ public class MyEmailUtil {
     // 当前用户：注销，发送邮箱，模板
     private final static String SELF_DELETE_SEND_SUBJECT = "账号注销";
     private final static String SELF_DELETE_SEND_TEMP = "尊敬的用户您好，您账号注销的验证码是（10分钟内有效）：{}";
+    // 忘记密码，发送邮箱，模板
+    private final static String SELF_FORGOT_PASSWORD_SEND_SUBJECT = "忘记密码";
+    private final static String SELF_FORGOT_PASSWORD_SEND_TEMP = "尊敬的用户您好，您本次忘记密码的验证码是（10分钟内有效）：{}";
+
+    /**
+     * 忘记密码：发送邮箱
+     */
+    public static String userSelfForgotPasswordSend(String email) {
+
+        RLock lock = redissonClient
+            .getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + email);
+        lock.lock();
+
+        try {
+            // 判断邮箱是否存在
+            boolean exist = ChainWrappers.lambdaQueryChain(sysUserMapper).eq(SysUserDO::getEmail, email)
+                .eq(SysUserDO::getDelFlag, false).exists();
+            if (!exist) {
+                ApiResultVO.error(BaseBizCodeEnum.EMAIL_DOES_NOT_EXIST_PLEASE_RE_ENTER);
+            }
+
+            String code = RandomUtil.randomStringUpper(6);
+            String content = StrUtil.format(SELF_FORGOT_PASSWORD_SEND_TEMP, code);
+
+            // 保存到 redis中，设置10分钟过期
+            jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + email, code,
+                BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+            MyEmailUtil.send(email, SELF_FORGOT_PASSWORD_SEND_SUBJECT, content, false);
+
+            return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+        } finally {
+            lock.unlock();
+        }
+    }
 
     /**
      * 当前用户：注销，发送邮箱

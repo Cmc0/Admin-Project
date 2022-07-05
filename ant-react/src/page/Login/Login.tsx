@@ -1,22 +1,28 @@
-import {LoginFormPage, ProFormCheckbox, ProFormText} from "@ant-design/pro-components";
+import {LoginFormPage, ModalForm, ProFormCaptcha, ProFormCheckbox, ProFormText} from "@ant-design/pro-components";
 import LoginBg from "@/asset/img/LoginBg.png";
 import Logo from "@/favicon.svg";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Divider, Form, Space, Tabs, Typography} from "antd";
 import {LockOutlined, QqOutlined, UserOutlined, WechatOutlined} from "@ant-design/icons/lib";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {UserLoginByPasswordDTO, userLoginPassword} from "@/api/UserLoginController";
 import {ToastSuccess} from "../../../util/ToastUtil";
 import LocalStorageKey, {SetWebSocketType} from "@/model/constant/LocalStorageKey";
-import {PasswordRSAEncrypt} from "../../../util/RsaUtil";
+import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
 import {Navigate} from "react-router-dom";
 import {getAppNav} from "@/App";
 import {closeWebSocket} from "../../../util/WebSocketUtil";
-import {useAppDispatch} from "@/store";
+import {useAppDispatch, useAppSelector} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
 import LoginTest from "@/page/Login/LoginTest";
 import {ValidatorUtil} from "../../../util/ValidatorUtil";
+import {
+    userSelfUpdatePassword,
+    UserSelfUpdatePasswordDTO,
+    userSelfUpdatePasswordSendEmailCode
+} from "@/api/UserSelfController";
+import {logout} from "../../../util/UserUtil";
 
 type LoginType = 'password' | 'phone';
 
@@ -153,4 +159,53 @@ export default function () {
             </LoginFormPage>
         </div>
     )
+}
+
+const userSelfForgotPasswordModalTitle = "忘记密码"
+
+function userSelfForgotPasswordModalForm() {
+
+    const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
+
+    return <ModalForm<UserSelfUpdatePasswordDTO>
+        modalProps={{
+            maskClosable: false
+        }}
+        isKeyPressSubmit
+        width={CommonConstant.MODAL_FORM_WIDTH}
+        title={userSelfForgotPasswordModalTitle}
+        trigger={<a>{userSelfForgotPasswordModalTitle}</a>}
+        onFinish={async (form) => {
+            const formTemp = {...form}
+            if (formTemp.newPassword) {
+                const date = new Date()
+                formTemp.newOrigPassword = RSAEncryptPro(formTemp.newPassword, rsaPublicKey, date)
+                formTemp.newPassword = PasswordRSAEncrypt(formTemp.newPassword, rsaPublicKey, date)
+            }
+            await userSelfUpdatePassword(formTemp).then(res => {
+                ToastSuccess(res.msg)
+                logout()
+            })
+            return true
+        }}
+    >
+        <ProFormCaptcha
+            fieldProps={{
+                maxLength: 6,
+                allowClear: true,
+            }}
+            required
+            label="验证码"
+            placeholder={'请输入验证码'}
+            name="code"
+            rules={[{validator: ValidatorUtil.codeValidate}]}
+            onGetCaptcha={async () => {
+                await userSelfUpdatePasswordSendEmailCode().then(res => {
+                    ToastSuccess(res.msg)
+                })
+            }}
+        />
+        <ProFormText label="新密码" name="newPassword" required
+                     rules={[{validator: ValidatorUtil.passwordValidate}]}/>
+    </ModalForm>
 }

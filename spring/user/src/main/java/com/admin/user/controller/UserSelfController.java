@@ -1,12 +1,10 @@
 package com.admin.user.controller;
 
 import com.admin.common.exception.BaseBizCodeEnum;
+import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.MyCodeToKeyDTO;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.user.model.dto.UserSelfDeleteDTO;
-import com.admin.user.model.dto.UserSelfUpdateBaseInfoDTO;
-import com.admin.user.model.dto.UserSelfUpdateEmailDTO;
-import com.admin.user.model.dto.UserSelfUpdatePasswordDTO;
+import com.admin.user.model.dto.*;
 import com.admin.user.model.vo.UserSelfBaseInfoVO;
 import com.admin.user.service.UserSelfService;
 import io.swagger.annotations.Api;
@@ -92,6 +90,18 @@ public class UserSelfController {
     @PostMapping(value = "/delete/sendEmailCode")
     public ApiResultVO<String> userSelfDeleteSendEmailCode() {
         return ApiResultVO.ok(baseService.userSelfDeleteSendEmailCode());
+    }
+
+    @ApiOperation(value = "忘记密码")
+    @PostMapping(value = "/forgotPassword")
+    public ApiResultVO<String> userSelfForgotPassword(@RequestBody @Valid UserSelfForgotPasswordDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfForgotPassword(dto));
+    }
+
+    @ApiOperation(value = "忘记密码，发送，邮箱验证码")
+    @PostMapping(value = "/forgotPassword/sendEmailCode")
+    public ApiResultVO<String> userSelfForgotPasswordSendEmailCode(@RequestBody @Valid EmailNotBlankDTO dto) {
+        return ApiResultVO.ok(baseService.userSelfForgotPasswordSendEmailCode(dto));
     }
 
 }

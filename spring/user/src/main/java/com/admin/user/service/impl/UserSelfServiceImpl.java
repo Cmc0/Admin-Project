@@ -10,6 +10,7 @@ import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRegexConstant;
+import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.dto.MyCodeToKeyDTO;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.entity.BaseEntityTwo;
@@ -18,10 +19,7 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
-import com.admin.user.model.dto.UserSelfDeleteDTO;
-import com.admin.user.model.dto.UserSelfUpdateBaseInfoDTO;
-import com.admin.user.model.dto.UserSelfUpdateEmailDTO;
-import com.admin.user.model.dto.UserSelfUpdatePasswordDTO;
+import com.admin.user.model.dto.*;
 import com.admin.user.model.vo.UserSelfBaseInfoVO;
 import com.admin.user.service.SysUserService;
 import com.admin.user.service.UserSelfService;
@@ -306,6 +304,65 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
     @Override
     public String userSelfDeleteSendEmailCode() {
         return MyEmailUtil.selfDeleteSend();
+    }
+
+    /**
+     * 忘记密码
+     */
+    @Override
+    public String userSelfForgotPassword(UserSelfForgotPasswordDTO dto) {
+
+        boolean isEmail = ReUtil.isMatch(BaseRegexConstant.EMAIL, dto.getAccount());
+        if (!isEmail) {
+            ApiResultVO.error(BaseBizCodeEnum.EMAIL_FORMAT_IS_INCORRECT);
+        }
+
+        SysUserDO sysUserDO =
+            lambdaQuery().eq(BaseEntityTwo::getId, dto.getAccount()).select(SysUserDO::getEmail, BaseEntityTwo::getId)
+                .one();
+
+        if (StrUtil.isBlank(sysUserDO.getEmail())) {
+            ApiResultVO.error(BaseBizCodeEnum.EMAIL_DOES_NOT_EXIST_PLEASE_RE_ENTER);
+        }
+
+        // 非对称：解密 ↓
+        String paramValue = SysParamUtil.getValueById(BaseConstant.RSA_PRIVATE_KEY_ID); // 获取非对称 私钥
+        dto.setNewPassword(MyRsaUtil.rsaDecrypt(dto.getNewPassword(), paramValue)); // 非对称：解密
+        dto.setNewOrigPassword(MyRsaUtil.rsaDecrypt(dto.getNewOrigPassword(), paramValue)); // 非对称：解密
+        // 非对称：解密 ↑
+
+        if (!ReUtil.isMatch(BaseRegexConstant.PASSWORD_REGEXP, dto.getNewOrigPassword())) {
+            ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
+        }
+
+        String redisKey = BaseConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
+
+        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        lock.lock();
+
+        try {
+
+            CodeUtil.checkCode(dto.getCode(), jsonRedisTemplate.opsForValue().get(redisKey));
+
+            sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getNewPassword(), true));
+            sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
+
+            updateById(sysUserDO); // 操作数据库
+
+            jsonRedisTemplate.delete(redisKey);
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 忘记密码，发送，邮箱验证码
+     */
+    @Override
+    public String userSelfForgotPasswordSendEmailCode(EmailNotBlankDTO dto) {
+        return MyEmailUtil.userSelfForgotPasswordSend(dto.getEmail());
     }
 
 }

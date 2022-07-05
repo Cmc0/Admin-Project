@@ -66,6 +66,8 @@ public interface BaseConstant {
     String PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY = "PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY:";
     // 当前用户：注销，发送的邮箱验证码，和分布式锁名前缀，锁邮箱
     String PRE_LOCK_SELF_DELETE_EMAIL_CODE = "PRE_LOCK_SELF_DELETE_EMAIL_CODE:";
+    // 忘记密码，发送，邮箱验证码，和分布式锁名前缀，锁邮箱
+    String PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE = "PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE:";
     // 当前用户修改 相关 ↑
 
     // 用户获取权限相关 缓存 ↓
