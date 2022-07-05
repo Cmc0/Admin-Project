@@ -2,11 +2,11 @@ package com.admin.websocket.configuration;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
-import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.websocket.model.constant.CommonConstant;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
@@ -41,8 +41,8 @@ public class MyNettyChannelGroupHelper {
     /**
      * 发送给所有人
      */
-    public static void sendToAll(WebSocketMessageEnum webSocketMessageEnum) {
-        CHANNEL_GROUP.writeAndFlush(webSocketMessageEnum);
+    public static void sendToAll(TextWebSocketFrame textWebSocketFrame) {
+        CHANNEL_GROUP.writeAndFlush(textWebSocketFrame);
     }
 }
 

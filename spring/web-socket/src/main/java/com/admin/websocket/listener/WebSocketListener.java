@@ -7,7 +7,9 @@ import cn.hutool.json.JSONUtil;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.websocket.configuration.MyNettyChannelGroupHelper;
+import com.admin.websocket.util.MyWebSocketUtil;
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -104,10 +106,12 @@ public class WebSocketListener {
 
         webSocketMessageEnum.setJson(null);
 
+        TextWebSocketFrame textWebSocketFrame = MyWebSocketUtil.getTextWebSocketFrame(webSocketMessageEnum);
+
         if (channelList == null) {
-            MyNettyChannelGroupHelper.sendToAll(webSocketMessageEnum); // 发送给所有人
+            MyNettyChannelGroupHelper.sendToAll(textWebSocketFrame); // 发送给所有人
         } else {
-            channelList.forEach(it -> it.writeAndFlush(webSocketMessageEnum));
+            channelList.forEach(it -> it.writeAndFlush(textWebSocketFrame));
         }
 
     }
