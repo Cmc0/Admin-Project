@@ -141,6 +141,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
                 }
             }
             sysUserDO.setEmail(dto.getEmail());
+            sysUserDO.setEnableFlag(dto.isEnableFlag());
 
             saveOrUpdate(sysUserDO);
 
