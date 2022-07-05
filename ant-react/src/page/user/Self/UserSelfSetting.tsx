@@ -100,7 +100,6 @@ export function UserSelfUpdateEmailModalForm() {
             stepsFormRender={(dom, submitter) => {
                 return (
                     <Modal
-                        width={CommonConstant.MODAL_STEPS_FORM_WIDTH}
                         title={UserSelfUpdateEmailTitle}
                         onCancel={() => setVisible(false)}
                         visible={visible}
