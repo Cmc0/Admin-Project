@@ -100,6 +100,7 @@ export default function () {
                     <Tabs.TabPane key={'password'} tab={'账号密码登录'}>
                         <>
                             <ProFormText
+                                extra={"测试账号：123@qq.com 测试密码：demoDemo123"}
                                 name="account"
                                 fieldProps={{
                                     size: 'large',
