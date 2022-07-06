@@ -25,6 +25,9 @@ public class SysUserDO extends BaseEntityThree {
     @ApiModelProperty(value = "该用户的 uuid，本系统使用 id，不使用 uuid")
     private String uuid;
 
+    /**
+     * 注意：每次修改时，都需要调用 {@link com.admin.common.util.MyJwtUtil#updateUserIdJwtSecretSufForRedis} 方法
+     */
     @ApiModelProperty(value = "用户 jwt私钥后缀（simple uuid）")
     private String jwtSecretSuf;
 

@@ -42,10 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,6 +145,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             // 新增数据到子表
             insertOrUpdateSub(sysUserDO.getId(), dto);
 
+            if (dto.getId() == null) {
+                MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
+            }
+
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
             lock.unlock();
@@ -242,6 +243,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         sysWebSocketService.offlineByUserIdSet(notEmptyIdSet.getIdSet());
 
+        Set<String> userIdStrSet = notEmptyIdSet.getIdSet().stream().map(Object::toString).collect(Collectors.toSet());
+        MyJwtUtil.deleteUserIdJwtSecretSufForRedis(userIdStrSet);
+
         // 并且给 消息中间件推送，进行下线操作
         KafkaUtil.delAccount(notEmptyIdSet.getIdSet());
 
@@ -304,6 +308,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
         }
 
         updateBatchById(updateList);
+
+        Map<String, String> map =
+            updateList.stream().collect(Collectors.toMap(it -> it.getId().toString(), SysUserDO::getJwtSecretSuf));
+        MyJwtUtil.updateUserIdJwtSecretSufForRedis(map);
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }

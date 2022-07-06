@@ -156,6 +156,8 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
             updateById(sysUserDO); // 操作数据库
 
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
+
             jsonRedisTemplate.delete(redisKey);
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
@@ -208,6 +210,8 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
             sysUserDO.setEmail(dto.getEmail());
 
             updateById(sysUserDO);
+
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
 
             jsonRedisTemplate.delete(keyRedisKey);
             jsonRedisTemplate.delete(codeRedisKey);
@@ -270,6 +274,8 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
 
         updateById(sysUserDO);
+
+        MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
