@@ -67,7 +67,11 @@ public class SysRequestAop {
             object = proceedingJoinPoint.proceed(); // 执行方法，备注：如果执行方法时抛出了异常，那么代码不会往下执行
         } catch (Throwable throwable) {
             sysRequestDO.setSuccessFlag(false); // 设置：请求失败
-            sysRequestDO.setErrorMsg(StrUtil.maxLength(throwable.getMessage(), 200));
+            if (StrUtil.isBlank(throwable.getMessage())) {
+                sysRequestDO.setErrorMsg(StrUtil.maxLength(throwable.getClass().getName(), 200));
+            } else {
+                sysRequestDO.setErrorMsg(StrUtil.maxLength(throwable.getMessage(), 200));
+            }
             sysRequestService.updateById(sysRequestDO); // 更新
             throw throwable;
         }
