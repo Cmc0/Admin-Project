@@ -56,11 +56,6 @@ public class SysRequestAop {
         sysRequestDO.setRegion(IpUtil.getRegion(sysRequestDO.getIp()));
         sysRequestDO.setSuccessFlag(true);
         sysRequestDO.setErrorMsg("");
-        sysRequestService.save(sysRequestDO); // 存库
-
-        Long id = sysRequestDO.getId();
-        sysRequestDO = new SysRequestDO();
-        sysRequestDO.setId(id);
 
         Object object;
         try {
@@ -72,7 +67,7 @@ public class SysRequestAop {
             } else {
                 sysRequestDO.setErrorMsg(StrUtil.maxLength(throwable.getMessage(), 200));
             }
-            sysRequestService.updateById(sysRequestDO); // 更新
+            sysRequestService.save(sysRequestDO); // 更新
             throw throwable;
         }
 
@@ -91,7 +86,7 @@ public class SysRequestAop {
             sysRequestDO.setUpdateId(userId);
         }
 
-        sysRequestService.updateById(sysRequestDO); // 更新
+        sysRequestService.save(sysRequestDO); // 更新
 
         return object;
     }
