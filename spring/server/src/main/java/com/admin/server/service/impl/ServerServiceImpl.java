@@ -8,6 +8,9 @@ import com.admin.server.model.vo.ServerWorkInfoVO;
 import com.admin.server.service.ServerService;
 import org.springframework.stereotype.Service;
 import oshi.hardware.GlobalMemory;
+import oshi.hardware.HWDiskStore;
+
+import java.util.List;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -33,6 +36,18 @@ public class ServerServiceImpl implements ServerService {
         // cpu信息
         CpuInfo cpuInfo = OshiUtil.getCpuInfo();
         serverWorkInfoVO.setCpuTotal(cpuInfo.getToTal());
+
+        long diskTotal = 0L;
+        long diskUsing = 0L;
+
+        List<HWDiskStore> diskStoreList = OshiUtil.getDiskStores();
+        for (HWDiskStore item : diskStoreList) {
+            diskTotal += item.getSize();
+            diskUsing += item.getWriteBytes();
+        }
+
+        serverWorkInfoVO.setDiskTotal(diskTotal);
+        serverWorkInfoVO.setDiskUsing(diskUsing);
 
         return serverWorkInfoVO;
     }
