@@ -18,13 +18,13 @@ public class ServerWorkInfoVO {
     @ApiModelProperty(value = "系统可用内存（字节）")
     private long memoryAvailable;
 
-    @ApiModelProperty(value = "CPU总的使用率")
-    private double cpuTotal;
+    @ApiModelProperty(value = "CPU使用率（0-100）")
+    private double cpuUsed;
 
     @ApiModelProperty(value = "磁盘总量（字节）")
     private long diskTotal;
 
-    @ApiModelProperty(value = "磁盘使用总量（字节）")
-    private long diskUsing;
+    @ApiModelProperty(value = "磁盘可以使用总量（字节）")
+    private long diskUsable;
 
 }

@@ -8,7 +8,8 @@ import com.admin.server.model.vo.ServerWorkInfoVO;
 import com.admin.server.service.ServerService;
 import org.springframework.stereotype.Service;
 import oshi.hardware.GlobalMemory;
-import oshi.hardware.HWDiskStore;
+import oshi.software.os.OSFileStore;
+import oshi.software.os.OperatingSystem;
 
 import java.util.List;
 
@@ -35,19 +36,19 @@ public class ServerServiceImpl implements ServerService {
 
         // cpu信息
         CpuInfo cpuInfo = OshiUtil.getCpuInfo();
-        serverWorkInfoVO.setCpuTotal(cpuInfo.getToTal());
+        serverWorkInfoVO.setCpuUsed(cpuInfo.getUsed());
 
+        // 磁盘信息
         long diskTotal = 0L;
-        long diskUsing = 0L;
-
-        List<HWDiskStore> diskStoreList = OshiUtil.getDiskStores();
-        for (HWDiskStore item : diskStoreList) {
-            diskTotal += item.getSize();
-            diskUsing += item.getWriteBytes();
+        long diskUsable = 0L;
+        OperatingSystem os = OshiUtil.getOs();
+        List<OSFileStore> fileStoreList = os.getFileSystem().getFileStores();
+        for (OSFileStore item : fileStoreList) {
+            diskTotal += item.getTotalSpace();
+            diskUsable += item.getUsableSpace();
         }
-
         serverWorkInfoVO.setDiskTotal(diskTotal);
-        serverWorkInfoVO.setDiskUsing(diskUsing);
+        serverWorkInfoVO.setDiskUsable(diskUsable);
 
         return serverWorkInfoVO;
     }
