@@ -15,6 +15,11 @@
 
         <dependency>
             <groupId>com.admin</groupId>
+            <artifactId>server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
             <artifactId>file</artifactId>
         </dependency>
 
