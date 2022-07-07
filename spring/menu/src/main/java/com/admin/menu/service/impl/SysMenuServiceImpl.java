@@ -199,18 +199,31 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
-        // 如果存在下级，则无法删除
-        Long count = lambdaQuery().in(SysMenuDO::getParentId, notEmptyIdSet.getIdSet()).count();
-        if (count != 0) {
-            ApiResultVO.error(BaseBizCodeEnum.PLEASE_DELETE_THE_CHILD_NODE_FIRST);
+        RLock lock1 =
+            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
+        multiLock.lock();
+
+        try {
+            // 如果存在下级，则无法删除
+            Long count = lambdaQuery().in(SysMenuDO::getParentId, notEmptyIdSet.getIdSet()).count();
+            if (count != 0) {
+                ApiResultVO.error(BaseBizCodeEnum.PLEASE_DELETE_THE_CHILD_NODE_FIRST);
+            }
+
+            // 删除子表数据
+            deleteByIdSetSub(notEmptyIdSet.getIdSet());
+
+            removeByIds(notEmptyIdSet.getIdSet());
+
+            UserUtil.updateMenuIdAndAuthsListForRedis(false); // 更新：redis中的缓存
+            UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
         }
-
-        // 删除子表数据
-        deleteByIdSetSub(notEmptyIdSet.getIdSet());
-
-        removeByIds(notEmptyIdSet.getIdSet());
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**

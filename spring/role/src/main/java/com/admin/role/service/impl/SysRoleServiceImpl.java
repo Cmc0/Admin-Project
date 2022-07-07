@@ -146,7 +146,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     @Override
     public SysRoleInfoByIdVO infoById(NotNullId notNullId) {
 
-        SysRoleInfoByIdVO sysRoleInfoByIdVO = BeanUtil.copyProperties(getById(notNullId.getId()), SysRoleInfoByIdVO.class);
+        SysRoleInfoByIdVO sysRoleInfoByIdVO =
+            BeanUtil.copyProperties(getById(notNullId.getId()), SysRoleInfoByIdVO.class);
 
         if (sysRoleInfoByIdVO == null) {
             return null;
@@ -174,11 +175,25 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
-        deleteByIdSetSub(notEmptyIdSet.getIdSet()); // 删除子表数据
+        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        RLock lock3 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
+        multiLock.lock();
 
-        baseMapper.deleteBatchIds(notEmptyIdSet.getIdSet());
+        try {
+            deleteByIdSetSub(notEmptyIdSet.getIdSet()); // 删除子表数据
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+            baseMapper.deleteBatchIds(notEmptyIdSet.getIdSet());
+
+            UserUtil.updateDefaultRoleIdForRedis(false); // 更新：redis中的缓存
+            UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
+            UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
+        }
     }
 
     /**
