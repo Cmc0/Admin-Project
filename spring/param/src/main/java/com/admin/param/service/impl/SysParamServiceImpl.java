@@ -16,11 +16,18 @@ import com.admin.param.model.dto.SysParamPageDTO;
 import com.admin.param.service.SysParamService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+
 @Service
 public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO> implements SysParamService {
+
+    @Resource
+    RedissonClient redissonClient;
 
     /**
      * 新增/修改
@@ -29,17 +36,24 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
     @Transactional
     public String insertOrUpdate(SysParamInsertOrUpdateDTO dto) {
 
-        SysParamDO sysParamDO = new SysParamDO();
-        sysParamDO.setName(dto.getName());
-        sysParamDO.setValue(dto.getValue());
-        sysParamDO.setRemark(dto.getRemark());
-        sysParamDO.setId(dto.getId());
+        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
+        lock.lock();
 
-        saveOrUpdate(sysParamDO);
+        try {
+            SysParamDO sysParamDO = new SysParamDO();
+            sysParamDO.setName(dto.getName());
+            sysParamDO.setValue(dto.getValue());
+            sysParamDO.setRemark(dto.getRemark());
+            sysParamDO.setId(dto.getId());
 
-        SysParamUtil.updateRedisCache(); // 更新 redis中【系统参数】的缓存
+            saveOrUpdate(sysParamDO);
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+            SysParamUtil.updateRedisCache(false); // 更新 redis中【系统参数】的缓存
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -78,12 +92,18 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
             ApiResultVO.error("操作失败：id【" + BaseConstant.IP_REQUESTS_PER_SECOND_ID + "】不允许删除");
         }
 
-        removeByIds(notEmptyIdSet.getIdSet());
+        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
+        lock.lock();
 
-        SysParamUtil.updateRedisCache(); // 更新 redis中【系统参数】的缓存
+        try {
+            removeByIds(notEmptyIdSet.getIdSet());
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+            SysParamUtil.updateRedisCache(false); // 更新 redis中【系统参数】的缓存
 
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            lock.unlock();
+        }
     }
 }
 

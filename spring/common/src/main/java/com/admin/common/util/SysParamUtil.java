@@ -8,6 +8,8 @@ import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysParamDO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,13 @@ public class SysParamUtil {
         jsonRedisTemplate = value;
     }
 
+    private static RedissonClient redissonClient;
+
+    @Resource
+    private void setRedissonClient(RedissonClient value) {
+        redissonClient = value;
+    }
+
     /**
      * 通过主键 id，获取 value，没有 value则返回 null
      */
@@ -55,28 +64,40 @@ public class SysParamUtil {
         }
 
         // 更新 redis中【系统参数】的缓存，并返回 值，备注：返回值可能会为 null
-        return updateRedisCache().get(idStr);
+        return updateRedisCache(true).get(idStr);
     }
 
     /**
      * 更新 redis中【系统参数】的缓存，并返回 值
      */
-    public static Map<String, String> updateRedisCache() {
+    public static Map<String, String> updateRedisCache(boolean lockFlag) {
 
-        List<SysParamDO> paramRedisList =
-            ChainWrappers.lambdaQueryChain(sysParamMapper).select(BaseEntityTwo::getId, SysParamDO::getValue)
-                .eq(BaseEntityThree::getEnableFlag, true).list();
+        RLock lock = null;
+        if (lockFlag) {
+            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
+            lock.lock();
+        }
 
-        // 转换为 map，目的：提供速度
-        // 注意：Collectors.toMap()方法，key不能重复，不然会报错
-        // 可以用第三个参数，解决这个报错：(v1, v2) -> v2 不覆盖（留前值）(v1, v2) -> v1 覆盖（取后值）
-        Map<String, String> map =
-            paramRedisList.stream().collect(Collectors.toMap(it -> it.getId().toString(), SysParamDO::getValue));
+        try {
+            List<SysParamDO> paramRedisList =
+                ChainWrappers.lambdaQueryChain(sysParamMapper).select(BaseEntityTwo::getId, SysParamDO::getValue)
+                    .eq(BaseEntityThree::getEnableFlag, true).list();
 
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
-        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
+            // 转换为 map，目的：提供速度
+            // 注意：Collectors.toMap()方法，key不能重复，不然会报错
+            // 可以用第三个参数，解决这个报错：(v1, v2) -> v2 不覆盖（留前值）(v1, v2) -> v1 覆盖（取后值）
+            Map<String, String> map =
+                paramRedisList.stream().collect(Collectors.toMap(it -> it.getId().toString(), SysParamDO::getValue));
 
-        return map;
+            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
+            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
+
+            return map;
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
     }
 
 }
