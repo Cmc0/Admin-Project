@@ -74,7 +74,7 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
 
             updateById(sysUserDO); // 操作数据库
 
-            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
 
             // 清除该账号【登录失败次数过多，被锁定】
             jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_LOGIN_BLACKLIST + sysUserDO.getId());

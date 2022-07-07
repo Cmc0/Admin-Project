@@ -12,6 +12,7 @@ import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.entity.*;
 import com.admin.common.model.vo.ApiResultVO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
+import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -216,6 +217,7 @@ public class UserUtil {
     /**
      * 通过 userId，获取关联的 roleIdSet，redis缓存，备注：包含默认角色的 id
      */
+    @NotNull
     public static Set<String> getRefRoleIdSetByUserIdFromRedis(String userId, boolean allCacheExistFlag) {
 
         Set<String> roleIdSet;
@@ -230,7 +232,7 @@ public class UserUtil {
                 jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
             roleIdSet = ops.get(userId); // 获取：用户绑定的 roleIdSet
         } else {
-            roleIdSet = updateRoleRefUserForRedis().get(userId); // 更新缓存
+            roleIdSet = updateRoleRefUserForRedis(true).get(userId); // 更新缓存
         }
 
         if (roleIdSet == null) {
@@ -241,7 +243,7 @@ public class UserUtil {
         Object object = jsonRedisTemplate.opsForValue().get(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         String defaultRoleId = Convert.toStr(object);
         if (defaultRoleId == null) {
-            defaultRoleId = updateDefaultRoleIdForRedis(); // 更新缓存
+            defaultRoleId = updateDefaultRoleIdForRedis(true); // 更新缓存
         }
         if (!BaseConstant.NEGATIVE_ONE_STR.equals(defaultRoleId)) {
             roleIdSet.add(defaultRoleId);
@@ -253,42 +255,66 @@ public class UserUtil {
     /**
      * 更新 redis缓存：角色关联用户
      */
-    public static Map<String, Set<String>> updateRoleRefUserForRedis() {
+    public static Map<String, Set<String>> updateRoleRefUserForRedis(boolean lockFlag) {
 
-        List<SysRoleRefUserDO> sysRoleRefUserDOList = ChainWrappers.lambdaQueryChain(sysRoleRefUserMapper)
-            .select(SysRoleRefUserDO::getRoleId, SysRoleRefUserDO::getUserId).list();
+        RLock lock = null;
+        if (lockFlag) {
+            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+            lock.lock();
+        }
 
-        // 用户对应的，角色 idSet，map
-        Map<String, Set<String>> userRefRoleIdSetMap = sysRoleRefUserDOList.stream().collect(Collectors
-            .groupingBy(it -> it.getUserId().toString(),
-                Collectors.mapping(it -> it.getRoleId().toString(), Collectors.toSet())));
+        try {
+            List<SysRoleRefUserDO> sysRoleRefUserDOList = ChainWrappers.lambdaQueryChain(sysRoleRefUserMapper)
+                .select(SysRoleRefUserDO::getRoleId, SysRoleRefUserDO::getUserId).list();
 
-        // 删除缓存
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
-        // 设置缓存
-        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE).putAll(userRefRoleIdSetMap);
+            // 用户对应的，角色 idSet，map
+            Map<String, Set<String>> userRefRoleIdSetMap = sysRoleRefUserDOList.stream().collect(Collectors
+                .groupingBy(it -> it.getUserId().toString(),
+                    Collectors.mapping(it -> it.getRoleId().toString(), Collectors.toSet())));
 
-        return userRefRoleIdSetMap;
+            // 删除缓存
+            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+            // 设置缓存
+            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE).putAll(userRefRoleIdSetMap);
+
+            return userRefRoleIdSetMap;
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
     }
 
     /**
      * 更新 redis缓存：默认角色 id
      */
-    public static String updateDefaultRoleIdForRedis() {
+    public static String updateDefaultRoleIdForRedis(boolean lockFlag) {
 
         String defaultRoleId = BaseConstant.NEGATIVE_ONE_STR; // -1 表示没有 默认角色
 
-        SysRoleDO sysRoleDO = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
-            .eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).one();
-
-        if (sysRoleDO != null) {
-            defaultRoleId = sysRoleDO.getId().toString();
+        RLock lock = null;
+        if (lockFlag) {
+            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+            lock.lock();
         }
 
-        // 设置缓存
-        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, defaultRoleId);
+        try {
+            SysRoleDO sysRoleDO = ChainWrappers.lambdaQueryChain(sysRoleMapper).eq(SysRoleDO::getDefaultFlag, true)
+                .eq(BaseEntityThree::getEnableFlag, true).select(BaseEntityTwo::getId).one();
 
-        return defaultRoleId;
+            if (sysRoleDO != null) {
+                defaultRoleId = sysRoleDO.getId().toString();
+            }
+
+            // 设置缓存
+            jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, defaultRoleId);
+
+            return defaultRoleId;
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
     }
 
     /**
@@ -311,7 +337,7 @@ public class UserUtil {
                 menuIdSet = multiGetList.stream().flatMap(Collection::stream).collect(Collectors.toSet());
             }
         } else {
-            Map<String, Set<String>> roleRefMenuIdSetMap = updateRoleRefMenuForRedis(); // 更新缓存
+            Map<String, Set<String>> roleRefMenuIdSetMap = updateRoleRefMenuForRedis(true); // 更新缓存
             menuIdSet = roleRefMenuIdSetMap.entrySet().stream().filter(it -> roleIdSet.contains(it.getKey()))
                 .flatMap(it -> it.getValue().stream()).collect(Collectors.toSet());
         }
@@ -326,22 +352,34 @@ public class UserUtil {
     /**
      * 更新 redis缓存：角色关联菜单
      */
-    public static Map<String, Set<String>> updateRoleRefMenuForRedis() {
+    public static Map<String, Set<String>> updateRoleRefMenuForRedis(boolean lockFlag) {
 
-        List<SysRoleRefMenuDO> sysRoleRefMenuDOList = ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper)
-            .select(SysRoleRefMenuDO::getRoleId, SysRoleRefMenuDO::getMenuId).list();
+        RLock lock = null;
+        if (lockFlag) {
+            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            lock.lock();
+        }
 
-        // 角色对应的，菜单 idSet，map
-        Map<String, Set<String>> roleRefMenuIdSetMap = sysRoleRefMenuDOList.stream().collect(Collectors
-            .groupingBy(it -> it.getRoleId().toString(),
-                Collectors.mapping(it -> it.getMenuId().toString(), Collectors.toSet())));
+        try {
+            List<SysRoleRefMenuDO> sysRoleRefMenuDOList = ChainWrappers.lambdaQueryChain(sysRoleRefMenuMapper)
+                .select(SysRoleRefMenuDO::getRoleId, SysRoleRefMenuDO::getMenuId).list();
 
-        // 删除缓存
-        jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
-        // 设置缓存
-        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE).putAll(roleRefMenuIdSetMap);
+            // 角色对应的，菜单 idSet，map
+            Map<String, Set<String>> roleRefMenuIdSetMap = sysRoleRefMenuDOList.stream().collect(Collectors
+                .groupingBy(it -> it.getRoleId().toString(),
+                    Collectors.mapping(it -> it.getMenuId().toString(), Collectors.toSet())));
 
-        return roleRefMenuIdSetMap;
+            // 删除缓存
+            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            // 设置缓存
+            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE).putAll(roleRefMenuIdSetMap);
+
+            return roleRefMenuIdSetMap;
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
     }
 
     /**
@@ -358,25 +396,27 @@ public class UserUtil {
             return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
                 .range(0, -1);
         } else {
-            return updateMenuIdAndAuthsListForRedis(); // 更新缓存
+            return updateMenuIdAndAuthsListForRedis(true); // 更新缓存
         }
     }
 
     /**
      * 更新 redis缓存：菜单id - 权限 的集合
      */
-    public static List<SysMenuDO> updateMenuIdAndAuthsListForRedis() {
+    public static List<SysMenuDO> updateMenuIdAndAuthsListForRedis(boolean lockFlag) {
 
-        List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
-            .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
-            .eq(BaseEntityThree::getEnableFlag, true).list();
-
-        // 备注：这里加个分布式锁，目的：防止多次执行 rightPush
-        RLock lock =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
-        lock.lock();
+        RLock lock = null;
+        if (lockFlag) {
+            lock =
+                redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+            lock.lock();
+        }
 
         try {
+            List<SysMenuDO> sysMenuDOList = ChainWrappers.lambdaQueryChain(sysMenuMapper)
+                .select(BaseEntityTwo::getId, BaseEntityFour::getParentId, SysMenuDO::getAuths)
+                .eq(BaseEntityThree::getEnableFlag, true).list();
+
             // 删除缓存
             jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
             // 设置缓存
@@ -385,7 +425,9 @@ public class UserUtil {
 
             return sysMenuDOList;
         } finally {
-            lock.unlock();
+            if (lock != null) {
+                lock.unlock();
+            }
         }
     }
 

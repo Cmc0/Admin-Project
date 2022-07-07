@@ -69,7 +69,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
 
             save(sysUserDO); // 保存
 
-            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
 
             jsonRedisTemplate.delete(redisKey);
 

@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysRoleMapper;
+import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.*;
@@ -20,6 +21,8 @@ import com.admin.role.service.SysRoleRefUserService;
 import com.admin.role.service.SysRoleService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +40,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     SysRoleRefMenuService sysRoleRefMenuService;
     @Resource
     SysRoleRefUserService sysRoleRefUserService;
+    @Resource
+    RedissonClient redissonClient;
 
     /**
      * 新增/修改
@@ -45,63 +50,80 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     @Transactional
     public String insertOrUpdate(SysRoleInsertOrUpdateDTO dto) {
 
-        // 角色名，不能重复
-        Long count = lambdaQuery().eq(SysRoleDO::getName, dto.getName())
-            .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
-        if (count != 0) {
-            ApiResultVO.error(BizCodeEnum.THE_SAME_ROLE_NAME_EXISTS);
-        }
+        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        RLock lock3 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
+        multiLock.lock();
 
-        // 如果是默认角色，则取消之前的默认角色
-        if (dto.isDefaultFlag()) {
-            lambdaUpdate().set(SysRoleDO::getDefaultFlag, false).eq(SysRoleDO::getDefaultFlag, true)
-                .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
-            UserUtil.updateDefaultRoleIdForRedis(); // 更新：redis中的缓存
-        }
-
-        SysRoleDO sysRoleDO = new SysRoleDO();
-        sysRoleDO.setName(dto.getName());
-        sysRoleDO.setDefaultFlag(dto.isDefaultFlag());
-        sysRoleDO.setEnableFlag(dto.isEnableFlag());
-        sysRoleDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
-        sysRoleDO.setId(dto.getId());
-
-        if (dto.getId() == null) { // 新增
-            baseMapper.insert(sysRoleDO);
-        } else { // 修改
-            baseMapper.updateById(sysRoleDO);
-            // 先删除子表数据
-            deleteByIdSetSub(Collections.singleton(dto.getId()));
-        }
-
-        // 再插入子表数据
-        if (CollUtil.isNotEmpty(dto.getMenuIdSet())) {
-            List<SysRoleRefMenuDO> insertList = new ArrayList<>();
-            for (Long menuId : dto.getMenuIdSet()) {
-                SysRoleRefMenuDO sysRoleRefMenuDO = new SysRoleRefMenuDO();
-                sysRoleRefMenuDO.setRoleId(sysRoleDO.getId());
-                sysRoleRefMenuDO.setMenuId(menuId);
-                insertList.add(sysRoleRefMenuDO);
+        try {
+            // 角色名，不能重复
+            Long count = lambdaQuery().eq(SysRoleDO::getName, dto.getName())
+                .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
+            if (count != 0) {
+                ApiResultVO.error(BizCodeEnum.THE_SAME_ROLE_NAME_EXISTS);
             }
-            sysRoleRefMenuService.saveBatch(insertList);
-        }
 
-        UserUtil.updateRoleRefMenuForRedis(); // 更新：redis中的缓存
-
-        if (CollUtil.isNotEmpty(dto.getUserIdSet())) {
-            List<SysRoleRefUserDO> insertList = new ArrayList<>();
-            for (Long userId : dto.getUserIdSet()) {
-                SysRoleRefUserDO sysRoleRefUserDO = new SysRoleRefUserDO();
-                sysRoleRefUserDO.setRoleId(sysRoleDO.getId());
-                sysRoleRefUserDO.setUserId(userId);
-                insertList.add(sysRoleRefUserDO);
+            // 如果是默认角色，则取消之前的默认角色
+            if (dto.isDefaultFlag()) {
+                lambdaUpdate().set(SysRoleDO::getDefaultFlag, false).eq(SysRoleDO::getDefaultFlag, true)
+                    .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
+                UserUtil.updateDefaultRoleIdForRedis(false); // 更新：redis中的缓存
             }
-            sysRoleRefUserService.saveBatch(insertList);
+            // 判断：是否是取消默认角色的操作
+            if (dto.getId() != null && !dto.isDefaultFlag()) {
+                boolean exists =
+                    lambdaQuery().eq(BaseEntityTwo::getId, dto.getId()).eq(SysRoleDO::getDefaultFlag, true).exists();
+                if (exists) {
+                    UserUtil.updateDefaultRoleIdForRedis(false); // 更新：redis中的缓存
+                }
+            }
+
+            SysRoleDO sysRoleDO = new SysRoleDO();
+            sysRoleDO.setName(dto.getName());
+            sysRoleDO.setDefaultFlag(dto.isDefaultFlag());
+            sysRoleDO.setEnableFlag(dto.isEnableFlag());
+            sysRoleDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+            sysRoleDO.setId(dto.getId());
+
+            if (dto.getId() == null) { // 新增
+                baseMapper.insert(sysRoleDO);
+            } else { // 修改
+                baseMapper.updateById(sysRoleDO);
+                // 先删除子表数据
+                deleteByIdSetSub(Collections.singleton(dto.getId()));
+            }
+
+            // 再插入子表数据
+            if (CollUtil.isNotEmpty(dto.getMenuIdSet())) {
+                List<SysRoleRefMenuDO> insertList = new ArrayList<>();
+                for (Long menuId : dto.getMenuIdSet()) {
+                    SysRoleRefMenuDO sysRoleRefMenuDO = new SysRoleRefMenuDO();
+                    sysRoleRefMenuDO.setRoleId(sysRoleDO.getId());
+                    sysRoleRefMenuDO.setMenuId(menuId);
+                    insertList.add(sysRoleRefMenuDO);
+                }
+                sysRoleRefMenuService.saveBatch(insertList);
+            }
+
+            if (CollUtil.isNotEmpty(dto.getUserIdSet())) {
+                List<SysRoleRefUserDO> insertList = new ArrayList<>();
+                for (Long userId : dto.getUserIdSet()) {
+                    SysRoleRefUserDO sysRoleRefUserDO = new SysRoleRefUserDO();
+                    sysRoleRefUserDO.setRoleId(sysRoleDO.getId());
+                    sysRoleRefUserDO.setUserId(userId);
+                    insertList.add(sysRoleRefUserDO);
+                }
+                sysRoleRefUserService.saveBatch(insertList);
+            }
+
+            UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
+            UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
         }
-
-        UserUtil.updateRoleRefUserForRedis(); // 更新：redis中的缓存
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**

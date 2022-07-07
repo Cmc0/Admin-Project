@@ -106,9 +106,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             }
         }
 
-        RLock lock =
+        RLock lock1 =
             redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail());
-        lock.lock();
+        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
+        multiLock.lock();
 
         try {
 
@@ -145,13 +148,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             // 新增数据到子表
             insertOrUpdateSub(sysUserDO.getId(), dto);
 
+            UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
+
             if (dto.getId() == null) {
-                MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf());
+                MyJwtUtil
+                    .updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
             }
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
-            lock.unlock();
+            multiLock.unlock();
         }
     }
 
@@ -187,8 +193,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             }
             sysRoleRefUserService.saveBatch(insertList);
         }
-
-        UserUtil.updateRoleRefUserForRedis(); // 更新：redis中的缓存
 
         // 新增数据到：岗位用户关联表
         if (CollUtil.isNotEmpty(dto.getJobIdSet())) {
@@ -235,21 +239,32 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             sysFileService.remove(sysFileRemoveDTO, false);
         }
 
-        deleteByIdSetSub(notEmptyIdSet.getIdSet()); // 删除关联表数据
-
-        // 注销用户：逻辑删除
-        lambdaUpdate().in(BaseEntityTwo::getId, notEmptyIdSet.getIdSet()).eq(SysUserDO::getDelFlag, false)
-            .set(SysUserDO::getDelFlag, true).update();
-
         sysWebSocketService.offlineByUserIdSet(notEmptyIdSet.getIdSet());
 
         Set<String> userIdStrSet = notEmptyIdSet.getIdSet().stream().map(Object::toString).collect(Collectors.toSet());
-        MyJwtUtil.deleteUserIdJwtSecretSufForRedis(userIdStrSet);
 
-        // 并且给 消息中间件推送，进行下线操作
-        KafkaUtil.delAccount(notEmptyIdSet.getIdSet());
+        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        RLock multiLock =
+            MultiLockUtil.getMultiLock(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", userIdStrSet, lock1);
+        multiLock.lock();
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        try {
+            deleteByIdSetSub(notEmptyIdSet.getIdSet()); // 删除关联表数据
+
+            // 注销用户：逻辑删除
+            lambdaUpdate().in(BaseEntityTwo::getId, notEmptyIdSet.getIdSet()).eq(SysUserDO::getDelFlag, false)
+                .set(SysUserDO::getDelFlag, true).update();
+
+            UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
+            MyJwtUtil.deleteUserIdJwtSecretSufForRedis(userIdStrSet); // 更新：redis中的缓存
+
+            // 并且给 消息中间件推送，进行下线操作
+            KafkaUtil.delAccount(notEmptyIdSet.getIdSet());
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
+        }
     }
 
     /**
@@ -311,7 +326,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         Map<String, String> map =
             updateList.stream().collect(Collectors.toMap(it -> it.getId().toString(), SysUserDO::getJwtSecretSuf));
-        MyJwtUtil.updateUserIdJwtSecretSufForRedis(map);
+
+        MyJwtUtil.updateUserIdJwtSecretSufForRedis(map); // 更新：redis中的缓存
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }

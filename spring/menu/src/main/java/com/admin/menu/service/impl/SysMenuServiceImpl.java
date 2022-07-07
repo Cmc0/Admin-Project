@@ -22,6 +22,8 @@ import com.admin.menu.service.SysMenuService;
 import com.admin.role.service.SysRoleRefMenuService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
 
     @Resource
     SysRoleRefMenuService sysRoleRefMenuService;
+    @Resource
+    RedissonClient redissonClient;
 
     /**
      * 新增/修改
@@ -50,35 +54,47 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             ApiResultVO.error("操作失败：权限菜单的权限不能为空");
         }
 
-        // path不能重复
-        if (StrUtil.isNotBlank(dto.getPath())) {
-            Long count = lambdaQuery().eq(SysMenuDO::getPath, dto.getPath())
-                .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
-            if (count != 0) {
-                ApiResultVO.error(BizCodeEnum.MENU_URI_IS_EXIST);
+        RLock lock1 =
+            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
+        multiLock.lock();
+
+        try {
+            // path不能重复
+            if (StrUtil.isNotBlank(dto.getPath())) {
+                Long count = lambdaQuery().eq(SysMenuDO::getPath, dto.getPath())
+                    .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).count();
+                if (count != 0) {
+                    ApiResultVO.error(BizCodeEnum.MENU_URI_IS_EXIST);
+                }
             }
+
+            // 如果是起始页面，则取消之前的起始页面
+            if (dto.isFirstFlag()) {
+                lambdaUpdate().set(SysMenuDO::getFirstFlag, false).eq(SysMenuDO::getFirstFlag, true)
+                    .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
+            }
+
+            // 判断：path是否以 http开头
+            dto.setLinkFlag(StrUtil.startWith(dto.getPath(), "http", true));
+
+            if (dto.getId() != null) {
+                deleteByIdSetSub(Collections.singleton(dto.getId())); // 先删除 子表数据
+            }
+
+            SysMenuDO sysMenuDO = getEntityByDTO(dto);
+            saveOrUpdate(sysMenuDO);
+
+            insertOrUpdateSub(sysMenuDO.getId(), dto); // 新增 子表数据
+
+            UserUtil.updateMenuIdAndAuthsListForRedis(false); // 更新：redis中的缓存
+            UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
         }
-
-        // 如果是起始页面，则取消之前的起始页面
-        if (dto.isFirstFlag()) {
-            lambdaUpdate().set(SysMenuDO::getFirstFlag, false).eq(SysMenuDO::getFirstFlag, true)
-                .ne(dto.getId() != null, BaseEntityTwo::getId, dto.getId()).update();
-        }
-
-        // 判断：path是否以 http开头
-        dto.setLinkFlag(StrUtil.startWith(dto.getPath(), "http", true));
-
-        if (dto.getId() != null) {
-            deleteByIdSetSub(Collections.singleton(dto.getId())); // 先删除 子表数据
-        }
-
-        SysMenuDO sysMenuDO = getEntityByDTO(dto);
-        saveOrUpdate(sysMenuDO);
-        UserUtil.updateMenuIdAndAuthsListForRedis(); // 更新：redis中的缓存
-
-        insertOrUpdateSub(sysMenuDO.getId(), dto); // 新增 子表数据
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**
@@ -97,8 +113,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             }
             sysRoleRefMenuService.saveBatch(insertList);
         }
-
-        UserUtil.updateRoleRefMenuForRedis(); // 更新：redis中的缓存
 
     }
 

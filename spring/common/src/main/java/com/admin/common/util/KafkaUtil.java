@@ -1,6 +1,5 @@
 package com.admin.common.util;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.enums.WebSocketMessageEnum;
@@ -28,7 +27,11 @@ public class KafkaUtil {
      * {@link com.admin.websocket.listener.WebSocketListener}
      */
     private static void sendWebSocketMessageByKafka(WebSocketMessageEnum webSocketMessageEnum) {
-        kafkaTemplate.send(BaseConstant.MQ_WEB_SOCKET_TOPIC, webSocketMessageEnum.toJsonString());
+        try {
+            kafkaTemplate.send(BaseConstant.MQ_WEB_SOCKET_TOPIC, webSocketMessageEnum.toJsonString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

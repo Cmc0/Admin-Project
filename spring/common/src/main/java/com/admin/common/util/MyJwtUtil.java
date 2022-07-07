@@ -15,6 +15,8 @@ import com.admin.common.model.entity.SysMenuDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +39,13 @@ public class MyJwtUtil {
     @Resource
     private void setJsonRedisTemplate(JsonRedisTemplate<String> value) {
         jsonRedisTemplate = value;
+    }
+
+    private static RedissonClient redissonClient;
+
+    @Resource
+    private void setRedissonClient(RedissonClient value) {
+        redissonClient = value;
     }
 
     /**
@@ -150,13 +159,21 @@ public class MyJwtUtil {
         String jwtSecretSuf = ops.get(userIdStr);
 
         if (jwtSecretSuf == null) {
-            SysUserDO sysUserDO = UserUtil.getUserJwtSecretSufByUserId(userId);
-            if (sysUserDO == null || StrUtil.isBlank(sysUserDO.getJwtSecretSuf())) {
-                ops.put(userIdStr, "");
-                return null;
-            } else {
-                jwtSecretSuf = sysUserDO.getJwtSecretSuf();
-                ops.put(userIdStr, jwtSecretSuf);
+
+            RLock lock = redissonClient.getLock(
+                BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + userId);
+            lock.lock();
+
+            try {
+                SysUserDO sysUserDO = UserUtil.getUserJwtSecretSufByUserId(userId);
+                if (sysUserDO == null || StrUtil.isBlank(sysUserDO.getJwtSecretSuf())) {
+                    return null;
+                } else {
+                    jwtSecretSuf = sysUserDO.getJwtSecretSuf();
+                    ops.put(userIdStr, jwtSecretSuf);
+                }
+            } finally {
+                lock.unlock();
             }
         }
 

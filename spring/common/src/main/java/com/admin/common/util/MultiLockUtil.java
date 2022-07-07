@@ -24,14 +24,26 @@ public class MultiLockUtil {
     /**
      * 获取连锁
      */
-    public static RLock getMultiLock(String preName, Set<Long> nameSet) {
+    public static RLock getMultiLock(String preName, Set<String> nameSet, RLock... locks) {
 
-        RLock[] lockArr = new RLock[nameSet.size()];
+        RLock[] lockArr;
+        if (locks == null) {
+            lockArr = new RLock[nameSet.size()];
+        } else {
+            lockArr = new RLock[nameSet.size() + locks.length];
+        }
 
         int i = 0;
-        for (Long item : nameSet) {
+        for (String item : nameSet) {
             lockArr[i] = redissonClient.getLock(BaseConstant.PRE_REDISSON + preName + item); // 设置锁名
             i++;
+        }
+
+        if (locks != null) {
+            for (RLock item : locks) {
+                lockArr[i] = item;
+                i++;
+            }
         }
 
         return redissonClient.getMultiLock(lockArr);
