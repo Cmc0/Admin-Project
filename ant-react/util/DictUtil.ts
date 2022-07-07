@@ -22,7 +22,7 @@ WebSocketTypeDict.set('1', {text: '在线', status: 'success'})
 WebSocketTypeDict.set('2', {text: '隐身', status: 'warning'})
 
 export interface IMyOption {
-    label?: string
+    label: string
     value?: number | string
 }
 

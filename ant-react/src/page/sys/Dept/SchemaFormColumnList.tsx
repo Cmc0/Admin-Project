@@ -44,7 +44,6 @@ const SchemaFormColumnList = (deptDictListRef: React.MutableRefObject<IMyTree[]>
                 showSearch: true,
                 mode: "multiple",
                 maxTagCount: 'responsive',
-                // @ts-ignore
                 options: userDictListRef.current,
             }
         },

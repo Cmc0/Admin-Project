@@ -70,6 +70,8 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
             valueType: 'select',
             fieldProps: {
                 showSearch: true,
+                mode: 'multiple',
+                maxTagCount: 'responsive',
                 options: roleDictListRef.current,
             }
         },
