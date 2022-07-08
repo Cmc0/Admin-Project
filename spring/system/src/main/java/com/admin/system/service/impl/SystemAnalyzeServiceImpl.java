@@ -3,8 +3,8 @@ package com.admin.system.service.impl;
 import com.admin.system.mapper.SystemAnalyzeMapper;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserVO;
-import com.admin.system.model.vo.SystemAnalyzeNewUserVO;
 import com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO;
+import com.admin.system.model.vo.SystemAnalyzeUserAddAndDeleteVO;
 import com.admin.system.service.SystemAnalyzeService;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +34,10 @@ public class SystemAnalyzeServiceImpl implements SystemAnalyzeService {
     }
 
     /**
-     * 新增用户分析
+     * 用户新增和注销分析
      */
     @Override
-    public SystemAnalyzeNewUserVO newUser() {
+    public SystemAnalyzeUserAddAndDeleteVO userAddAndDelete() {
         return baseMapper.newUser();
     }
 

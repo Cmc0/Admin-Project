@@ -190,10 +190,9 @@ export default function () {
                                     />
                                     <StatisticCard
                                         statistic={{
-                                            title: '本月活跃人数',
+                                            title: '总用户数',
                                             value: 234,
-                                            description: <StatisticCard.Statistic title="月同比" value="8.04%"
-                                                                                  trend="up"/>,
+                                            suffix: '个'
                                         }}
                                     />
                                 </ProCard>

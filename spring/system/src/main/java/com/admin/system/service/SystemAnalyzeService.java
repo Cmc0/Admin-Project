@@ -2,8 +2,8 @@ package com.admin.system.service;
 
 import com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserVO;
-import com.admin.system.model.vo.SystemAnalyzeNewUserVO;
 import com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO;
+import com.admin.system.model.vo.SystemAnalyzeUserAddAndDeleteVO;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface SystemAnalyzeService {
 
     List<SystemAnalyzeActiveUserTrendVO> activeUserTrend();
 
-    SystemAnalyzeNewUserVO newUser();
+    SystemAnalyzeUserAddAndDeleteVO userAddAndDelete();
 
     SystemAnalyzeTrafficUsageVO trafficUsage();
 

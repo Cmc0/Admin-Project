@@ -3,8 +3,8 @@ package com.admin.system.controller;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserVO;
-import com.admin.system.model.vo.SystemAnalyzeNewUserVO;
 import com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO;
+import com.admin.system.model.vo.SystemAnalyzeUserAddAndDeleteVO;
 import com.admin.system.service.SystemAnalyzeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,14 +24,14 @@ public class SystemAnalyzeController {
     @Resource
     SystemAnalyzeService baseService;
 
-    @PreAuthorize("hasAuthority('systemAnalyze:user')")
+    @PreAuthorize("hasAuthority('systemAnalyze:requset')")
     @PostMapping("/activeUser")
     @ApiOperation(value = "活跃人数分析")
     public ApiResultVO<SystemAnalyzeActiveUserVO> activeUser() {
         return ApiResultVO.ok(baseService.activeUser());
     }
 
-    @PreAuthorize("hasAuthority('systemAnalyze:user')")
+    @PreAuthorize("hasAuthority('systemAnalyze:requset')")
     @PostMapping("/activeUserTrend")
     @ApiOperation(value = "活跃人数走势")
     public ApiResultVO<List<SystemAnalyzeActiveUserTrendVO>> activeUserTrend() {
@@ -39,13 +39,13 @@ public class SystemAnalyzeController {
     }
 
     @PreAuthorize("hasAuthority('systemAnalyze:user')")
-    @PostMapping("/newUser")
-    @ApiOperation(value = "新增用户分析")
-    public ApiResultVO<SystemAnalyzeNewUserVO> newUser() {
-        return ApiResultVO.ok(baseService.newUser());
+    @PostMapping("/userAddAndDelete")
+    @ApiOperation(value = "用户新增和注销分析")
+    public ApiResultVO<SystemAnalyzeUserAddAndDeleteVO> userAddAndDelete() {
+        return ApiResultVO.ok(baseService.userAddAndDelete());
     }
 
-    @PreAuthorize("hasAuthority('systemAnalyze:user')")
+    @PreAuthorize("hasAuthority('systemAnalyze:requset')")
     @PostMapping("/trafficUsage")
     @ApiOperation(value = "流量占用情况")
     public ApiResultVO<SystemAnalyzeTrafficUsageVO> trafficUsage() {

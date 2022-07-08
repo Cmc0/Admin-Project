@@ -18,19 +18,7 @@
                             FROM sys_request a
                             WHERE a.create_id != - 1
                             GROUP BY DATE_FORMAT(a.create_time, '%Y%m%d')) a
-               ) AS dailyTotal,
-               (
-                   SELECT COUNT(DISTINCT a.create_id)
-                   FROM sys_request a
-                   WHERE DATE_FORMAT(a.create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
-                     AND a.create_id != - 1
-               ) AS currentMonthTotal,
-               (
-                   SELECT COUNT(DISTINCT a.create_id)
-                   FROM sys_request a
-                   WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(), '%Y%m'), DATE_FORMAT(a.create_time, '%Y%m')) = 1
-                     AND a.create_id != - 1
-               ) AS lastMonthTotal
+               ) AS dailyTotal
     </select>
 
     <!-- 活跃人数走势 -->
@@ -45,8 +33,8 @@
         GROUP BY DATE_FORMAT(a.create_time, '%Y%m')
     </select>
 
-    <!-- 新增用户分析 -->
-    <select id="newUser" resultType="com.admin.system.model.vo.SystemAnalyzeNewUserVO">
+    <!-- 用户新增和注销分析 -->
+    <select id="newUser" resultType="com.admin.system.model.vo.SystemAnalyzeUserAddAndDeleteVO">
 
     </select>
 
