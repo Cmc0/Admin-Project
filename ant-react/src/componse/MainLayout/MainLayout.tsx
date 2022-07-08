@@ -137,7 +137,6 @@ function MainLayoutElement(props: IMainLayoutElement) {
         return () => {
             clearInterval(sysRequestAllAvgInterval)
         }
-
     }, [])
 
     return <div className={"vh100"}>

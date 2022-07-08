@@ -28,11 +28,13 @@ public class ServerServiceImpl implements ServerService {
         RuntimeInfo runtimeInfo = SystemUtil.getRuntimeInfo();
         serverWorkInfoVO.setJvmTotalMemory(runtimeInfo.getTotalMemory());
         serverWorkInfoVO.setJvmFreeMemory(runtimeInfo.getFreeMemory());
+        serverWorkInfoVO.setJvmUsedMemory(serverWorkInfoVO.getJvmTotalMemory() - serverWorkInfoVO.getJvmFreeMemory());
 
         // 服务器内存信息
         GlobalMemory memory = OshiUtil.getMemory();
         serverWorkInfoVO.setMemoryTotal(memory.getTotal());
         serverWorkInfoVO.setMemoryAvailable(memory.getAvailable());
+        serverWorkInfoVO.setMemoryUsed(memory.getTotal() - memory.getAvailable());
 
         // cpu信息
         CpuInfo cpuInfo = OshiUtil.getCpuInfo();
@@ -49,6 +51,7 @@ public class ServerServiceImpl implements ServerService {
         }
         serverWorkInfoVO.setDiskTotal(diskTotal);
         serverWorkInfoVO.setDiskUsable(diskUsable);
+        serverWorkInfoVO.setDiskUsed(diskTotal - diskUsable);
 
         return serverWorkInfoVO;
     }
