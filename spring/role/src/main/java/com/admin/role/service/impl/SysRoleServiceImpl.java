@@ -23,8 +23,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -42,12 +44,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     SysRoleRefUserService sysRoleRefUserService;
     @Resource
     RedissonClient redissonClient;
+    @Resource
+    DataSourceTransactionManager dataSourceTransactionManager;
+    @Resource
+    TransactionDefinition transactionDefinition;
 
     /**
      * 新增/修改
      */
     @Override
-    @Transactional
     public String insertOrUpdate(SysRoleInsertOrUpdateDTO dto) {
 
         RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
@@ -55,6 +60,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         RLock lock3 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
         multiLock.lock();
+
+        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
 
         try {
             // 角色名，不能重复
@@ -120,7 +127,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
             UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
             UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
 
+            dataSourceTransactionManager.commit(transactionStatus);
+
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } catch (Throwable throwable) {
+
+            dataSourceTransactionManager.rollback(transactionStatus);
+            throw throwable;
+
         } finally {
             multiLock.unlock();
         }
@@ -172,7 +187,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
      * 批量删除
      */
     @Override
-    @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
@@ -180,6 +194,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         RLock lock3 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
         multiLock.lock();
+
+        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
 
         try {
             deleteByIdSetSub(notEmptyIdSet.getIdSet()); // 删除子表数据
@@ -190,7 +206,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
             UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
             UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
 
+            dataSourceTransactionManager.commit(transactionStatus);
+
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } catch (Throwable throwable) {
+
+            dataSourceTransactionManager.rollback(transactionStatus);
+            throw throwable;
+
         } finally {
             multiLock.unlock();
         }

@@ -24,7 +24,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -38,12 +41,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     SysRoleRefMenuService sysRoleRefMenuService;
     @Resource
     RedissonClient redissonClient;
+    @Resource
+    DataSourceTransactionManager dataSourceTransactionManager;
+    @Resource
+    TransactionDefinition transactionDefinition;
 
     /**
      * 新增/修改
      */
     @Override
-    @Transactional
     public String insertOrUpdate(SysMenuInsertOrUpdateDTO dto) {
 
         if (dto.getId() != null && dto.getId().equals(dto.getParentId())) {
@@ -59,6 +65,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
+
+        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
 
         try {
             // path不能重复
@@ -91,7 +99,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             UserUtil.updateMenuIdAndAuthsListForRedis(false); // 更新：redis中的缓存
             UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
 
+            dataSourceTransactionManager.commit(transactionStatus);
+
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } catch (Throwable throwable) {
+
+            dataSourceTransactionManager.rollback(transactionStatus);
+            throw throwable;
+
         } finally {
             multiLock.unlock();
         }
@@ -196,7 +212,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
      * 批量删除
      */
     @Override
-    @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         RLock lock1 =
@@ -204,6 +219,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
+
+        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
 
         try {
             // 如果存在下级，则无法删除
@@ -220,7 +237,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             UserUtil.updateMenuIdAndAuthsListForRedis(false); // 更新：redis中的缓存
             UserUtil.updateRoleRefMenuForRedis(false); // 更新：redis中的缓存
 
+            dataSourceTransactionManager.commit(transactionStatus);
+
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } catch (Throwable throwable) {
+
+            dataSourceTransactionManager.rollback(transactionStatus);
+            throw throwable;
+
         } finally {
             multiLock.unlock();
         }

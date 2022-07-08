@@ -38,7 +38,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -60,6 +63,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
     SysFileService sysFileService;
     @Resource
     SysWebSocketService sysWebSocketService;
+    @Resource
+    DataSourceTransactionManager dataSourceTransactionManager;
+    @Resource
+    TransactionDefinition transactionDefinition;
 
     /**
      * 分页排序查询
@@ -89,7 +96,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 新增/修改
      */
     @Override
-    @Transactional
     public String insertOrUpdate(SysUserInsertOrUpdateDTO dto) {
 
         boolean passwordFlag = StrUtil.isNotBlank(dto.getPassword()) && StrUtil.isNotBlank(dto.getOrigPassword());
@@ -112,6 +118,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
+
+        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
 
         try {
 
@@ -155,7 +163,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
                     .updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
             }
 
+            dataSourceTransactionManager.commit(transactionStatus);
+
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } catch (Throwable throwable) {
+
+            dataSourceTransactionManager.rollback(transactionStatus);
+            throw throwable;
+
         } finally {
             multiLock.unlock();
         }
@@ -224,7 +240,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 批量注销用户
      */
     @Override
-    @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         // 删除文件
@@ -248,6 +263,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             MultiLockUtil.getMultiLock(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", userIdStrSet, lock1);
         multiLock.lock();
 
+        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
+
         try {
             deleteByIdSetSub(notEmptyIdSet.getIdSet()); // 删除关联表数据
 
@@ -258,10 +275,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
             MyJwtUtil.deleteUserIdJwtSecretSufForRedis(userIdStrSet); // 更新：redis中的缓存
 
+            dataSourceTransactionManager.commit(transactionStatus);
+
             // 并且给 消息中间件推送，进行下线操作
             KafkaUtil.delAccount(notEmptyIdSet.getIdSet());
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+
+        } catch (Throwable throwable) {
+
+            dataSourceTransactionManager.rollback(transactionStatus);
+            throw throwable;
+
         } finally {
             multiLock.unlock();
         }
