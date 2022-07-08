@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class SystemAnalyzeUserVO {
 
+    @ApiModelProperty(value = "总用户数")
+    private long total;
+
     @ApiModelProperty(value = "昨日新增用户")
     private long yesterdayAddTotal;
 

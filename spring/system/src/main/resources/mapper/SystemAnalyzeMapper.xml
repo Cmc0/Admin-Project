@@ -38,8 +38,13 @@
         SELECT (
                    SELECT COUNT(1)
                    FROM sys_user a
+                   WHERE a.del_flag = FALSE
+               ) AS total,
+               (
+                   SELECT COUNT(1)
+                   FROM sys_user a
                    WHERE TO_DAYS(CURDATE()) - TO_DAYS(a.create_time) = 1)
-                   AS yesterdayAddTotal,
+                 AS yesterdayAddTotal,
                (
                    SELECT TRUNCATE
                               (SUM(a.total) / (TO_DAYS(CURDATE()) - TO_DAYS(MIN(a.createTime))), 2)
@@ -48,14 +53,14 @@
                                    MIN(a.create_time) AS createTime
                             FROM sys_user a
                             GROUP BY DATE_FORMAT(a.create_time, '%Y%m%d')) a
-               )   AS dailyAddTotal,
+               ) AS dailyAddTotal,
                (
                    SELECT COUNT(1)
                    FROM sys_user a
                    WHERE TO_DAYS(
                                  CURDATE()) - TO_DAYS(a.update_time) = 1
                      AND a.del_flag = TRUE
-               )   AS yesterdayDeleteTotal,
+               ) AS yesterdayDeleteTotal,
                (
                    SELECT TRUNCATE
                               (SUM(a.total) / (TO_DAYS(CURDATE()) - TO_DAYS(MIN(a.createTime))), 2)
@@ -65,7 +70,7 @@
                             FROM sys_user a
                             WHERE a.del_flag = TRUE
                             GROUP BY DATE_FORMAT(a.update_time, '%Y%m%d')) a
-               )   AS dailyDeleteTotal
+               ) AS dailyDeleteTotal
     </select>
 
     <!-- 流量占用情况 -->
