@@ -11,7 +11,7 @@ const WorkplaceDiskECharts = "WorkplaceDiskECharts"
 
 const CpuTotal = 100
 
-function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>, freeTotal: number | undefined, usedTotal: number | undefined) {
+function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>, freeTotal: number | undefined, usedTotal: number | undefined, total: number | undefined) {
 
     eachChartsRef.current?.hideLoading()
 
@@ -25,7 +25,7 @@ function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsT
                     show: false,
                 },
                 data: [
-                    {value: usedTotal, itemStyle: {color: '#6395F9'}},
+                    {value: usedTotal, itemStyle: {color: getDangerFlag(total, usedTotal) ? '#cf1322' : '#6395F9'}},
                     {value: freeTotal, itemStyle: {color: '#F0F0F0'}},
                 ]
             }
@@ -45,10 +45,10 @@ export default function () {
     function doSetServerInfo() {
         serverWorkInfo().then(res => {
             setServerInfo(res.data)
-            setEChartsOption(workplaceJvmEChartsRef, res.data.jvmFreeMemory, res.data.jvmUsedMemory)
-            setEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed)
-            setEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed)
-            setEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed)
+            setEChartsOption(workplaceJvmEChartsRef, res.data.jvmFreeMemory, res.data.jvmUsedMemory, res.data.jvmTotalMemory)
+            setEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed, res.data.memoryTotal)
+            setEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed, CpuTotal)
+            setEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed, res.data.diskTotal)
         })
     }
 
@@ -187,7 +187,12 @@ function getTitle(total: number = 0) {
 
 // 获取：value的 className
 function getValueClassName(total: number = 0, value: number = 0) {
-    return getPercentage(total, value, false) > 80 ? 'red4' : 'green3'
+    return getDangerFlag(total, value) ? 'red4' : 'green3'
+}
+
+// 获取：参数是否危险
+function getDangerFlag(total: number = 0, value: number = 0) {
+    return getPercentage(total, value, false) > 85
 }
 
 // 获取：百分比
