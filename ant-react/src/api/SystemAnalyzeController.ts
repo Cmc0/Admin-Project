@@ -34,6 +34,7 @@ export function systemAnalyzeTrafficUsage(config?: AxiosRequestConfig) {
 export interface SystemAnalyzeUserVO {
     dailyAddTotal?: number // 每日新增用户
     dailyDeleteTotal?: number // 每日注销用户
+    total?: number // 总用户数
     yesterdayAddTotal?: number // 昨日新增用户
     yesterdayDeleteTotal?: number // 昨日注销用户
 }
