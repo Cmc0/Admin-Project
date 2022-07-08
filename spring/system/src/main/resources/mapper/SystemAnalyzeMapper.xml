@@ -4,26 +4,32 @@
 
     <!-- 活跃人数分析 -->
     <select id="activeUser" resultType="com.admin.system.model.vo.SystemAnalyzeActiveUserVO">
-        SELECT (SELECT COUNT(DISTINCT a.create_id)
-                FROM sys_request a
-                WHERE TO_DAYS(CURDATE()) - TO_DAYS(a.create_time) = 1
+        SELECT (
+                   SELECT COUNT(DISTINCT a.create_id)
+                   FROM sys_request a
+                   WHERE TO_DAYS(
+                                 CURDATE()) - TO_DAYS(a.create_time) = 1
+                     AND a.create_id != - 1
                ) AS yesterdayTotal,
                (
                    SELECT ROUND(AVG(a.total), 2)
                    FROM (
                             SELECT COUNT(DISTINCT a.create_id) AS total
                             FROM sys_request a
+                            WHERE a.create_id != - 1
                             GROUP BY DATE_FORMAT(a.create_time, '%Y%m%d')) a
                ) AS dailyTotal,
                (
                    SELECT COUNT(DISTINCT a.create_id)
                    FROM sys_request a
                    WHERE DATE_FORMAT(a.create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+                     AND a.create_id != - 1
                ) AS currentMonthTotal,
                (
                    SELECT COUNT(DISTINCT a.create_id)
                    FROM sys_request a
                    WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(), '%Y%m'), DATE_FORMAT(a.create_time, '%Y%m')) = 1
+                     AND a.create_id != - 1
                ) AS lastMonthTotal
     </select>
 
