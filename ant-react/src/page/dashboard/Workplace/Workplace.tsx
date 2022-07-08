@@ -208,9 +208,9 @@ export default function () {
                                     />
                                     <StatisticCard
                                         statistic={{
-                                            title: '本月新增用户',
+                                            title: '昨日注销用户',
                                             value: 234,
-                                            description: <StatisticCard.Statistic title="月同比" value="8.04%"
+                                            description: <StatisticCard.Statistic title="较每日注销用户" value="8.04%"
                                                                                   trend="up"/>,
                                         }}
                                     />
