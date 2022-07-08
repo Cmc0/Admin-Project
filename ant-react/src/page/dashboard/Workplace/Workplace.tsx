@@ -1,21 +1,81 @@
 import {RouteContext, RouteContextType, StatisticCard} from "@ant-design/pro-components";
 import {Statistic} from "antd";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {serverWorkInfo, ServerWorkInfoVO} from "@/api/ServerController";
+import * as echarts from "echarts";
+
+const WorkplaceJvmECharts = "WorkplaceJvmECharts"
+const WorkplaceMemoryECharts = "WorkplaceMemoryECharts"
+const WorkplaceCpuECharts = "WorkplaceCpuECharts"
+const WorkplaceDiskECharts = "WorkplaceDiskECharts"
+
+const CpuTotal = 100
+
+function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>, freeTotal: number | undefined, usedTotal: number | undefined) {
+
+    eachChartsRef.current?.hideLoading()
+
+    eachChartsRef.current?.setOption({
+        series: [
+            {
+                type: 'pie',
+                hoverAnimation: false,
+                radius: ['50%', '70%'],
+                label: {
+                    show: false,
+                },
+                data: [
+                    {value: usedTotal, itemStyle: {color: '#6395F9'}},
+                    {value: freeTotal, itemStyle: {color: '#F0F0F0'}},
+                ]
+            }
+        ]
+    })
+
+}
 
 export default function () {
 
     const [serverInfo, setServerInfo] = useState<ServerWorkInfoVO>({});
+    const workplaceJvmEChartsRef = useRef<echarts.EChartsType>()
+    const workplaceMemoryEChartsRef = useRef<echarts.EChartsType>()
+    const workplaceCpuEChartsRef = useRef<echarts.EChartsType>()
+    const workplaceDiskEChartsRef = useRef<echarts.EChartsType>()
 
     function doSetServerInfo() {
         serverWorkInfo().then(res => {
             setServerInfo(res.data)
+            setEChartsOption(workplaceJvmEChartsRef, res.data.jvmFreeMemory, res.data.jvmUsedMemory)
+            setEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed)
+            setEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed)
+            setEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed)
         })
     }
 
     useEffect(() => {
+        if (workplaceJvmEChartsRef.current) {
+            workplaceJvmEChartsRef.current.dispose()
+        }
+        if (workplaceMemoryEChartsRef.current) {
+            workplaceMemoryEChartsRef.current.dispose()
+        }
+        if (workplaceCpuEChartsRef.current) {
+            workplaceCpuEChartsRef.current.dispose()
+        }
+        if (workplaceDiskEChartsRef.current) {
+            workplaceDiskEChartsRef.current.dispose()
+        }
+        workplaceJvmEChartsRef.current = echarts.init(document.getElementById(WorkplaceJvmECharts)!)
+        workplaceMemoryEChartsRef.current = echarts.init(document.getElementById(WorkplaceMemoryECharts)!)
+        workplaceCpuEChartsRef.current = echarts.init(document.getElementById(WorkplaceCpuECharts)!)
+        workplaceDiskEChartsRef.current = echarts.init(document.getElementById(WorkplaceDiskECharts)!)
+
+        workplaceJvmEChartsRef.current?.showLoading()
+        workplaceMemoryEChartsRef.current?.showLoading()
+        workplaceCpuEChartsRef.current?.showLoading()
+        workplaceDiskEChartsRef.current?.showLoading()
         doSetServerInfo()
-        const serverInfoInterval = setInterval(doSetServerInfo, 20 * 1000);
+        const serverInfoInterval = setInterval(doSetServerInfo, 15 * 1000);
         return () => {
             clearInterval(serverInfoInterval)
         }
@@ -34,11 +94,7 @@ export default function () {
                                                         value={getPercentage(serverInfo.jvmTotalMemory, serverInfo.jvmUsedMemory)}/>,
                             }}
                             chart={
-                                <img
-                                    src="https://gw.alipayobjects.com/zos/alicdn/ShNDpDTik/huan.svg"
-                                    alt="百分比"
-                                    width="100%"
-                                />
+                                <div id={WorkplaceJvmECharts} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -50,11 +106,7 @@ export default function () {
                                                         value={getPercentage(serverInfo.memoryTotal, serverInfo.memoryUsed)}/>,
                             }}
                             chart={
-                                <img
-                                    src="https://gw.alipayobjects.com/zos/alicdn/ShNDpDTik/huan.svg"
-                                    alt="百分比"
-                                    width="100%"
-                                />
+                                <div id={WorkplaceMemoryECharts} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -62,15 +114,11 @@ export default function () {
                             statistic={{
                                 title: 'CPU使用',
                                 value: (serverInfo.cpuUsed || 0),
-                                description: <Statistic title="占比 100"
-                                                        value={getPercentage(100, serverInfo.cpuUsed)}/>,
+                                description: <Statistic title={`占比 ${CpuTotal}`}
+                                                        value={getPercentage(CpuTotal, serverInfo.cpuUsed)}/>,
                             }}
                             chart={
-                                <img
-                                    src="https://gw.alipayobjects.com/zos/alicdn/ShNDpDTik/huan.svg"
-                                    alt="百分比"
-                                    width="100%"
-                                />
+                                <div id={WorkplaceCpuECharts} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -82,11 +130,7 @@ export default function () {
                                                         value={getPercentage(serverInfo.diskTotal, serverInfo.diskUsed)}/>,
                             }}
                             chart={
-                                <img
-                                    src="https://gw.alipayobjects.com/zos/alicdn/ShNDpDTik/huan.svg"
-                                    alt="百分比"
-                                    width="100%"
-                                />
+                                <div id={WorkplaceDiskECharts} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
