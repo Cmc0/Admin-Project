@@ -182,15 +182,15 @@ export default function () {
                                 <ProCard split="vertical">
                                     <StatisticCard
                                         statistic={{
-                                            title: '昨日全部流量',
+                                            title: '昨日活跃人数',
                                             value: 234,
-                                            description: <StatisticCard.Statistic title="较每日平均流量" value="8.04%"
+                                            description: <StatisticCard.Statistic title="较每日活跃人数" value="8.04%"
                                                                                   trend="down"/>,
                                         }}
                                     />
                                     <StatisticCard
                                         statistic={{
-                                            title: '本月累计流量',
+                                            title: '本月活跃人数',
                                             value: 234,
                                             description: <StatisticCard.Statistic title="月同比" value="8.04%"
                                                                                   trend="up"/>,
@@ -200,16 +200,36 @@ export default function () {
                                 <ProCard split="vertical">
                                     <StatisticCard
                                         statistic={{
-                                            title: '总请求数',
-                                            value: '104050',
-                                            suffix: '次',
+                                            title: '昨日新增用户',
+                                            value: 234,
+                                            description: <StatisticCard.Statistic title="较每日新增用户" value="8.04%"
+                                                                                  trend="down"/>,
                                         }}
                                     />
                                     <StatisticCard
                                         statistic={{
-                                            title: '总用户数',
-                                            value: '134',
-                                            suffix: '个',
+                                            title: '本月新增用户',
+                                            value: 234,
+                                            description: <StatisticCard.Statistic title="月同比" value="8.04%"
+                                                                                  trend="up"/>,
+                                        }}
+                                    />
+                                </ProCard>
+                                <ProCard split="vertical">
+                                    <StatisticCard
+                                        statistic={{
+                                            title: '昨日累计流量',
+                                            value: 234,
+                                            description: <StatisticCard.Statistic title="较每日累计流量" value="8.04%"
+                                                                                  trend="down"/>,
+                                        }}
+                                    />
+                                    <StatisticCard
+                                        statistic={{
+                                            title: '本月累计流量',
+                                            value: 234,
+                                            description: <StatisticCard.Statistic title="月同比" value="8.04%"
+                                                                                  trend="up"/>,
                                         }}
                                     />
                                 </ProCard>
