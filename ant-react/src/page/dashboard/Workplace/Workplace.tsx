@@ -1,5 +1,4 @@
-import {RouteContext, RouteContextType, StatisticCard} from "@ant-design/pro-components";
-import {Statistic} from "antd";
+import {ProCard, RouteContext, RouteContextType, StatisticCard} from "@ant-design/pro-components";
 import {useEffect, useRef, useState} from "react";
 import {serverWorkInfo, ServerWorkInfoVO} from "@/api/ServerController";
 import * as echarts from "echarts";
@@ -90,7 +89,7 @@ export default function () {
                             statistic={{
                                 title: 'JVM内存使用',
                                 value: (getNumber(serverInfo.jvmUsedMemory)),
-                                description: <Statistic
+                                description: <StatisticCard.Statistic
                                     title={getTitle(serverInfo.jvmTotalMemory)}
                                     value={getPercentage(serverInfo.jvmTotalMemory, serverInfo.jvmUsedMemory)}
                                     valueRender={(node) => {
@@ -106,11 +105,12 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
+                        <StatisticCard.Divider type={value.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: '系统内存使用',
                                 value: (getNumber(serverInfo.memoryUsed)),
-                                description: <Statistic
+                                description: <StatisticCard.Statistic
                                     title={getTitle(serverInfo.memoryTotal)}
                                     value={getPercentage(serverInfo.memoryTotal, serverInfo.memoryUsed)}
                                     valueRender={(node) => {
@@ -125,11 +125,12 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
+                        <StatisticCard.Divider type={value.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: 'CPU使用',
                                 value: (serverInfo.cpuUsed || 0),
-                                description: <Statistic
+                                description: <StatisticCard.Statistic
                                     title={`占比 ${CpuTotal}`}
                                     value={getPercentage(CpuTotal, serverInfo.cpuUsed)}
                                     valueRender={(node) => {
@@ -145,11 +146,12 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
+                        <StatisticCard.Divider type={value.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: '磁盘使用',
                                 value: (getNumber(serverInfo.diskUsed)),
-                                description: <Statistic
+                                description: <StatisticCard.Statistic
                                     title={getTitle(serverInfo.diskTotal)}
                                     value={getPercentage(serverInfo.diskTotal, serverInfo.diskUsed)}
                                     valueRender={(node) => {
@@ -166,6 +168,72 @@ export default function () {
                             chartPlacement="left"
                         />
                     </StatisticCard.Group>
+
+                    <ProCard
+                        title="数据概览"
+                        extra="2019年9月28日 星期五"
+                        split={value.isMobile ? 'horizontal' : 'vertical'}
+                        headerBordered
+                        bordered
+                    >
+                        <ProCard split="horizontal">
+                            <ProCard split="horizontal">
+                                <ProCard split="vertical">
+                                    <StatisticCard
+                                        statistic={{
+                                            title: '昨日全部流量',
+                                            value: 234,
+                                            description: <StatisticCard.Statistic title="较本月平均流量" value="8.04%"
+                                                                                  trend="down"/>,
+                                        }}
+                                    />
+                                    <StatisticCard
+                                        statistic={{
+                                            title: '本月累计流量',
+                                            value: 234,
+                                            description: <StatisticCard.Statistic title="月同比" value="8.04%"
+                                                                                  trend="up"/>,
+                                        }}
+                                    />
+                                </ProCard>
+                                <ProCard split="vertical">
+                                    <StatisticCard
+                                        statistic={{
+                                            title: '运行中实验',
+                                            value: '12/56',
+                                            suffix: '个',
+                                        }}
+                                    />
+                                    <StatisticCard
+                                        statistic={{
+                                            title: '历史实验总数',
+                                            value: '134',
+                                            suffix: '个',
+                                        }}
+                                    />
+                                </ProCard>
+                            </ProCard>
+                            <StatisticCard
+                                title="流量走势"
+                                chart={
+                                    <img
+                                        src="https://gw.alipayobjects.com/zos/alicdn/_dZIob2NB/zhuzhuangtu.svg"
+                                        width="100%"
+                                    />
+                                }
+                            />
+                        </ProCard>
+                        <StatisticCard
+                            title="流量占用情况"
+                            chart={
+                                <img
+                                    src="https://gw.alipayobjects.com/zos/alicdn/qoYmFMxWY/jieping2021-03-29%252520xiawu4.32.34.png"
+                                    alt="大盘"
+                                    width="100%"
+                                />
+                            }
+                        />
+                    </ProCard>
                 </>
             }}
         </RouteContext.Consumer>
