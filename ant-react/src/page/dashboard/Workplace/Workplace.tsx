@@ -2,6 +2,7 @@ import {ProCard, RouteContext, RouteContextType, StatisticCard} from "@ant-desig
 import {useEffect, useRef, useState} from "react";
 import {serverWorkInfo, ServerWorkInfoVO} from "@/api/ServerController";
 import * as echarts from "echarts";
+import moment from "moment";
 
 const WorkplaceJvmECharts = "WorkplaceJvmECharts"
 const WorkplaceMemoryECharts = "WorkplaceMemoryECharts"
@@ -170,8 +171,8 @@ export default function () {
                     </StatisticCard.Group>
 
                     <ProCard
-                        title="数据概览"
-                        extra="2019年9月28日 星期五"
+                        title="平台概览"
+                        extra={moment().format('YYYY年M月D日 dddd')}
                         split={value.isMobile ? 'horizontal' : 'vertical'}
                         headerBordered
                         bordered
