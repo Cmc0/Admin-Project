@@ -184,7 +184,7 @@ export default function () {
                                         statistic={{
                                             title: '昨日全部流量',
                                             value: 234,
-                                            description: <StatisticCard.Statistic title="较本月平均流量" value="8.04%"
+                                            description: <StatisticCard.Statistic title="较每日平均流量" value="8.04%"
                                                                                   trend="down"/>,
                                         }}
                                     />
@@ -200,14 +200,14 @@ export default function () {
                                 <ProCard split="vertical">
                                     <StatisticCard
                                         statistic={{
-                                            title: '运行中实验',
-                                            value: '12/56',
-                                            suffix: '个',
+                                            title: '总请求数',
+                                            value: '104050',
+                                            suffix: '次',
                                         }}
                                     />
                                     <StatisticCard
                                         statistic={{
-                                            title: '历史实验总数',
+                                            title: '总用户数',
                                             value: '134',
                                             suffix: '个',
                                         }}
