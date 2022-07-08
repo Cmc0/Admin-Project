@@ -4,9 +4,13 @@ import {serverWorkInfo, ServerWorkInfoVO} from "@/api/ServerController";
 import * as echarts from "echarts";
 import moment from "moment";
 import {
-    systemAnalyzeActiveUser, systemAnalyzeActiveUserTrend,
+    systemAnalyzeActiveUser,
+    systemAnalyzeActiveUserTrend,
     SystemAnalyzeActiveUserTrendVO,
-    SystemAnalyzeActiveUserVO, systemAnalyzeTrafficUsage, SystemAnalyzeTrafficUsageVO, systemAnalyzeUser,
+    SystemAnalyzeActiveUserVO,
+    systemAnalyzeTrafficUsage,
+    SystemAnalyzeTrafficUsageVO,
+    systemAnalyzeUser,
     SystemAnalyzeUserVO
 } from "@/api/SystemAnalyzeController";
 
@@ -14,6 +18,9 @@ const WorkplaceJvmECharts = "WorkplaceJvmECharts"
 const WorkplaceMemoryECharts = "WorkplaceMemoryECharts"
 const WorkplaceCpuECharts = "WorkplaceCpuECharts"
 const WorkplaceDiskECharts = "WorkplaceDiskECharts"
+
+const ActiveUserTrendECharts = "ActiveUserTrendECharts"
+const TrafficUsageECharts = "TrafficUsageECharts"
 
 const CpuTotal = 100
 
@@ -137,7 +144,7 @@ export default function () {
                         <StatisticCard
                             statistic={{
                                 title: 'JVM内存使用',
-                                value: (getNumber(serverInfo.jvmUsedMemory)),
+                                value: (getSizeNumber(serverInfo.jvmUsedMemory)),
                                 description: <StatisticCard.Statistic
                                     title={getTitle(serverInfo.jvmTotalMemory)}
                                     value={getPercentage(serverInfo.jvmTotalMemory, serverInfo.jvmUsedMemory)}
@@ -158,7 +165,7 @@ export default function () {
                         <StatisticCard
                             statistic={{
                                 title: '系统内存使用',
-                                value: (getNumber(serverInfo.memoryUsed)),
+                                value: (getSizeNumber(serverInfo.memoryUsed)),
                                 description: <StatisticCard.Statistic
                                     title={getTitle(serverInfo.memoryTotal)}
                                     value={getPercentage(serverInfo.memoryTotal, serverInfo.memoryUsed)}
@@ -199,7 +206,7 @@ export default function () {
                         <StatisticCard
                             statistic={{
                                 title: '磁盘使用',
-                                value: (getNumber(serverInfo.diskUsed)),
+                                value: (getSizeNumber(serverInfo.diskUsed)),
                                 description: <StatisticCard.Statistic
                                     title={getTitle(serverInfo.diskTotal)}
                                     value={getPercentage(serverInfo.diskTotal, serverInfo.diskUsed)}
@@ -231,15 +238,17 @@ export default function () {
                                     <StatisticCard
                                         statistic={{
                                             title: '昨日活跃人数',
-                                            value: 234,
-                                            description: <StatisticCard.Statistic title="较每日活跃人数" value="8.04%"
-                                                                                  trend="down"/>,
+                                            value: getNumber(activeUser.yesterdayTotal),
+                                            description: <StatisticCard.Statistic
+                                                title={`较每日活跃人数 ${getNumber(activeUser.dailyTotal)}`}
+                                                value={getProportion(activeUser.dailyTotal, activeUser.yesterdayTotal)}
+                                                trend={getTrend(activeUser.dailyTotal, activeUser.yesterdayTotal)}/>,
                                         }}
                                     />
                                     <StatisticCard
                                         statistic={{
                                             title: '总用户数',
-                                            value: 234,
+                                            value: getNumber(analyzeUser.total),
                                             suffix: '个'
                                         }}
                                     />
@@ -248,17 +257,21 @@ export default function () {
                                     <StatisticCard
                                         statistic={{
                                             title: '昨日新增用户',
-                                            value: 234,
-                                            description: <StatisticCard.Statistic title="较每日新增用户" value="8.04%"
-                                                                                  trend="down"/>,
+                                            value: getNumber(analyzeUser.yesterdayAddTotal),
+                                            description: <StatisticCard.Statistic
+                                                title={`较每日新增用户 ${getNumber(analyzeUser.dailyAddTotal)}`}
+                                                value={getProportion(analyzeUser.dailyAddTotal, analyzeUser.yesterdayAddTotal)}
+                                                trend={getTrend(analyzeUser.dailyAddTotal, analyzeUser.yesterdayAddTotal)}/>,
                                         }}
                                     />
                                     <StatisticCard
                                         statistic={{
                                             title: '昨日注销用户',
-                                            value: 234,
-                                            description: <StatisticCard.Statistic title="较每日注销用户" value="8.04%"
-                                                                                  trend="up"/>,
+                                            value: getNumber(analyzeUser.yesterdayDeleteTotal),
+                                            description: <StatisticCard.Statistic
+                                                title={`较每日注销用户 ${getNumber(analyzeUser.dailyDeleteTotal)}`}
+                                                value={getProportion(analyzeUser.dailyDeleteTotal, analyzeUser.yesterdayDeleteTotal)}
+                                                trend={getTrend(analyzeUser.dailyDeleteTotal, analyzeUser.yesterdayDeleteTotal)}/>,
                                         }}
                                     />
                                 </ProCard>
@@ -266,21 +279,14 @@ export default function () {
                             <StatisticCard
                                 title="活跃人数走势"
                                 chart={
-                                    <img
-                                        src="https://gw.alipayobjects.com/zos/alicdn/_dZIob2NB/zhuzhuangtu.svg"
-                                        width="100%"
-                                    />
+                                    <div id={ActiveUserTrendECharts} className={"w-315 h-180"}/>
                                 }
                             />
                         </ProCard>
                         <StatisticCard
                             title="流量占用情况"
                             chart={
-                                <img
-                                    src="https://gw.alipayobjects.com/zos/alicdn/qoYmFMxWY/jieping2021-03-29%252520xiawu4.32.34.png"
-                                    alt="大盘"
-                                    width="100%"
-                                />
+                                <div id={TrafficUsageECharts} className={"w-315 h-315"}/>
                             }
                         />
                     </ProCard>
@@ -290,8 +296,30 @@ export default function () {
     )
 }
 
-// 通过 byte获取 mb的字符串
+// 获取：趋势
+function getTrend(source: number = 0, target: number = 0) {
+    return getProportion(source, target, false) > 0 ? 'up' : 'down'
+}
+
+// 获取：比例，source 被占多少比例
+function getProportion(source: number = 0, target: number = 0, addStrFlag: boolean = true) {
+    let res: string | number = 0;
+    if (source !== 0) {
+        res = Math.round((target - source) / source * 10000) / 100
+    }
+    if (addStrFlag) {
+        res = res + '%'
+    }
+    return res
+}
+
+// 获取：默认为 0的数字
 function getNumber(number: number = 0) {
+    return number
+}
+
+// 通过 byte获取 mb的字符串
+function getSizeNumber(number: number = 0) {
     if (number > 1024 * 1024 * 1024) {
         return Math.round((number / 1024 / 1024 / 1024) * 100) / 100 + 'G'
     }
@@ -300,7 +328,7 @@ function getNumber(number: number = 0) {
 
 // 获取：占比
 function getTitle(total: number = 0) {
-    return '占比 ' + getNumber(total)
+    return '占比 ' + getSizeNumber(total)
 }
 
 // 获取：value的 className
