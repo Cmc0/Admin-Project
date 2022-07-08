@@ -15,6 +15,6 @@ public interface SystemAnalyzeService {
 
     SystemAnalyzeUserVO user();
 
-    SystemAnalyzeTrafficUsageVO trafficUsage();
+    List<SystemAnalyzeTrafficUsageVO> trafficUsage();
 
 }

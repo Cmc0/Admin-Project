@@ -48,7 +48,7 @@ public class SystemAnalyzeController {
     @PreAuthorize("hasAuthority('systemAnalyze:requset')")
     @PostMapping("/trafficUsage")
     @ApiOperation(value = "流量占用情况")
-    public ApiResultVO<SystemAnalyzeTrafficUsageVO> trafficUsage() {
+    public ApiResultVO<List<SystemAnalyzeTrafficUsageVO>> trafficUsage() {
         return ApiResultVO.ok(baseService.trafficUsage());
     }
 

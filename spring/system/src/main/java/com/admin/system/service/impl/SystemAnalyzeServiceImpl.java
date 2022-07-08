@@ -45,7 +45,7 @@ public class SystemAnalyzeServiceImpl implements SystemAnalyzeService {
      * 流量占用情况
      */
     @Override
-    public SystemAnalyzeTrafficUsageVO trafficUsage() {
+    public List<SystemAnalyzeTrafficUsageVO> trafficUsage() {
         return baseMapper.trafficUsage();
     }
 }

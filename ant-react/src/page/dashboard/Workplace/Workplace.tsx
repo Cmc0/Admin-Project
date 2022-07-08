@@ -3,6 +3,12 @@ import {useEffect, useRef, useState} from "react";
 import {serverWorkInfo, ServerWorkInfoVO} from "@/api/ServerController";
 import * as echarts from "echarts";
 import moment from "moment";
+import {
+    systemAnalyzeActiveUser, systemAnalyzeActiveUserTrend,
+    SystemAnalyzeActiveUserTrendVO,
+    SystemAnalyzeActiveUserVO, systemAnalyzeTrafficUsage, SystemAnalyzeTrafficUsageVO, systemAnalyzeUser,
+    SystemAnalyzeUserVO
+} from "@/api/SystemAnalyzeController";
 
 const WorkplaceJvmECharts = "WorkplaceJvmECharts"
 const WorkplaceMemoryECharts = "WorkplaceMemoryECharts"
@@ -37,6 +43,11 @@ function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsT
 export default function () {
 
     const [serverInfo, setServerInfo] = useState<ServerWorkInfoVO>({});
+    const [activeUser, setActiveUser] = useState<SystemAnalyzeActiveUserVO>({});
+    const [activeUserTrendList, setActiveUserTrendList] = useState<SystemAnalyzeActiveUserTrendVO[] | undefined>([]);
+    const [trafficUsage, setTrafficUsage] = useState<SystemAnalyzeTrafficUsageVO>({});
+    const [analyzeUser, setAnalyzeUser] = useState<SystemAnalyzeUserVO>({});
+
     const workplaceJvmEChartsRef = useRef<echarts.EChartsType>()
     const workplaceMemoryEChartsRef = useRef<echarts.EChartsType>()
     const workplaceCpuEChartsRef = useRef<echarts.EChartsType>()
@@ -49,6 +60,30 @@ export default function () {
             setEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed, res.data.memoryTotal)
             setEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed, CpuTotal)
             setEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed, res.data.diskTotal)
+        })
+    }
+
+    function doSystemAnalyzeActiveUser() {
+        systemAnalyzeActiveUser().then(res => {
+            setActiveUser(res.data)
+        })
+    }
+
+    function doSystemAnalyzeActiveUserTrend() {
+        systemAnalyzeActiveUserTrend().then(res => {
+            setActiveUserTrendList(res.data)
+        })
+    }
+
+    function doSystemAnalyzeTrafficUsage() {
+        systemAnalyzeTrafficUsage().then(res => {
+            setTrafficUsage(res.data)
+        })
+    }
+
+    function doSystemAnalyzeUser() {
+        systemAnalyzeUser().then(res => {
+            setAnalyzeUser(res.data)
         })
     }
 
@@ -76,8 +111,21 @@ export default function () {
         workplaceDiskEChartsRef.current?.showLoading()
         doSetServerInfo()
         const serverInfoInterval = setInterval(doSetServerInfo, 15 * 1000);
+
+        doSystemAnalyzeActiveUser()
+        doSystemAnalyzeActiveUserTrend()
+        doSystemAnalyzeTrafficUsage()
+        doSystemAnalyzeUser()
+
+        const systemAnalyzeInterval = setInterval(() => {
+            doSystemAnalyzeActiveUserTrend()
+            doSystemAnalyzeTrafficUsage()
+            doSystemAnalyzeUser()
+        }, 15 * 1000);
+
         return () => {
             clearInterval(serverInfoInterval)
+            clearInterval(systemAnalyzeInterval)
         }
     }, [])
 

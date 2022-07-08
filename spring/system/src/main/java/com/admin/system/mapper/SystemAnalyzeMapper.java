@@ -19,6 +19,6 @@ public interface SystemAnalyzeMapper {
     SystemAnalyzeUserVO user();
 
     // 流量占用情况
-    SystemAnalyzeTrafficUsageVO trafficUsage();
+    List<SystemAnalyzeTrafficUsageVO> trafficUsage();
 
 }
