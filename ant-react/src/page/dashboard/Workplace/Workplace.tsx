@@ -1,5 +1,5 @@
 import {RouteContext, RouteContextType, StatisticCard} from "@ant-design/pro-components";
-import {Divider, Statistic} from "antd";
+import {Statistic} from "antd";
 import {useEffect, useState} from "react";
 import {serverWorkInfo, ServerWorkInfoVO} from "@/api/ServerController";
 
@@ -42,7 +42,6 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
-                        <Divider className={"h100"} type={value.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: '系统内存使用',
