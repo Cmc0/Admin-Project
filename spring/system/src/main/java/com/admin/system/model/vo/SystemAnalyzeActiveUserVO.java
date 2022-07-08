@@ -10,7 +10,7 @@ public class SystemAnalyzeActiveUserVO {
     private long yesterdayTotal;
 
     @ApiModelProperty(value = "每日活跃人数")
-    private long dailyTotal;
+    private double dailyTotal;
 
     @ApiModelProperty(value = "本月活跃人数")
     private long currentMonthTotal;
