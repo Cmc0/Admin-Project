@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.admin.system.mapper.SystemAnalyzeMapper">
+
+    <!-- 活跃人数分析 -->
+    <select id="activeUser" resultType="com.admin.system.model.vo.SystemAnalyzeActiveUserVO">
+        SELECT (
+                   SELECT COUNT(1)
+                   FROM sys_request a
+                   WHERE a.create_time <![CDATA[>=]]> DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                     AND a.create_time <![CDATA[<]]> CURDATE()
+               )                                    AS yesterdayTotal,
+               (SELECT COUNT(1) FROM sys_request a) AS dailyTotal
+    </select>
+
+    <!-- 活跃人数走势 -->
+    <select id="activeUserTrend" resultType="com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO">
+
+    </select>
+
+    <!-- 新增用户分析 -->
+    <select id="newUser" resultType="com.admin.system.model.vo.SystemAnalyzeNewUserVO">
+
+    </select>
+
+    <!-- 流量占用情况 -->
+    <select id="trafficUsage" resultType="com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO">
+
+    </select>
+
+</mapper>
