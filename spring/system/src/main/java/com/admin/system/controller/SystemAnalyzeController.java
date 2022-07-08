@@ -4,7 +4,7 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO;
 import com.admin.system.model.vo.SystemAnalyzeActiveUserVO;
 import com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO;
-import com.admin.system.model.vo.SystemAnalyzeUserAddAndDeleteVO;
+import com.admin.system.model.vo.SystemAnalyzeUserVO;
 import com.admin.system.service.SystemAnalyzeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,10 +39,10 @@ public class SystemAnalyzeController {
     }
 
     @PreAuthorize("hasAuthority('systemAnalyze:user')")
-    @PostMapping("/userAddAndDelete")
-    @ApiOperation(value = "用户新增和注销分析")
-    public ApiResultVO<SystemAnalyzeUserAddAndDeleteVO> userAddAndDelete() {
-        return ApiResultVO.ok(baseService.userAddAndDelete());
+    @PostMapping("/user")
+    @ApiOperation(value = "用户分析")
+    public ApiResultVO<SystemAnalyzeUserVO> user() {
+        return ApiResultVO.ok(baseService.user());
     }
 
     @PreAuthorize("hasAuthority('systemAnalyze:requset')")

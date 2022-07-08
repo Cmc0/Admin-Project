@@ -33,9 +33,39 @@
         GROUP BY DATE_FORMAT(a.create_time, '%Y%m')
     </select>
 
-    <!-- 用户新增和注销分析 -->
-    <select id="newUser" resultType="com.admin.system.model.vo.SystemAnalyzeUserAddAndDeleteVO">
-
+    <!-- 用户分析 -->
+    <select id="user" resultType="com.admin.system.model.vo.SystemAnalyzeUserVO">
+        SELECT (
+                   SELECT COUNT(1)
+                   FROM sys_user a
+                   WHERE TO_DAYS(CURDATE()) - TO_DAYS(a.create_time) = 1)
+                   AS yesterdayAddTotal,
+               (
+                   SELECT TRUNCATE
+                              (SUM(a.total) / (TO_DAYS(CURDATE()) - TO_DAYS(MIN(a.createTime))), 2)
+                   FROM (
+                            SELECT COUNT(1)           AS total,
+                                   MIN(a.create_time) AS createTime
+                            FROM sys_user a
+                            GROUP BY DATE_FORMAT(a.create_time, '%Y%m%d')) a
+               )   AS dailyAddTotal,
+               (
+                   SELECT COUNT(1)
+                   FROM sys_user a
+                   WHERE TO_DAYS(
+                                 CURDATE()) - TO_DAYS(a.update_time) = 1
+                     AND a.del_flag = TRUE
+               )   AS yesterdayDeleteTotal,
+               (
+                   SELECT TRUNCATE
+                              (SUM(a.total) / (TO_DAYS(CURDATE()) - TO_DAYS(MIN(a.createTime))), 2)
+                   FROM (
+                            SELECT COUNT(1)           AS total,
+                                   MIN(a.create_time) AS createTime
+                            FROM sys_user a
+                            WHERE a.del_flag = TRUE
+                            GROUP BY DATE_FORMAT(a.update_time, '%Y%m%d')) a
+               )   AS dailyDeleteTotal
     </select>
 
     <!-- 流量占用情况 -->
