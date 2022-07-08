@@ -70,7 +70,10 @@
 
     <!-- 流量占用情况 -->
     <select id="trafficUsage" resultType="com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO">
-
+        SELECT COUNT(1) AS total,
+               a.category
+        FROM sys_request a
+        GROUP BY a.category
     </select>
 
 </mapper>
