@@ -90,8 +90,16 @@ export default function () {
                             statistic={{
                                 title: 'JVM内存使用',
                                 value: (getNumber(serverInfo.jvmUsedMemory)),
-                                description: <Statistic title={getTitle(serverInfo.jvmTotalMemory)}
-                                                        value={getPercentage(serverInfo.jvmTotalMemory, serverInfo.jvmUsedMemory)}/>,
+                                description: <Statistic
+                                    title={getTitle(serverInfo.jvmTotalMemory)}
+                                    value={getPercentage(serverInfo.jvmTotalMemory, serverInfo.jvmUsedMemory)}
+                                    valueRender={(node) => {
+                                        return <div
+                                            className={getValueClassName(serverInfo.jvmTotalMemory, serverInfo.jvmUsedMemory)}>
+                                            {node}
+                                        </div>
+                                    }}
+                                />,
                             }}
                             chart={
                                 <div id={WorkplaceJvmECharts} className={"w-100 h-100"}/>
@@ -102,8 +110,15 @@ export default function () {
                             statistic={{
                                 title: '系统内存使用',
                                 value: (getNumber(serverInfo.memoryUsed)),
-                                description: <Statistic title={getTitle(serverInfo.memoryTotal)}
-                                                        value={getPercentage(serverInfo.memoryTotal, serverInfo.memoryUsed)}/>,
+                                description: <Statistic
+                                    title={getTitle(serverInfo.memoryTotal)}
+                                    value={getPercentage(serverInfo.memoryTotal, serverInfo.memoryUsed)}
+                                    valueRender={(node) => {
+                                        return <div
+                                            className={getValueClassName(serverInfo.memoryTotal, serverInfo.memoryUsed)}>
+                                            {node}
+                                        </div>
+                                    }}/>,
                             }}
                             chart={
                                 <div id={WorkplaceMemoryECharts} className={"w-100 h-100"}/>
@@ -114,8 +129,16 @@ export default function () {
                             statistic={{
                                 title: 'CPU使用',
                                 value: (serverInfo.cpuUsed || 0),
-                                description: <Statistic title={`占比 ${CpuTotal}`}
-                                                        value={getPercentage(CpuTotal, serverInfo.cpuUsed)}/>,
+                                description: <Statistic
+                                    title={`占比 ${CpuTotal}`}
+                                    value={getPercentage(CpuTotal, serverInfo.cpuUsed)}
+                                    valueRender={(node) => {
+                                        return <div
+                                            className={getValueClassName(CpuTotal, serverInfo.cpuUsed)}>
+                                            {node}
+                                        </div>
+                                    }}
+                                />,
                             }}
                             chart={
                                 <div id={WorkplaceCpuECharts} className={"w-100 h-100"}/>
@@ -126,8 +149,16 @@ export default function () {
                             statistic={{
                                 title: '磁盘使用',
                                 value: (getNumber(serverInfo.diskUsed)),
-                                description: <Statistic title={getTitle(serverInfo.diskTotal)}
-                                                        value={getPercentage(serverInfo.diskTotal, serverInfo.diskUsed)}/>,
+                                description: <Statistic
+                                    title={getTitle(serverInfo.diskTotal)}
+                                    value={getPercentage(serverInfo.diskTotal, serverInfo.diskUsed)}
+                                    valueRender={(node) => {
+                                        return <div
+                                            className={getValueClassName(serverInfo.diskTotal, serverInfo.diskUsed)}>
+                                            {node}
+                                        </div>
+                                    }}
+                                />,
                             }}
                             chart={
                                 <div id={WorkplaceDiskECharts} className={"w-100 h-100"}/>
@@ -154,10 +185,19 @@ function getTitle(total: number = 0) {
     return '占比 ' + getNumber(total)
 }
 
+// 获取：value的 className
+function getValueClassName(total: number = 0, value: number = 0) {
+    return getPercentage(total, value, false) > 80 ? 'red4' : 'green3'
+}
+
 // 获取：百分比
-function getPercentage(total: number = 0, value: number = 0) {
-    if (total === 0 && value === 0) {
-        return '0%'
+function getPercentage(total: number = 0, value: number = 0, addStrFlag: boolean = true) {
+    let res: string | number = 0;
+    if (total !== 0) {
+        res = Math.round((value / total) * 10000) / 100
     }
-    return Math.round((value / total) * 10000) / 100 + '%'
+    if (addStrFlag) {
+        res = res + '%'
+    }
+    return res
 }
