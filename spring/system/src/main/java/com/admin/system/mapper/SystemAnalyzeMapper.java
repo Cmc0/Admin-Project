@@ -5,13 +5,15 @@ import com.admin.system.model.vo.SystemAnalyzeActiveUserVO;
 import com.admin.system.model.vo.SystemAnalyzeNewUserVO;
 import com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO;
 
+import java.util.List;
+
 public interface SystemAnalyzeMapper {
 
     // 活跃人数分析
     SystemAnalyzeActiveUserVO activeUser();
 
     // 活跃人数走势
-    SystemAnalyzeActiveUserTrendVO activeUserTrend();
+    List<SystemAnalyzeActiveUserTrendVO> activeUserTrend();
 
     // 新增用户分析
     SystemAnalyzeNewUserVO newUser();

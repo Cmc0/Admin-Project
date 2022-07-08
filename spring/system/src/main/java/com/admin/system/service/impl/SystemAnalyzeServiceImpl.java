@@ -9,6 +9,7 @@ import com.admin.system.service.SystemAnalyzeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class SystemAnalyzeServiceImpl implements SystemAnalyzeService {
@@ -28,7 +29,7 @@ public class SystemAnalyzeServiceImpl implements SystemAnalyzeService {
      * 活跃人数走势
      */
     @Override
-    public SystemAnalyzeActiveUserTrendVO activeUserTrend() {
+    public List<SystemAnalyzeActiveUserTrendVO> activeUserTrend() {
         return baseMapper.activeUserTrend();
     }
 

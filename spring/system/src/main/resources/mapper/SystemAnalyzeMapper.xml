@@ -35,7 +35,17 @@
 
     <!-- 活跃人数走势 -->
     <select id="activeUserTrend" resultType="com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO">
-
+        SELECT DATE_FORMAT(a.create_time, '%Y-%m') AS monthStr,
+               COUNT(DISTINCT a.create_id)         AS total
+        FROM sys_request a
+        WHERE a.create_id != - 1
+          AND PERIOD_DIFF(
+                      DATE_FORMAT(CURDATE(), '%Y%m'),
+                      DATE_FORMAT(a.create_time, '%Y%m')) &lt;= 7
+        GROUP BY DATE_FORMAT(
+                         a.create_time,
+                         '%Y%m'
+                     )
     </select>
 
     <!-- 新增用户分析 -->

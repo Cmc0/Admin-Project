@@ -5,11 +5,13 @@ import com.admin.system.model.vo.SystemAnalyzeActiveUserVO;
 import com.admin.system.model.vo.SystemAnalyzeNewUserVO;
 import com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO;
 
+import java.util.List;
+
 public interface SystemAnalyzeService {
 
     SystemAnalyzeActiveUserVO activeUser();
 
-    SystemAnalyzeActiveUserTrendVO activeUserTrend();
+    List<SystemAnalyzeActiveUserTrendVO> activeUserTrend();
 
     SystemAnalyzeNewUserVO newUser();
 
