@@ -215,27 +215,9 @@ export default function () {
                                         }}
                                     />
                                 </ProCard>
-                                <ProCard split="vertical">
-                                    <StatisticCard
-                                        statistic={{
-                                            title: '昨日累计流量',
-                                            value: 234,
-                                            description: <StatisticCard.Statistic title="较每日累计流量" value="8.04%"
-                                                                                  trend="down"/>,
-                                        }}
-                                    />
-                                    <StatisticCard
-                                        statistic={{
-                                            title: '本月累计流量',
-                                            value: 234,
-                                            description: <StatisticCard.Statistic title="月同比" value="8.04%"
-                                                                                  trend="up"/>,
-                                        }}
-                                    />
-                                </ProCard>
                             </ProCard>
                             <StatisticCard
-                                title="流量走势"
+                                title="活跃人数走势"
                                 chart={
                                     <img
                                         src="https://gw.alipayobjects.com/zos/alicdn/_dZIob2NB/zhuzhuangtu.svg"
