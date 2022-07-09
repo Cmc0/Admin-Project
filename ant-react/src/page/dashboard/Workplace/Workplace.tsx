@@ -88,7 +88,7 @@ function setActiveUserTrendEChartsOption(data: SystemAnalyzeActiveUserTrendVO[] 
 
 }
 
-function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | undefined, trafficUsageEChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>) {
+function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | undefined, trafficUsageEChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>, isMobile: React.MutableRefObject<boolean>) {
 
     trafficUsageEChartsRef.current?.hideLoading()
 
@@ -98,12 +98,13 @@ function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | unde
         tooltip: {
             trigger: 'item'
         },
-        legend: {
-            orient: 'vertical',
-            right: '10',
-            top: '10',
-            bottom: '10',
-        },
+        legend: isMobile.current ?
+            {} : {
+                orient: 'vertical',
+                right: '10',
+                top: '10',
+                bottom: '10',
+            },
         series: [
             {
                 type: 'pie',
@@ -148,6 +149,8 @@ export default function () {
     const activeUserTrendEChartsAdapterRef = useRef<HTMLDivElement>(null)
     const trafficUsageEChartsAdapterRef = useRef<HTMLDivElement>(null)
 
+    const isMobile = useRef<boolean>(false)
+
     function doSetServerInfo() {
         serverWorkInfo().then(res => {
             setServerInfo(res.data)
@@ -174,7 +177,7 @@ export default function () {
     function doSystemAnalyzeTrafficUsage() {
         systemAnalyzeTrafficUsage().then(res => {
             setTrafficUsage(res.data)
-            setTrafficUsageEChartsOption(res.data, trafficUsageEChartsRef)
+            setTrafficUsageEChartsOption(res.data, trafficUsageEChartsRef, isMobile)
         })
     }
 
@@ -222,12 +225,14 @@ export default function () {
         const activeUserTrendEChartsElement = document.getElementById(ActiveUserTrendEChartsId)!;
         const trafficUsageEChartsElement = document.getElementById(TrafficUsageEChartsId)!;
 
+        isMobile.current = window.innerWidth < CommonConstant.MOBILE_WIDTH
+
         const activeUserTrendEChartsAdapterWidth = activeUserTrendEChartsAdapterRef.current?.clientWidth!;
 
         activeUserTrendEChartsElement.style.width = activeUserTrendEChartsAdapterWidth + 'px'
-        activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterWidth / (activeUserTrendEChartsAdapterWidth < CommonConstant.MOBILE_WIDTH ? 1.3 : 2) + 'px'
+        activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterWidth / (isMobile.current ? 1.1 : 2) + 'px'
 
-        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / 1.6;
+        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / (isMobile.current ? 1 : 1.6);
 
         trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterWidth + 'px'
         trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + 'px'
