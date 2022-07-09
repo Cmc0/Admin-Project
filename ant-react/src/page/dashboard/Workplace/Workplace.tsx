@@ -14,17 +14,17 @@ import {
     SystemAnalyzeUserVO
 } from "@/api/SystemAnalyzeController";
 
-const WorkplaceJvmECharts = "WorkplaceJvmECharts"
-const WorkplaceMemoryECharts = "WorkplaceMemoryECharts"
-const WorkplaceCpuECharts = "WorkplaceCpuECharts"
-const WorkplaceDiskECharts = "WorkplaceDiskECharts"
+const WorkplaceJvmEChartsId = "WorkplaceJvmEChartsId"
+const WorkplaceMemoryEChartsId = "WorkplaceMemoryEChartsId"
+const WorkplaceCpuEChartsId = "WorkplaceCpuEChartsId"
+const WorkplaceDiskEChartsId = "WorkplaceDiskEChartsId"
 
-const ActiveUserTrendECharts = "ActiveUserTrendECharts"
-const TrafficUsageECharts = "TrafficUsageECharts"
+const ActiveUserTrendEChartsId = "ActiveUserTrendEChartsId"
+const TrafficUsageEChartsId = "TrafficUsageEChartsId"
 
 const CpuTotal = 100
 
-function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>, freeTotal: number | undefined, usedTotal: number | undefined, total: number | undefined) {
+function setServerInfoEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>, freeTotal: number | undefined, usedTotal: number | undefined, total: number | undefined) {
 
     eachChartsRef.current?.hideLoading()
 
@@ -47,6 +47,34 @@ function setEChartsOption(eachChartsRef: React.MutableRefObject<echarts.EChartsT
 
 }
 
+function setActiveUserTrendEChartsOption(data: SystemAnalyzeActiveUserTrendVO[] | undefined, activeUserTrendEChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>) {
+
+    activeUserTrendEChartsRef.current?.hideLoading()
+
+    const monthStrList = data?.map(it => it.monthStr!);
+    const totalList = data?.map(it => it.total);
+
+    activeUserTrendEChartsRef.current?.setOption({
+        xAxis: {
+            data: monthStrList
+        },
+        yAxis: {},
+        series: [
+            {
+                data: totalList,
+                type: 'line'
+            }
+        ]
+    })
+
+}
+
+function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO, trafficUsageEChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>) {
+
+    trafficUsageEChartsRef.current?.hideLoading()
+
+}
+
 export default function () {
 
     const [serverInfo, setServerInfo] = useState<ServerWorkInfoVO>({});
@@ -60,13 +88,16 @@ export default function () {
     const workplaceCpuEChartsRef = useRef<echarts.EChartsType>()
     const workplaceDiskEChartsRef = useRef<echarts.EChartsType>()
 
+    const activeUserTrendEChartsRef = useRef<echarts.EChartsType>()
+    const trafficUsageEChartsRef = useRef<echarts.EChartsType>()
+
     function doSetServerInfo() {
         serverWorkInfo().then(res => {
             setServerInfo(res.data)
-            setEChartsOption(workplaceJvmEChartsRef, res.data.jvmFreeMemory, res.data.jvmUsedMemory, res.data.jvmTotalMemory)
-            setEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed, res.data.memoryTotal)
-            setEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed, CpuTotal)
-            setEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed, res.data.diskTotal)
+            setServerInfoEChartsOption(workplaceJvmEChartsRef, res.data.jvmFreeMemory, res.data.jvmUsedMemory, res.data.jvmTotalMemory)
+            setServerInfoEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed, res.data.memoryTotal)
+            setServerInfoEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed, CpuTotal)
+            setServerInfoEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed, res.data.diskTotal)
         })
     }
 
@@ -79,12 +110,14 @@ export default function () {
     function doSystemAnalyzeActiveUserTrend() {
         systemAnalyzeActiveUserTrend().then(res => {
             setActiveUserTrendList(res.data)
+            setActiveUserTrendEChartsOption(res.data, activeUserTrendEChartsRef)
         })
     }
 
     function doSystemAnalyzeTrafficUsage() {
         systemAnalyzeTrafficUsage().then(res => {
             setTrafficUsage(res.data)
+            setTrafficUsageEChartsOption(res.data, trafficUsageEChartsRef)
         })
     }
 
@@ -95,6 +128,7 @@ export default function () {
     }
 
     useEffect(() => {
+        // 服务器运行情况 ↓
         if (workplaceJvmEChartsRef.current) {
             workplaceJvmEChartsRef.current.dispose()
         }
@@ -107,10 +141,10 @@ export default function () {
         if (workplaceDiskEChartsRef.current) {
             workplaceDiskEChartsRef.current.dispose()
         }
-        workplaceJvmEChartsRef.current = echarts.init(document.getElementById(WorkplaceJvmECharts)!)
-        workplaceMemoryEChartsRef.current = echarts.init(document.getElementById(WorkplaceMemoryECharts)!)
-        workplaceCpuEChartsRef.current = echarts.init(document.getElementById(WorkplaceCpuECharts)!)
-        workplaceDiskEChartsRef.current = echarts.init(document.getElementById(WorkplaceDiskECharts)!)
+        workplaceJvmEChartsRef.current = echarts.init(document.getElementById(WorkplaceJvmEChartsId)!)
+        workplaceMemoryEChartsRef.current = echarts.init(document.getElementById(WorkplaceMemoryEChartsId)!)
+        workplaceCpuEChartsRef.current = echarts.init(document.getElementById(WorkplaceCpuEChartsId)!)
+        workplaceDiskEChartsRef.current = echarts.init(document.getElementById(WorkplaceDiskEChartsId)!)
 
         workplaceJvmEChartsRef.current?.showLoading()
         workplaceMemoryEChartsRef.current?.showLoading()
@@ -118,6 +152,21 @@ export default function () {
         workplaceDiskEChartsRef.current?.showLoading()
         doSetServerInfo()
         const serverInfoInterval = setInterval(doSetServerInfo, 15 * 1000);
+        // 服务器运行情况 ↑
+
+        // 平台概览 ↓
+        if (activeUserTrendEChartsRef.current) {
+            activeUserTrendEChartsRef.current.dispose()
+        }
+        if (trafficUsageEChartsRef.current) {
+            trafficUsageEChartsRef.current.dispose()
+        }
+
+        activeUserTrendEChartsRef.current = echarts.init(document.getElementById(ActiveUserTrendEChartsId)!)
+        trafficUsageEChartsRef.current = echarts.init(document.getElementById(TrafficUsageEChartsId)!)
+
+        activeUserTrendEChartsRef.current?.showLoading()
+        trafficUsageEChartsRef.current?.showLoading()
 
         doSystemAnalyzeActiveUser()
         doSystemAnalyzeActiveUserTrend()
@@ -130,9 +179,23 @@ export default function () {
             doSystemAnalyzeUser()
         }, 15 * 1000);
 
+        // 平台概览 ↑
+
+        function resizeListener() {
+            workplaceJvmEChartsRef.current?.resize()
+            workplaceMemoryEChartsRef.current?.resize()
+            workplaceCpuEChartsRef.current?.resize()
+            workplaceDiskEChartsRef.current?.resize()
+            activeUserTrendEChartsRef.current?.resize()
+            trafficUsageEChartsRef.current?.resize()
+        }
+
+        window.addEventListener('resize', resizeListener)
+
         return () => {
             clearInterval(serverInfoInterval)
             clearInterval(systemAnalyzeInterval)
+            window.removeEventListener('resize', resizeListener)
         }
     }, [])
 
@@ -157,7 +220,7 @@ export default function () {
                                 />,
                             }}
                             chart={
-                                <div id={WorkplaceJvmECharts} className={"w-100 h-100"}/>
+                                <div id={WorkplaceJvmEChartsId} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -177,7 +240,7 @@ export default function () {
                                     }}/>,
                             }}
                             chart={
-                                <div id={WorkplaceMemoryECharts} className={"w-100 h-100"}/>
+                                <div id={WorkplaceMemoryEChartsId} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -198,7 +261,7 @@ export default function () {
                                 />,
                             }}
                             chart={
-                                <div id={WorkplaceCpuECharts} className={"w-100 h-100"}/>
+                                <div id={WorkplaceCpuEChartsId} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -219,7 +282,7 @@ export default function () {
                                 />,
                             }}
                             chart={
-                                <div id={WorkplaceDiskECharts} className={"w-100 h-100"}/>
+                                <div id={WorkplaceDiskEChartsId} className={"w-100 h-100"}/>
                             }
                             chartPlacement="left"
                         />
@@ -279,14 +342,16 @@ export default function () {
                             <StatisticCard
                                 title="活跃人数走势"
                                 chart={
-                                    <div id={ActiveUserTrendECharts} className={"w-315 h-180"}/>
+                                    <div className={"wh100"}>
+                                        <div id={ActiveUserTrendEChartsId} className={"wh100"}/>
+                                    </div>
                                 }
                             />
                         </ProCard>
                         <StatisticCard
                             title="流量占用情况"
                             chart={
-                                <div id={TrafficUsageECharts} className={"w-315 h-315"}/>
+                                <div id={TrafficUsageEChartsId} className={"w-315 h-315"}/>
                             }
                         />
                     </ProCard>
