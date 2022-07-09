@@ -92,6 +92,41 @@ function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | unde
 
     trafficUsageEChartsRef.current?.hideLoading()
 
+    const dataList = data?.map(it => ({name: String(it.category), value: it.total}));
+
+    trafficUsageEChartsRef.current?.setOption({
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            right: '10',
+            top: '10',
+            bottom: '10',
+        },
+        series: [
+            {
+                type: 'pie',
+                radius: ['43%', '70%'],
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 40,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: dataList
+            }
+        ]
+    })
+
 }
 
 export default function () {
@@ -192,7 +227,7 @@ export default function () {
         activeUserTrendEChartsElement.style.width = activeUserTrendEChartsAdapterWidth + 'px'
         activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterWidth / (activeUserTrendEChartsAdapterWidth < CommonConstant.MOBILE_WIDTH ? 1.3 : 2) + 'px'
 
-        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth!;
+        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / 1.6;
 
         trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterWidth + 'px'
         trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + 'px'
@@ -375,7 +410,7 @@ export default function () {
                             title="流量占用情况"
                             chart={
                                 <div ref={trafficUsageEChartsAdapterRef}>
-                                    <div id={TrafficUsageEChartsId} className={"w-315 h-315"}/>
+                                    <div id={TrafficUsageEChartsId}/>
                                 </div>
                             }
                         />
