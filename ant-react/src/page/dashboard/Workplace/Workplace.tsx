@@ -107,7 +107,6 @@ function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | unde
             },
         series: [
             {
-                name: '总请求数',
                 type: 'pie',
                 radius: ['43%', '70%'],
                 data: dataList
@@ -140,11 +139,11 @@ export default function () {
 
     function doSetServerInfo() {
         serverWorkInfo().then(res => {
-            setServerInfo(res.data)
             setServerInfoEChartsOption(workplaceJvmEChartsRef, res.data.jvmFreeMemory, res.data.jvmUsedMemory, res.data.jvmTotalMemory)
             setServerInfoEChartsOption(workplaceMemoryEChartsRef, res.data.memoryAvailable, res.data.memoryUsed, res.data.memoryTotal)
             setServerInfoEChartsOption(workplaceCpuEChartsRef, (CpuTotal - res.data.cpuUsed!), res.data.cpuUsed, CpuTotal)
             setServerInfoEChartsOption(workplaceDiskEChartsRef, res.data.diskUsable, res.data.diskUsed, res.data.diskTotal)
+            setServerInfo(res.data)
         })
     }
 
@@ -156,15 +155,15 @@ export default function () {
 
     function doSystemAnalyzeActiveUserTrend() {
         systemAnalyzeActiveUserTrend().then(res => {
-            setActiveUserTrendList(res.data)
             setActiveUserTrendEChartsOption(res.data, activeUserTrendEChartsRef)
+            setActiveUserTrendList(res.data)
         })
     }
 
     function doSystemAnalyzeTrafficUsage() {
         systemAnalyzeTrafficUsage().then(res => {
-            setTrafficUsage(res.data)
             setTrafficUsageEChartsOption(res.data, trafficUsageEChartsRef, isMobile)
+            setTrafficUsage(res.data)
         })
     }
 
@@ -222,7 +221,7 @@ export default function () {
         const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / (isMobile.current ? 1 : 1.6);
 
         trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterWidth + 'px'
-        trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + 'px'
+        trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + 90 + 'px'
 
         activeUserTrendEChartsRef.current = echarts.init(activeUserTrendEChartsElement)
         trafficUsageEChartsRef.current = echarts.init(trafficUsageEChartsElement)
