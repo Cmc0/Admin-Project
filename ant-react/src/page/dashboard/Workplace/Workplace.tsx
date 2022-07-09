@@ -221,7 +221,7 @@ export default function () {
         const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / (isMobile.current ? 1 : 1.6);
 
         trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterWidth + 'px'
-        trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + 90 + 'px'
+        trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + (isMobile.current ? 120 : 0) + 'px'
 
         activeUserTrendEChartsRef.current = echarts.init(activeUserTrendEChartsElement)
         trafficUsageEChartsRef.current = echarts.init(trafficUsageEChartsElement)
