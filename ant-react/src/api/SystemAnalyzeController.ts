@@ -12,7 +12,7 @@ export function systemAnalyzeActiveUser(config?: AxiosRequestConfig) {
 }
 
 export interface SystemAnalyzeActiveUserTrendVO {
-    monthStr?: string // 年月，格式：2022-07-08（字符串）
+    monthDataStr?: string // 年月，格式：2022年07月（字符串）
     total?: number // 该月活跃人数
 }
 
@@ -28,7 +28,7 @@ export interface SystemAnalyzeTrafficUsageVO {
 
 // 平台系统-分析 流量占用情况
 export function systemAnalyzeTrafficUsage(config?: AxiosRequestConfig) {
-    return $http.myPost<SystemAnalyzeTrafficUsageVO>('/systemAnalyze/trafficUsage', undefined, config)
+    return $http.myProTreePost<SystemAnalyzeTrafficUsageVO>('/systemAnalyze/trafficUsage', undefined, config)
 }
 
 export interface SystemAnalyzeUserVO {

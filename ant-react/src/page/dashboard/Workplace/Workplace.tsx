@@ -52,25 +52,43 @@ function setActiveUserTrendEChartsOption(data: SystemAnalyzeActiveUserTrendVO[] 
 
     activeUserTrendEChartsRef.current?.hideLoading()
 
-    const monthStrList = data?.map(it => it.monthStr!);
+    const monthDataStrList = data?.map(it => it.monthDataStr!);
     const totalList = data?.map(it => it.total);
 
     activeUserTrendEChartsRef.current?.setOption({
         xAxis: {
-            data: monthStrList
+            data: monthDataStrList
+        },
+        tooltip: {
+            trigger: 'axis'
         },
         yAxis: {},
         series: [
             {
                 data: totalList,
-                type: 'line'
+                type: 'line',
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: '#5B8FF9'
+                        },
+                        {
+                            offset: 1,
+                            color: '#FFFFFF'
+                        }
+                    ])
+                },
+                markLine: {
+                    data: [{type: 'average'}]
+                }
             }
         ]
     })
 
 }
 
-function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO, trafficUsageEChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>) {
+function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | undefined, trafficUsageEChartsRef: React.MutableRefObject<echarts.EChartsType | undefined>) {
 
     trafficUsageEChartsRef.current?.hideLoading()
 
@@ -81,7 +99,7 @@ export default function () {
     const [serverInfo, setServerInfo] = useState<ServerWorkInfoVO>({});
     const [activeUser, setActiveUser] = useState<SystemAnalyzeActiveUserVO>({});
     const [activeUserTrendList, setActiveUserTrendList] = useState<SystemAnalyzeActiveUserTrendVO[] | undefined>([]);
-    const [trafficUsage, setTrafficUsage] = useState<SystemAnalyzeTrafficUsageVO>({});
+    const [trafficUsage, setTrafficUsage] = useState<SystemAnalyzeTrafficUsageVO[] | undefined>([]);
     const [analyzeUser, setAnalyzeUser] = useState<SystemAnalyzeUserVO>({});
 
     const workplaceJvmEChartsRef = useRef<echarts.EChartsType>()
