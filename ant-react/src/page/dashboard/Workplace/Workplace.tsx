@@ -91,6 +91,9 @@ export default function () {
     const activeUserTrendEChartsRef = useRef<echarts.EChartsType>()
     const trafficUsageEChartsRef = useRef<echarts.EChartsType>()
 
+    const activeUserTrendEChartsAdapterRef = useRef<HTMLDivElement>(null)
+    const trafficUsageEChartsAdapterRef = useRef<HTMLDivElement>(null)
+
     function doSetServerInfo() {
         serverWorkInfo().then(res => {
             setServerInfo(res.data)
@@ -162,8 +165,21 @@ export default function () {
             trafficUsageEChartsRef.current.dispose()
         }
 
-        activeUserTrendEChartsRef.current = echarts.init(document.getElementById(ActiveUserTrendEChartsId)!)
-        trafficUsageEChartsRef.current = echarts.init(document.getElementById(TrafficUsageEChartsId)!)
+        const activeUserTrendEChartsElement = document.getElementById(ActiveUserTrendEChartsId)!;
+        const trafficUsageEChartsElement = document.getElementById(TrafficUsageEChartsId)!;
+
+        activeUserTrendAndTrafficUsageEChartsSetWidthAndHeight()
+
+        function activeUserTrendAndTrafficUsageEChartsSetWidthAndHeight() {
+            activeUserTrendEChartsElement.style.width = activeUserTrendEChartsAdapterRef.current?.clientWidth + 'px'
+            activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterRef.current?.clientWidth! / 1.5 + 'px'
+
+            trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterRef.current?.clientWidth + 'px'
+            trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterRef.current?.clientWidth + 'px'
+        }
+
+        activeUserTrendEChartsRef.current = echarts.init(activeUserTrendEChartsElement)
+        trafficUsageEChartsRef.current = echarts.init(trafficUsageEChartsElement)
 
         activeUserTrendEChartsRef.current?.showLoading()
         trafficUsageEChartsRef.current?.showLoading()
@@ -182,10 +198,7 @@ export default function () {
         // 平台概览 ↑
 
         function resizeListener() {
-            workplaceJvmEChartsRef.current?.resize()
-            workplaceMemoryEChartsRef.current?.resize()
-            workplaceCpuEChartsRef.current?.resize()
-            workplaceDiskEChartsRef.current?.resize()
+            activeUserTrendAndTrafficUsageEChartsSetWidthAndHeight()
             activeUserTrendEChartsRef.current?.resize()
             trafficUsageEChartsRef.current?.resize()
         }
@@ -342,8 +355,8 @@ export default function () {
                             <StatisticCard
                                 title="活跃人数走势"
                                 chart={
-                                    <div className={"wh100"}>
-                                        <div id={ActiveUserTrendEChartsId} className={"wh100"}/>
+                                    <div ref={activeUserTrendEChartsAdapterRef}>
+                                        <div id={ActiveUserTrendEChartsId}/>
                                     </div>
                                 }
                             />
@@ -351,7 +364,9 @@ export default function () {
                         <StatisticCard
                             title="流量占用情况"
                             chart={
-                                <div id={TrafficUsageEChartsId} className={"w-315 h-315"}/>
+                                <div ref={trafficUsageEChartsAdapterRef}>
+                                    <div id={TrafficUsageEChartsId} className={"w-315 h-315"}/>
+                                </div>
                             }
                         />
                     </ProCard>
