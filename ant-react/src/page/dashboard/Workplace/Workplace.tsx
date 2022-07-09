@@ -41,7 +41,7 @@ function setServerInfoEChartsOption(eachChartsRef: React.MutableRefObject<echart
                 data: [
                     {value: usedTotal, itemStyle: {color: getDangerFlag(total, usedTotal) ? '#cf1322' : '#6395F9'}},
                     {value: freeTotal, itemStyle: {color: '#F0F0F0'}},
-                ]
+                ],
             }
         ]
     })
@@ -92,7 +92,7 @@ function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | unde
 
     trafficUsageEChartsRef.current?.hideLoading()
 
-    const dataList = data?.map(it => ({name: String(it.category), value: it.total}));
+    const dataList = data?.map(it => ({name: it.categoryStr, value: it.total}));
 
     trafficUsageEChartsRef.current?.setOption({
         tooltip: {
@@ -107,22 +107,9 @@ function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | unde
             },
         series: [
             {
+                name: '总请求数',
                 type: 'pie',
                 radius: ['43%', '70%'],
-                label: {
-                    show: false,
-                    position: 'center'
-                },
-                emphasis: {
-                    label: {
-                        show: true,
-                        fontSize: 40,
-                        fontWeight: 'bold'
-                    }
-                },
-                labelLine: {
-                    show: false
-                },
                 data: dataList
             }
         ]

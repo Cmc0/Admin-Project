@@ -75,9 +75,11 @@
 
     <!-- 流量占用情况 -->
     <select id="trafficUsage" resultType="com.admin.system.model.vo.SystemAnalyzeTrafficUsageVO">
-        SELECT COUNT(1) AS total,
-               a.category
+        SELECT COUNT(1)               AS total,
+               IFNULL(b.`name`, '未知') AS categoryStr
         FROM sys_request a
+                 LEFT JOIN sys_dict b ON b.`value` = a.category
+            AND b.dict_key = 'request_category'
         GROUP BY a.category
     </select>
 

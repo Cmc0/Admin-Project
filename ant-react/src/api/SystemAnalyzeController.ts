@@ -22,7 +22,7 @@ export function systemAnalyzeActiveUserTrend(config?: AxiosRequestConfig) {
 }
 
 export interface SystemAnalyzeTrafficUsageVO {
-    category?: number // 请求类别
+    categoryStr?: string // 请求类别
     total?: number // 该类别请求总数
 }
 
