@@ -9,4 +9,5 @@ export default {
     RANDOM_AVATAR_URL: 'https://joeschmoe.io/api/v1/random', // 随机头像的地址
     MODAL_FORM_WIDTH: 450, // ModalForm 宽度
     IMAGE_FILE_ACCEPT_TYPE: ".png,.jpeg,.jpg", // 图片文件的类型
+    MOBILE_WIDTH: 596, // 小于这个数值，就是移动端
 }

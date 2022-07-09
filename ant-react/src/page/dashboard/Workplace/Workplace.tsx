@@ -13,6 +13,7 @@ import {
     systemAnalyzeUser,
     SystemAnalyzeUserVO
 } from "@/api/SystemAnalyzeController";
+import CommonConstant from "@/model/constant/CommonConstant";
 
 const WorkplaceJvmEChartsId = "WorkplaceJvmEChartsId"
 const WorkplaceMemoryEChartsId = "WorkplaceMemoryEChartsId"
@@ -168,15 +169,15 @@ export default function () {
         const activeUserTrendEChartsElement = document.getElementById(ActiveUserTrendEChartsId)!;
         const trafficUsageEChartsElement = document.getElementById(TrafficUsageEChartsId)!;
 
-        activeUserTrendAndTrafficUsageEChartsSetWidthAndHeight()
+        const activeUserTrendEChartsAdapterWidth = activeUserTrendEChartsAdapterRef.current?.clientWidth!;
 
-        function activeUserTrendAndTrafficUsageEChartsSetWidthAndHeight() {
-            activeUserTrendEChartsElement.style.width = activeUserTrendEChartsAdapterRef.current?.clientWidth + 'px'
-            activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterRef.current?.clientWidth! / 1.5 + 'px'
+        activeUserTrendEChartsElement.style.width = activeUserTrendEChartsAdapterWidth + 'px'
+        activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterWidth / (activeUserTrendEChartsAdapterWidth < CommonConstant.MOBILE_WIDTH ? 1.3 : 2) + 'px'
 
-            trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterRef.current?.clientWidth + 'px'
-            trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterRef.current?.clientWidth + 'px'
-        }
+        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth!;
+
+        trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterWidth + 'px'
+        trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + 'px'
 
         activeUserTrendEChartsRef.current = echarts.init(activeUserTrendEChartsElement)
         trafficUsageEChartsRef.current = echarts.init(trafficUsageEChartsElement)
@@ -197,18 +198,9 @@ export default function () {
 
         // 平台概览 ↑
 
-        function resizeListener() {
-            activeUserTrendAndTrafficUsageEChartsSetWidthAndHeight()
-            activeUserTrendEChartsRef.current?.resize()
-            trafficUsageEChartsRef.current?.resize()
-        }
-
-        window.addEventListener('resize', resizeListener)
-
         return () => {
             clearInterval(serverInfoInterval)
             clearInterval(systemAnalyzeInterval)
-            window.removeEventListener('resize', resizeListener)
         }
     }, [])
 
