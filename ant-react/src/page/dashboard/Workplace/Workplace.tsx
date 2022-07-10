@@ -218,7 +218,7 @@ export default function () {
         activeUserTrendEChartsElement.style.width = activeUserTrendEChartsAdapterWidth + 'px'
         activeUserTrendEChartsElement.style.height = activeUserTrendEChartsAdapterWidth / (isMobile.current ? 1.1 : 2) + 'px'
 
-        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / (isMobile.current ? 1 : 1.6);
+        const trafficUsageEChartsAdapterWidth = trafficUsageEChartsAdapterRef.current?.clientWidth! / (isMobile.current ? 1 : 1.5);
 
         trafficUsageEChartsElement.style.width = trafficUsageEChartsAdapterWidth + 'px'
         trafficUsageEChartsElement.style.height = trafficUsageEChartsAdapterWidth + (isMobile.current ? 120 : 0) + 'px'
