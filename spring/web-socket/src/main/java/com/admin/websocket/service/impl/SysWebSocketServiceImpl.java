@@ -1,6 +1,7 @@
 package com.admin.websocket.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.useragent.UserAgent;
@@ -21,7 +22,6 @@ import com.admin.websocket.mapper.SysWebSocketMapper;
 import com.admin.websocket.model.dto.SysWebSocketPageDTO;
 import com.admin.websocket.model.entity.SysWebSocketDO;
 import com.admin.websocket.model.enums.SysWebSocketTypeEnum;
-import com.admin.websocket.model.vo.SysWebSocketPageVO;
 import com.admin.websocket.model.vo.SysWebSocketRegisterVO;
 import com.admin.websocket.service.SysWebSocketService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -192,8 +192,21 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
      * 分页排序查询
      */
     @Override
-    public Page<SysWebSocketPageVO> myPage(SysWebSocketPageDTO dto) {
-        return baseMapper.myPage(dto.getPage(), dto);
+    public Page<SysWebSocketDO> myPage(SysWebSocketPageDTO dto) {
+        return lambdaQuery().eq(dto.getId() != null, BaseEntityTwo::getId, dto.getId())
+            .eq(dto.getCreateId() != null, BaseEntityTwo::getCreateId, dto.getCreateId())
+            .like(StrUtil.isNotBlank(dto.getRegion()), SysWebSocketDO::getRegion, dto.getRegion())
+            .like(StrUtil.isNotBlank(dto.getIp()), SysWebSocketDO::getIp, dto.getIp())
+            .like(StrUtil.isNotBlank(dto.getBrowser()), SysWebSocketDO::getBrowser, dto.getBrowser())
+            .like(StrUtil.isNotBlank(dto.getOs()), SysWebSocketDO::getOs, dto.getOs())
+            .eq(dto.getMobileFlag() != null, SysWebSocketDO::getMobileFlag, dto.getMobileFlag())
+            .eq(dto.getType() != null, SysWebSocketDO::getType, dto.getType())
+            .like(StrUtil.isNotBlank(dto.getServer()), SysWebSocketDO::getServer, dto.getServer())
+            .eq(dto.getEnableFlag() != null, SysWebSocketDO::getEnableFlag, dto.getEnableFlag())
+            .eq(dto.getCategory() != null, SysWebSocketDO::getCategory, dto.getCategory())
+            .le(dto.getEndCreateTime() != null, BaseEntity::getCreateTime, dto.getEndCreateTime())
+            .ge(dto.getBeginCreateTime() != null, BaseEntity::getCreateTime, dto.getBeginCreateTime())
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(BaseEntity::getCreateTime).page(dto.getPage());
     }
 
     /**

@@ -180,7 +180,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             .eq(dto.getFirstFlag() != null, SysMenuDO::getFirstFlag, dto.getFirstFlag())
             .eq(dto.getAuthFlag() != null, SysMenuDO::getAuthFlag, dto.getAuthFlag())
             .eq(dto.getShowFlag() != null, SysMenuDO::getShowFlag, dto.getShowFlag())
-            .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
     }
 
     /**

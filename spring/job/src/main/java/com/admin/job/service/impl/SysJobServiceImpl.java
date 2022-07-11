@@ -96,7 +96,7 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
         return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysJobDO::getName, dto.getName())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntityThree::getRemark, dto.getRemark())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
-            .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
     }
 
     /**

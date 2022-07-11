@@ -108,7 +108,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
             .like(StrUtil.isNotBlank(dto.getDictKey()), SysDictDO::getDictKey, dto.getDictKey())
             .eq(dto.getType() != null, SysDictDO::getType, dto.getType())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
-            .orderByDesc(SysDictDO::getOrderNo).page(dto.getPage());
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(SysDictDO::getOrderNo).page(dto.getPage());
     }
 
     /**

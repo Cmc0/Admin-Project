@@ -199,8 +199,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
             .eq(dto.getType() != null, SysBulletinDO::getType, dto.getType())
             .le(dto.getPtEndTime() != null, SysBulletinDO::getPublishTime, dto.getPtEndTime())
             .ge(dto.getPtBeginTime() != null, SysBulletinDO::getPublishTime, dto.getPtBeginTime())
-            .orderByDesc(BaseEntity::getCreateTime).page(dto.getPage());
-
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(BaseEntity::getCreateTime).page(dto.getPage());
     }
 
     /**

@@ -112,7 +112,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptDO> im
         return lambdaQuery().like(StrUtil.isNotBlank(dto.getName()), SysDeptDO::getName, dto.getName())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntityThree::getRemark, dto.getRemark())
             .eq(dto.getEnableFlag() != null, BaseEntityThree::getEnableFlag, dto.getEnableFlag())
-            .orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(BaseEntityFour::getOrderNo).page(dto.getPage());
     }
 
     /**
