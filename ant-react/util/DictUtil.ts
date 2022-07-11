@@ -21,6 +21,10 @@ export const WebSocketTypeDict = new Map<TWebSocketType, ProSchemaValueEnumType>
 WebSocketTypeDict.set('1', {text: '在线', status: 'success'})
 WebSocketTypeDict.set('2', {text: '隐身', status: 'warning'})
 
+export const BulletinTypeDict = new Map<TWebSocketType, ProSchemaValueEnumType>();
+BulletinTypeDict.set('1', {text: '草稿', status: 'warning'})
+BulletinTypeDict.set('2', {text: '公示', status: 'processing'})
+
 export interface IMyOption {
     label: string
     value?: number | string
