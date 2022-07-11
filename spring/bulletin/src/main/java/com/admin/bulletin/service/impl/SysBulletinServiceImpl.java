@@ -121,7 +121,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
 
             int compare = DateUtil.compare(sysBulletinDO.getPublishTime(), new Date());
             if (compare < 0) {
-                ApiResultVO.error("操作失败：发布时间晚于当前时间");
+                ApiResultVO.error("操作失败：发布时间晚于当前时间，请刷新重试");
             }
 
             sysBulletinDO.setStatus(SysBulletinStatusEnum.PUBLICITY);
