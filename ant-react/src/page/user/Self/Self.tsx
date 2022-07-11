@@ -10,9 +10,9 @@ export const USER_CENTER_KEY_TWO = "账号设置"
 export default function () {
     return (
         <RouteContext.Consumer>
-            {(value: RouteContextType) => {
+            {(routeContextType: RouteContextType) => {
                 return <Card>
-                    <Tabs tabPosition={value.isMobile ? 'top' : 'left'}>
+                    <Tabs tabPosition={routeContextType.isMobile ? 'top' : 'left'}>
                         <Tabs.TabPane key={'1'} tab={
                             <span><UserOutlined/>{USER_CENTER_KEY_ONE}</span>
                         }>

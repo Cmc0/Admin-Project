@@ -250,9 +250,9 @@ export default function () {
 
     return (
         <RouteContext.Consumer>
-            {(value: RouteContextType) => {
+            {(routeContextType: RouteContextType) => {
                 return <>
-                    <StatisticCard.Group direction={value.isMobile ? 'column' : 'row'}>
+                    <StatisticCard.Group direction={routeContextType.isMobile ? 'column' : 'row'}>
                         <StatisticCard
                             statistic={{
                                 title: 'JVM内存使用',
@@ -273,7 +273,7 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
-                        <StatisticCard.Divider type={value.isMobile ? 'horizontal' : 'vertical'}/>
+                        <StatisticCard.Divider type={routeContextType.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: '系统内存使用',
@@ -293,7 +293,7 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
-                        <StatisticCard.Divider type={value.isMobile ? 'horizontal' : 'vertical'}/>
+                        <StatisticCard.Divider type={routeContextType.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: 'CPU使用',
@@ -314,7 +314,7 @@ export default function () {
                             }
                             chartPlacement="left"
                         />
-                        <StatisticCard.Divider type={value.isMobile ? 'horizontal' : 'vertical'}/>
+                        <StatisticCard.Divider type={routeContextType.isMobile ? 'horizontal' : 'vertical'}/>
                         <StatisticCard
                             statistic={{
                                 title: '磁盘使用',
@@ -340,7 +340,7 @@ export default function () {
                     <ProCard
                         title="平台概览"
                         extra={moment().format('YYYY年M月D日 dddd')}
-                        split={value.isMobile ? 'horizontal' : 'vertical'}
+                        split={routeContextType.isMobile ? 'horizontal' : 'vertical'}
                         headerBordered
                         bordered
                     >

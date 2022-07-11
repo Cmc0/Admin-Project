@@ -21,7 +21,7 @@ import {GetWebSocketType, SetWebSocketType, TWebSocketType} from "@/model/consta
 import {sysWebSocketChangeType} from "@/api/SysWebSocketController";
 import {sysRequestAllAvg, SysRequestAllAvgVO} from "@/api/SysRequestController";
 import {GetAvgType} from "@/page/sysMonitor/Request/Request";
-import {MenuDataItem} from '@ant-design/pro-components';
+import {MenuDataItem, RouteContext, RouteContextType} from '@ant-design/pro-components';
 import {GetPublicDownFileUrl} from "../../../util/FileUtil";
 import {userSelfBaseInfo, userSelfLogout} from "@/api/UserSelfController";
 
@@ -139,131 +139,137 @@ function MainLayoutElement(props: IMainLayoutElement) {
         }
     }, [])
 
-    return <div className={"vh100"}>
-        <ProLayout
-            title={CommonConstant.SYS_NAME}
-            location={{
-                pathname
-            }}
-            menu={{
-                request: async () => {
-                    const userSelfMenuListTemp: MenuDataItem[] = JSON.parse(JSON.stringify(props.userSelfMenuList));
-                    userSelfMenuListTemp.forEach(item => {
-                        item.icon = <MyIcon icon={item.icon as string}/>
-                        item.hideInMenu = !item.showFlag
-                    })
-                    return ListToTree(userSelfMenuListTemp, true, 0);
-                },
-            }}
-            fixSiderbar={true}
-            fixedHeader={true}
-            menuItemRender={(item: MenuDataItem, defaultDom: React.ReactNode) => (
-                <a
-                    onClick={() => {
-                        if (item.path && item.router) {
-                            if (RouterMapKeyList.includes(item.router)) {
-                                if (item.linkFlag) {
-                                    window.open(item.path, '_blank')
-                                } else {
-                                    setPathname(item.path)
-                                    getAppNav()(item.path)
-                                }
-                            } else {
-                                InDev()
-                            }
-                        }
+    return <RouteContext.Consumer>
+        {(routeContextType: RouteContextType) => {
+            return <div className={"vh100"}>
+                <ProLayout
+                    title={CommonConstant.SYS_NAME}
+                    location={{
+                        pathname
                     }}
-                >
-                    <>
-                        {defaultDom}
-                        {(item.router && !RouterMapKeyList.includes(item.router)) &&
-                        <WarningFilled className={"warning2 m-l-4"}/>
-                        }
-                    </>
-                </a>
-            )}
-            headerContentRender={() => (
-                <span className={"hand m-l-9"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
-                    <Badge status="processing"
-                           text={
-                               <Typography.Text
-                                   strong
-                                   type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                   avg：{sysRequestAllAvgVO.avg}ms
-                               </Typography.Text>
-                           }/>
-                </span>
-            )}
-            rightContentRender={() => (
-                <Space size={20}>
-                    <Dropdown overlay={<Menu items={[
-                        {
-                            key: '1',
-                            label: <a onClick={() => doSysWebSocketChangeType('1', setWebSocketType)}>
-                                我在线上
-                            </a>,
-                            icon: <Badge status={"success"}/>
+                    menu={{
+                        request: async () => {
+                            const userSelfMenuListTemp: MenuDataItem[] = JSON.parse(JSON.stringify(props.userSelfMenuList));
+                            userSelfMenuListTemp.forEach(item => {
+                                item.icon = <MyIcon icon={item.icon as string}/>
+                                item.hideInMenu = !item.showFlag
+                            })
+                            return ListToTree(userSelfMenuListTemp, true, 0);
                         },
-                        {
-                            key: '2',
-                            label: <a onClick={() => doSysWebSocketChangeType('2', setWebSocketType)}>
-                                隐身
-                            </a>,
-                            icon: <Badge status={"warning"}/>
-                        },
-                    ]}/>}>
-                        <Badge
-                            className={"hand"}
-                            status={webSocketStatus ? (webSocketType === '1' ? 'success' : 'warning') : 'default'}
-                            text={webSocketStatus ? (webSocketType === '1' ? '在线' : '隐身') : '离线'}
-                        />
-                    </Dropdown>
+                    }}
+                    fixSiderbar={true}
+                    fixedHeader={true}
+                    menuItemRender={(item: MenuDataItem, defaultDom: React.ReactNode) => (
+                        <a
+                            onClick={() => {
+                                if (item.path && item.router) {
+                                    if (RouterMapKeyList.includes(item.router)) {
+                                        if (item.linkFlag) {
+                                            window.open(item.path, '_blank')
+                                        } else {
+                                            setPathname(item.path)
+                                            getAppNav()(item.path)
+                                        }
+                                    } else {
+                                        InDev()
+                                    }
+                                }
+                            }}
+                        >
+                            <>
+                                {defaultDom}
+                                {(item.router && !RouterMapKeyList.includes(item.router)) &&
+                                <WarningFilled className={"warning2 m-l-4"}/>
+                                }
+                            </>
+                        </a>
+                    )}
+                    headerContentRender={() => (
+                        <span className={"hand m-l-9"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                            <Badge status="processing"
+                                   text={
+                                       <Typography.Text
+                                           strong
+                                           type={GetAvgType(sysRequestAllAvgVO.avg!)}>
+                                           avg：{sysRequestAllAvgVO.avg}ms
+                                       </Typography.Text>
+                                   }/>
+                        </span>
+                    )}
+                    rightContentRender={() => (
+                        <Space size={20}>
+                            <Dropdown overlay={<Menu items={[
+                                {
+                                    key: '1',
+                                    label: <a onClick={() => doSysWebSocketChangeType('1', setWebSocketType)}>
+                                        我在线上
+                                    </a>,
+                                    icon: <Badge status={"success"}/>
+                                },
+                                {
+                                    key: '2',
+                                    label: <a onClick={() => doSysWebSocketChangeType('2', setWebSocketType)}>
+                                        隐身
+                                    </a>,
+                                    icon: <Badge status={"warning"}/>
+                                },
+                            ]}/>}>
+                                <Badge
+                                    className={"hand"}
+                                    status={webSocketStatus ? (webSocketType === '1' ? 'success' : 'warning') : 'default'}
+                                    text={webSocketStatus ? (webSocketType === '1' ? '在线' : '隐身') : '离线'}
+                                />
+                            </Dropdown>
 
-                    <Dropdown overlayClassName={"body-bc"} overlay={<Menu items={[
-                        {
-                            key: '1',
-                            label: <a onClick={() => {
-                                setPathname(CommonConstant.USER_CENTER_PATH)
-                                getAppNav()(CommonConstant.USER_CENTER_PATH)
-                            }}>
-                                个人中心
-                            </a>,
-                            icon: <UserOutlined/>
-                        },
-                        {
-                            key: '2',
-                            label: <a
-                                className={"red3"}
-                                onClick={() => {
-                                    execConfirm(() => {
-                                        return userSelfLogout().then((res) => {
-                                            ToastSuccess(res.msg)
-                                            logout()
-                                        })
-                                    }, undefined, "确定退出登录吗？")
-                                }}
-                            >
-                                退出登录
-                            </a>,
-                            icon: <LogoutOutlined className={"red3"}/>
-                        },
-                    ]}/>}>
-                        <div className={"h100 hand"} onClick={() => {
-                            setPathname(CommonConstant.USER_CENTER_PATH)
-                            getAppNav()(CommonConstant.USER_CENTER_PATH)
-                        }}>
-                            <Avatar size="small"
-                                    src={userSelfBaseInfo.avatarUrl ? GetPublicDownFileUrl(userSelfBaseInfo.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}/>
-                        </div>
-                    </Dropdown>
-                </Space>
-            )}
-        >
-            <PageContainer>
-                <Outlet/>
-            </PageContainer>
-        </ProLayout>
-    </div>
+                            <Dropdown overlayClassName={"body-bc"} overlay={<Menu items={[
+                                {
+                                    key: '1',
+                                    label: <a onClick={() => {
+                                        setPathname(CommonConstant.USER_CENTER_PATH)
+                                        getAppNav()(CommonConstant.USER_CENTER_PATH)
+                                    }}>
+                                        个人中心
+                                    </a>,
+                                    icon: <UserOutlined/>
+                                },
+                                {
+                                    key: '2',
+                                    label: <a
+                                        className={"red3"}
+                                        onClick={() => {
+                                            execConfirm(() => {
+                                                return userSelfLogout().then((res) => {
+                                                    ToastSuccess(res.msg)
+                                                    logout()
+                                                })
+                                            }, undefined, "确定退出登录吗？")
+                                        }}
+                                    >
+                                        退出登录
+                                    </a>,
+                                    icon: <LogoutOutlined className={"red3"}/>
+                                },
+                            ]}/>}>
+                                <div className={"h100 hand"} onClick={() => {
+                                    if (!routeContextType.isMobile) {
+                                        setPathname(CommonConstant.USER_CENTER_PATH)
+                                        getAppNav()(CommonConstant.USER_CENTER_PATH)
+                                    }
+                                }}>
+                                    <Avatar size="small"
+                                            src={userSelfBaseInfo.avatarUrl ? GetPublicDownFileUrl(userSelfBaseInfo.avatarUrl) : CommonConstant.RANDOM_AVATAR_URL}/>
+                                </div>
+                            </Dropdown>
+                        </Space>
+                    )}
+                >
+                    <PageContainer>
+                        <Outlet/>
+                    </PageContainer>
+                </ProLayout>
+            </div>
+        }}
+    </RouteContext.Consumer>
 }
 
 function doSysWebSocketChangeType(value: TWebSocketType, setWebSocketType: Dispatch<SetStateAction<TWebSocketType>>) {
