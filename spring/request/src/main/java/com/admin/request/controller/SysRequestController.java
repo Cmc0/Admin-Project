@@ -3,8 +3,8 @@ package com.admin.request.controller;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.request.model.dto.SysRequestPageDTO;
 import com.admin.request.model.dto.SysRequestSelfLoginRecordPageDTO;
+import com.admin.request.model.entity.SysRequestDO;
 import com.admin.request.model.vo.SysRequestAllAvgVO;
-import com.admin.request.model.vo.SysRequestPageVO;
 import com.admin.request.service.SysRequestService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -29,7 +29,7 @@ public class SysRequestController {
     @PreAuthorize("hasAuthority('sysRequest:page')")
     @PostMapping("/page")
     @ApiOperation(value = "分页排序查询")
-    public ApiResultVO<Page<SysRequestPageVO>> myPage(@RequestBody @Valid SysRequestPageDTO dto) {
+    public ApiResultVO<Page<SysRequestDO>> myPage(@RequestBody @Valid SysRequestPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 
@@ -47,8 +47,7 @@ public class SysRequestController {
 
     @PostMapping("/selfLoginRecord")
     @ApiOperation(value = "当前用户：登录记录")
-    public ApiResultVO<Page<SysRequestPageVO>> selfLoginRecord(
-        @RequestBody @Valid SysRequestSelfLoginRecordPageDTO dto) {
+    public ApiResultVO<Page<SysRequestDO>> selfLoginRecord(@RequestBody @Valid SysRequestSelfLoginRecordPageDTO dto) {
         return ApiResultVO.ok(baseService.selfLoginRecord(dto));
     }
 

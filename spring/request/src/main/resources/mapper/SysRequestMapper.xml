@@ -4,57 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.admin.request.mapper.SysRequestMapper">
 
-    <!-- 分页排序查询 -->
-    <select id="myPage" resultType="com.admin.request.model.vo.SysRequestPageVO">
-        SELECT a.id AS id,
-        a.create_id AS createId,
-        a.create_time AS createTime,
-        a.uri AS uri,
-        a.time_number AS timeNumber,
-        a.time_str AS timeStr,
-        a.name AS name,
-        a.category AS category,
-        a.region AS region,
-        a.ip AS ip,
-        a.success_flag AS successFlag,
-        a.error_msg AS errorMsg
-        FROM sys_request a
-        WHERE a.del_flag = FALSE
-        <if test="dto.uri != null and dto.uri != ''">
-            AND a.uri LIKE concat('%', #{dto.uri}, '%')
-        </if>
-        <if test="dto.name != null and dto.name != ''">
-            AND a.name LIKE concat('%', #{dto.name}, '%')
-        </if>
-        <if test="dto.ip != null and dto.ip != ''">
-            AND a.ip LIKE concat('%', #{dto.ip}, '%')
-        </if>
-        <if test="dto.region != null and dto.region != ''">
-            AND a.region LIKE concat('%', #{dto.region}, '%')
-        </if>
-        <if test="dto.beginTimeNumber != null">
-            AND a.time_number <![CDATA[>=]]> #{dto.beginTimeNumber}
-        </if>
-        <if test="dto.endTimeNumber != null">
-            AND a.time_number <![CDATA[<=]]> #{dto.endTimeNumber}
-        </if>
-        <if test="dto.beginCreateTime != null">
-            AND a.create_time <![CDATA[>=]]> #{dto.beginCreateTime}
-        </if>
-        <if test="dto.endCreateTime != null">
-            AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
-        </if>
-        <if test="dto.createId != null">
-            AND a.create_id = #{dto.createId}
-        </if>
-        <if test="dto.category != null">
-            AND a.category = #{dto.category}
-        </if>
-        <if test="dto.successFlag != null">
-            AND a.success_flag = #{dto.successFlag}
-        </if>
-    </select>
-
     <!-- 所有请求的平均耗时-增强：增加筛选项 -->
     <select id="allAvgPro" resultType="com.admin.request.model.vo.SysRequestAllAvgVO">
         SELECT COUNT(1) AS count,

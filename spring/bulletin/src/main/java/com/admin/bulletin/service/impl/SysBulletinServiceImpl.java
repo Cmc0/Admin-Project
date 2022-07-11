@@ -199,7 +199,8 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
             .eq(dto.getType() != null, SysBulletinDO::getType, dto.getType())
             .le(dto.getPtEndTime() != null, SysBulletinDO::getPublishTime, dto.getPtEndTime())
             .ge(dto.getPtBeginTime() != null, SysBulletinDO::getPublishTime, dto.getPtBeginTime())
-            .eq(BaseEntityThree::getDelFlag, false).page(dto.getPage(true));
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(dto.notHasOrder(), SysBulletinDO::getPublishTime)
+            .page(dto.getPage(true));
     }
 
     /**
@@ -268,7 +269,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
             .le(dto.getPtEndTime() != null, SysBulletinDO::getPublishTime, dto.getPtEndTime())
             .ge(dto.getPtBeginTime() != null, SysBulletinDO::getPublishTime, dto.getPtBeginTime())
             .select(SysBulletinDO::getTitle, SysBulletinDO::getType, SysBulletinDO::getContent,
-                SysBulletinDO::getPublishTime).orderByDesc(BaseEntity::getCreateTime).page(dto.getPage());
+                SysBulletinDO::getPublishTime).page(dto.getPage());
     }
 
     /**

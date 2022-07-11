@@ -1,6 +1,5 @@
 package com.admin.common.model.dto;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,6 +21,13 @@ public class MyPageDTO {
     private MyOrderDTO order;
 
     /**
+     * 判断前端是否，传递了 order字段
+     */
+    public boolean notHasOrder() {
+        return getOrder() == null || StrUtil.isBlank(order.getName());
+    }
+
+    /**
      * 分页属性拷贝
      */
     public <T> Page<T> getPage() {
@@ -37,7 +43,7 @@ public class MyPageDTO {
         page.setCurrent(getCurrent());
         page.setSize(getPageSize());
 
-        if (getOrder() == null || StrUtil.isBlank(order.getName())) {
+        if (notHasOrder()) {
             return page;
         }
 
@@ -51,26 +57,11 @@ public class MyPageDTO {
      * 分页属性拷贝-增加：默认创建时间 倒序排序
      */
     public <T> Page<T> getCreateTimeDescDefaultOrderPage() {
-        return getDefaultOrderPage("createTime", false, false);
-    }
-
-    /**
-     * 分页属性拷贝-增加：默认创建时间 倒序排序
-     */
-    public <T> Page<T> getCreateTimeDescDefaultOrderPage(boolean toUnderlineCaseFlag) {
-        return getDefaultOrderPage("createTime", false, toUnderlineCaseFlag);
-    }
-
-    /**
-     * 分页属性拷贝-增加：默认排序
-     * underscoreFlag：是否驼峰转下划线
-     */
-    public <T> Page<T> getDefaultOrderPage(String column, boolean asc, boolean toUnderlineCaseFlag) {
 
         Page<T> page = getPage();
 
-        if (CollUtil.isEmpty(page.orders())) {
-            page.orders().add(new OrderItem(toUnderlineCaseFlag ? StrUtil.toUnderlineCase(column) : column, asc));
+        if (notHasOrder()) {
+            page.orders().add(new OrderItem("createTime", false));
         }
 
         return page;
@@ -80,7 +71,7 @@ public class MyPageDTO {
      * 自定义的排序规则，转换为 mybatis plus 的排序规则
      * underscoreFlag：是否驼峰转下划线
      */
-    public static OrderItem orderToOrderItem(MyOrderDTO order, boolean toUnderlineCaseFlag) {
+    private static OrderItem orderToOrderItem(MyOrderDTO order, boolean toUnderlineCaseFlag) {
         OrderItem orderItem = new OrderItem();
         orderItem.setColumn(toUnderlineCaseFlag ? StrUtil.toUnderlineCase(order.getName()) : order.getName());
         if (StrUtil.isNotBlank(order.getValue())) {
