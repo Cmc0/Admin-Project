@@ -48,7 +48,11 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
             }
         }
     },
-    {title: 'xxlJobId', dataIndex: 'xxlJobId'},
+    {
+        title: 'xxlJobId', dataIndex: 'xxlJobId', renderText: (text) => {
+            return text === -1 ? "" : text
+        }
+    },
     {title: '备注', dataIndex: 'remark'},
     {
         title: '创建人', dataIndex: 'createId', valueType: 'select',
