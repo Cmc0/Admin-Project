@@ -171,12 +171,12 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
 
             sysBulletinDO.setStatus(SysBulletinStatusEnum.DRAFT);
 
-            // 删除提交时，创建的定时任务
-            xxlJobService.deleteById(new NotNullId(sysBulletinDO.getXxlJobId()));
-
             sysBulletinDO.setXxlJobId(MyEntityUtil.getNotNullLong(null)); // 设置 定时任务 主键id
 
             updateById(sysBulletinDO); // 操作数据库
+
+            // 撤回时，删除创建的定时任务
+            xxlJobService.deleteById(new NotNullId(sysBulletinDO.getXxlJobId()));
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
 
