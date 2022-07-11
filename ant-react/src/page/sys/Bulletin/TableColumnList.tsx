@@ -78,7 +78,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
                         ToastSuccess(res.msg)
                         actionRef.current?.reload()
                     })
-                }, undefined, `确定删除，主键id为【${entity.title}】吗？`)
+                }, undefined, `确定删除，主键id为【${entity.id}】的数据吗？`)
             }}>删除</a>,
         ],
     },

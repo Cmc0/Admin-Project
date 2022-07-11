@@ -43,7 +43,6 @@ const SchemaFormColumnList = (bulletinTypeDictListRef: React.MutableRefObject<IM
             valueType: 'textarea',
             fieldProps: {
                 showCount: true,
-                maxCount: 0,
                 allowClear: true,
             },
             formItemProps: {
