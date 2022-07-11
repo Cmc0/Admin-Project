@@ -79,7 +79,7 @@ export function sysBulletinRevoke(form: NotNullId, config?: AxiosRequestConfig) 
 
 // 公告-管理 获取：当前用户可以查看的公告，总数
 export function sysBulletinUserSelfCount(config?: AxiosRequestConfig) {
-    return $http.myPost<long>('/sysBulletin/userSelfCount', undefined, config)
+    return $http.myPost<number>('/sysBulletin/userSelfCount', undefined, config)
 }
 
 export interface SysBulletinUserSelfPageDTO extends MyPageDTO {
