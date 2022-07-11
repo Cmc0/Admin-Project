@@ -57,6 +57,7 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         hideInSearch: true,
         valueType: 'fromNow',
         sorter: true,
+        defaultSortOrder: 'descend',
         renderText: (text, record) => {
             return text ? text : record.createTime
         }
