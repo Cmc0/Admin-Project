@@ -113,7 +113,8 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
         try {
 
             SysBulletinDO sysBulletinDO = lambdaQuery().eq(BaseEntityTwo::getId, notNullId.getId())
-                .select(BaseEntityTwo::getId, SysBulletinDO::getStatus, SysBulletinDO::getPublishTime).one();
+                .select(BaseEntityTwo::getId, SysBulletinDO::getStatus, SysBulletinDO::getPublishTime,
+                    SysBulletinDO::getTitle).one();
 
             if (SysBulletinStatusEnum.PUBLICITY.equals(sysBulletinDO.getStatus())) {
                 ApiResultVO.error("操作失败：已经发布过了，请刷新重试");
