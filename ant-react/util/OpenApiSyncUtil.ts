@@ -262,18 +262,22 @@ function start() {
                     const responsesFullName = subItem.responses["200"].content["*/*"].schema.$ref;
                     responsesName = getComponentNameByFullName(responsesFullName)
                     responsesName = getMatchStr(responsesName);
-                    if (responsesName.startsWith("Page«")) {
-                        responsesName = getMatchStr(responsesName);
-                        pageFlag = true
-                    } else if (responsesName.startsWith("List«")) {
-                        responsesName = getMatchStr(responsesName);
-                        treeFlag = true
-                    }
-                    const responses = componentMap[responsesName]
-                    // @ts-ignore
-                    responsesFlag = responses && !typeList.includes(responsesName)
-                    if (responsesFlag) {
-                        fileData = writeInterface(responsesName, fileData, responses)
+                    if (responsesName === 'long') {
+                        responsesName = 'number'
+                    } else {
+                        if (responsesName.startsWith("Page«")) {
+                            responsesName = getMatchStr(responsesName);
+                            pageFlag = true
+                        } else if (responsesName.startsWith("List«")) {
+                            responsesName = getMatchStr(responsesName);
+                            treeFlag = true
+                        }
+                        const responses = componentMap[responsesName]
+                        // @ts-ignore
+                        responsesFlag = responses && !typeList.includes(responsesName)
+                        if (responsesFlag) {
+                            fileData = writeInterface(responsesName, fileData, responses)
+                        }
                     }
                 }
 
