@@ -206,7 +206,8 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
             .eq(dto.getCategory() != null, SysWebSocketDO::getCategory, dto.getCategory())
             .le(dto.getEndCreateTime() != null, BaseEntity::getCreateTime, dto.getEndCreateTime())
             .ge(dto.getBeginCreateTime() != null, BaseEntity::getCreateTime, dto.getBeginCreateTime())
-            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(BaseEntity::getCreateTime).page(dto.getPage(true));
+            .eq(BaseEntityThree::getDelFlag, false).orderByDesc(dto.notHasOrder(), BaseEntity::getCreateTime)
+            .page(dto.getPage(true));
     }
 
     /**
