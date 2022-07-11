@@ -39,15 +39,15 @@ public class XxlJobServiceImpl implements XxlJobService {
      * 新增 xxl-job 定时任务
      */
     @Override
-    public Long insertOrUpdate(XxlJobInsertOrUpdateDTO dto) {
+    public Long insert(XxlJobInsertOrUpdateDTO dto) {
 
         if (!JSONUtil.isTypeJSON(dto.getExecutorParam())) {
             ApiResultVO.error("操作失败：executorParam 必须是 json格式字符串");
         }
 
-        if (dto.getCSendTime() != null) {
+        if (dto.getProSendTime() != null) {
             // 增加 10秒，目的：防止时间过短，然后错过了
-            Date date = new Date(dto.getCSendTime().getTime() + BaseConstant.SECOND_10_EXPIRE_TIME);
+            Date date = new Date(dto.getProSendTime().getTime() + BaseConstant.SECOND_10_EXPIRE_TIME);
             dto.setScheduleConf(MyDateUtil.getCron(date)); // 根据时间生成 Cron 表达式
         }
 

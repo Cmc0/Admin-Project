@@ -10,6 +10,7 @@ import com.admin.common.model.entity.BaseEntity;
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.SysParamDO;
 import com.admin.common.model.vo.ApiResultVO;
+import com.admin.common.util.MyEntityUtil;
 import com.admin.common.util.SysParamUtil;
 import com.admin.param.model.dto.SysParamInsertOrUpdateDTO;
 import com.admin.param.model.dto.SysParamPageDTO;
@@ -50,7 +51,7 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
             SysParamDO sysParamDO = new SysParamDO();
             sysParamDO.setName(dto.getName());
             sysParamDO.setValue(dto.getValue());
-            sysParamDO.setRemark(dto.getRemark());
+            sysParamDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
             sysParamDO.setId(dto.getId());
 
             saveOrUpdate(sysParamDO);

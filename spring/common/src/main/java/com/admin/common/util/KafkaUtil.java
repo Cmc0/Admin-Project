@@ -37,7 +37,7 @@ public class KafkaUtil {
     /**
      * 消息推送：公告推送
      */
-    public static void bulletinPush(Set<Long> userIdSet) {
+    public static void bulletinPublish(Set<Long> userIdSet) {
 
         WebSocketMessageEnum newBulletin = WebSocketMessageEnum.NEW_BULLETIN;
         newBulletin.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));

@@ -11,9 +11,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class SysBulletinPageDTO extends SysBulletinUserSelfPageDTO {
 
-    @ApiModelProperty(value = "主键id")
-    private Long id;
-
     @ApiModelProperty(value = "公告状态：1 草稿 2 公示")
     private Byte status;
 

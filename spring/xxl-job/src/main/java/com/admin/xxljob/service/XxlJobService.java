@@ -5,7 +5,7 @@ import com.admin.xxljob.dto.XxlJobInsertOrUpdateDTO;
 
 public interface XxlJobService {
 
-    Long insertOrUpdate(XxlJobInsertOrUpdateDTO dto);
+    Long insert(XxlJobInsertOrUpdateDTO dto);
 
     void deleteById(NotNullId notNullId);
 

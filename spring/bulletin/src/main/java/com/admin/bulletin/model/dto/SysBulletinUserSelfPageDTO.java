@@ -1,15 +1,18 @@
 package com.admin.bulletin.model.dto;
 
+import com.admin.common.model.dto.MyPageDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
 /**
  * {@link com.admin.bulletin.model.entity.SysBulletinDO}
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class SysBulletinUserSelfPageDTO {
+public class SysBulletinUserSelfPageDTO extends MyPageDTO {
 
     @ApiModelProperty(value = "公告类型（字典值）")
     private Byte type;

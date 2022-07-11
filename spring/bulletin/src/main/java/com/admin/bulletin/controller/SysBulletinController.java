@@ -4,8 +4,6 @@ import com.admin.bulletin.model.dto.SysBulletinInsertOrUpdateDTO;
 import com.admin.bulletin.model.dto.SysBulletinPageDTO;
 import com.admin.bulletin.model.dto.SysBulletinUserSelfPageDTO;
 import com.admin.bulletin.model.entity.SysBulletinDO;
-import com.admin.bulletin.model.vo.SysBulletinPageVO;
-import com.admin.bulletin.model.vo.SysBulletinUserSelfPageVO;
 import com.admin.bulletin.service.SysBulletinService;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
@@ -54,7 +52,7 @@ public class SysBulletinController {
     @ApiOperation(value = "分页排序查询")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('sysBulletin:page')")
-    public ApiResultVO<Page<SysBulletinPageVO>> myPage(@RequestBody @Valid SysBulletinPageDTO dto) {
+    public ApiResultVO<Page<SysBulletinDO>> myPage(@RequestBody @Valid SysBulletinPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
     }
 
@@ -74,8 +72,7 @@ public class SysBulletinController {
 
     @PostMapping("/userSelfPage")
     @ApiOperation(value = "分页排序查询：当前用户可以查看的公告")
-    public ApiResultVO<Page<SysBulletinUserSelfPageVO>> userSelfPage(
-        @RequestBody @Valid SysBulletinUserSelfPageDTO dto) {
+    public ApiResultVO<Page<SysBulletinDO>> userSelfPage(@RequestBody @Valid SysBulletinUserSelfPageDTO dto) {
         return ApiResultVO.ok(baseService.userSelfPage(dto));
     }
 

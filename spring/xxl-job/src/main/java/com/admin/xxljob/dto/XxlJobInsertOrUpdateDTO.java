@@ -12,7 +12,7 @@ public class XxlJobInsertOrUpdateDTO {
     private String jobDesc;
 
     @ApiModelProperty(value = "发送时间（本系统定义），会转换为 Cron 表达式，并赋值给 scheduleConf")
-    private Date cSendTime;
+    private Date proSendTime;
 
     @ApiModelProperty(value = "JobHandler")
     private String executorHandler;

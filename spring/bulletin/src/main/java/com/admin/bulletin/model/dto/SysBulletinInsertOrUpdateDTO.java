@@ -37,8 +37,4 @@ public class SysBulletinInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     @ApiModelProperty(value = "发布时间")
     private Date publishTime;
 
-    @NotNull
-    @ApiModelProperty(value = "公告状态：1 草稿 2 公示")
-    private Byte status;
-
 }

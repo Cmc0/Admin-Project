@@ -16,6 +16,11 @@
 
         <dependency>
             <groupId>com.admin</groupId>
+            <artifactId>xxl-job</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.admin</groupId>
             <artifactId>common</artifactId>
         </dependency>
 
