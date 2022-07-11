@@ -56,6 +56,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
             ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
         }
 
+        sysFileUploadTypeEnum.checkFileSize(dto.getFile()); // 检查：文件大小
+
         String originalFilename = dto.getFile().getOriginalFilename();
 
         if (StrUtil.isBlank(originalFilename)) {
