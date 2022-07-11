@@ -39,10 +39,17 @@
         <module>file</module> <!-- 文件相关功能包 -->
         <module>server</module> <!-- 服务器相关功能包 -->
         <module>system</module> <!-- 平台系统相关功能包 -->
+        <module>bulletin</module> <!-- 公告相关功能包 -->
     </modules>
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.admin</groupId>
+                <artifactId>bulletin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.admin</groupId>
