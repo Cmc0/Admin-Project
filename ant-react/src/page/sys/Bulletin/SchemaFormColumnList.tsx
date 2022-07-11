@@ -31,6 +31,9 @@ const SchemaFormColumnList = (bulletinTypeDictListRef: React.MutableRefObject<IM
             title: '发布时间',
             dataIndex: 'publishTime',
             valueType: 'dateTime',
+            fieldProps: {
+                className: "w100",
+            },
             formItemProps: {
                 rules: [
                     {required: true,},
