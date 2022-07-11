@@ -50,7 +50,7 @@ export default function () {
                 }}
                 columnEmptyText={false}
                 revalidateOnFocus={false}
-                columns={TableColumnList(currentForm, setFormVisible, actionRef, bulletinTypeDictListRef)}
+                columns={TableColumnList(currentForm, setFormVisible, actionRef)}
                 options={{
                     fullScreen: true,
                 }}

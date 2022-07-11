@@ -1,5 +1,5 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
-import {BulletinTypeDict, GetUserDictList, IMyOption} from "../../../../util/DictUtil";
+import {BulletinTypeDict, GetUserDictList, RequestGetDictList} from "../../../../util/DictUtil";
 import React from "react";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import {
@@ -9,7 +9,7 @@ import {
     SysBulletinPageDTO
 } from "@/api/SysBulletinController";
 
-const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>, bulletinTypeDictListRef: React.MutableRefObject<IMyOption[]>): ProColumns<SysBulletinDO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysBulletinDO>[] => [
     {
         title: '序号',
         dataIndex: 'index',
@@ -19,8 +19,8 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
     {
         title: '公告类型', dataIndex: 'type',
         valueType: 'select',
-        fieldProps: {
-            options: bulletinTypeDictListRef.current,
+        request: () => {
+            return RequestGetDictList('bulletin_type')
         }
     },
     {title: '标题', dataIndex: 'title'},
@@ -30,7 +30,14 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
         dataIndex: 'status',
         valueEnum: BulletinTypeDict
     },
-    {title: '发布时间', dataIndex: 'publishTime', valueType: 'fromNow', sorter: true, hideInSearch: true},
+    {
+        title: '发布时间',
+        dataIndex: 'publishTime',
+        valueType: 'fromNow',
+        sorter: true,
+        hideInSearch: true,
+        defaultSortOrder: 'descend',
+    },
     {
         title: '发布时间', dataIndex: 'publishTimeRange', hideInTable: true, valueType: 'dateTimeRange', search: {
             transform: (value) => {

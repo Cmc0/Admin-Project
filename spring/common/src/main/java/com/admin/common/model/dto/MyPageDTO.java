@@ -25,6 +25,13 @@ public class MyPageDTO {
      * 分页属性拷贝
      */
     public <T> Page<T> getPage() {
+        return getPage(false);
+    }
+
+    /**
+     * 分页属性拷贝
+     */
+    public <T> Page<T> getPage(boolean toUnderlineCaseFlag) {
         Page<T> page = new Page<>();
 
         page.setCurrent(getCurrent());
@@ -35,7 +42,7 @@ public class MyPageDTO {
         }
 
         // 添加 orderList里面的排序规则
-        page.orders().add(orderToOrderItem(getOrder()));
+        page.orders().add(orderToOrderItem(getOrder(), toUnderlineCaseFlag));
 
         return page;
     }
@@ -44,18 +51,26 @@ public class MyPageDTO {
      * 分页属性拷贝-增加：默认创建时间 倒序排序
      */
     public <T> Page<T> getCreateTimeDescDefaultOrderPage() {
-        return getDefaultOrderPage("createTime", false);
+        return getDefaultOrderPage("createTime", false, false);
+    }
+
+    /**
+     * 分页属性拷贝-增加：默认创建时间 倒序排序
+     */
+    public <T> Page<T> getCreateTimeDescDefaultOrderPage(boolean toUnderlineCaseFlag) {
+        return getDefaultOrderPage("createTime", false, toUnderlineCaseFlag);
     }
 
     /**
      * 分页属性拷贝-增加：默认排序
+     * underscoreFlag：是否驼峰转下划线
      */
-    public <T> Page<T> getDefaultOrderPage(String column, boolean asc) {
+    public <T> Page<T> getDefaultOrderPage(String column, boolean asc, boolean toUnderlineCaseFlag) {
 
         Page<T> page = getPage();
 
         if (CollUtil.isEmpty(page.orders())) {
-            page.orders().add(new OrderItem(column, asc));
+            page.orders().add(new OrderItem(toUnderlineCaseFlag ? StrUtil.toUnderlineCase(column) : column, asc));
         }
 
         return page;
@@ -63,10 +78,11 @@ public class MyPageDTO {
 
     /**
      * 自定义的排序规则，转换为 mybatis plus 的排序规则
+     * underscoreFlag：是否驼峰转下划线
      */
-    public static OrderItem orderToOrderItem(MyOrderDTO order) {
+    public static OrderItem orderToOrderItem(MyOrderDTO order, boolean toUnderlineCaseFlag) {
         OrderItem orderItem = new OrderItem();
-        orderItem.setColumn(order.getName());
+        orderItem.setColumn(toUnderlineCaseFlag ? StrUtil.toUnderlineCase(order.getName()) : order.getName());
         if (StrUtil.isNotBlank(order.getValue())) {
             orderItem.setAsc("ascend".equals(order.getValue()));
         }
