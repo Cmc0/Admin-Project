@@ -115,7 +115,6 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
 
             // 并且给 消息中间件推送，进行下线操作
             KafkaUtil.loginExpired(webSocketIdSet);
-
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
