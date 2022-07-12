@@ -19,10 +19,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -31,21 +29,16 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
 
     @Resource
     RedissonClient redissonClient;
-    @Resource
-    DataSourceTransactionManager dataSourceTransactionManager;
-    @Resource
-    TransactionDefinition transactionDefinition;
 
     /**
      * 新增/修改
      */
     @Override
+    @Transactional
     public String insertOrUpdate(SysParamInsertOrUpdateDTO dto) {
 
         RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
         lock.lock();
-
-        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
 
         try {
             SysParamDO sysParamDO = new SysParamDO();
@@ -58,15 +51,7 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
 
             SysParamUtil.updateRedisCache(false); // 更新 redis中【系统参数】的缓存
 
-            dataSourceTransactionManager.commit(transactionStatus);
-
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-
-        } catch (Throwable throwable) {
-
-            dataSourceTransactionManager.rollback(transactionStatus);
-            throw throwable;
-
         } finally {
             lock.unlock();
         }
@@ -97,6 +82,7 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
      * 批量删除
      */
     @Override
+    @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         if (notEmptyIdSet.getIdSet().contains(BaseConstant.RSA_PRIVATE_KEY_ID)) {
@@ -110,22 +96,12 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
         RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
         lock.lock();
 
-        TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
-
         try {
             removeByIds(notEmptyIdSet.getIdSet());
 
             SysParamUtil.updateRedisCache(false); // 更新 redis中【系统参数】的缓存
 
-            dataSourceTransactionManager.commit(transactionStatus);
-
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-
-        } catch (Throwable throwable) {
-
-            dataSourceTransactionManager.rollback(transactionStatus);
-            throw throwable;
-
         } finally {
             lock.unlock();
         }
