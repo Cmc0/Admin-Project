@@ -10,6 +10,7 @@ import SqlAddAsStr, {SqlAddAsSourceTemp} from "@/page/MyConvert/SqlAddAsStr";
 import TableSqlToJavaBeanStr, {TableSqlToJavaBeanSourceTemp} from "@/page/MyConvert/TableSqlToJavaBeanStr";
 import JavaBeanToTsInterfaceStr, {JavaBeanToTsInterfaceSourceTemp} from "@/page/MyConvert/JavaBeanToTsInterfaceStr";
 import ColumnTypeRefEnum from "@/model/enums/ColumnTypeRefEnum";
+import JavaExplainToApiModelPropertyStr, {JavaExplainToApiModelPropertySourceTemp} from "@/page/MyConvert/JavaExplainToApiModelPropertyStr";
 
 interface IFunctionButton {
     id?: number // 按钮的 id，现在是 index（下标）
@@ -48,6 +49,13 @@ const QuickFunctionList: IFunctionButton[] = [
         sourceTemp: JavaBeanToTsInterfaceSourceTemp,
         functionStr: JavaBeanToTsInterfaceStr,
         remark: 'JavaBean转TsInterface',
+        quickInFbListFlag: true
+    },
+    {
+        name: 'JavaExplainToApiModelProperty',
+        sourceTemp: JavaExplainToApiModelPropertySourceTemp,
+        functionStr: JavaExplainToApiModelPropertyStr,
+        remark: 'Java注释转ApiModelProperty',
         quickInFbListFlag: true
     },
 ];

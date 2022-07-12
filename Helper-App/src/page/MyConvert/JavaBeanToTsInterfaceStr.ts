@@ -1,4 +1,3 @@
-// language=HTML
 export const JavaBeanToTsInterfaceSourceTemp =
     `private Date createTime;
 
