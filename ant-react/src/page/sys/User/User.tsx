@@ -10,6 +10,7 @@ import {
     sysUserPage,
     SysUserPageDTO,
     SysUserPageVO,
+    sysUserRefreshJwtSecretSuf,
     sysUserResetAvatar
 } from "@/api/SysUserController";
 import TableColumnList, {SysUserUpdatePasswordModalForm} from "@/page/sys/User/TableColumnList";
@@ -89,6 +90,14 @@ export default function () {
                 }}
                 tableAlertOptionRender={({selectedRowKeys, selectedRows, onCleanSelected}) => (
                     <Space size={16}>
+                        <a onClick={() => {
+                            execConfirm(() => {
+                                return sysUserRefreshJwtSecretSuf({idSet: selectedRowKeys}).then(res => {
+                                    ToastSuccess(res.msg)
+                                    actionRef.current?.reload()
+                                })
+                            }, undefined, `确定刷新选中的【${selectedRowKeys.length}】项的令牌吗？`)
+                        }}>刷新令牌</a>
                         <SysUserUpdatePasswordModalForm idSet={selectedRowKeys as number[]} actionRef={actionRef}/>
                         <a onClick={() => {
                             execConfirm(() => {

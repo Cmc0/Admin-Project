@@ -9,6 +9,7 @@ import {
     SysUserInsertOrUpdateDTO,
     SysUserPageDTO,
     SysUserPageVO,
+    sysUserRefreshJwtSecretSuf,
     sysUserResetAvatar,
     sysUserUpdatePassword,
     SysUserUpdatePasswordDTO
@@ -126,6 +127,17 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                 {
                     key: '2',
                     label: <SysUserUpdatePasswordModalForm idSet={[entity.id!]} actionRef={actionRef}/>
+                },
+                {
+                    key: '3',
+                    label: <a onClick={() => {
+                        execConfirm(() => {
+                            return sysUserRefreshJwtSecretSuf({idSet: [entity.id!]}).then(res => {
+                                ToastSuccess(res.msg)
+                                actionRef.current?.reload()
+                            })
+                        }, undefined, `确定刷新【${entity.nickname}】的令牌吗？`)
+                    }}>刷新令牌</a>
                 },
             ]}>
             </Menu>}>
