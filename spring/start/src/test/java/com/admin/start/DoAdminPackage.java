@@ -1,6 +1,7 @@
 package com.admin.start;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RuntimeUtil;
 import lombok.SneakyThrows;
 
 import java.io.File;
@@ -15,11 +16,13 @@ public class DoAdminPackage {
 
         String springPath = System.getProperty("user.dir"); // 例如：E:\Cmc0\Admin-Project\spring
 
-        //        RuntimeUtil.execForStr("cmd /c cd " + springPath, "cmd /c mvn clean");
+        System.out.println("后端打包 ↓");
 
-        File springFile = FileUtil.newFile(springPath);
+        String execForStr = RuntimeUtil.execForStr("cmd /c cd " + springPath + "&& mvn clean package");
 
-        //        RuntimeUtil.exec(null, springFile, "cmd mvn clean");
+        System.out.println(execForStr);
+
+        System.out.println("后端打包 ↑");
 
         String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
 
