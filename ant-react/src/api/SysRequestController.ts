@@ -35,7 +35,7 @@ export function sysRequestAllAvgPro(form: SysRequestPageDTO, config?: AxiosReque
     return $http.myPost<SysRequestAllAvgVO>('/sysRequest/allAvgPro', form, config)
 }
 
-export interface SysRequestPageVO {
+export interface SysRequestDO {
     category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     createTime?: string // 创建时间
@@ -58,7 +58,7 @@ export interface SysRequestPageVO {
 
 // 接口请求-管理 分页排序查询
 export function sysRequestPage(form: SysRequestPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysRequestPageVO>('/sysRequest/page', form, config)
+    return $http.myProPagePost<SysRequestDO>('/sysRequest/page', form, config)
 }
 
 export interface SysRequestSelfLoginRecordPageDTO extends MyPageDTO {
@@ -72,5 +72,5 @@ export interface SysRequestSelfLoginRecordPageDTO extends MyPageDTO {
 
 // 接口请求-管理 当前用户：登录记录
 export function sysRequestSelfLoginRecord(form: SysRequestSelfLoginRecordPageDTO, config?: AxiosRequestConfig) {
-    return $http.myProPagePost<SysRequestPageVO>('/sysRequest/selfLoginRecord', form, config)
+    return $http.myProPagePost<SysRequestDO>('/sysRequest/selfLoginRecord', form, config)
 }

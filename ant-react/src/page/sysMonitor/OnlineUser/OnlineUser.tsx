@@ -3,9 +3,9 @@ import {ActionType, ProTable} from "@ant-design/pro-components";
 import React, {useRef, useState} from "react";
 import TableColumnList from "@/page/sysMonitor/OnlineUser/TableColumnList";
 import {
+    SysWebSocketDO,
     sysWebSocketPage,
     SysWebSocketPageDTO,
-    SysWebSocketPageVO,
     sysWebSocketRetreatAll
 } from "@/api/SysWebSocketController";
 import {PoweroffOutlined} from "@ant-design/icons";
@@ -21,7 +21,7 @@ export default function () {
     const [polling, setPolling] = useState<number | undefined>(CommonConstant.POLLING_TIME);
 
     return (
-        <ProTable<SysWebSocketPageVO, SysWebSocketPageDTO>
+        <ProTable<SysWebSocketDO, SysWebSocketPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
             pagination={{

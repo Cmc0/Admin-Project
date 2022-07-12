@@ -1,10 +1,10 @@
 import {ActionType, ProColumns} from "@ant-design/pro-components";
 import React from "react";
 import {handlerRegion} from "../../../../util/StrUtil";
-import {GetUserDictList, RequestGetDictList, YesNoBaseDict, YesNoDict} from "../../../../util/DictUtil";
-import {SysRequestPageDTO, SysRequestPageVO} from "@/api/SysRequestController";
+import {GetUserDictList, RequestGetDictList, YesNoDict} from "../../../../util/DictUtil";
+import {SysRequestDO, SysRequestPageDTO} from "@/api/SysRequestController";
 
-const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysRequestPageVO>[] => [
+const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<SysRequestDO>[] => [
     {
         title: '序号',
         dataIndex: 'index',

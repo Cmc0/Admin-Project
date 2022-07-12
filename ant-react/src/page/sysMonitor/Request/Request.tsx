@@ -8,9 +8,9 @@ import TableColumnList from "@/page/sysMonitor/Request/TableColumnList";
 import {
     sysRequestAllAvgPro,
     SysRequestAllAvgVO,
+    SysRequestDO,
     sysRequestPage,
     SysRequestPageDTO,
-    SysRequestPageVO
 } from "@/api/SysRequestController";
 
 export function GetAvgType(avg: number) {
@@ -25,7 +25,7 @@ export default function () {
     const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
 
     return (
-        <ProTable<SysRequestPageVO, SysRequestPageDTO>
+        <ProTable<SysRequestDO, SysRequestPageDTO>
             actionRef={actionRef}
             rowKey={"id"}
             pagination={{
