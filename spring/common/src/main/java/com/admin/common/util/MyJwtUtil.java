@@ -1,5 +1,6 @@
 package com.admin.common.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
@@ -10,11 +11,14 @@ import cn.hutool.jwt.JWT;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
+import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysMenuDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.model.vo.ApiResultVO;
+import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -46,6 +50,13 @@ public class MyJwtUtil {
     @Resource
     private void setRedissonClient(RedissonClient value) {
         redissonClient = value;
+    }
+
+    private static SysUserMapper sysUserMapper;
+
+    @Resource
+    private void setSysUserMapper(SysUserMapper value) {
+        sysUserMapper = value;
     }
 
     /**
@@ -181,26 +192,50 @@ public class MyJwtUtil {
     }
 
     /**
-     * 更新：redis中，userId和 jwtSecretSuf对应关系
+     * 设置：redis中，userId和 jwtSecretSuf对应关系
      */
-    public static void updateUserIdJwtSecretSufForRedis(Long userId, String jwtSecretSuf) {
+    public static void setUserIdJwtSecretSufForRedis(Long userId, String jwtSecretSuf) {
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE)
             .put(userId.toString(), jwtSecretSuf);
     }
 
     /**
      * 更新：redis中，userId和 jwtSecretSuf对应关系，可批量
+     * 注意：调用时，请根据情况加分布式锁
      */
-    public static void updateUserIdJwtSecretSufForRedis(Map<String, String> map) {
+    public static void updateUserIdJwtSecretSufForRedis(Set<Long> userIdSet) {
+
+        userIdSet.remove(BaseConstant.ADMIN_ID);
+        if (CollUtil.isEmpty(userIdSet)) {
+            return;
+        }
+
+        List<SysUserDO> sysUserDOList =
+            ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, userIdSet)
+                .eq(SysUserDO::getEnableFlag, true).eq(SysUserDO::getDelFlag, false)
+                .select(BaseEntityTwo::getId, SysUserDO::getJwtSecretSuf).list();
+
+        if (sysUserDOList.size() == 0) {
+            return;
+        }
+
+        Map<String, String> map = sysUserDOList.stream().filter(it -> StrUtil.isNotBlank(it.getJwtSecretSuf()))
+            .collect(Collectors.toMap(it -> it.getId().toString(), SysUserDO::getJwtSecretSuf));
+
+        if (map.size() == 0) {
+            return;
+        }
+
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE).putAll(map);
     }
 
     /**
      * 删除：redis中，userId和 jwtSecretSuf对应关系，可批量
+     * 注意：调用时，请根据情况加分布式锁
      */
-    public static void deleteUserIdJwtSecretSufForRedis(Set<String> userIdSet) {
+    public static void deleteUserIdJwtSecretSufForRedis(Set<String> userIdStrSet) {
         jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE)
-            .delete(ArrayUtil.toArray(userIdSet, String.class));
+            .delete(ArrayUtil.toArray(userIdStrSet, String.class));
     }
 
     /**

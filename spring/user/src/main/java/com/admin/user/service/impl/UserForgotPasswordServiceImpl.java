@@ -1,5 +1,6 @@
 package com.admin.user.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
@@ -62,8 +63,12 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
 
         String redisKey = BaseConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
-        lock.lock();
+        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        RLock lock2 = redissonClient.getLock(
+            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
+
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
+        multiLock.lock();
 
         try {
 
@@ -74,7 +79,7 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
 
             updateById(sysUserDO); // 操作数据库
 
-            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(CollUtil.newHashSet(sysUserDO.getId())); // 更新：redis中的缓存
 
             // 清除该账号【登录失败次数过多，被锁定】
             jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_LOGIN_BLACKLIST + sysUserDO.getId());
@@ -83,7 +88,7 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
-            lock.unlock();
+            multiLock.unlock();
         }
     }
 

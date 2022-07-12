@@ -42,7 +42,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -151,8 +154,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             UserUtil.updateRoleRefUserForRedis(false); // 更新：redis中的缓存
 
             if (dto.getId() == null) {
-                MyJwtUtil
-                    .updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
+                MyJwtUtil.setUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 设置：redis中的缓存
             }
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
@@ -322,14 +324,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             updateList.add(sysUserDO);
         }
 
-        updateBatchById(updateList);
+        RLock multiLock = MultiLockUtil
+            .getMultiLockForLong(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", notEmptyIdSet.getIdSet());
+        multiLock.lock();
 
-        Map<String, String> map =
-            updateList.stream().collect(Collectors.toMap(it -> it.getId().toString(), SysUserDO::getJwtSecretSuf));
+        try {
+            updateBatchById(updateList);
 
-        MyJwtUtil.updateUserIdJwtSecretSufForRedis(map); // 更新：redis中的缓存
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(notEmptyIdSet.getIdSet()); // 更新：redis中的缓存
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            multiLock.unlock();
+        }
     }
 
     /**

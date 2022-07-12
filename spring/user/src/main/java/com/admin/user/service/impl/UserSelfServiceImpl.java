@@ -144,8 +144,12 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
         String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
-        lock.lock();
+        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        RLock lock2 = redissonClient.getLock(
+            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
+
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
+        multiLock.lock();
 
         try {
 
@@ -156,13 +160,13 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
             updateById(sysUserDO); // 操作数据库
 
-            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(CollUtil.newHashSet(sysUserDO.getId())); // 更新：redis中的缓存
 
             jsonRedisTemplate.delete(redisKey);
 
             return BaseBizCodeEnum.API_RESULT_OK.getMsg();
         } finally {
-            lock.unlock();
+            multiLock.unlock();
         }
     }
 
@@ -187,11 +191,15 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
         String codeRedisKey = BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
 
-        RLock keyLock = redissonClient.getLock(BaseConstant.PRE_REDISSON + keyRedisKey);
-        RLock codeLock = redissonClient.getLock(BaseConstant.PRE_REDISSON + codeRedisKey);
+        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + keyRedisKey);
+        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + codeRedisKey);
+
+        RLock lock3 = redissonClient.getLock(
+            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":"
+                + currentUserIdNotAdmin);
 
         // 连锁
-        RLock multiLock = redissonClient.getMultiLock(keyLock, codeLock);
+        RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
         multiLock.lock();
 
         try {
@@ -211,7 +219,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
             updateById(sysUserDO);
 
-            MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(CollUtil.newHashSet(sysUserDO.getId())); // 更新：redis中的缓存
 
             jsonRedisTemplate.delete(keyRedisKey);
             jsonRedisTemplate.delete(codeRedisKey);
@@ -273,11 +281,19 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         sysUserDO.setId(UserUtil.getCurrentUserIdNotAdmin());
         sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
 
-        updateById(sysUserDO);
+        RLock lock = redissonClient.getLock(
+            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
+        lock.lock();
 
-        MyJwtUtil.updateUserIdJwtSecretSufForRedis(sysUserDO.getId(), sysUserDO.getJwtSecretSuf()); // 更新：redis中的缓存
+        try {
+            updateById(sysUserDO);
 
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+            MyJwtUtil.updateUserIdJwtSecretSufForRedis(CollUtil.newHashSet(sysUserDO.getId())); // 更新：redis中的缓存
+
+            return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**

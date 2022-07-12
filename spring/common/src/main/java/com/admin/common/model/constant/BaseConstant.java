@@ -56,7 +56,8 @@ public interface BaseConstant {
 
     String PRE_LOCK_BULLETIN_ID = ""; // 公告修改，发布，取消时的 id锁前缀
 
-    String PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE = "PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE"; // 用户 id和私钥后缀 缓存
+    String PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE = "PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE";
+        // 用户 id和私钥后缀 缓存，以及分布式锁，锁用户 主键 id
 
     // 登录失败次数过多，被锁定的账号，redis key前缀，锁 userId
     String PRE_REDIS_LOGIN_BLACKLIST = "PRE_REDIS_LOGIN_BLACKLIST:";
