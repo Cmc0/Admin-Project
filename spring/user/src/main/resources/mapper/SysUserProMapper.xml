@@ -4,7 +4,6 @@
 
     <!-- 分页排序查询 -->
     <select id="myPage" resultType="com.admin.user.model.vo.SysUserPageVO">
-        SELECT * FROM(
         SELECT
         a.nickname AS nickname,
         a.avatar_url AS avatarUrl,
@@ -13,7 +12,7 @@
         a.create_time AS createTime,
         a.update_time AS updateTime,
         a.enable_flag AS enableFlag,
-        MAX( b.create_time ) AS lastActiveTime,
+        IFNULL( MAX( b.create_time ), a.create_time) AS lastActiveTime,
         IF ( a.`password` = '', 0, 1 ) AS passwordFlag
         FROM
         sys_user a
@@ -35,20 +34,17 @@
         <if test="dto.endCreateTime != null">
             AND a.create_time <![CDATA[<=]]> #{dto.endCreateTime}
         </if>
+        <if test="dto.passwordFlag != null">
+            AND IF ( a.`password` = '', 0, 1 ) = #{dto.passwordFlag}
+        </if>
+        <if test="dto.beginLastActiveTime != null">
+            AND IFNULL( MAX( b.create_time ) ,a.create_time) <![CDATA[>=]]> #{dto.beginLastActiveTime}
+        </if>
+        <if test="dto.endLastActiveTime != null">
+            AND IFNULL( MAX( b.create_time ), a.create_time) <![CDATA[<=]]> #{dto.endLastActiveTime}
+        </if>
         GROUP BY
         a.id
-        ) a
-        <where>
-            <if test="dto.passwordFlag != null">
-                AND a.passwordFlag = #{dto.passwordFlag}
-            </if>
-            <if test="dto.beginLastActiveTime != null">
-                AND a.lastActiveTime <![CDATA[>=]]> #{dto.beginLastActiveTime}
-            </if>
-            <if test="dto.endLastActiveTime != null">
-                AND a.lastActiveTime <![CDATA[<=]]> #{dto.endLastActiveTime}
-            </if>
-        </where>
     </select>
 
 </mapper>

@@ -58,9 +58,6 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
         valueType: 'fromNow',
         sorter: true,
         defaultSortOrder: 'descend',
-        renderText: (text, record) => {
-            return text ? text : record.createTime
-        }
     },
     {
         title: '最近活跃', dataIndex: 'lastActiveTimeRange', hideInTable: true, valueType: 'dateTimeRange', search: {
