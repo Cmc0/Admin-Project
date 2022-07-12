@@ -2,7 +2,7 @@ package com.admin.user.controller;
 
 import com.admin.common.model.dto.EmailNotBlankDTO;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.user.model.dto.UserSelfForgotPasswordDTO;
+import com.admin.user.model.dto.UserForgotPasswordDTO;
 import com.admin.user.service.UserForgotPasswordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +24,7 @@ public class UserForgotPasswordController {
 
     @ApiOperation(value = "忘记密码，重置密码")
     @PostMapping
-    public ApiResultVO<String> userForgotPassword(@RequestBody @Valid UserSelfForgotPasswordDTO dto) {
+    public ApiResultVO<String> userForgotPassword(@RequestBody @Valid UserForgotPasswordDTO dto) {
         return ApiResultVO.ok(baseService.userForgotPassword(dto));
     }
 

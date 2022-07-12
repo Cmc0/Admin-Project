@@ -14,7 +14,7 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.*;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
-import com.admin.user.model.dto.UserSelfForgotPasswordDTO;
+import com.admin.user.model.dto.UserForgotPasswordDTO;
 import com.admin.user.service.UserForgotPasswordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RLock;
@@ -36,7 +36,7 @@ public class UserForgotPasswordServiceImpl extends ServiceImpl<SysUserProMapper,
      * 忘记密码，重置密码
      */
     @Override
-    public String userForgotPassword(UserSelfForgotPasswordDTO dto) {
+    public String userForgotPassword(UserForgotPasswordDTO dto) {
 
         boolean isEmail = ReUtil.isMatch(BaseRegexConstant.EMAIL, dto.getAccount());
         if (!isEmail) {

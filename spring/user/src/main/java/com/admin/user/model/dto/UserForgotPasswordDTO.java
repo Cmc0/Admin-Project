@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class UserSelfForgotPasswordDTO {
+public class UserForgotPasswordDTO {
 
     @NotBlank
     @ApiModelProperty(value = "账号")
