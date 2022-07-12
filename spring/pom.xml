@@ -46,6 +46,12 @@
         <dependencies>
 
             <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.54</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.admin</groupId>
                 <artifactId>bulletin</artifactId>
                 <version>${project.version}</version>

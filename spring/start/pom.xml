@@ -14,6 +14,13 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <!-- 不会被打包 -->
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.admin</groupId>
             <artifactId>bulletin</artifactId>
         </dependency>
