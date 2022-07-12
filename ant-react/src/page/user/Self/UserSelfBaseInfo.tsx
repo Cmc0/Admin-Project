@@ -56,6 +56,7 @@ export default function () {
                             success: true,
                             data: res.data
                         })
+                        appDispatch(setUserSelfBaseInfo(res.data))
                     })
                 })
             }}
