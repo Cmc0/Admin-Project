@@ -205,10 +205,10 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     {(routeContextType: RouteContextType) => {
                         return <Space size={30}>
 
-                            <Space size={22}>
+                            <Space size={routeContextType.isMobile ? 20 : 22}>
                                 <Tooltip title="消息">
                                     <a onClick={InDev}>
-                                        <Badge count={10} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
+                                        <Badge count={0} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
                                             <Button type="text" icon={<MessageOutlined/>}/>
                                         </Badge>
                                     </a>
@@ -216,7 +216,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
                                 <Tooltip title="公告">
                                     <a onClick={InDev}>
-                                        <Badge count={10} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
+                                        <Badge count={0} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
                                             <Button type="text" icon={<NotificationOutlined/>}/>
                                         </Badge>
                                     </a>
