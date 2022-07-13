@@ -231,7 +231,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     {(routeContextType: RouteContextType) => {
                         return <Space size={routeContextType.isMobile ? 15 : 30}>
 
-                            <Space size={routeContextType.isMobile ? 5 : 22}>
+                            <Space size={routeContextType.isMobile ? 3 : 22}>
                                 <Tooltip title="消息">
                                     <a onClick={InDev}>
                                         <Badge count={0} offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
