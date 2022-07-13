@@ -15,7 +15,15 @@ import java.util.concurrent.CountDownLatch;
 
 public class DoAdminPackage {
 
+    private static final String HOST = "139.196.121.3";
+
+    private static final String USER = "root";
+
+    private static final String PRIVATE_KEY_PATH = "E:\\demo\\key1.pem";
+
     private static final String VITE_REMOTE_PATH = "/mydata/nginx/html/h5";
+
+    private static final String SPRING_REMOTE_PATH = "/mydata/springboot";
 
     private static final String SPRING_REMOTE_EXEC_CMD = "docker restart spring-boot-cmc";
 
@@ -25,7 +33,7 @@ public class DoAdminPackage {
     @SneakyThrows
     public static void main(String[] args) {
 
-        Session session = JschUtil.getSession("139.196.121.3", 22, "root", "E:\\demo\\key1.pem", null);
+        Session session = JschUtil.getSession(HOST, 22, USER, PRIVATE_KEY_PATH, null);
 
         Sftp sftp = JschUtil.createSftp(session);
 
@@ -63,7 +71,7 @@ public class DoAdminPackage {
 
         timeNumber = System.currentTimeMillis();
 
-        sftp.put(jarPath, "/mydata/springboot");
+        sftp.put(jarPath, SPRING_REMOTE_PATH);
 
         timeNumber = System.currentTimeMillis() - timeNumber;
         timeStr = DateUtil.formatBetween(timeNumber);
