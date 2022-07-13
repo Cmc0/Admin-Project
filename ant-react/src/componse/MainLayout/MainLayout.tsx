@@ -229,9 +229,9 @@ function MainLayoutElement(props: IMainLayoutElement) {
             rightContentRender={() => (
                 <RouteContext.Consumer>
                     {(routeContextType: RouteContextType) => {
-                        return <Space size={routeContextType.isMobile ? 18 : 30}>
+                        return <Space size={routeContextType.isMobile ? 15 : 30}>
 
-                            <Space size={routeContextType.isMobile ? 10 : 22}>
+                            <Space size={routeContextType.isMobile ? 5 : 22}>
                                 <Tooltip title="消息">
                                     <a onClick={InDev}>
                                         <Badge count={0} offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
