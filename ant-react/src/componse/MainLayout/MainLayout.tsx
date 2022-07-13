@@ -130,6 +130,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     const [bulletinUserSelfCount, setBulletinUserSelfCount] = useState<number>(0)
 
+    const webSocketMessage = useAppSelector((state) => state.common.webSocketMessage)
+
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
             headers: {
@@ -148,6 +150,15 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     useEffect(() => {
         doSysBulletinUserSelfCount()
+    }, [])
+
+    useEffect(() => {
+        if (webSocketMessage.code === 6) {
+            doSysBulletinUserSelfCount()
+        }
+    }, [webSocketMessage.code])
+
+    useEffect(() => {
         setPathname(window.location.pathname)
         doSysRequestAllAvg()
         const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 120 * 1000);
