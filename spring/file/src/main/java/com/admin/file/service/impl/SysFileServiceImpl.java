@@ -98,6 +98,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         SysFileDO sysFileDO = new SysFileDO();
         sysFileDO.setUrl(url);
         sysFileDO.setFileName(originalFilename); // 存储：原始文件名
+        sysFileDO.setFileExtName(fileType); // 存储：文件类型
         sysFileDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
         sysFileDO.setExtraJson(MyEntityUtil.getNotNullStr(dto.getExtraJson()));
 

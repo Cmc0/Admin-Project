@@ -19,6 +19,9 @@ public class SysFileDO extends BaseEntityThree {
     @ApiModelProperty(value = "文件原始名（包含文件类型）")
     private String fileName;
 
+    @ApiModelProperty(value = "文件类型，备注：这个是读取文件流的头部信息获得文件类型")
+    private String fileExtName;
+
     @ApiModelProperty(value = "额外信息（json格式）")
     private String extraJson;
 
