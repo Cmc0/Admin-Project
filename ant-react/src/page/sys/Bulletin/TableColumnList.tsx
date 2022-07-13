@@ -113,7 +113,6 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
                                 actionRef.current?.reload()
                             })
                         }, undefined, `确定发布，主键id为【${entity.id}】的数据吗？`)
-
                     } else {
                         execConfirm(() => {
                             return sysBulletinRevoke({id: entity.id!}).then(res => {
