@@ -234,8 +234,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
                                 },
                                 {
                                     key: '2',
+                                    danger: true,
                                     label: <a
-                                        className={"red3"}
                                         onClick={() => {
                                             execConfirm(() => {
                                                 return userSelfLogout().then((res) => {
@@ -247,7 +247,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                                     >
                                         退出登录
                                     </a>,
-                                    icon: <LogoutOutlined className={"red3"}/>
+                                    icon: <LogoutOutlined/>
                                 },
                             ]}/>}>
                                 <div className={"h100 hand"} onClick={() => {
