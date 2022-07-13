@@ -212,25 +212,26 @@ function MainLayoutElement(props: IMainLayoutElement) {
                     </>
                 </a>
             )}
-            headerContentRender={() => (
-                <span className={"hand m-l-9"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
-                        <Badge
-                            status="processing"
-                            text={
-                                <Typography.Text
-                                    strong
-                                    type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                    avg：{sysRequestAllAvgVO.avg}ms
-                                </Typography.Text>
-                            }/>
-                    </span>
-            )}
+            headerContentRender={() =>
+                <span className={`hand m-l-9`}
+                      title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                      <Badge
+                          status="processing"
+                          text={
+                              <Typography.Text
+                                  strong
+                                  type={GetAvgType(sysRequestAllAvgVO.avg!)}>
+                                  avg：{sysRequestAllAvgVO.avg}ms
+                              </Typography.Text>
+                          }/>
+                </span>
+            }
             rightContentRender={() => (
                 <RouteContext.Consumer>
                     {(routeContextType: RouteContextType) => {
-                        return <Space size={30}>
+                        return <Space size={routeContextType.isMobile ? 18 : 30}>
 
-                            <Space size={routeContextType.isMobile ? 20 : 22}>
+                            <Space size={routeContextType.isMobile ? 13 : 22}>
                                 <Tooltip title="消息">
                                     <a onClick={InDev}>
                                         <Badge count={0} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
