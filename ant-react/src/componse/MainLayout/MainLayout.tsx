@@ -31,6 +31,7 @@ import {MenuDataItem, RouteContext, RouteContextType} from '@ant-design/pro-comp
 import {GetPublicDownFileUrl} from "../../../util/FileUtil";
 import {userSelfBaseInfo, userSelfLogout} from "@/api/UserSelfController";
 import Marquee from 'react-fast-marquee';
+import {sysBulletinUserSelfCount} from "@/api/SysBulletinController";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -127,6 +128,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
     const [sysRequestAllAvgVO, setSysRequestAllAvgVO] = useState<SysRequestAllAvgVO>({avg: 0, count: 0})
     const userSelfBaseInfo = useAppSelector((state) => state.user.userSelfBaseInfo)
 
+    const [bulletinUserSelfCount, setBulletinUserSelfCount] = useState<number>(0)
+
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
             headers: {
@@ -137,7 +140,14 @@ function MainLayoutElement(props: IMainLayoutElement) {
         })
     }
 
+    function doSysBulletinUserSelfCount() {
+        sysBulletinUserSelfCount().then(res => {
+            setBulletinUserSelfCount(res.data)
+        })
+    }
+
     useEffect(() => {
+        doSysBulletinUserSelfCount()
         setPathname(window.location.pathname)
         doSysRequestAllAvg()
         const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 120 * 1000);
@@ -218,7 +228,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
                                 <Tooltip title="公告">
                                     <a onClick={InDev}>
-                                        <Badge count={0} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
+                                        <Badge count={bulletinUserSelfCount} offset={[5, 5]} size={"small"} title={""}
+                                               className={"hand"}>
                                             <Button type="text" icon={<NotificationOutlined/>}/>
                                         </Badge>
                                     </a>
