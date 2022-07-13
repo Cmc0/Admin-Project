@@ -3,7 +3,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Badge, Button, Dropdown, Menu, Space, Tooltip, Typography} from "antd";
+import {Alert, Avatar, Badge, Button, Dropdown, Menu, Space, Tooltip, Typography} from "antd";
 import {
     LogoutOutlined,
     MessageOutlined,
@@ -30,6 +30,7 @@ import {GetAvgType} from "@/page/sysMonitor/Request/Request";
 import {MenuDataItem, RouteContext, RouteContextType} from '@ant-design/pro-components';
 import {GetPublicDownFileUrl} from "../../../util/FileUtil";
 import {userSelfBaseInfo, userSelfLogout} from "@/api/UserSelfController";
+import Marquee from 'react-fast-marquee';
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -190,15 +191,16 @@ function MainLayoutElement(props: IMainLayoutElement) {
             )}
             headerContentRender={() => (
                 <span className={"hand m-l-9"} title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
-                    <Badge status="processing"
-                           text={
-                               <Typography.Text
-                                   strong
-                                   type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                   avg：{sysRequestAllAvgVO.avg}ms
-                               </Typography.Text>
-                           }/>
-                </span>
+                        <Badge
+                            status="processing"
+                            text={
+                                <Typography.Text
+                                    strong
+                                    type={GetAvgType(sysRequestAllAvgVO.avg!)}>
+                                    avg：{sysRequestAllAvgVO.avg}ms
+                                </Typography.Text>
+                            }/>
+                    </span>
             )}
             rightContentRender={() => (
                 <RouteContext.Consumer>
@@ -291,6 +293,15 @@ function MainLayoutElement(props: IMainLayoutElement) {
             )}
         >
             <PageContainer>
+                <Alert
+                    banner
+                    closable
+                    message={
+                        <Marquee pauseOnHover gradient={false}>
+                            I can be a React component, multiple React components, or just some text.
+                        </Marquee>
+                    }
+                />
                 <Outlet/>
             </PageContainer>
         </ProLayout>
