@@ -67,9 +67,9 @@ public class DoAdminPackage {
 
         System.out.println("后端打包上传 ↓");
 
-        String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
-
         timeNumber = System.currentTimeMillis();
+
+        String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
 
         sftp.put(jarPath, SPRING_REMOTE_PATH);
 
@@ -116,9 +116,9 @@ public class DoAdminPackage {
 
         System.out.println("前端打包上传 ↓");
 
-        String viteBuildPath = vitePath + "/dist";
-
         timeNumber = System.currentTimeMillis();
+
+        String viteBuildPath = vitePath + "/dist";
 
         sftp.delDir(VITE_REMOTE_PATH);
 
