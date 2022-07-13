@@ -142,23 +142,25 @@ function MainLayoutElement(props: IMainLayoutElement) {
         })
     }
 
-    function doSysBulletinUserSelfCount() {
+    function doSysBulletinUserSelfCount(webSocketMessage?: IWebSocketMessage) {
+        if (webSocketMessage && webSocketMessage.code !== 6) {
+            return
+        }
         sysBulletinUserSelfCount().then(res => {
             setBulletinUserSelfCount(res.data)
         })
     }
 
-    useEffect(() => {
-        doSysBulletinUserSelfCount()
-    }, [])
+    function webSocketMessageHandler(webSocketMessage?: IWebSocketMessage) {
+        doSysBulletinUserSelfCount(webSocketMessage)
+    }
 
     useEffect(() => {
-        if (webSocketMessage.code === 6) {
-            doSysBulletinUserSelfCount()
-        }
-    }, [webSocketMessage.code])
+        webSocketMessageHandler(webSocketMessage)
+    }, [webSocketMessage])
 
     useEffect(() => {
+        webSocketMessageHandler()
         setPathname(window.location.pathname)
         doSysRequestAllAvg()
         const sysRequestAllAvgInterval = setInterval(doSysRequestAllAvg, 120 * 1000);
