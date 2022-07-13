@@ -3,8 +3,14 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Avatar, Badge, Dropdown, Menu, Space, Typography} from "antd";
-import {LogoutOutlined, UserOutlined, WarningFilled} from "@ant-design/icons/lib";
+import {Avatar, Badge, Button, Dropdown, Menu, Space, Tooltip, Typography} from "antd";
+import {
+    LogoutOutlined,
+    MessageOutlined,
+    NotificationOutlined,
+    UserOutlined,
+    WarningFilled
+} from "@ant-design/icons/lib";
 import {logout} from "../../../util/UserUtil";
 import {InDev} from "../../../util/CommonUtil";
 import {execConfirm, ToastError, ToastSuccess} from "../../../util/ToastUtil";
@@ -197,7 +203,26 @@ function MainLayoutElement(props: IMainLayoutElement) {
             rightContentRender={() => (
                 <RouteContext.Consumer>
                     {(routeContextType: RouteContextType) => {
-                        return <Space size={20}>
+                        return <Space size={30}>
+
+                            <Space size={22}>
+                                <Tooltip title="消息">
+                                    <a onClick={InDev}>
+                                        <Badge count={10} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
+                                            <Button type="text" icon={<MessageOutlined/>}/>
+                                        </Badge>
+                                    </a>
+                                </Tooltip>
+
+                                <Tooltip title="公告">
+                                    <a onClick={InDev}>
+                                        <Badge count={10} offset={[5, 5]} size={"small"} title={""} className={"hand"}>
+                                            <Button type="text" icon={<NotificationOutlined/>}/>
+                                        </Badge>
+                                    </a>
+                                </Tooltip>
+                            </Space>
+
                             <Dropdown overlay={<Menu items={[
                                 {
                                     key: '1',

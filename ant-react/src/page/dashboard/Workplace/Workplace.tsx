@@ -14,6 +14,7 @@ import {
     SystemAnalyzeUserVO
 } from "@/api/SystemAnalyzeController";
 import CommonConstant from "@/model/constant/CommonConstant";
+import EChartOption = echarts.EChartOption;
 
 const WorkplaceJvmEChartsId = "WorkplaceJvmEChartsId"
 const WorkplaceMemoryEChartsId = "WorkplaceMemoryEChartsId"
@@ -44,7 +45,7 @@ function setServerInfoEChartsOption(eachChartsRef: React.MutableRefObject<echart
                 ],
             }
         ]
-    })
+    } as EChartOption<EChartOption.SeriesPie>)
 
 }
 
@@ -84,7 +85,7 @@ function setActiveUserTrendEChartsOption(data: SystemAnalyzeActiveUserTrendVO[] 
                 }
             }
         ]
-    })
+    } as EChartOption<EChartOption.SeriesLine>)
 
 }
 
@@ -112,7 +113,7 @@ function setTrafficUsageEChartsOption(data: SystemAnalyzeTrafficUsageVO[] | unde
                 data: dataList
             }
         ]
-    })
+    } as EChartOption<EChartOption.SeriesPie>)
 
 }
 
