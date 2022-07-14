@@ -35,76 +35,41 @@ public class DoAdminPackage {
     @SneakyThrows
     public static void main(String[] args) {
 
+        Scanner scanner = new Scanner(System.in);
+
         System.out.println("请输入：1 全部打包 2 后端打包 3 前端打包");
 
-        Thread thread = getThread(null);
+        String nextLine = scanner.nextLine();
 
-        thread.start();
+        scanner.close();
 
-        Thread.UncaughtExceptionHandler uncaughtExceptionHandler = (t, e) -> {
-            e.printStackTrace();
-            thread.interrupt();
-        };
+        int number = Convert.toInt(nextLine, 1);
 
-        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-    }
+        int threadCount = 2;
 
-    private static Thread getThread(Integer startNumber) {
+        if (number == 2 || number == 3) {
+            threadCount = 1;
+        }
 
-        return new Thread(() -> {
+        Session session = JschUtil.getSession(HOST, 22, USER, PRIVATE_KEY_PATH, null);
 
-            int number = 0;
+        Sftp sftp = JschUtil.createSftp(session);
 
-            if (startNumber == null) {
-                int finalNumber = number;
-                ThreadUtil.execute(() -> {
-                    ThreadUtil.sleep(2000);
-                    if (finalNumber == 0) {
-                        throw new RuntimeException("等待输入超时，默认：1 全部打包");
-                    }
-                });
+        String springPath = System.getProperty("user.dir"); // 例如：E:\Cmc0\Admin-Project\spring
 
-                Scanner scanner = new Scanner(System.in);
+        CountDownLatch countDownLatch = ThreadUtil.newCountDownLatch(threadCount);
 
-                String nextLine = scanner.nextLine();
+        if (number == 1 || number == 2) {
+            ThreadUtil.execute(() -> doSpringPackage(springPath, countDownLatch, sftp, session));
+        }
 
-                scanner.close();
+        if (number == 1 || number == 3) {
+            ThreadUtil.execute(() -> doVitePackage(springPath, countDownLatch, sftp));
+        }
 
-                number = Convert.toInt(nextLine, 1);
-            } else {
-                number = startNumber;
-            }
+        countDownLatch.await();
 
-            int threadCount = 2;
-
-            if (number == 2 || number == 3) {
-                threadCount = 1;
-            }
-
-            Session session = JschUtil.getSession(HOST, 22, USER, PRIVATE_KEY_PATH, null);
-
-            Sftp sftp = JschUtil.createSftp(session);
-
-            String springPath = System.getProperty("user.dir"); // 例如：E:\Cmc0\Admin-Project\spring
-
-            CountDownLatch countDownLatch = ThreadUtil.newCountDownLatch(threadCount);
-
-            if (number == 1 || number == 2) {
-                ThreadUtil.execute(() -> doSpringPackage(springPath, countDownLatch, sftp, session));
-            }
-
-            if (number == 1 || number == 3) {
-                ThreadUtil.execute(() -> doVitePackage(springPath, countDownLatch, sftp));
-            }
-
-            try {
-                countDownLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            sftp.close();
-        });
+        sftp.close();
     }
 
     /**
