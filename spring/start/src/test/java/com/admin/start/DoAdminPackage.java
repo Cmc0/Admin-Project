@@ -1,5 +1,6 @@
 package com.admin.start;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
@@ -11,6 +12,7 @@ import cn.hutool.extra.ssh.Sftp;
 import com.jcraft.jsch.Session;
 import lombok.SneakyThrows;
 
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
 public class DoAdminPackage {
@@ -33,16 +35,37 @@ public class DoAdminPackage {
     @SneakyThrows
     public static void main(String[] args) {
 
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("请输入：1 全部打包 2 后端打包 3 前端打包");
+
+        String nextLine = scanner.nextLine();
+
+        int number = Convert.toInt(nextLine, 1);
+
+        int threadCount = 2;
+
+        if (2 == number) {
+            threadCount = 1;
+        } else if (3 == number) {
+            threadCount = 1;
+        }
+
         Session session = JschUtil.getSession(HOST, 22, USER, PRIVATE_KEY_PATH, null);
 
         Sftp sftp = JschUtil.createSftp(session);
 
         String springPath = System.getProperty("user.dir"); // 例如：E:\Cmc0\Admin-Project\spring
 
-        CountDownLatch countDownLatch = ThreadUtil.newCountDownLatch(2);
+        CountDownLatch countDownLatch = ThreadUtil.newCountDownLatch(threadCount);
 
-        ThreadUtil.execute(() -> doSpringPackage(springPath, countDownLatch, sftp, session));
-        ThreadUtil.execute(() -> doVitePackage(springPath, countDownLatch, sftp));
+        if (number == 1 || number == 2) {
+            ThreadUtil.execute(() -> doSpringPackage(springPath, countDownLatch, sftp, session));
+        }
+
+        if (number == 1 || number == 3) {
+            ThreadUtil.execute(() -> doVitePackage(springPath, countDownLatch, sftp));
+        }
 
         countDownLatch.await();
 
