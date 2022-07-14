@@ -234,14 +234,14 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             <Space size={routeContextType.isMobile ? 5 : 22}>
                                 <a onClick={InDev} title="消息">
                                     <Badge count={0} offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
-                                           title={""} className={"hand"}>
+                                           className={"hand"}>
                                         <Button type="text" icon={<MessageOutlined/>}/>
                                     </Badge>
                                 </a>
 
                                 <a onClick={InDev} title="公告">
                                     <Badge count={bulletinUserSelfCount}
-                                           offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"} title={""}
+                                           offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
                                            className={"hand"}>
                                         <Button type="text" icon={<NotificationOutlined/>}/>
                                     </Badge>
