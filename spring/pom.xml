@@ -171,7 +171,7 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
-                <version>3.17.3</version>
+                <version>3.17.4</version>
             </dependency>
 
             <!-- minio：文件系统 -->
@@ -192,7 +192,7 @@
             <dependency>
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
-                <version>6.1.6</version>
+                <version>6.2.1</version>
             </dependency>
 
             <!-- 发送邮件 -->
@@ -206,7 +206,7 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>easyexcel</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
             </dependency>
 
             <!-- 离线IP地址定位库 -->

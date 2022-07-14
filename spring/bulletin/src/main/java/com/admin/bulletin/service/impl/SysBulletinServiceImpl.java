@@ -246,21 +246,28 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        ThreadUtil.execute(() -> {
-            SysBulletinReadTimeRefUserDO sysBulletinReadTimeRefUserDO = new SysBulletinReadTimeRefUserDO();
-            sysBulletinReadTimeRefUserDO.setUserId(currentUserId);
-            sysBulletinReadTimeRefUserDO.setBulletinReadTime(new Date());
-            boolean exists = sysBulletinReadTimeRefUserService.lambdaQuery()
-                .eq(SysBulletinReadTimeRefUserDO::getUserId, currentUserId).exists();
-            if (exists) {
-                sysBulletinReadTimeRefUserService.updateById(sysBulletinReadTimeRefUserDO);
-            } else {
-                sysBulletinReadTimeRefUserService.save(sysBulletinReadTimeRefUserDO);
-            }
+        // 备注，dto.getPageSize()：0 点击关闭公告横幅 1 查询用户最新一条公告，用于横幅展示
+        if (dto.getPageSize() != 0 && dto.getPageSize() != 1) {
+            ThreadUtil.execute(() -> {
+                SysBulletinReadTimeRefUserDO sysBulletinReadTimeRefUserDO = new SysBulletinReadTimeRefUserDO();
+                sysBulletinReadTimeRefUserDO.setUserId(currentUserId);
+                sysBulletinReadTimeRefUserDO.setBulletinReadTime(new Date());
+                boolean exists = sysBulletinReadTimeRefUserService.lambdaQuery()
+                    .eq(SysBulletinReadTimeRefUserDO::getUserId, currentUserId).exists();
+                if (exists) {
+                    sysBulletinReadTimeRefUserService.updateById(sysBulletinReadTimeRefUserDO);
+                } else {
+                    sysBulletinReadTimeRefUserService.save(sysBulletinReadTimeRefUserDO);
+                }
 
-            // 通知该用户，刷新 公告信息
-            KafkaUtil.bulletinPublish(Collections.singleton(currentUserId));
-        });
+                // 通知该用户，刷新 公告信息
+                KafkaUtil.bulletinPublish(Collections.singleton(currentUserId));
+            });
+        }
+
+        if (dto.getPageSize() == 0) {
+            return dto.getPage(false); // 不去查询数据
+        }
 
         return lambdaQuery().eq(BaseEntityThree::getDelFlag, false)
             .eq(SysBulletinDO::getStatus, SysBulletinStatusEnum.PUBLICITY).le(SysBulletinDO::getPublishTime, new Date())
@@ -270,7 +277,8 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
             .le(dto.getPtEndTime() != null, SysBulletinDO::getPublishTime, dto.getPtEndTime())
             .ge(dto.getPtBeginTime() != null, SysBulletinDO::getPublishTime, dto.getPtBeginTime())
             .select(SysBulletinDO::getTitle, SysBulletinDO::getType, SysBulletinDO::getContent,
-                SysBulletinDO::getPublishTime, BaseEntityTwo::getId, BaseEntity::getCreateId).page(dto.getPage(true));
+                SysBulletinDO::getPublishTime, BaseEntityTwo::getId, BaseEntity::getCreateId)
+            .orderByDesc(dto.notHasOrder(), SysBulletinDO::getPublishTime).page(dto.getPage(true));
     }
 
     /**

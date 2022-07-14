@@ -31,7 +31,7 @@ import {MenuDataItem, RouteContext, RouteContextType} from '@ant-design/pro-comp
 import {GetPublicDownFileUrl} from "../../../util/FileUtil";
 import {userSelfBaseInfo, userSelfLogout} from "@/api/UserSelfController";
 import Marquee from 'react-fast-marquee';
-import {sysBulletinUserSelfCount} from "@/api/SysBulletinController";
+import {SysBulletinDO, sysBulletinUserSelfCount, sysBulletinUserSelfPage} from "@/api/SysBulletinController";
 
 // 前往：第一个页面
 function goFirstPage(menuList: SysMenuDO[]) {
@@ -132,6 +132,20 @@ function MainLayoutElement(props: IMainLayoutElement) {
 
     const webSocketMessage = useAppSelector((state) => state.common.webSocketMessage)
 
+    const [newBulletin, setNewBulletin] = useState<SysBulletinDO>({});
+
+    function doSetNewBulletin(bulletinUserSelfCount: number) {
+        if (bulletinUserSelfCount < 1) {
+            setNewBulletin({})
+            return
+        }
+        sysBulletinUserSelfPage({pageSize: 1}).then(res => {
+            if (res.data && res.data.length) {
+                setNewBulletin(res.data[0])
+            }
+        })
+    }
+
     function doSysRequestAllAvg() {
         sysRequestAllAvg({
             headers: {
@@ -148,6 +162,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
         }
         sysBulletinUserSelfCount().then(res => {
             setBulletinUserSelfCount(res.data)
+            doSetNewBulletin(res.data)
         })
     }
 
@@ -320,16 +335,24 @@ function MainLayoutElement(props: IMainLayoutElement) {
             )}
         >
             <PageContainer>
-                <Alert
-                    banner
-                    closable
-                    message={
-                        <Marquee pauseOnHover gradient={false}>
-                            I can be a React component, multiple React components, or just some text.
-                        </Marquee>
+                <>
+                    {
+                        newBulletin.id && <Alert
+                            banner
+                            closable
+                            message={
+                                <Marquee pauseOnHover gradient={false}>
+                                    {newBulletin.publishTime}：【{newBulletin.title}】{newBulletin.content}
+                                </Marquee>
+                            }
+                            onClose={() => {
+                                // 清除公告数量
+                                sysBulletinUserSelfPage({pageSize: 0})
+                            }}
+                        />
                     }
-                />
-                <Outlet/>
+                    <Outlet/>
+                </>
             </PageContainer>
         </ProLayout>
     </div>
