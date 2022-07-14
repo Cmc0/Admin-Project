@@ -229,7 +229,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
             rightContentRender={() => (
                 <RouteContext.Consumer>
                     {(routeContextType: RouteContextType) => {
-                        return <Space size={routeContextType.isMobile ? 13 : 30}>
+                        return <Space size={routeContextType.isMobile ? 12 : 30}>
 
                             <Space size={routeContextType.isMobile ? 5 : 22}>
                                 <a onClick={InDev} title="消息">
