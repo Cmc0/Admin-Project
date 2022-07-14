@@ -4,13 +4,12 @@ import Logo from "@/favicon.svg";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Form, Tabs} from "antd";
 import {LockOutlined, SafetyCertificateOutlined, UserOutlined} from "@ant-design/icons/lib";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {ToastSuccess} from "../../../util/ToastUtil";
 import {getAppNav} from "@/App";
 import {useAppSelector} from "@/store";
 import {InDev} from "../../../util/CommonUtil";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../util/RsaUtil";
-import RegisterTest from "@/page/Register/RegisterTest";
 import {UserRegisterByEmailDTO, userRegisterEmail, userRegisterEmailSendCode} from "@/api/UserRegisterController";
 import {UseEffectLogin} from "@/page/Login/Login";
 import {ValidatorUtil} from "../../../util/ValidatorUtil";
@@ -22,12 +21,6 @@ export default function () {
     const [registerType, setRegisterType] = useState<RegisterType>('email');
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
     const [useForm] = Form.useForm<UserRegisterByEmailDTO>();
-
-    useEffect(() => {
-        window.PageTest = function () {
-            RegisterTest(useForm)
-        }
-    }, [])
 
     UseEffectLogin()
 

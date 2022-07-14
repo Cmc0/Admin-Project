@@ -15,7 +15,6 @@ import {closeWebSocket} from "../../../util/WebSocketUtil";
 import {useAppDispatch, useAppSelector} from "@/store";
 import {setLoadMenuFlag} from "@/store/userSlice";
 import {InDev} from "../../../util/CommonUtil";
-import LoginTest from "@/page/Login/LoginTest";
 import {ValidatorUtil} from "../../../util/ValidatorUtil";
 import {
     userForgotPassword,
@@ -39,12 +38,6 @@ export default function () {
 
     const [loginType, setLoginType] = useState<LoginType>('password');
     const [useForm] = Form.useForm<UserLoginByPasswordDTO>();
-
-    useEffect(() => {
-        window.PageTest = function () {
-            LoginTest(useForm)
-        }
-    }, [])
 
     UseEffectLogin()
 
