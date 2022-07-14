@@ -30,13 +30,6 @@ public class MyPageDTO {
     /**
      * 分页属性拷贝
      */
-    public <T> Page<T> getPage() {
-        return getPage(false);
-    }
-
-    /**
-     * 分页属性拷贝
-     */
     public <T> Page<T> getPage(boolean toUnderlineCaseFlag) {
         Page<T> page = new Page<>();
 
@@ -58,7 +51,7 @@ public class MyPageDTO {
      */
     public <T> Page<T> getCreateTimeDescDefaultOrderPage() {
 
-        Page<T> page = getPage();
+        Page<T> page = getPage(false);
 
         if (notHasOrder()) {
             page.orders().add(new OrderItem("createTime", false));

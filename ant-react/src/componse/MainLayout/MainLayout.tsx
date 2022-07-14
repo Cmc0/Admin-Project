@@ -239,7 +239,11 @@ function MainLayoutElement(props: IMainLayoutElement) {
                                     </Badge>
                                 </a>
 
-                                <a onClick={InDev} title="公告">
+                                <a onClick={() => {
+                                    setPathname(CommonConstant.MESSAGE_BULLETIN_PATH)
+                                    getAppNav()(CommonConstant.MESSAGE_BULLETIN_PATH)
+
+                                }} title="公告">
                                     <Badge count={bulletinUserSelfCount}
                                            offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
                                            className={"hand"}>
