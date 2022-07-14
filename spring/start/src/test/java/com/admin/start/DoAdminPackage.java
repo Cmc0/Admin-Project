@@ -47,9 +47,7 @@ public class DoAdminPackage {
 
         int threadCount = 2;
 
-        if (2 == number) {
-            threadCount = 1;
-        } else if (3 == number) {
+        if (number == 2 || number == 3) {
             threadCount = 1;
         }
 
