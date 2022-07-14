@@ -247,7 +247,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
         Long currentUserId = UserUtil.getCurrentUserId();
 
         // 备注，dto.getPageSize()：0 点击关闭公告横幅 1 查询用户最新一条公告，用于横幅展示
-        if (dto.getPageSize() != 0 && dto.getPageSize() != 1) {
+        if (dto.getPageSize() != 1) {
             ThreadUtil.execute(() -> {
                 SysBulletinReadTimeRefUserDO sysBulletinReadTimeRefUserDO = new SysBulletinReadTimeRefUserDO();
                 sysBulletinReadTimeRefUserDO.setUserId(currentUserId);
