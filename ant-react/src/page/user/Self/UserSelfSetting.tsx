@@ -349,7 +349,10 @@ function RequestSelfLoginRecordModal() {
                     rowKey={"id"}
                     columnEmptyText={false}
                     revalidateOnFocus={false}
-                    scroll={{y: 365}}
+                    scroll={{y: 440}}
+                    search={{
+                        filterType: 'light',
+                    }}
                     columns={[
                         {
                             title: '序号',
