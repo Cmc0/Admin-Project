@@ -3,7 +3,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Alert, Avatar, Badge, Button, Dropdown, Menu, Space, Tooltip, Typography} from "antd";
+import {Alert, Avatar, Badge, Button, Dropdown, Menu, Space, Typography} from "antd";
 import {
     LogoutOutlined,
     MessageOutlined,
@@ -221,7 +221,7 @@ function MainLayoutElement(props: IMainLayoutElement) {
                               <Typography.Text
                                   strong
                                   type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                  avg：{sysRequestAllAvgVO.avg}ms
+                                  {sysRequestAllAvgVO.avg}ms
                               </Typography.Text>
                           }/>
                 </span>
@@ -229,27 +229,23 @@ function MainLayoutElement(props: IMainLayoutElement) {
             rightContentRender={() => (
                 <RouteContext.Consumer>
                     {(routeContextType: RouteContextType) => {
-                        return <Space size={routeContextType.isMobile ? 15 : 30}>
+                        return <Space size={routeContextType.isMobile ? 13 : 30}>
 
-                            <Space size={routeContextType.isMobile ? 3 : 22}>
-                                <Tooltip title="消息">
-                                    <a onClick={InDev}>
-                                        <Badge count={0} offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
-                                               title={""} className={"hand"}>
-                                            <Button type="text" icon={<MessageOutlined/>}/>
-                                        </Badge>
-                                    </a>
-                                </Tooltip>
+                            <Space size={routeContextType.isMobile ? 5 : 22}>
+                                <a onClick={InDev} title="消息">
+                                    <Badge count={0} offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"}
+                                           title={""} className={"hand"}>
+                                        <Button type="text" icon={<MessageOutlined/>}/>
+                                    </Badge>
+                                </a>
 
-                                <Tooltip title="公告">
-                                    <a onClick={InDev}>
-                                        <Badge count={bulletinUserSelfCount}
-                                               offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"} title={""}
-                                               className={"hand"}>
-                                            <Button type="text" icon={<NotificationOutlined/>}/>
-                                        </Badge>
-                                    </a>
-                                </Tooltip>
+                                <a onClick={InDev} title="公告">
+                                    <Badge count={bulletinUserSelfCount}
+                                           offset={[routeContextType.isMobile ? 0 : 5, 5]} size={"small"} title={""}
+                                           className={"hand"}>
+                                        <Button type="text" icon={<NotificationOutlined/>}/>
+                                    </Badge>
+                                </a>
                             </Space>
 
                             <Dropdown overlay={<Menu items={[
