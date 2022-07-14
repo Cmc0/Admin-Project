@@ -37,32 +37,43 @@ public class DoAdminPackage {
 
         System.out.println("请输入：1 全部打包 2 后端打包 3 前端打包");
 
-        Thread thread = getThread();
+        Thread thread = getThread(null);
+
+        thread.start();
 
         Thread.UncaughtExceptionHandler uncaughtExceptionHandler = (t, e) -> {
             e.printStackTrace();
+            thread.interrupt();
         };
 
         Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-
     }
 
-    private static Thread getThread() {
+    private static Thread getThread(Integer startNumber) {
 
         return new Thread(() -> {
 
-            ThreadUtil.execute(() -> {
-                ThreadUtil.sleep(2000);
-                throw new RuntimeException("等待输入超时，默认：1 全部打包");
-            });
+            int number = 0;
 
-            Scanner scanner = new Scanner(System.in);
+            if (startNumber == null) {
+                int finalNumber = number;
+                ThreadUtil.execute(() -> {
+                    ThreadUtil.sleep(2000);
+                    if (finalNumber == 0) {
+                        throw new RuntimeException("等待输入超时，默认：1 全部打包");
+                    }
+                });
 
-            String nextLine = scanner.nextLine();
+                Scanner scanner = new Scanner(System.in);
 
-            scanner.close();
+                String nextLine = scanner.nextLine();
 
-            int number = Convert.toInt(nextLine, 1);
+                scanner.close();
+
+                number = Convert.toInt(nextLine, 1);
+            } else {
+                number = startNumber;
+            }
 
             int threadCount = 2;
 
