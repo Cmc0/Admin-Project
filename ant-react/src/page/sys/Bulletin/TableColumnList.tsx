@@ -24,6 +24,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
     {
         title: '公告类型', dataIndex: 'type',
         valueType: 'select',
+        fieldProps: {
+            showSearch: true,
+        },
         request: () => {
             return RequestGetDictList('bulletin_type')
         }
@@ -61,6 +64,9 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
     {title: '备注', dataIndex: 'remark'},
     {
         title: '创建人', dataIndex: 'createId', valueType: 'select',
+        fieldProps: {
+            showSearch: true,
+        },
         request: () => {
             return GetUserDictList()
         }

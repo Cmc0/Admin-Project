@@ -15,6 +15,9 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
     {title: 'id', dataIndex: 'id'},
     {
         title: '用户昵称', dataIndex: 'createId', valueType: 'select',
+        fieldProps: {
+            showSearch: true,
+        },
         request: () => {
             return GetUserDictList()
         }
@@ -44,6 +47,9 @@ const TableColumnList = (actionRef: React.RefObject<ActionType>): ProColumns<Sys
         title: '类别',
         dataIndex: 'category',
         valueType: 'select',
+        fieldProps: {
+            showSearch: true,
+        },
         request: () => {
             return RequestGetDictList('request_category')
         }

@@ -375,6 +375,9 @@ function RequestSelfLoginRecordModal() {
                             title: '来源',
                             dataIndex: 'category',
                             valueType: 'select',
+                            fieldProps: {
+                                showSearch: true,
+                            },
                             request: () => {
                                 return RequestGetDictList('request_category')
                             }
