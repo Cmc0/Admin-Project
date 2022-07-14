@@ -41,6 +41,8 @@ public class DoAdminPackage {
 
         String nextLine = scanner.nextLine();
 
+        scanner.close();
+
         int number = Convert.toInt(nextLine, 1);
 
         int threadCount = 2;
