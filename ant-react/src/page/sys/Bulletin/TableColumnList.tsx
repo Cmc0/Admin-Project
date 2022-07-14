@@ -31,8 +31,8 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysBulletinInsertOr
             return RequestGetDictList('bulletin_type')
         }
     },
-    {title: '标题', dataIndex: 'title'},
-    {title: '公告内容', dataIndex: 'content'},
+    {title: '标题', dataIndex: 'title', copyable: true},
+    {title: '公告内容', dataIndex: 'content', copyable: true},
     {
         title: '状态',
         dataIndex: 'status',
