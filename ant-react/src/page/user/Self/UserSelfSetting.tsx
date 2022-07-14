@@ -377,14 +377,17 @@ function RequestSelfLoginRecordModal() {
                                     dataIndex: 'createTime',
                                     sorter: true,
                                     valueType: 'fromNow',
+                                    ellipsis: true,
                                     hideInSearch: true,
                                     width: 90,
                                 },
-                                {title: 'ip', dataIndex: 'ip', width: 110,},
+                                {title: 'ip', dataIndex: 'ip', width: 120, ellipsis: true,},
                                 {
                                     title: 'ip区域',
                                     dataIndex: 'region',
-                                    width: 130,
+                                    ellipsis: true,
+                                    copyable: true,
+                                    width: 160,
                                     renderText: (text) => {
                                         return handlerRegion(text)
                                     }
@@ -393,7 +396,8 @@ function RequestSelfLoginRecordModal() {
                                     title: '来源',
                                     dataIndex: 'category',
                                     valueType: 'select',
-                                    width: 130,
+                                    width: 120,
+                                    ellipsis: true,
                                     fieldProps: {
                                         showSearch: true,
                                     },
