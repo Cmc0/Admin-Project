@@ -380,11 +380,11 @@ function RequestSelfLoginRecordModal() {
                                     hideInSearch: true,
                                     width: 90,
                                 },
-                                {title: 'ip', dataIndex: 'ip', width: 100,},
+                                {title: 'ip', dataIndex: 'ip', width: 110,},
                                 {
                                     title: 'ip区域',
                                     dataIndex: 'region',
-                                    width: 100,
+                                    width: 130,
                                     renderText: (text) => {
                                         return handlerRegion(text)
                                     }
@@ -393,7 +393,7 @@ function RequestSelfLoginRecordModal() {
                                     title: '来源',
                                     dataIndex: 'category',
                                     valueType: 'select',
-                                    width: 100,
+                                    width: 130,
                                     fieldProps: {
                                         showSearch: true,
                                     },
