@@ -19,8 +19,8 @@ import LoginTest from "@/page/Login/LoginTest";
 import {ValidatorUtil} from "../../../util/ValidatorUtil";
 import {
     userForgotPassword,
-    userForgotPasswordSendEmailCode,
-    UserSelfForgotPasswordDTO
+    UserForgotPasswordDTO,
+    userForgotPasswordSendEmailCode
 } from "@/api/UserForgotPasswordController";
 
 type LoginType = 'password' | 'phone';
@@ -154,29 +154,29 @@ export default function () {
                                         <Typography.Text type="secondary"> 7天免登录</Typography.Text>
                                     </span>
                     </ProFormCheckbox>
-                    <UserSelfForgotPasswordModalForm/>
+                    <UserForgotPasswordModalForm/>
                 </div>
             </LoginFormPage>
         </div>
     )
 }
 
-const userSelfForgotPasswordModalTitle = "忘记密码"
+const userForgotPasswordModalTitle = "忘记密码"
 
-function UserSelfForgotPasswordModalForm() {
+function UserForgotPasswordModalForm() {
 
     const rsaPublicKey = useAppSelector((state) => state.common.rsaPublicKey)
-    const [useForm] = Form.useForm<UserSelfForgotPasswordDTO>();
+    const [useForm] = Form.useForm<UserForgotPasswordDTO>();
 
-    return <ModalForm<UserSelfForgotPasswordDTO>
+    return <ModalForm<UserForgotPasswordDTO>
         modalProps={{
             maskClosable: false
         }}
         form={useForm}
         isKeyPressSubmit
         width={CommonConstant.MODAL_FORM_WIDTH}
-        title={userSelfForgotPasswordModalTitle}
-        trigger={<a>{userSelfForgotPasswordModalTitle}</a>}
+        title={userForgotPasswordModalTitle}
+        trigger={<a>{userForgotPasswordModalTitle}</a>}
         onFinish={async (form) => {
             const formTemp = {...form}
             if (formTemp.newPassword) {

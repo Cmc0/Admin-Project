@@ -2,7 +2,7 @@ import EmailNotBlankDTO from "@/model/dto/EmailNotBlankDTO";
 import {AxiosRequestConfig} from "axios";
 import $http from "../../util/HttpUtil";
 
-export interface UserSelfForgotPasswordDTO {
+export interface UserForgotPasswordDTO {
     account?: string // 账号
     code?: string // 验证码
     newOrigPassword?: string // 前端加密之后的原始密码，新密码
@@ -10,7 +10,7 @@ export interface UserSelfForgotPasswordDTO {
 }
 
 // 用户-忘记密码 忘记密码，重置密码
-export function userForgotPassword(form: UserSelfForgotPasswordDTO, config?: AxiosRequestConfig) {
+export function userForgotPassword(form: UserForgotPasswordDTO, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/userForgotPassword', form, config)
 }
 
