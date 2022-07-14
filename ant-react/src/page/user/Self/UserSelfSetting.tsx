@@ -387,7 +387,7 @@ function RequestSelfLoginRecordModal() {
                                     dataIndex: 'region',
                                     ellipsis: true,
                                     copyable: true,
-                                    width: 160,
+                                    width: 180,
                                     renderText: (text) => {
                                         return handlerRegion(text)
                                     }
