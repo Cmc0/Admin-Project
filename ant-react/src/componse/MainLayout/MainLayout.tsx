@@ -342,7 +342,8 @@ function MainLayoutElement(props: IMainLayoutElement) {
                             closable
                             message={
                                 <Marquee pauseOnHover gradient={false}>
-                                    {newBulletin.publishTime}：【{newBulletin.title}】{newBulletin.content + " "}
+                                    <span
+                                        className={"m-r-10"}>{newBulletin.publishTime}：【{newBulletin.title}】{newBulletin.content}</span>
                                 </Marquee>
                             }
                             onClose={() => {
