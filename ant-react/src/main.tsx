@@ -20,12 +20,12 @@ const consoleOldError = console.error
 
 console.error = (message?: any, ...optionalParams: any[]) => {
     if (optionalParams && optionalParams.length) {
-        if (optionalParams[0] === 'findDOMNode') { // 过滤 findDOMNode警告
+        if (optionalParams[0] === 'findDOMNode') { // 过滤 findDOMNode警告，TODO：等 antd 官方修复，然后删除
             return
         }
     }
     if (typeof message === 'string' && message.startsWith("Warning: Tree missing follow keys:")) {
-        // TODO：等官方修复，然后删除
+        // TODO：等 antd pro 官方修复，然后删除
         console.log(message)
         return;
     }
