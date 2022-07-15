@@ -33,7 +33,7 @@ console.error = (message?: any, ...optionalParams: any[]) => {
 }
 // 自定义 console.error ↑
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <Provider store={store}>
             <ConfigProvider locale={zhCN}>
