@@ -10,7 +10,7 @@ Will have the most powerful !
 - [Helper-App](https://cmc0.github.io/)：致力于帮助开发者减少一些繁琐的开发语言转换
 
 ### 前端框架
-`【vite】【react】【ant design】【procomponents.ant.design】`
+`【vite】【react】【ant.design】【procomponents.ant.design】`
 
 ### 后端框架
 `springboot，minio，ip2region，knife4j，redisson，hutool，mybatis-plus，xxl-job，netty，kafka，elasticsearch，redis`
