@@ -1,6 +1,6 @@
 import {LoginFormPage, ModalForm, ProFormCaptcha, ProFormCheckbox, ProFormText} from "@ant-design/pro-components";
 import LoginBg from "@/asset/img/LoginBg.png";
-import Logo from "@/favicon.svg";
+import Logo from "/vite.svg";
 import CommonConstant from "@/model/constant/CommonConstant";
 import {Divider, Form, Space, Tabs, Typography} from "antd";
 import {LockOutlined, QqOutlined, UserOutlined, WechatOutlined} from "@ant-design/icons/lib";
