@@ -36,7 +36,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${spring.redis.host}:3306/admin-project?characterEncoding=utf8bm4&useUnicode=true&autoReconnect=true&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
+    url: jdbc:mysql://${spring.redis.host}:3306/admin-project?characterEncoding=utf8mb4&useUnicode=true&autoReconnect=true&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
     username: root
     password: ${spring.redis.password}
     hikari:
