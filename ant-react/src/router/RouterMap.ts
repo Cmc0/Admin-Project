@@ -15,8 +15,8 @@ interface IRouterMapItem {
 const RouterMap: Record<string, IRouterMapItem> = {} // 路由 map
 
 // 自动获取路由 map
-const fileObj: Record<string, { [key: string]: any }> = import.meta.globEager(
-    '/src/page/**/*.tsx'
+const fileObj: Record<string, { [key: string]: any }> = import.meta.glob(
+    '/src/page/**/*.tsx', {eager: true}
 )
 
 Object.keys(fileObj).forEach((item: string) => {
