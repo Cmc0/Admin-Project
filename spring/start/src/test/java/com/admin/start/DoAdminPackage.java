@@ -17,7 +17,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class DoAdminPackage {
 
-    private static final String HOST = "139.196.121.3";
+    private static final String HOST = "81.69.58.190";
 
     private static final String USER = "root";
 
@@ -27,7 +27,7 @@ public class DoAdminPackage {
 
     private static final String SPRING_REMOTE_PATH = "/mydata/springboot";
 
-    private static final String SPRING_REMOTE_EXEC_CMD = "docker restart spring-boot-cmc";
+    private static final String SPRING_REMOTE_EXEC_CMD = "docker restart spring-boot-admin";
 
     /**
      * 打包：前端和后端
