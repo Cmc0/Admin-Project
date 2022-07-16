@@ -1,11 +1,13 @@
 package com.admin.websocket.service.impl;
 
+import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
+import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
@@ -148,7 +150,12 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
             TimeUnit.MILLISECONDS);
 
         SysWebSocketRegisterVO sysWebSocketRegisterVO = new SysWebSocketRegisterVO();
-        sysWebSocketRegisterVO.setWebSocketUrl(NettyServer.ipAndPort);
+
+        // 注意：这里需要额外处理一下返回的地址，如果是 ip，则返回 ip:port，反之则返回 webSocketAddress
+        sysWebSocketRegisterVO.setWebSocketUrl(
+            Validator.isIpv4(BaseConfiguration.adminProperties.getWebSocketAddress()) ? NettyServer.ipAndPort :
+                BaseConfiguration.adminProperties.getWebSocketAddress());
+
         sysWebSocketRegisterVO.setCode(uuid);
 
         return sysWebSocketRegisterVO;
