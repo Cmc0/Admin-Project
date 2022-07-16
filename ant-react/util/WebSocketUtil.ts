@@ -76,7 +76,7 @@ export function connectWebSocket(
             }
             webSocket = new WebSocket(
                 `${
-                    import.meta.env.DEV ? 'ws:' : 'ws:'
+                    import.meta.env.DEV ? 'ws:' : 'wss:'
                 }//${webSocketUrl}/ws?code=${code}`
             )
 
