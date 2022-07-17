@@ -70,6 +70,15 @@ export default function () {
                                 <WechatOutlined className={"green2"}/>
                             </div>
                         </Space>
+                        <div className="m-t-50 flex-c ai-c">
+                            © 2021-{new Date().getFullYear()} Admin Project. All rights reserved.
+                            <a
+                                href={"https://beian.miit.gov.cn"}
+                                target={"_blank"}
+                            >
+                                渝ICP备2022000851号-1
+                            </a>
+                        </div>
                     </div>
                 }
                 onFinish={async (form) => {
