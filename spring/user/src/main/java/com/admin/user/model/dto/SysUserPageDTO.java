@@ -23,9 +23,6 @@ public class SysUserPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "正常/冻结")
     private Boolean enableFlag;
 
-    @ApiModelProperty(value = "是否追加 admin账号，备注：pageSize == -1 时生效")
-    private boolean addAdminFlag;
-
     @ApiModelProperty(value = "创建开始时间")
     private Date beginCreateTime;
 

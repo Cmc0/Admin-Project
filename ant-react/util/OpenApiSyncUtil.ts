@@ -72,6 +72,10 @@ interface IOpenApi {
 let dtoNameList: string[] = fs.readdirSync("./src/model/dto")
 dtoNameList = dtoNameList.map(item => item.split('.ts')[0])
 
+// 获取：model/vo下面的 ts文件名
+let voNameList: string[] = fs.readdirSync("./src/model/vo")
+voNameList = voNameList.map(item => item.split('.ts')[0])
+
 // 获取：model/entity下面的 ts文件名
 let entityNameList: string[] = fs.readdirSync("./src/model/entity")
 entityNameList = entityNameList.map(item => item.split('.ts')[0])
@@ -114,6 +118,9 @@ function getFileDataFromModelDir(componentName: string, fileData: string) {
     } else if (entityNameList.includes(componentName)) {
 
         value = `import ${componentName} from "@/model/entity/${componentName}";\n`
+    } else if (voNameList.includes(componentName)) {
+
+        value = `import ${componentName} from "@/model/vo/${componentName}";\n`
     }
 
     if (value && !fileData.includes(value)) {
@@ -126,7 +133,7 @@ function getFileDataFromModelDir(componentName: string, fileData: string) {
 // 写：interface
 function writeInterface(componentName: string, fileData: string, component: Record<string, IOpenApiComponentSchemaProperty>) {
 
-    if (dtoNameList.includes(componentName) || entityNameList.includes(componentName)) {
+    if (dtoNameList.includes(componentName) || entityNameList.includes(componentName) || voNameList.includes(componentName)) {
         fileData = getFileDataFromModelDir(componentName, fileData)
         return fileData
     }

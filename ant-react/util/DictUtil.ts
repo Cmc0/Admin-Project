@@ -45,9 +45,9 @@ export function RequestGetDictList(dictKey: string) {
     })
 }
 
-export function GetUserDictList(addAdminFlag: boolean = true) {
+export function GetUserDictList() {
     return new Promise<IMyOption[]>(async resolve => {
-        await sysUserPage({pageSize: -1, addAdminFlag}).then(res => {
+        await sysUserPage({pageSize: -1}).then(res => {
             let dictList: IMyOption[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
@@ -70,7 +70,7 @@ export interface IMyTree {
     children: IMyTree[]
 }
 
-export function GetMenuDictList(addAdminFlag: boolean = true) {
+export function GetMenuDictList() {
     return new Promise<IMyTree[]>(async resolve => {
         await sysMenuPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -89,7 +89,7 @@ export function GetMenuDictList(addAdminFlag: boolean = true) {
     })
 }
 
-export function GetDeptDictList(addAdminFlag: boolean = true) {
+export function GetDeptDictList() {
     return new Promise<IMyTree[]>(async resolve => {
         await sysDeptPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -108,7 +108,7 @@ export function GetDeptDictList(addAdminFlag: boolean = true) {
     })
 }
 
-export function GetAreaDictList(addAdminFlag: boolean = true) {
+export function GetAreaDictList() {
     return new Promise<IMyTree[]>(async resolve => {
         await sysAreaPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -127,7 +127,7 @@ export function GetAreaDictList(addAdminFlag: boolean = true) {
     })
 }
 
-export function GetJobDictList(addAdminFlag: boolean = true) {
+export function GetJobDictList() {
     return new Promise<IMyTree[]>(async resolve => {
         await sysJobPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -146,7 +146,7 @@ export function GetJobDictList(addAdminFlag: boolean = true) {
     })
 }
 
-export function GetRoleDictList(addAdminFlag: boolean = true) {
+export function GetRoleDictList() {
     return new Promise<IMyOption[]>(async resolve => {
         await sysRolePage({pageSize: -1}).then(res => {
             let dictList: IMyOption[] = []

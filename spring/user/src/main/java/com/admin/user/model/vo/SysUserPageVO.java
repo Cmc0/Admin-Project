@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * {@link com.admin.common.model.entity.SysUserDO}
@@ -37,5 +38,14 @@ public class SysUserPageVO {
 
     @ApiModelProperty(value = "是否有密码")
     private boolean passwordFlag;
+
+    @ApiModelProperty(value = "角色 idSet")
+    private Set<Long> roleIdSet;
+
+    @ApiModelProperty(value = "部门 idSet")
+    private Set<Long> deptIdSet;
+
+    @ApiModelProperty(value = "岗位 idSet")
+    private Set<Long> jobIdSet;
 
 }

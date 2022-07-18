@@ -16,6 +16,7 @@ import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysRoleRefUserDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
+import com.admin.common.model.vo.SelectListVO;
 import com.admin.common.util.*;
 import com.admin.dept.model.entity.SysDeptRefUserDO;
 import com.admin.dept.service.SysDeptRefUserService;
@@ -29,6 +30,7 @@ import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.dto.SysUserSelectListDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
@@ -42,10 +44,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,20 +71,68 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         Page<SysUserPageVO> page = baseMapper.myPage(dto.getCreateTimeDescDefaultOrderPage(), dto);
 
+        Set<Long> userIdSet = new HashSet<>();
+
         for (SysUserPageVO item : page.getRecords()) {
             item.setEmail(DesensitizedUtil.email(item.getEmail())); // 脱敏
+            userIdSet.add(item.getId());
         }
 
-        // 增加 admin账号
-        if (dto.isAddAdminFlag() && dto.getPageSize() == -1) {
-            SysUserPageVO sysUserPageVO = new SysUserPageVO();
-            sysUserPageVO.setId(BaseConstant.ADMIN_ID);
-            sysUserPageVO.setNickname(BaseConfiguration.adminProperties.getAdminNickname());
-            page.getRecords().add(sysUserPageVO);
-            page.setTotal(page.getTotal() + 1); // total + 1
+        if (userIdSet.size() != 0) {
+
+            List<SysRoleRefUserDO> sysRoleRefUserDOList =
+                sysRoleRefUserService.lambdaQuery().in(SysRoleRefUserDO::getUserId, userIdSet)
+                    .select(SysRoleRefUserDO::getUserId, SysRoleRefUserDO::getRoleId).list();
+
+            List<SysDeptRefUserDO> sysDeptRefUserDOList =
+                sysDeptRefUserService.lambdaQuery().in(SysDeptRefUserDO::getUserId, userIdSet)
+                    .select(SysDeptRefUserDO::getUserId, SysDeptRefUserDO::getDeptId).list();
+
+            List<SysJobRefUserDO> sysJobRefUserDOList =
+                sysJobRefUserService.lambdaQuery().in(SysJobRefUserDO::getUserId, userIdSet)
+                    .select(SysJobRefUserDO::getUserId, SysJobRefUserDO::getJobId).list();
+
+            Map<Long, Set<Long>> roleUserGroupMap = sysRoleRefUserDOList.stream().collect(Collectors
+                .groupingBy(SysRoleRefUserDO::getUserId,
+                    Collectors.mapping(SysRoleRefUserDO::getRoleId, Collectors.toSet())));
+
+            Map<Long, Set<Long>> deptUserGroupMap = sysDeptRefUserDOList.stream().collect(Collectors
+                .groupingBy(SysDeptRefUserDO::getUserId,
+                    Collectors.mapping(SysDeptRefUserDO::getDeptId, Collectors.toSet())));
+
+            Map<Long, Set<Long>> jobUserGroupMap = sysJobRefUserDOList.stream().collect(Collectors
+                .groupingBy(SysJobRefUserDO::getUserId,
+                    Collectors.mapping(SysJobRefUserDO::getJobId, Collectors.toSet())));
+
+            page.getRecords().forEach(it -> {
+                it.setRoleIdSet(roleUserGroupMap.get(it.getId()));
+                it.setDeptIdSet(deptUserGroupMap.get(it.getId()));
+                it.setJobIdSet(jobUserGroupMap.get(it.getId()));
+            });
         }
 
         return page;
+    }
+
+    /**
+     * 下拉列表
+     */
+    @Override
+    public List<SelectListVO> selectList(SysUserSelectListDTO dto) {
+
+        List<SysUserDO> sysUserDOList = lambdaQuery().select(SysUserDO::getNickname, BaseEntityTwo::getId).list();
+
+        List<SelectListVO> selectListVOList =
+            sysUserDOList.stream().map(it -> new SelectListVO(it.getNickname(), it.getId().toString()))
+                .collect(Collectors.toList());
+
+        // 增加 admin账号
+        if (dto.isAddAdminFlag()) {
+            selectListVOList.add(new SelectListVO(BaseConfiguration.adminProperties.getAdminNickname(),
+                BaseConstant.ADMIN_ID.toString()));
+        }
+
+        return selectListVOList;
     }
 
     /**

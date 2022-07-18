@@ -3,8 +3,10 @@ package com.admin.user.controller;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
+import com.admin.common.model.vo.SelectListVO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
+import com.admin.user.model.dto.SysUserSelectListDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/sysUser")
@@ -34,6 +37,13 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('sysUser:page')")
     public ApiResultVO<Page<SysUserPageVO>> myPage(@RequestBody @Valid SysUserPageDTO dto) {
         return ApiResultVO.ok(baseService.myPage(dto));
+    }
+
+    @ApiOperation(value = "下拉列表")
+    @PostMapping("/selectList")
+    @PreAuthorize("hasAuthority('sysUser:page')")
+    public ApiResultVO<List<SelectListVO>> selectList(@RequestBody @Valid SysUserSelectListDTO dto) {
+        return ApiResultVO.ok(baseService.selectList(dto));
     }
 
     @ApiOperation(value = "新增/修改")
