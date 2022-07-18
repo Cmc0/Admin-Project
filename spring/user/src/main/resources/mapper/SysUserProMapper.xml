@@ -38,7 +38,7 @@
             AND IF ( a.`password` = '', 0, 1 ) = #{dto.passwordFlag}
         </if>
         <if test="dto.beginLastActiveTime != null">
-            AND IFNULL( MAX( b.create_time ) ,a.create_time) <![CDATA[>=]]> #{dto.beginLastActiveTime}
+            AND IFNULL( MAX( b.create_time ), a.create_time) <![CDATA[>=]]> #{dto.beginLastActiveTime}
         </if>
         <if test="dto.endLastActiveTime != null">
             AND IFNULL( MAX( b.create_time ), a.create_time) <![CDATA[<=]]> #{dto.endLastActiveTime}
