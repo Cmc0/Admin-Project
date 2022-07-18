@@ -15,7 +15,8 @@ import {
 } from "@/api/SysBulletinController";
 import TableColumnList from "@/page/sys/Bulletin/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Bulletin/SchemaFormColumnList";
-import {IMyOption, RequestGetDictList} from "../../../../util/DictUtil";
+import {RequestGetDictList} from "../../../../util/DictUtil";
+import DictListVO from "@/model/vo/DictListVO";
 
 export default function () {
 
@@ -27,7 +28,7 @@ export default function () {
 
     const currentForm = useRef<SysBulletinInsertOrUpdateDTO>({})
 
-    const bulletinTypeDictListRef = useRef<IMyOption[]>([])
+    const bulletinTypeDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
         RequestGetDictList('bulletin_type').then(res => {

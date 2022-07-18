@@ -18,7 +18,8 @@ import {
 } from "@/api/SysJobController";
 import TableColumnList from "@/page/sys/Job/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Job/SchemaFormColumnList";
-import {GetJobDictList, GetUserDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
+import {GetJobDictList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
+import DictListVO from "@/model/vo/DictListVO";
 
 export default function () {
 
@@ -35,7 +36,7 @@ export default function () {
     const currentForm = useRef<SysJobInsertOrUpdateDTO>({})
 
     const jobDictListRef = useRef<IMyTree[]>([])
-    const userDictListRef = useRef<IMyOption[]>([])
+    const userDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
         GetJobDictList().then(res => {

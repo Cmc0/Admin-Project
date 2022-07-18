@@ -1,5 +1,5 @@
 import {RouterMapKeyList} from "@/router/RouterMap";
-import {IMyOption, IMyTree, YesNoDict} from "../../../../util/DictUtil";
+import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
@@ -7,13 +7,14 @@ import {FormInstance} from "antd/es";
 import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
 import {Space} from "antd";
+import DictListVO from "@/model/vo/DictListVO";
 
 export const InitForm: SysMenuInsertOrUpdateDTO = {
     enableFlag: true,
     showFlag: true,
 }
 
-const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     return [
         {
@@ -108,7 +109,7 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
                                 showSearch: true,
                                 options: IconList,
                                 optionLabelProp: 'children',
-                                optionItemRender: (item: IMyOption) => {
+                                optionItemRender: (item: DictListVO) => {
                                     return <Space>
                                         <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
                                     </Space>

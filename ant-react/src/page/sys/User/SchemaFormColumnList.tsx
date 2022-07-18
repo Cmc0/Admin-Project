@@ -2,16 +2,17 @@ import React from "react";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {FormInstance} from "antd/es";
 import {SysUserInsertOrUpdateDTO} from "@/api/SysUserController";
-import {IMyOption, IMyTree, YesNoDict} from "../../../../util/DictUtil";
+import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import {TreeSelect} from "antd";
 import {randomNickname} from "../../../../util/UserUtil";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
+import DictListVO from "@/model/vo/DictListVO";
 
 export const InitForm: SysUserInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<IMyOption[]>): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
     return [
         {
             dataIndex: 'nickname',

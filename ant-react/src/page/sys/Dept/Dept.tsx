@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
-import {GetAreaDictList, GetDeptDictList, GetUserDictList, IMyOption, IMyTree} from "../../../../util/DictUtil";
+import {GetAreaDictList, GetDeptDictList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
 import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import CommonConstant from "@/model/constant/CommonConstant";
@@ -19,6 +19,7 @@ import {
 } from "@/api/SysDeptController";
 import TableColumnList from "@/page/sys/Dept/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Dept/SchemaFormColumnList";
+import DictListVO from "@/model/vo/DictListVO";
 
 export default function () {
 
@@ -36,7 +37,7 @@ export default function () {
 
     const deptDictListRef = useRef<IMyTree[]>([])
     const areaDictListRef = useRef<IMyTree[]>([])
-    const userDictListRef = useRef<IMyOption[]>([])
+    const userDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
         GetDeptDictList().then(res => {

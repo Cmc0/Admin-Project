@@ -16,7 +16,7 @@ import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysRoleRefUserDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.model.vo.SelectListVO;
+import com.admin.common.model.vo.DictListVO;
 import com.admin.common.util.*;
 import com.admin.dept.model.entity.SysDeptRefUserDO;
 import com.admin.dept.service.SysDeptRefUserService;
@@ -28,9 +28,9 @@ import com.admin.job.service.SysJobRefUserService;
 import com.admin.role.service.SysRoleRefUserService;
 import com.admin.user.exception.BizCodeEnum;
 import com.admin.user.mapper.SysUserProMapper;
+import com.admin.user.model.dto.SysUserDictListDTO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
-import com.admin.user.model.dto.SysUserSelectListDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
@@ -118,21 +118,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 下拉列表
      */
     @Override
-    public List<SelectListVO> selectList(SysUserSelectListDTO dto) {
+    public List<DictListVO> dictList(SysUserDictListDTO dto) {
 
         List<SysUserDO> sysUserDOList = lambdaQuery().select(SysUserDO::getNickname, BaseEntityTwo::getId).list();
 
-        List<SelectListVO> selectListVOList =
-            sysUserDOList.stream().map(it -> new SelectListVO(it.getNickname(), it.getId().toString()))
+        List<DictListVO> dictListVOList =
+            sysUserDOList.stream().map(it -> new DictListVO(it.getNickname(), it.getId().toString()))
                 .collect(Collectors.toList());
 
         // 增加 admin账号
         if (dto.isAddAdminFlag()) {
-            selectListVOList.add(new SelectListVO(BaseConfiguration.adminProperties.getAdminNickname(),
-                BaseConstant.ADMIN_ID.toString()));
+            dictListVOList.add(
+                new DictListVO(BaseConfiguration.adminProperties.getAdminNickname(), BaseConstant.ADMIN_ID.toString()));
         }
 
-        return selectListVOList;
+        return dictListVOList;
     }
 
     /**

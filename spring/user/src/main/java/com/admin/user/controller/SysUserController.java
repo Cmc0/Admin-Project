@@ -3,10 +3,10 @@ package com.admin.user.controller;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.model.vo.SelectListVO;
+import com.admin.common.model.vo.DictListVO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
-import com.admin.user.model.dto.SysUserSelectListDTO;
+import com.admin.user.model.dto.SysUserDictListDTO;
 import com.admin.user.model.dto.SysUserUpdatePasswordDTO;
 import com.admin.user.model.vo.SysUserInfoByIdVO;
 import com.admin.user.model.vo.SysUserPageVO;
@@ -40,10 +40,10 @@ public class SysUserController {
     }
 
     @ApiOperation(value = "下拉列表")
-    @PostMapping("/selectList")
+    @PostMapping("/dictList")
     @PreAuthorize("hasAuthority('sysUser:page')")
-    public ApiResultVO<List<SelectListVO>> selectList(@RequestBody @Valid SysUserSelectListDTO dto) {
-        return ApiResultVO.ok(baseService.selectList(dto));
+    public ApiResultVO<List<DictListVO>> dictList(@RequestBody @Valid SysUserDictListDTO dto) {
+        return ApiResultVO.ok(baseService.dictList(dto));
     }
 
     @ApiOperation(value = "新增/修改")

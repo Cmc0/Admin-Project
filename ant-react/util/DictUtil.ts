@@ -1,13 +1,14 @@
 import {TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {ProSchemaValueEnumType} from "@ant-design/pro-components";
 import {sysDictPage} from "@/api/SysDictController";
-import {sysUserPage} from "@/api/SysUserController";
+import {sysUserSelectList} from "@/api/SysUserController";
 import {sysMenuPage} from "@/api/SysMenuController";
 import {ListToTree} from "./TreeUtil";
 import {sysDeptPage} from "@/api/SysDeptController";
 import {sysJobPage} from "@/api/SysJobController";
 import {sysRolePage} from "@/api/SysRoleController";
 import {sysAreaPage} from "@/api/SysAreaController";
+import DictListVO from "@/model/vo/DictListVO";
 
 export const YesNoDict = new Map<any, ProSchemaValueEnumType>();
 YesNoDict.set(true, {text: '是', status: 'success'})
@@ -25,37 +26,25 @@ export const BulletinTypeDict = new Map<TWebSocketType, ProSchemaValueEnumType>(
 BulletinTypeDict.set('1', {text: '草稿', status: 'warning'})
 BulletinTypeDict.set('2', {text: '公示', status: 'processing'})
 
-export interface IMyOption {
-    label: string
-    value?: number | string
-}
-
 export function RequestGetDictList(dictKey: string) {
-    return new Promise<IMyOption[]>(async resolve => {
+    return new Promise<DictListVO[]>(async resolve => {
         await sysDictPage({pageSize: -1, type: 2, dictKey}).then(res => {
-            let dictList: IMyOption[] = []
+            let dictList: DictListVO[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     label: item.name,
                     value: item.value,
-                } as IMyOption));
+                } as DictListVO));
             }
             resolve(dictList)
         })
     })
 }
 
-export function GetUserDictList() {
-    return new Promise<IMyOption[]>(async resolve => {
-        await sysUserPage({pageSize: -1}).then(res => {
-            let dictList: IMyOption[] = []
-            if (res.data) {
-                dictList = res.data.map(item => ({
-                    label: item.nickname,
-                    value: item.id,
-                } as IMyOption));
-            }
-            resolve(dictList)
+export function GetUserDictList(addAdminFlag: boolean = true) {
+    return new Promise<DictListVO[]>(async resolve => {
+        await sysUserSelectList({addAdminFlag}).then(res => {
+            resolve(res.data || [])
         })
     })
 }
@@ -147,14 +136,14 @@ export function GetJobDictList() {
 }
 
 export function GetRoleDictList() {
-    return new Promise<IMyOption[]>(async resolve => {
+    return new Promise<DictListVO[]>(async resolve => {
         await sysRolePage({pageSize: -1}).then(res => {
-            let dictList: IMyOption[] = []
+            let dictList: DictListVO[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     label: item.name,
                     value: item.id,
-                } as IMyOption));
+                } as DictListVO));
             }
             resolve(dictList)
         })

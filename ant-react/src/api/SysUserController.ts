@@ -1,3 +1,4 @@
+import DictListVO from "@/model/vo/DictListVO";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
@@ -57,7 +58,6 @@ export function sysUserInsertOrUpdate(form: SysUserInsertOrUpdateDTO, config?: A
 }
 
 export interface SysUserPageDTO extends MyPageDTO {
-    addAdminFlag?: boolean // 是否追加 admin账号，备注：pageSize == -1 时生效
     beginCreateTime?: string // 创建开始时间
     beginLastActiveTime?: string // 最近活跃开始时间
     current?: number // 第几页
@@ -74,12 +74,15 @@ export interface SysUserPageDTO extends MyPageDTO {
 export interface SysUserPageVO {
     avatarUrl?: string // 头像url
     createTime?: string // 创建时间
+    deptIdSet?: number[] // 部门 idSet
     email?: string // 邮箱，备注：会脱敏
     enableFlag?: boolean // 正常/冻结
     id?: number // 主键id
+    jobIdSet?: number[] // 岗位 idSet
     lastActiveTime?: string // 最近活跃时间
     nickname?: string // 昵称
     passwordFlag?: boolean // 是否有密码
+    roleIdSet?: number[] // 角色 idSet
     updateTime?: string // 修改时间
 }
 
@@ -96,6 +99,15 @@ export function sysUserRefreshJwtSecretSuf(form: NotEmptyIdSet, config?: AxiosRe
 // 用户-管理 批量重置头像
 export function sysUserResetAvatar(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysUser/resetAvatar', form, config)
+}
+
+export interface SysUserSelectListDTO {
+    addAdminFlag?: boolean // 是否追加 admin账号
+}
+
+// 用户-管理 下拉列表
+export function sysUserSelectList(form: SysUserSelectListDTO, config?: AxiosRequestConfig) {
+    return $http.myProTreePost<DictListVO>('/sysUser/selectList', form, config)
 }
 
 export interface SysUserUpdatePasswordDTO {

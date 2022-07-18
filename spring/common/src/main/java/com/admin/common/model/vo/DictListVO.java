@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SelectListVO {
+public class DictListVO {
 
     @ApiModelProperty(value = "显示用")
     private String label;
