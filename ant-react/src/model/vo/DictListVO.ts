@@ -1,4 +1,4 @@
-export default interface DictListVO {
+export default interface DictListVO<T = string | number> {
     label: string // 显示用
-    value?: string // 传值用
+    value: T // 传值用
 }

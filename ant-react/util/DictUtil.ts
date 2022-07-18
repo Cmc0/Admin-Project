@@ -43,9 +43,9 @@ export function getByValueFromDictList(
 }
 
 // 根据list和 valueList，获取字典的 labelList值
-export function getByValueFromDictListPro(
-    dictList: DictListVO[],
-    valueList?: (string | undefined)[],
+export function getByValueFromDictListPro<T = string>(
+    dictList: DictListVO<T>[],
+    valueList?: T[],
     defaultValue: string = '-',
     separator: string = '，'
 ) {
@@ -83,30 +83,30 @@ export function GetUserDictList(addAdminFlag: boolean = true) {
     })
 }
 
-export interface IMyTree extends DictListVO {
-    id?: number
-    key?: number
+export interface IMyTree<T = string | number> extends DictListVO<T> {
+    id: number
+    key: number
     label: string // 备注：和 title是一样的值
-    title?: string
-    parentId: number,
-    orderNo: number,
-    children: IMyTree[]
+    title: string
+    parentId: number
+    orderNo: number
+    children?: IMyTree[]
 }
 
 export function GetMenuDictTreeList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree[]>(async resolve => {
+    return new Promise<IMyTree<number>[]>(async resolve => {
         await sysMenuPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree[] = []
+            let dictList: IMyTree<number>[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
-                    id: item.id,
-                    key: item.id,
-                    value: item.id,
-                    label: item.name,
-                    title: item.name,
-                    parentId: item.parentId,
-                    orderNo: item.orderNo
-                } as IMyTree));
+                    id: item.id!,
+                    key: item.id!,
+                    value: item.id!,
+                    label: item.name!,
+                    title: item.name!,
+                    parentId: item.parentId!,
+                    orderNo: item.orderNo!,
+                }));
             }
             if (toTreeFlag) {
                 resolve(ListToTree(dictList))
@@ -118,19 +118,19 @@ export function GetMenuDictTreeList(toTreeFlag: boolean = true) {
 }
 
 export function GetDeptDictList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree[]>(async resolve => {
+    return new Promise<IMyTree<number>[]>(async resolve => {
         await sysDeptPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree[] = []
+            let dictList: IMyTree<number>[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
-                    id: item.id,
-                    key: item.id,
-                    value: item.id,
-                    label: item.name,
-                    title: item.name,
-                    parentId: item.parentId,
-                    orderNo: item.orderNo
-                } as IMyTree));
+                    id: item.id!,
+                    key: item.id!,
+                    value: item.id!,
+                    label: item.name!,
+                    title: item.name!,
+                    parentId: item.parentId!,
+                    orderNo: item.orderNo!
+                }));
             }
             if (toTreeFlag) {
                 resolve(ListToTree(dictList))
@@ -142,19 +142,19 @@ export function GetDeptDictList(toTreeFlag: boolean = true) {
 }
 
 export function GetAreaDictList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree[]>(async resolve => {
+    return new Promise<IMyTree<number>[]>(async resolve => {
         await sysAreaPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree[] = []
+            let dictList: IMyTree<number>[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
-                    id: item.id,
-                    key: item.id,
-                    value: item.id,
-                    label: item.name,
-                    title: item.name,
-                    parentId: item.parentId,
-                    orderNo: item.orderNo
-                } as IMyTree));
+                    id: item.id!,
+                    key: item.id!,
+                    value: item.id!,
+                    label: item.name!,
+                    title: item.name!,
+                    parentId: item.parentId!,
+                    orderNo: item.orderNo!
+                }));
             }
             if (toTreeFlag) {
                 resolve(ListToTree(dictList))
@@ -166,19 +166,19 @@ export function GetAreaDictList(toTreeFlag: boolean = true) {
 }
 
 export function GetJobDictList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree[]>(async resolve => {
+    return new Promise<IMyTree<number>[]>(async resolve => {
         await sysJobPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree[] = []
+            let dictList: IMyTree<number>[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
-                    id: item.id,
-                    key: item.id,
-                    value: item.id,
-                    label: item.name,
-                    title: item.name,
-                    parentId: item.parentId,
-                    orderNo: item.orderNo
-                } as IMyTree));
+                    id: item.id!,
+                    key: item.id!,
+                    value: item.id!,
+                    label: item.name!,
+                    title: item.name!,
+                    parentId: item.parentId!,
+                    orderNo: item.orderNo!
+                }));
             }
             if (toTreeFlag) {
                 resolve(ListToTree(dictList))
@@ -190,14 +190,14 @@ export function GetJobDictList(toTreeFlag: boolean = true) {
 }
 
 export function GetRoleDictList() {
-    return new Promise<DictListVO[]>(async resolve => {
+    return new Promise<DictListVO<number>[]>(async resolve => {
         await sysRolePage({pageSize: -1}).then(res => {
-            let dictList: DictListVO[] = []
+            let dictList: DictListVO<number>[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
-                    label: item.name,
-                    value: item.id,
-                } as DictListVO));
+                    label: item.name!,
+                    value: item.id!,
+                }));
             }
             resolve(dictList)
         })

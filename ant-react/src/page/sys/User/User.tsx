@@ -93,7 +93,7 @@ export default function () {
                                     部门
                                 </Typography.Text>
                                 <Typography.Text type="secondary">
-                                    ：{getByValueFromDictListPro(deptDictListRef.current!, record.deptIdSet?.map(it => String(it)))}
+                                    ：{getByValueFromDictListPro(deptDictListRef.current, record.deptIdSet)}
                                 </Typography.Text>
                             </span>
                             <span>
@@ -101,7 +101,7 @@ export default function () {
                                     岗位
                                 </Typography.Text>
                                 <Typography.Text type="secondary">
-                                    ：{getByValueFromDictListPro(jobDictListRef.current!, record.jobIdSet?.map(it => String(it)))}
+                                    ：{getByValueFromDictListPro(jobDictListRef.current, record.jobIdSet)}
                                 </Typography.Text>
                             </span>
                             <span>
@@ -109,7 +109,7 @@ export default function () {
                                     角色
                                 </Typography.Text>
                                 <Typography.Text type="secondary">
-                                    ：{getByValueFromDictListPro(roleDictListRef.current!, record.roleIdSet?.map(it => String(it)))}
+                                    ：{getByValueFromDictListPro(roleDictListRef.current, record.roleIdSet)}
                                 </Typography.Text>
                             </span>
                         </div>
