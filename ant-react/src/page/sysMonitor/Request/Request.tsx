@@ -2,7 +2,7 @@ import React, {useRef, useState} from "react";
 import {ActionType, ProTable} from "@ant-design/pro-components";
 import CommonConstant from "@/model/constant/CommonConstant";
 import moment from "moment";
-import {Badge, Button, Space, Typography} from "antd";
+import {Badge, Button, Space, Tooltip, Typography} from "antd";
 import {LoadingOutlined, ReloadOutlined} from "@ant-design/icons/lib";
 import TableColumnList from "@/page/sysMonitor/Request/TableColumnList";
 import {
@@ -34,16 +34,18 @@ export default function () {
             }}
             headerTitle={<Space size={16}>
                 <span>上次更新时间：{moment(lastUpdateTime).format('HH:mm:ss')}</span>
-                <div className={"hand"} title={`筛选条件，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
-                    <Badge status="processing"
-                           text={
-                               <Typography.Text
-                                   strong
-                                   type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                   avg：{sysRequestAllAvgVO.avg}ms
-                               </Typography.Text>
-                           }/>
-                </div>
+                <Tooltip title={`筛选条件，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                    <span className={"hand"}>
+                        <Badge status="processing"
+                               text={
+                                   <Typography.Text
+                                       strong
+                                       type={GetAvgType(sysRequestAllAvgVO.avg!)}>
+                                       avg：{sysRequestAllAvgVO.avg}ms
+                                   </Typography.Text>
+                               }/>
+                    </span>
+                </Tooltip>
             </Space>}
             polling={polling}
             columnEmptyText={false}

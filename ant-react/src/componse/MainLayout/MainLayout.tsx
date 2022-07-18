@@ -3,7 +3,7 @@ import CommonConstant from "@/model/constant/CommonConstant";
 import {Outlet} from "react-router-dom";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {getAppNav} from "@/App";
-import {Alert, Avatar, Badge, Button, Dropdown, Menu, Space, Typography} from "antd";
+import {Alert, Avatar, Badge, Button, Dropdown, Menu, Space, Tooltip, Typography} from "antd";
 import {
     LogoutOutlined,
     MessageOutlined,
@@ -228,18 +228,19 @@ function MainLayoutElement(props: IMainLayoutElement) {
                 </a>
             )}
             headerContentRender={() =>
-                <span className={`hand m-l-9`}
-                      title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
-                      <Badge
-                          status="processing"
-                          text={
-                              <Typography.Text
-                                  strong
-                                  type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                  {sysRequestAllAvgVO.avg}ms
-                              </Typography.Text>
-                          }/>
-                </span>
+                <Tooltip title={`全局，接口平均响应耗时，共请求 ${sysRequestAllAvgVO.count}次`}>
+                    <span className={`hand m-l-9`}>
+                          <Badge
+                              status="processing"
+                              text={
+                                  <Typography.Text
+                                      strong
+                                      type={GetAvgType(sysRequestAllAvgVO.avg!)}>
+                                      {sysRequestAllAvgVO.avg}ms
+                                  </Typography.Text>
+                              }/>
+                    </span>
+                </Tooltip>
             }
             rightContentRender={() => (
                 <RouteContext.Consumer>
