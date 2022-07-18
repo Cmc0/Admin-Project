@@ -86,6 +86,7 @@ export default function () {
             }}
             postData={(data) => {
                 hasChildrenIdList.current = GetIdListForHasChildrenNode(data)
+                setExpandedRowKeys(hasChildrenIdList.current) // 默认展开全部
                 return data
             }}
             toolbar={{
