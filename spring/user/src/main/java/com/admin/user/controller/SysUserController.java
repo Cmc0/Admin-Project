@@ -3,7 +3,7 @@ package com.admin.user.controller;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.model.vo.DictListVO;
+import com.admin.common.model.vo.DictLongListVO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
 import com.admin.user.model.dto.SysUserDictListDTO;
@@ -42,7 +42,7 @@ public class SysUserController {
     @ApiOperation(value = "下拉列表")
     @PostMapping("/dictList")
     @PreAuthorize("hasAuthority('sysUser:page')")
-    public ApiResultVO<List<DictListVO>> dictList(@RequestBody @Valid SysUserDictListDTO dto) {
+    public ApiResultVO<List<DictLongListVO>> dictList(@RequestBody @Valid SysUserDictListDTO dto) {
         return ApiResultVO.ok(baseService.dictList(dto));
     }
 

@@ -3,7 +3,7 @@ package com.admin.user.service;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.SysUserDO;
-import com.admin.common.model.vo.DictListVO;
+import com.admin.common.model.vo.DictLongListVO;
 import com.admin.user.model.dto.SysUserInsertOrUpdateDTO;
 import com.admin.user.model.dto.SysUserPageDTO;
 import com.admin.user.model.dto.SysUserDictListDTO;
@@ -19,7 +19,7 @@ public interface SysUserService extends IService<SysUserDO> {
 
     Page<SysUserPageVO> myPage(SysUserPageDTO dto);
 
-    List<DictListVO> dictList(SysUserDictListDTO dto);
+    List<DictLongListVO> dictList(SysUserDictListDTO dto);
 
     String insertOrUpdate(SysUserInsertOrUpdateDTO dto);
 

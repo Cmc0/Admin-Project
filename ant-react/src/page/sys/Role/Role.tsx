@@ -16,7 +16,7 @@ import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Role/SchemaFormColumnList";
 import {GetMenuDictTreeList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export default function () {
 
@@ -34,7 +34,7 @@ export default function () {
     const currentForm = useRef<SysRoleInsertOrUpdateDTO>({})
 
     const menuDictListRef = useRef<IMyTree[]>([])
-    const userDictListRef = useRef<DictListVO[]>([])
+    const userDictListRef = useRef<DictLongListVO[]>([])
 
     function doGetDictList() {
         GetMenuDictTreeList().then(res => {

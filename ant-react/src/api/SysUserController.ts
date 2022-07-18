@@ -1,7 +1,7 @@
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 import {AxiosRequestConfig} from "axios";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import $http from "../../util/HttpUtil";
@@ -17,7 +17,7 @@ export interface SysUserDictListDTO {
 
 // 用户-管理 下拉列表
 export function sysUserDictList(form: SysUserDictListDTO, config?: AxiosRequestConfig) {
-    return $http.myProTreePost<DictListVO>('/sysUser/dictList', form, config)
+    return $http.myProTreePost<DictLongListVO>('/sysUser/dictList', form, config)
 }
 
 export interface SysUserInfoByIdVO {

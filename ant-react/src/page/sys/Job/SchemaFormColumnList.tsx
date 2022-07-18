@@ -3,13 +3,13 @@ import React from "react";
 import {ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {SysJobInsertOrUpdateDTO} from "@/api/SysJobController";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export const InitForm: SysJobInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>, userDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (jobDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysJobInsertOrUpdateDTO>, userDictListRef: React.MutableRefObject<DictLongListVO[]>): ProFormColumnsType<SysJobInsertOrUpdateDTO>[] => {
     return [
         {
             title: '上级岗位', dataIndex: 'parentId', valueType: "treeSelect",

@@ -7,7 +7,7 @@ import {sysDeptPage} from "@/api/SysDeptController";
 import {sysJobPage} from "@/api/SysJobController";
 import {sysRolePage} from "@/api/SysRoleController";
 import {sysAreaPage} from "@/api/SysAreaController";
-import DictListVO, {TDictListVO} from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 import {sysUserDictList} from "@/api/SysUserController";
 
 export const YesNoDict = new Map<any, ProSchemaValueEnumType>();
@@ -27,9 +27,9 @@ BulletinTypeDict.set('1', {text: '草稿', status: 'warning'})
 BulletinTypeDict.set('2', {text: '公示', status: 'processing'})
 
 // 根据list和 value，获取字典的 label值
-export function getByValueFromDictList<T extends TDictListVO>(
-    dictList: DictListVO<T>[],
-    value: T,
+export function getByValueFromDictList(
+    dictList: DictLongListVO [],
+    value: number,
     defaultValue: string = '-'
 ) {
     let res: string | undefined = defaultValue
@@ -43,9 +43,9 @@ export function getByValueFromDictList<T extends TDictListVO>(
 }
 
 // 根据list和 valueList，获取字典的 labelList值
-export function getByValueFromDictListPro<T extends TDictListVO>(
-    dictList: DictListVO<T>[],
-    valueList?: T[],
+export function getByValueFromDictListPro(
+    dictList: DictLongListVO [],
+    valueList?: number[],
     defaultValue: string = '-',
     separator: string = '，'
 ) {
@@ -61,9 +61,9 @@ export function getByValueFromDictListPro<T extends TDictListVO>(
 }
 
 export function RequestGetDictList(dictKey: string) {
-    return new Promise<DictListVO<number>[]>(async resolve => {
+    return new Promise<DictLongListVO[]>(async resolve => {
         await sysDictPage({pageSize: -1, type: 2, dictKey}).then(res => {
-            let dictList: DictListVO<number>[] = []
+            let dictList: DictLongListVO[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     label: item.name!,
@@ -76,21 +76,21 @@ export function RequestGetDictList(dictKey: string) {
 }
 
 export function GetUserDictList(addAdminFlag: boolean = true) {
-    return new Promise<DictListVO<string>[]>(async resolve => {
+    return new Promise<DictLongListVO[]>(async resolve => {
         await sysUserDictList({addAdminFlag}).then(res => {
             resolve(res.data || [])
         })
     })
 }
 
-export interface IMyTree<T extends TDictListVO = number> extends DictListVO<T> {
+export interface IMyTree extends DictLongListVO {
     id: number
     key: number
     label: string // 备注：和 title是一样的值
     title: string
     parentId: number
     orderNo: number
-    children?: IMyTree<T>[]
+    children?: IMyTree []
 }
 
 export function GetMenuDictTreeList(toTreeFlag: boolean = true) {
@@ -190,9 +190,9 @@ export function GetJobDictList(toTreeFlag: boolean = true) {
 }
 
 export function GetRoleDictList() {
-    return new Promise<DictListVO<number>[]>(async resolve => {
+    return new Promise<DictLongListVO[]>(async resolve => {
         await sysRolePage({pageSize: -1}).then(res => {
-            let dictList: DictListVO<number>[] = []
+            let dictList: DictLongListVO[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     label: item.name!,

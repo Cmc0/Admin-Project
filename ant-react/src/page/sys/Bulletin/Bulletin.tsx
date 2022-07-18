@@ -16,7 +16,7 @@ import {
 import TableColumnList from "@/page/sys/Bulletin/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Bulletin/SchemaFormColumnList";
 import {RequestGetDictList} from "../../../../util/DictUtil";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export default function () {
 
@@ -28,7 +28,7 @@ export default function () {
 
     const currentForm = useRef<SysBulletinInsertOrUpdateDTO>({})
 
-    const bulletinTypeDictListRef = useRef<DictListVO<number>[]>([])
+    const bulletinTypeDictListRef = useRef<DictLongListVO[]>([])
 
     function doGetDictList() {
         RequestGetDictList('bulletin_type').then(res => {

@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DictListVO {
+public class DictLongListVO {
 
     @ApiModelProperty(value = "显示用")
     private String label;
 
     @ApiModelProperty(value = "传值用")
-    private String value;
+    private Long value;
 
 }

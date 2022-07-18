@@ -26,7 +26,7 @@ import {
 } from "../../../../util/DictUtil";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 import {ListToTree} from "../../../../util/TreeUtil";
 
 export default function () {
@@ -47,10 +47,10 @@ export default function () {
 
     const deptDictTreeListRef = useRef<IMyTree[]>([])
     const jobDictTreeListRef = useRef<IMyTree[]>([])
-    const roleDictListRef = useRef<DictListVO<number>[]>([])
+    const roleDictListRef = useRef<DictLongListVO[]>([])
 
-    const deptDictListRef = useRef<DictListVO<number>[]>([])
-    const jobDictListRef = useRef<DictListVO<number>[]>([])
+    const deptDictListRef = useRef<DictLongListVO[]>([])
+    const jobDictListRef = useRef<DictLongListVO[]>([])
 
     function doGetDictList() {
         GetDeptDictList(false).then(res => {

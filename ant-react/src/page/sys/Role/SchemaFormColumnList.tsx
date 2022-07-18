@@ -3,13 +3,13 @@ import React from "react";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {SysRoleInsertOrUpdateDTO} from "@/api/SysRoleController";
 import {TreeSelect} from "antd";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export const InitForm: SysRoleInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, userDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysRoleInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, userDictListRef: React.MutableRefObject<DictLongListVO[]>): ProFormColumnsType<SysRoleInsertOrUpdateDTO>[] => {
     return [
         {
             title: '角色名', dataIndex: 'name', formItemProps: {

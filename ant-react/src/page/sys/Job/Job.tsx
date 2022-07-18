@@ -19,7 +19,7 @@ import {
 import TableColumnList from "@/page/sys/Job/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Job/SchemaFormColumnList";
 import {GetJobDictList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export default function () {
 
@@ -36,7 +36,7 @@ export default function () {
     const currentForm = useRef<SysJobInsertOrUpdateDTO>({})
 
     const jobDictTreeListRef = useRef<IMyTree[]>([])
-    const userDictListRef = useRef<DictListVO[]>([])
+    const userDictListRef = useRef<DictLongListVO[]>([])
 
     function doGetDictList() {
         GetJobDictList().then(res => {

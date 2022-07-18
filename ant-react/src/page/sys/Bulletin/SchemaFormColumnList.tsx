@@ -1,11 +1,11 @@
 import React from "react";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {SysBulletinInsertOrUpdateDTO} from "@/api/SysBulletinController";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export const InitForm: SysBulletinInsertOrUpdateDTO = {}
 
-const SchemaFormColumnList = (bulletinTypeDictListRef: React.MutableRefObject<DictListVO<number>[]>): ProFormColumnsType<SysBulletinInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (bulletinTypeDictListRef: React.MutableRefObject<DictLongListVO[]>): ProFormColumnsType<SysBulletinInsertOrUpdateDTO>[] => {
 
     return [
         {

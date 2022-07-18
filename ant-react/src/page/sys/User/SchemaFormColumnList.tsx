@@ -6,13 +6,13 @@ import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import {TreeSelect} from "antd";
 import {randomNickname} from "../../../../util/UserUtil";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export const InitForm: SysUserInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<DictListVO<number>[]>): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<DictLongListVO[]>): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
     return [
         {
             dataIndex: 'nickname',

@@ -19,7 +19,7 @@ import {
 } from "@/api/SysMenuController";
 import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
 import {GetMenuDictTreeList, GetRoleDictList, IMyTree} from "../../../../util/DictUtil";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export default function () {
 
@@ -44,7 +44,7 @@ export default function () {
     const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
 
     const menuDictTreeListRef = useRef<IMyTree[]>([])
-    const roleDictListRef = useRef<DictListVO<number>[]>([])
+    const roleDictListRef = useRef<DictLongListVO[]>([])
 
     function doGetDictList() {
         GetMenuDictTreeList().then(res => {

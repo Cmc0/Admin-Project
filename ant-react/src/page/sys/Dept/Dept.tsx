@@ -19,7 +19,7 @@ import {
 } from "@/api/SysDeptController";
 import TableColumnList from "@/page/sys/Dept/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Dept/SchemaFormColumnList";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export default function () {
 
@@ -37,7 +37,7 @@ export default function () {
 
     const deptDictTreeListRef = useRef<IMyTree[]>([])
     const areaDictTreeListRef = useRef<IMyTree[]>([])
-    const userDictListRef = useRef<DictListVO[]>([])
+    const userDictListRef = useRef<DictLongListVO[]>([])
 
     function doGetDictList() {
         GetDeptDictList().then(res => {

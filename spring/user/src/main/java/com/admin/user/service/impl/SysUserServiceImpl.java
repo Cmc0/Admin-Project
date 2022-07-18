@@ -16,7 +16,7 @@ import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysRoleRefUserDO;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.common.model.vo.DictListVO;
+import com.admin.common.model.vo.DictLongListVO;
 import com.admin.common.util.*;
 import com.admin.dept.model.entity.SysDeptRefUserDO;
 import com.admin.dept.service.SysDeptRefUserService;
@@ -118,18 +118,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
      * 下拉列表
      */
     @Override
-    public List<DictListVO> dictList(SysUserDictListDTO dto) {
+    public List<DictLongListVO> dictList(SysUserDictListDTO dto) {
 
         List<SysUserDO> sysUserDOList = lambdaQuery().select(SysUserDO::getNickname, BaseEntityTwo::getId).list();
 
-        List<DictListVO> dictListVOList =
-            sysUserDOList.stream().map(it -> new DictListVO(it.getNickname(), it.getId().toString()))
+        List<DictLongListVO> dictListVOList =
+            sysUserDOList.stream().map(it -> new DictLongListVO(it.getNickname(), it.getId()))
                 .collect(Collectors.toList());
 
         // 增加 admin账号
         if (dto.isAddAdminFlag()) {
-            dictListVOList.add(
-                new DictListVO(BaseConfiguration.adminProperties.getAdminNickname(), BaseConstant.ADMIN_ID.toString()));
+            dictListVOList
+                .add(new DictLongListVO(BaseConfiguration.adminProperties.getAdminNickname(), BaseConstant.ADMIN_ID));
         }
 
         return dictListVOList;

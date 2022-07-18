@@ -7,14 +7,14 @@ import {FormInstance} from "antd/es";
 import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
 import {Space} from "antd";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export const InitForm: SysMenuInsertOrUpdateDTO = {
     enableFlag: true,
     showFlag: true,
 }
 
-const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<DictListVO<number>[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<DictLongListVO[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     return [
         {
@@ -109,7 +109,7 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
                                 showSearch: true,
                                 options: IconList,
                                 optionLabelProp: 'children',
-                                optionItemRender: (item: DictListVO) => {
+                                optionItemRender: (item: DictLongListVO) => {
                                     return <Space>
                                         <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
                                     </Space>

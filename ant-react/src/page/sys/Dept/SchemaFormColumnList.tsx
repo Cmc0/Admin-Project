@@ -4,13 +4,13 @@ import {ListToTree} from "../../../../util/TreeUtil";
 import {ProFormColumnsType} from "@ant-design/pro-form/lib/components/SchemaForm/typing";
 import {SysDeptInsertOrUpdateDTO} from "@/api/SysDeptController";
 import {TreeSelect} from "antd";
-import DictListVO from "@/model/vo/DictListVO";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
 export const InitForm: SysDeptInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (deptDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysDeptInsertOrUpdateDTO>, areaDictListRef: React.MutableRefObject<IMyTree[]>, userDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysDeptInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (deptDictListRef: React.MutableRefObject<IMyTree[]>, currentForm: React.MutableRefObject<SysDeptInsertOrUpdateDTO>, areaDictListRef: React.MutableRefObject<IMyTree[]>, userDictListRef: React.MutableRefObject<DictLongListVO[]>): ProFormColumnsType<SysDeptInsertOrUpdateDTO>[] => {
     return [
         {
             title: '上级部门', dataIndex: 'parentId', valueType: "treeSelect",
