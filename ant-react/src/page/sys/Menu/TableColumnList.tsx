@@ -120,34 +120,37 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysMenuInsertOrUpda
                                     authFlag: true,
                                     enableFlag: true
                                 }
-                                sysMenuInsertOrUpdate({
+                                await sysMenuInsertOrUpdate({
                                     ...formTemp,
                                     name: '新增修改',
                                     auths: form.auths + ":insertOrUpdate",
                                     orderNo: defaultOrderNo
-                                })
-                                sysMenuInsertOrUpdate({
-                                    ...formTemp,
-                                    name: '列表查询',
-                                    auths: form.auths + ":page",
-                                    orderNo: defaultOrderNo - 10
-                                })
-                                sysMenuInsertOrUpdate({
-                                    ...formTemp,
-                                    name: '删除',
-                                    auths: form.auths + ":deleteByIdSet",
-                                    orderNo: defaultOrderNo - 20
-                                })
-                                await sysMenuInsertOrUpdate({
-                                    ...formTemp,
-                                    name: '查看详情',
-                                    auths: form.auths + ":infoById",
-                                    orderNo: defaultOrderNo - 30
-                                }).then(res => {
-                                    ToastSuccess(res.msg)
-                                    setTimeout(() => {
-                                        actionRef.current?.reload()
-                                    }, CommonConstant.MODAL_ANIM_TIME)
+                                }).then(() => {
+                                    sysMenuInsertOrUpdate({
+                                        ...formTemp,
+                                        name: '列表查询',
+                                        auths: form.auths + ":page",
+                                        orderNo: defaultOrderNo - 10
+                                    }).then(() => {
+                                        sysMenuInsertOrUpdate({
+                                            ...formTemp,
+                                            name: '删除',
+                                            auths: form.auths + ":deleteByIdSet",
+                                            orderNo: defaultOrderNo - 20
+                                        }).then(() => {
+                                            sysMenuInsertOrUpdate({
+                                                ...formTemp,
+                                                name: '查看详情',
+                                                auths: form.auths + ":infoById",
+                                                orderNo: defaultOrderNo - 30
+                                            }).then(res => {
+                                                ToastSuccess(res.msg)
+                                                setTimeout(() => {
+                                                    actionRef.current?.reload()
+                                                }, CommonConstant.MODAL_ANIM_TIME)
+                                            })
+                                        })
+                                    })
                                 })
                                 return true
                             }}
