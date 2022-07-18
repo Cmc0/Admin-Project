@@ -1,14 +1,14 @@
 import {TWebSocketType} from "@/model/constant/LocalStorageKey";
 import {ProSchemaValueEnumType} from "@ant-design/pro-components";
 import {sysDictPage} from "@/api/SysDictController";
-import {sysUserSelectList} from "@/api/SysUserController";
 import {sysMenuPage} from "@/api/SysMenuController";
 import {ListToTree} from "./TreeUtil";
 import {sysDeptPage} from "@/api/SysDeptController";
 import {sysJobPage} from "@/api/SysJobController";
 import {sysRolePage} from "@/api/SysRoleController";
 import {sysAreaPage} from "@/api/SysAreaController";
-import DictListVO from "@/model/vo/DictListVO";
+import DictListVO, {TDictListVO} from "@/model/vo/DictListVO";
+import {sysUserDictList} from "@/api/SysUserController";
 
 export const YesNoDict = new Map<any, ProSchemaValueEnumType>();
 YesNoDict.set(true, {text: '是', status: 'success'})
@@ -27,9 +27,9 @@ BulletinTypeDict.set('1', {text: '草稿', status: 'warning'})
 BulletinTypeDict.set('2', {text: '公示', status: 'processing'})
 
 // 根据list和 value，获取字典的 label值
-export function getByValueFromDictList(
-    dictList: DictListVO[],
-    value: string,
+export function getByValueFromDictList<T extends TDictListVO>(
+    dictList: DictListVO<T>[],
+    value: T,
     defaultValue: string = '-'
 ) {
     let res: string | undefined = defaultValue
@@ -43,7 +43,7 @@ export function getByValueFromDictList(
 }
 
 // 根据list和 valueList，获取字典的 labelList值
-export function getByValueFromDictListPro<T = string>(
+export function getByValueFromDictListPro<T extends TDictListVO>(
     dictList: DictListVO<T>[],
     valueList?: T[],
     defaultValue: string = '-',
@@ -61,14 +61,14 @@ export function getByValueFromDictListPro<T = string>(
 }
 
 export function RequestGetDictList(dictKey: string) {
-    return new Promise<DictListVO[]>(async resolve => {
+    return new Promise<DictListVO<number>[]>(async resolve => {
         await sysDictPage({pageSize: -1, type: 2, dictKey}).then(res => {
-            let dictList: DictListVO[] = []
+            let dictList: DictListVO<number>[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
-                    label: item.name,
-                    value: item.value,
-                } as DictListVO));
+                    label: item.name!,
+                    value: item.value!,
+                }));
             }
             resolve(dictList)
         })
@@ -76,27 +76,27 @@ export function RequestGetDictList(dictKey: string) {
 }
 
 export function GetUserDictList(addAdminFlag: boolean = true) {
-    return new Promise<DictListVO[]>(async resolve => {
-        await sysUserSelectList({addAdminFlag}).then(res => {
+    return new Promise<DictListVO<string>[]>(async resolve => {
+        await sysUserDictList({addAdminFlag}).then(res => {
             resolve(res.data || [])
         })
     })
 }
 
-export interface IMyTree<T = string | number> extends DictListVO<T> {
+export interface IMyTree<T extends TDictListVO = number> extends DictListVO<T> {
     id: number
     key: number
     label: string // 备注：和 title是一样的值
     title: string
     parentId: number
     orderNo: number
-    children?: IMyTree[]
+    children?: IMyTree<T>[]
 }
 
 export function GetMenuDictTreeList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree<number>[]>(async resolve => {
+    return new Promise<IMyTree[]>(async resolve => {
         await sysMenuPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree<number>[] = []
+            let dictList: IMyTree[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     id: item.id!,
@@ -118,9 +118,9 @@ export function GetMenuDictTreeList(toTreeFlag: boolean = true) {
 }
 
 export function GetDeptDictList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree<number>[]>(async resolve => {
+    return new Promise<IMyTree[]>(async resolve => {
         await sysDeptPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree<number>[] = []
+            let dictList: IMyTree[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     id: item.id!,
@@ -142,9 +142,9 @@ export function GetDeptDictList(toTreeFlag: boolean = true) {
 }
 
 export function GetAreaDictList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree<number>[]>(async resolve => {
+    return new Promise<IMyTree[]>(async resolve => {
         await sysAreaPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree<number>[] = []
+            let dictList: IMyTree[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     id: item.id!,
@@ -166,9 +166,9 @@ export function GetAreaDictList(toTreeFlag: boolean = true) {
 }
 
 export function GetJobDictList(toTreeFlag: boolean = true) {
-    return new Promise<IMyTree<number>[]>(async resolve => {
+    return new Promise<IMyTree[]>(async resolve => {
         await sysJobPage({pageSize: -1}).then(res => {
-            let dictList: IMyTree<number>[] = []
+            let dictList: IMyTree[] = []
             if (res.data) {
                 dictList = res.data.map(item => ({
                     id: item.id!,

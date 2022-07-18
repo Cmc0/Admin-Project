@@ -1,7 +1,7 @@
-import DictListVO from "@/model/vo/DictListVO";
 import MyOrderDTO from "@/model/dto/MyOrderDTO";
 import MyPageDTO from "@/model/dto/MyPageDTO";
 import NotNullId from "@/model/dto/NotNullId";
+import DictListVO from "@/model/vo/DictListVO";
 import {AxiosRequestConfig} from "axios";
 import NotEmptyIdSet from "@/model/dto/NotEmptyIdSet";
 import $http from "../../util/HttpUtil";
@@ -9,6 +9,15 @@ import $http from "../../util/HttpUtil";
 // 用户-管理 批量注销用户
 export function sysUserDeleteByIdSet(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysUser/deleteByIdSet', form, config)
+}
+
+export interface SysUserDictListDTO {
+    addAdminFlag?: boolean // 是否追加 admin账号
+}
+
+// 用户-管理 下拉列表
+export function sysUserDictList(form: SysUserDictListDTO, config?: AxiosRequestConfig) {
+    return $http.myProTreePost<DictListVO>('/sysUser/dictList', form, config)
 }
 
 export interface SysUserInfoByIdVO {
@@ -99,15 +108,6 @@ export function sysUserRefreshJwtSecretSuf(form: NotEmptyIdSet, config?: AxiosRe
 // 用户-管理 批量重置头像
 export function sysUserResetAvatar(form: NotEmptyIdSet, config?: AxiosRequestConfig) {
     return $http.myPost<string>('/sysUser/resetAvatar', form, config)
-}
-
-export interface SysUserSelectListDTO {
-    addAdminFlag?: boolean // 是否追加 admin账号
-}
-
-// 用户-管理 下拉列表
-export function sysUserSelectList(form: SysUserSelectListDTO, config?: AxiosRequestConfig) {
-    return $http.myProTreePost<DictListVO>('/sysUser/selectList', form, config)
 }
 
 export interface SysUserUpdatePasswordDTO {

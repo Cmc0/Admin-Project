@@ -47,10 +47,10 @@ export default function () {
 
     const deptDictTreeListRef = useRef<IMyTree[]>([])
     const jobDictTreeListRef = useRef<IMyTree[]>([])
-    const roleDictListRef = useRef<DictListVO[]>([])
+    const roleDictListRef = useRef<DictListVO<number>[]>([])
 
-    const deptDictListRef = useRef<DictListVO[]>([])
-    const jobDictListRef = useRef<DictListVO[]>([])
+    const deptDictListRef = useRef<DictListVO<number>[]>([])
+    const jobDictListRef = useRef<DictListVO<number>[]>([])
 
     function doGetDictList() {
         GetDeptDictList(false).then(res => {

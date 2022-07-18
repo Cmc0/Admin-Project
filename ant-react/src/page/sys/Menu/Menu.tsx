@@ -44,7 +44,7 @@ export default function () {
     const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
 
     const menuDictTreeListRef = useRef<IMyTree[]>([])
-    const roleDictListRef = useRef<DictListVO[]>([])
+    const roleDictListRef = useRef<DictListVO<number>[]>([])
 
     function doGetDictList() {
         GetMenuDictTreeList().then(res => {

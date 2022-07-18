@@ -12,7 +12,7 @@ export const InitForm: SysUserInsertOrUpdateDTO = {
     enableFlag: true,
 }
 
-const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<DictListVO<number>[]>): ProFormColumnsType<SysUserInsertOrUpdateDTO>[] => {
     return [
         {
             dataIndex: 'nickname',

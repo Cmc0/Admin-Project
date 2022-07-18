@@ -5,7 +5,7 @@ import DictListVO from "@/model/vo/DictListVO";
 
 export const InitForm: SysBulletinInsertOrUpdateDTO = {}
 
-const SchemaFormColumnList = (bulletinTypeDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysBulletinInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (bulletinTypeDictListRef: React.MutableRefObject<DictListVO<number>[]>): ProFormColumnsType<SysBulletinInsertOrUpdateDTO>[] => {
 
     return [
         {

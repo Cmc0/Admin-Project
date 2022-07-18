@@ -28,7 +28,7 @@ export default function () {
 
     const currentForm = useRef<SysBulletinInsertOrUpdateDTO>({})
 
-    const bulletinTypeDictListRef = useRef<DictListVO[]>([])
+    const bulletinTypeDictListRef = useRef<DictListVO<number>[]>([])
 
     function doGetDictList() {
         RequestGetDictList('bulletin_type').then(res => {

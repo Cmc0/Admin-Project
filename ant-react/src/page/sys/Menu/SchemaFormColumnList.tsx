@@ -14,7 +14,7 @@ export const InitForm: SysMenuInsertOrUpdateDTO = {
     showFlag: true,
 }
 
-const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<DictListVO[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
+const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>, useForm: FormInstance<SysMenuInsertOrUpdateDTO>, currentForm: React.MutableRefObject<SysMenuInsertOrUpdateDTO>, roleDictListRef: React.MutableRefObject<DictListVO<number>[]>): ProFormColumnsType<SysMenuInsertOrUpdateDTO>[] => {
 
     return [
         {
