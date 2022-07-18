@@ -311,10 +311,10 @@ INSERT INTO `sys_menu` VALUES (59, 1, '2022-03-31 09:57:38', 1, '2022-05-07 14:4
 INSERT INTO `sys_menu` VALUES (60, 1, '2022-07-08 22:22:03', 1, '2022-07-08 22:22:03', 1, 0, 0, '', '服务器运行情况', '', '', 2, 'server:workInfo', 0, 0, '', '', 10000, 0, 1);
 INSERT INTO `sys_menu` VALUES (61, 1, '2022-07-08 22:22:35', 1, '2022-07-08 22:22:35', 1, 0, 0, '', '平台系统-分析-请求', '', '', 2, 'systemAnalyze:requset', 0, 0, '', '', 9990, 0, 1);
 INSERT INTO `sys_menu` VALUES (62, 1, '2022-07-08 22:22:51', 1, '2022-07-08 22:22:51', 1, 0, 0, '', '平台系统-分析-用户', '', '', 2, 'systemAnalyze:user', 0, 0, '', '', 9980, 0, 1);
-INSERT INTO `sys_menu` VALUES (63, 1, '2022-07-12 11:01:41', 1, '2022-07-12 11:02:01', 1, 0, 0, '', 'Helper App', 'https://cmc0.github.io/', 'CodeOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
-INSERT INTO `sys_menu` VALUES (64, 1, '2022-07-15 15:19:32', 1, '2022-07-15 15:19:32', 1, 0, 0, '', 'Elastic', 'http://81.69.58.190:5601/', 'ReadOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
-INSERT INTO `sys_menu` VALUES (65, 1, '2021-12-22 11:05:23', 1, '2022-07-07 21:06:42', 1, 0, 0, '', '文件服务', 'http://139.196.121.3:9001', 'FolderOpenOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
-INSERT INTO `sys_menu` VALUES (66, 1, '2021-12-22 11:04:05', 1, '2022-06-24 09:30:18', 1, 0, 0, '', '定时任务', 'http://139.196.121.3:8335/xxl-job-admin', 'FieldTimeOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
+INSERT INTO `sys_menu` VALUES (63, 1, '2022-07-12 11:01:41', 1, '2022-07-12 11:02:01', 1, 0, 0, '', 'Helper App', 'https://cmc0.github.io', 'CodeOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
+INSERT INTO `sys_menu` VALUES (64, 1, '2022-07-15 15:19:32', 1, '2022-07-15 15:19:32', 1, 0, 0, '', 'Elastic', 'http://81.69.58.190:5601', 'ReadOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
+INSERT INTO `sys_menu` VALUES (65, 1, '2021-12-22 11:05:23', 1, '2022-07-07 21:06:42', 1, 0, 0, '', '文件服务', 'http://81.69.58.190:9001', 'FolderOpenOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
+INSERT INTO `sys_menu` VALUES (66, 1, '2021-12-22 11:04:05', 1, '2022-06-24 09:30:18', 1, 0, 0, '', '定时任务', 'http://42.192.38.156:8335/xxl-job-admin', 'FieldTimeOutlined', 0, '', 1, 1, '', '', 0, 0, 0);
 
 -- ----------------------------
 -- Table structure for sys_param
