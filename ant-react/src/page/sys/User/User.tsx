@@ -17,10 +17,17 @@ import TableColumnList, {SysUserUpdatePasswordModalForm} from "@/page/sys/User/T
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/User/SchemaFormColumnList";
-import {GetDeptDictList, GetJobDictList, GetRoleDictList, IMyTree} from "../../../../util/DictUtil";
+import {
+    getByValueFromDictListPro,
+    GetDeptDictList,
+    GetJobDictList,
+    GetRoleDictList,
+    IMyTree
+} from "../../../../util/DictUtil";
 import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
 import DictListVO from "@/model/vo/DictListVO";
+import {ListToTree} from "../../../../util/TreeUtil";
 
 export default function () {
 
@@ -38,16 +45,21 @@ export default function () {
 
     const currentForm = useRef<SysUserInsertOrUpdateDTO>({})
 
-    const deptDictListRef = useRef<IMyTree[]>([])
-    const jobDictListRef = useRef<IMyTree[]>([])
+    const deptDictTreeListRef = useRef<IMyTree[]>([])
+    const jobDictTreeListRef = useRef<IMyTree[]>([])
     const roleDictListRef = useRef<DictListVO[]>([])
 
+    const deptDictListRef = useRef<DictListVO[]>([])
+    const jobDictListRef = useRef<DictListVO[]>([])
+
     function doGetDictList() {
-        GetDeptDictList().then(res => {
+        GetDeptDictList(false).then(res => {
             deptDictListRef.current = res
+            deptDictTreeListRef.current = ListToTree(res)
         })
-        GetJobDictList().then(res => {
+        GetJobDictList(false).then(res => {
             jobDictListRef.current = res
+            jobDictTreeListRef.current = ListToTree(res)
         })
         GetRoleDictList().then(res => {
             roleDictListRef.current = res
@@ -81,7 +93,7 @@ export default function () {
                                     部门
                                 </Typography.Text>
                                 <Typography.Text type="secondary">
-                                    ：开发部门，测试部门
+                                    ：{getByValueFromDictListPro(deptDictListRef.current!, record.deptIdSet?.map(it => String(it)))}
                                 </Typography.Text>
                             </span>
                             <span>
@@ -89,7 +101,15 @@ export default function () {
                                     岗位
                                 </Typography.Text>
                                 <Typography.Text type="secondary">
-                                    ：前端开发，后端开发
+                                    ：{getByValueFromDictListPro(jobDictListRef.current!, record.jobIdSet?.map(it => String(it)))}
+                                </Typography.Text>
+                            </span>
+                            <span>
+                                <Typography.Text mark>
+                                    角色
+                                </Typography.Text>
+                                <Typography.Text type="secondary">
+                                    ：{getByValueFromDictListPro(roleDictListRef.current!, record.roleIdSet?.map(it => String(it)))}
                                 </Typography.Text>
                             </span>
                         </div>
@@ -237,7 +257,7 @@ export default function () {
                 }}
                 visible={formVisible}
                 onVisibleChange={setFormVisible}
-                columns={SchemaFormColumnList(useForm, deptDictListRef, jobDictListRef, roleDictListRef)}
+                columns={SchemaFormColumnList(useForm, deptDictTreeListRef, jobDictTreeListRef, roleDictListRef)}
                 onFinish={async (form) => {
 
                     const formTemp = {...form}

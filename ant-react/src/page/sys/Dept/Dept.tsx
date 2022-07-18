@@ -35,16 +35,16 @@ export default function () {
 
     const currentForm = useRef<SysDeptInsertOrUpdateDTO>({})
 
-    const deptDictListRef = useRef<IMyTree[]>([])
-    const areaDictListRef = useRef<IMyTree[]>([])
+    const deptDictTreeListRef = useRef<IMyTree[]>([])
+    const areaDictTreeListRef = useRef<IMyTree[]>([])
     const userDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
         GetDeptDictList().then(res => {
-            deptDictListRef.current = res
+            deptDictTreeListRef.current = res
         })
         GetAreaDictList().then(res => {
-            areaDictListRef.current = res
+            areaDictTreeListRef.current = res
         })
         GetUserDictList().then(res => {
             userDictListRef.current = res
@@ -111,7 +111,7 @@ export default function () {
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: deptDictListRef.current});
+                        CalcOrderNo(currentForm.current, {children: deptDictTreeListRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -220,7 +220,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(deptDictListRef, currentForm, areaDictListRef, userDictListRef)}
+            columns={SchemaFormColumnList(deptDictTreeListRef, currentForm, areaDictTreeListRef, userDictListRef)}
             onFinish={async (form) => {
                 await sysDeptInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

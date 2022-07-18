@@ -18,7 +18,7 @@ import {
     sysMenuTree
 } from "@/api/SysMenuController";
 import {AddOrderNo} from "@/model/dto/AddOrderNoDTO";
-import {GetMenuDictList, GetRoleDictList, IMyTree} from "../../../../util/DictUtil";
+import {GetMenuDictTreeList, GetRoleDictList, IMyTree} from "../../../../util/DictUtil";
 import DictListVO from "@/model/vo/DictListVO";
 
 export default function () {
@@ -43,12 +43,12 @@ export default function () {
 
     const currentForm = useRef<SysMenuInsertOrUpdateDTO>({})
 
-    const menuDictListRef = useRef<IMyTree[]>([])
+    const menuDictTreeListRef = useRef<IMyTree[]>([])
     const roleDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
-        GetMenuDictList().then(res => {
-            menuDictListRef.current = res
+        GetMenuDictTreeList().then(res => {
+            menuDictTreeListRef.current = res
         })
         GetRoleDictList().then(res => {
             roleDictListRef.current = res
@@ -118,7 +118,7 @@ export default function () {
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: menuDictListRef.current});
+                        CalcOrderNo(currentForm.current, {children: menuDictTreeListRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -232,7 +232,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(menuDictListRef, useForm, currentForm, roleDictListRef)}
+            columns={SchemaFormColumnList(menuDictTreeListRef, useForm, currentForm, roleDictListRef)}
             onFinish={async (form) => {
                 await sysMenuInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

@@ -34,15 +34,15 @@ export default function () {
 
     const currentForm = useRef<SysAreaInsertOrUpdateDTO>({})
 
-    const deptDictListRef = useRef<IMyTree[]>([])
-    const areaDictListRef = useRef<IMyTree[]>([])
+    const deptDictTreeListRef = useRef<IMyTree[]>([])
+    const areaDictTreeListRef = useRef<IMyTree[]>([])
 
     function doGetDictList() {
         GetDeptDictList().then(res => {
-            deptDictListRef.current = res
+            deptDictTreeListRef.current = res
         })
         GetAreaDictList().then(res => {
-            areaDictListRef.current = res
+            areaDictTreeListRef.current = res
         })
     }
 
@@ -106,7 +106,7 @@ export default function () {
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: areaDictListRef.current});
+                        CalcOrderNo(currentForm.current, {children: areaDictTreeListRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -215,7 +215,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(areaDictListRef, currentForm, deptDictListRef)}
+            columns={SchemaFormColumnList(areaDictTreeListRef, currentForm, deptDictTreeListRef)}
             onFinish={async (form) => {
                 await sysAreaInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)

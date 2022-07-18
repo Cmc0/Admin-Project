@@ -26,6 +26,40 @@ export const BulletinTypeDict = new Map<TWebSocketType, ProSchemaValueEnumType>(
 BulletinTypeDict.set('1', {text: '草稿', status: 'warning'})
 BulletinTypeDict.set('2', {text: '公示', status: 'processing'})
 
+// 根据list和 value，获取字典的 label值
+export function getByValueFromDictList(
+    dictList: DictListVO[],
+    value: string,
+    defaultValue: string = '-'
+) {
+    let res: string | undefined = defaultValue
+    dictList.some((item) => {
+        if (item.value === value) {
+            res = item.label
+            return true // 结束当前循环
+        }
+    })
+    return res
+}
+
+// 根据list和 valueList，获取字典的 labelList值
+export function getByValueFromDictListPro(
+    dictList: DictListVO[],
+    valueList?: (string | undefined)[],
+    defaultValue: string = '-',
+    separator: string = '，'
+) {
+    let resList: string[] = []
+    if (dictList && valueList && valueList.length) {
+        dictList.forEach((item) => {
+            if (valueList.includes(item.value)) {
+                resList.push(item.label)
+            }
+        })
+    }
+    return resList.length ? resList.join(separator) : defaultValue
+}
+
 export function RequestGetDictList(dictKey: string) {
     return new Promise<DictListVO[]>(async resolve => {
         await sysDictPage({pageSize: -1, type: 2, dictKey}).then(res => {
@@ -49,17 +83,17 @@ export function GetUserDictList(addAdminFlag: boolean = true) {
     })
 }
 
-export interface IMyTree {
+export interface IMyTree extends DictListVO {
     id?: number
     key?: number
+    label: string // 备注：和 title是一样的值
     title?: string
-    value?: number
     parentId: number,
     orderNo: number,
     children: IMyTree[]
 }
 
-export function GetMenuDictList() {
+export function GetMenuDictTreeList(toTreeFlag: boolean = true) {
     return new Promise<IMyTree[]>(async resolve => {
         await sysMenuPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -68,17 +102,22 @@ export function GetMenuDictList() {
                     id: item.id,
                     key: item.id,
                     value: item.id,
+                    label: item.name,
                     title: item.name,
                     parentId: item.parentId,
                     orderNo: item.orderNo
                 } as IMyTree));
             }
-            resolve(ListToTree(dictList))
+            if (toTreeFlag) {
+                resolve(ListToTree(dictList))
+            } else {
+                resolve(dictList)
+            }
         })
     })
 }
 
-export function GetDeptDictList() {
+export function GetDeptDictList(toTreeFlag: boolean = true) {
     return new Promise<IMyTree[]>(async resolve => {
         await sysDeptPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -87,17 +126,22 @@ export function GetDeptDictList() {
                     id: item.id,
                     key: item.id,
                     value: item.id,
+                    label: item.name,
                     title: item.name,
                     parentId: item.parentId,
                     orderNo: item.orderNo
                 } as IMyTree));
             }
-            resolve(ListToTree(dictList))
+            if (toTreeFlag) {
+                resolve(ListToTree(dictList))
+            } else {
+                resolve(dictList)
+            }
         })
     })
 }
 
-export function GetAreaDictList() {
+export function GetAreaDictList(toTreeFlag: boolean = true) {
     return new Promise<IMyTree[]>(async resolve => {
         await sysAreaPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -106,17 +150,22 @@ export function GetAreaDictList() {
                     id: item.id,
                     key: item.id,
                     value: item.id,
+                    label: item.name,
                     title: item.name,
                     parentId: item.parentId,
                     orderNo: item.orderNo
                 } as IMyTree));
             }
-            resolve(ListToTree(dictList))
+            if (toTreeFlag) {
+                resolve(ListToTree(dictList))
+            } else {
+                resolve(dictList)
+            }
         })
     })
 }
 
-export function GetJobDictList() {
+export function GetJobDictList(toTreeFlag: boolean = true) {
     return new Promise<IMyTree[]>(async resolve => {
         await sysJobPage({pageSize: -1}).then(res => {
             let dictList: IMyTree[] = []
@@ -125,12 +174,17 @@ export function GetJobDictList() {
                     id: item.id,
                     key: item.id,
                     value: item.id,
+                    label: item.name,
                     title: item.name,
                     parentId: item.parentId,
                     orderNo: item.orderNo
                 } as IMyTree));
             }
-            resolve(ListToTree(dictList))
+            if (toTreeFlag) {
+                resolve(ListToTree(dictList))
+            } else {
+                resolve(dictList)
+            }
         })
     })
 }

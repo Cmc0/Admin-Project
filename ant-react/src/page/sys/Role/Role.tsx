@@ -15,7 +15,7 @@ import TableColumnList from "@/page/sys/Role/TableColumnList";
 import {execConfirm, ToastSuccess} from "../../../../util/ToastUtil";
 import CommonConstant from "@/model/constant/CommonConstant";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Role/SchemaFormColumnList";
-import {GetMenuDictList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
+import {GetMenuDictTreeList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
 import DictListVO from "@/model/vo/DictListVO";
 
 export default function () {
@@ -37,7 +37,7 @@ export default function () {
     const userDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
-        GetMenuDictList().then(res => {
+        GetMenuDictTreeList().then(res => {
             menuDictListRef.current = res
         })
         GetUserDictList(false).then(res => {

@@ -35,12 +35,12 @@ export default function () {
 
     const currentForm = useRef<SysJobInsertOrUpdateDTO>({})
 
-    const jobDictListRef = useRef<IMyTree[]>([])
+    const jobDictTreeListRef = useRef<IMyTree[]>([])
     const userDictListRef = useRef<DictListVO[]>([])
 
     function doGetDictList() {
         GetJobDictList().then(res => {
-            jobDictListRef.current = res
+            jobDictTreeListRef.current = res
         })
         GetUserDictList().then(res => {
             userDictListRef.current = res
@@ -107,7 +107,7 @@ export default function () {
                 actions: [
                     <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                         currentForm.current = {}
-                        CalcOrderNo(currentForm.current, {children: jobDictListRef.current});
+                        CalcOrderNo(currentForm.current, {children: jobDictTreeListRef.current});
                         setFormVisible(true)
                     }}>新建</Button>
                 ],
@@ -216,7 +216,7 @@ export default function () {
             }}
             visible={formVisible}
             onVisibleChange={setFormVisible}
-            columns={SchemaFormColumnList(jobDictListRef, currentForm, userDictListRef)}
+            columns={SchemaFormColumnList(jobDictTreeListRef, currentForm, userDictListRef)}
             onFinish={async (form) => {
                 await sysJobInsertOrUpdate({...currentForm.current, ...form}).then(res => {
                     ToastSuccess(res.msg)
