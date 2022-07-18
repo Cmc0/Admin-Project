@@ -85,8 +85,7 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
                 treeNodeFilterProp: 'title',
                 maxTagCount: 'responsive',
                 treeCheckable: true,
-                showCheckedStrategy: TreeSelect.SHOW_ALL,
-                // @ts-ignore
+                showCheckedStrategy: TreeSelect.SHOW_PARENT,
                 options: deptDictListRef.current
             },
         },
@@ -100,8 +99,7 @@ const SchemaFormColumnList = (useForm: FormInstance<SysUserInsertOrUpdateDTO>, d
                 treeNodeFilterProp: 'title',
                 maxTagCount: 'responsive',
                 treeCheckable: true,
-                showCheckedStrategy: TreeSelect.SHOW_ALL,
-                // @ts-ignore
+                showCheckedStrategy: TreeSelect.SHOW_PARENT,
                 options: jobDictListRef.current
             },
         },

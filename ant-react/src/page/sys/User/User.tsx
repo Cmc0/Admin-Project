@@ -33,8 +33,6 @@ export default function () {
 
     const currentForm = useRef<SysUserInsertOrUpdateDTO>({})
 
-    const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
-
     const deptDictListRef = useRef<IMyTree[]>([])
     const jobDictListRef = useRef<IMyTree[]>([])
     const roleDictListRef = useRef<IMyOption[]>([])
@@ -67,10 +65,9 @@ export default function () {
                 columnEmptyText={false}
                 rowSelection={{}}
                 expandable={{
-                    expandedRowKeys,
-                    onExpandedRowsChange: (expandedRows) => {
-                        setExpandedRowKeys(expandedRows as number[])
-                    }
+                    expandedRowRender: record => (
+                        record.email
+                    )
                 }}
                 revalidateOnFocus={false}
                 columns={TableColumnList(currentForm, setFormVisible, actionRef)}
