@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ProTable} from "@ant-design/pro-components";
-import {Button, Form, Space} from "antd";
-import {PlusOutlined} from "@ant-design/icons/lib";
+import {Button, Dropdown, Form, Menu, Space, Typography} from "antd";
+import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
 import {
     sysUserDeleteByIdSet,
     sysUserInfoById,
@@ -22,6 +22,10 @@ import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
 
 export default function () {
+
+    const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
+
+    const hasChildrenIdList = useRef<number[]>([]); // 有子节点的 idList
 
     const actionRef = useRef<ActionType>(null)
 
@@ -65,8 +69,29 @@ export default function () {
                 columnEmptyText={false}
                 rowSelection={{}}
                 expandable={{
+                    expandedRowKeys,
+                    onExpandedRowsChange: (expandedRows) => {
+                        setExpandedRowKeys(expandedRows as number[])
+                    },
                     expandedRowRender: record => (
-                        record.email
+                        <div className={"flex-c"}>
+                            <span>
+                                <Typography.Text mark>
+                                    部门
+                                </Typography.Text>
+                                <Typography.Text type="secondary">
+                                    ：开发部门，测试部门
+                                </Typography.Text>
+                            </span>
+                            <span>
+                                <Typography.Text mark>
+                                    岗位
+                                </Typography.Text>
+                                <Typography.Text type="secondary">
+                                    ：前端开发，后端开发
+                                </Typography.Text>
+                            </span>
+                        </div>
                     )
                 }}
                 revalidateOnFocus={false}
@@ -77,7 +102,36 @@ export default function () {
                 request={(params, sort, filter) => {
                     return sysUserPage({...params, sort})
                 }}
+                postData={(data) => {
+                    hasChildrenIdList.current = data.map(it => it.id)
+                    return data
+                }}
                 toolbar={{
+                    title:
+                        <Dropdown
+                            overlay={<Menu items={[
+                                {
+                                    key: '1',
+                                    label: <a onClick={() => {
+                                        setExpandedRowKeys(hasChildrenIdList.current)
+                                    }}>
+                                        展开全部
+                                    </a>,
+                                    icon: <ColumnHeightOutlined/>
+                                },
+                                {
+                                    key: '2',
+                                    label: <a onClick={() => {
+                                        setExpandedRowKeys([])
+                                    }}>
+                                        收起全部
+                                    </a>,
+                                    icon: <VerticalAlignMiddleOutlined/>
+                                },
+                            ]}/>}
+                        >
+                            <Button size={"small"} icon={<EllipsisOutlined/>}/>
+                        </Dropdown>,
                     actions: [
                         <Button key={"1"} icon={<PlusOutlined/>} type="primary" onClick={() => {
                             currentForm.current = {}
