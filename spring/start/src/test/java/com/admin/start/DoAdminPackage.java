@@ -3,6 +3,7 @@ package com.admin.start;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.unit.DataSizeUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.RuntimeUtil;
@@ -12,6 +13,7 @@ import cn.hutool.extra.ssh.Sftp;
 import com.jcraft.jsch.Session;
 import lombok.SneakyThrows;
 
+import java.io.File;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -88,11 +90,13 @@ public class DoAdminPackage {
 
         System.out.println("后端打包 ↑ 耗时：" + timeStr);
 
-        System.out.println("后端打包上传 ↓");
+        String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
+
+        File file = FileUtil.newFile(jarPath);
+
+        System.out.println("后端打包上传 ↓ 大小：" + DataSizeUtil.format(FileUtil.size(file)));
 
         timeNumber = System.currentTimeMillis();
-
-        String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
 
         sftp.put(jarPath, SPRING_REMOTE_PATH);
 
@@ -137,15 +141,17 @@ public class DoAdminPackage {
 
         System.out.println("前端打包 ↑ 耗时：" + timeStr);
 
-        System.out.println("前端打包上传 ↓");
+        String viteBuildPath = vitePath + "/dist";
+
+        File file = FileUtil.newFile(viteBuildPath);
+
+        System.out.println("前端打包上传 ↓ 大小：" + DataSizeUtil.format(FileUtil.size(file)));
 
         timeNumber = System.currentTimeMillis();
 
-        String viteBuildPath = vitePath + "/dist";
-
         sftp.delDir(VITE_REMOTE_PATH);
 
-        sftp.syncUpload(FileUtil.newFile(viteBuildPath), VITE_REMOTE_PATH);
+        sftp.syncUpload(file, VITE_REMOTE_PATH);
 
         timeNumber = System.currentTimeMillis() - timeNumber;
         timeStr = DateUtil.formatBetween(timeNumber);
