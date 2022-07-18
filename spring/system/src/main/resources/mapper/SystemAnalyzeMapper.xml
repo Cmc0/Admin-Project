@@ -23,7 +23,7 @@
 
     <!-- 活跃人数走势 -->
     <select id="activeUserTrend" resultType="com.admin.system.model.vo.SystemAnalyzeActiveUserTrendVO">
-        SELECT DATE_FORMAT(a.create_time, '%Y年%m月') AS monthDataStr,
+        SELECT DATE_FORMAT(a.create_time, '%Y年%c月') AS monthDataStr,
                COUNT(DISTINCT a.create_id)          AS total
         FROM sys_request a
         WHERE a.create_id != - 1

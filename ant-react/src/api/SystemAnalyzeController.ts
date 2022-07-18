@@ -12,7 +12,7 @@ export function systemAnalyzeActiveUser(config?: AxiosRequestConfig) {
 }
 
 export interface SystemAnalyzeActiveUserTrendVO {
-    monthDataStr?: string // 年月，格式：2022年07月（字符串）
+    monthDataStr?: string // 年月，格式：2022年7月（字符串）
     total?: number // 该月活跃人数
 }
 

@@ -53,8 +53,22 @@ function setActiveUserTrendEChartsOption(data: SystemAnalyzeActiveUserTrendVO[] 
 
     activeUserTrendEChartsRef.current?.hideLoading()
 
-    const monthDataStrList = data?.map(it => it.monthDataStr!);
-    const totalList = data?.map(it => it.total);
+    let monthDataStrList: (string | undefined)[] = []
+    let totalList: (number | undefined)[] = []
+
+    const yearSet = new Set<string>(); // 目的：只显示一次年
+
+    data?.forEach(item => {
+        const splitList = item.monthDataStr?.split("年")!;
+        if (yearSet.has(splitList![0])) {
+            monthDataStrList.push(splitList![1])
+        } else {
+            yearSet.add(splitList[0])
+            monthDataStrList.push(splitList![1] + "\n" + splitList![0])
+        }
+
+        totalList.push(item.total)
+    })
 
     activeUserTrendEChartsRef.current?.setOption({
         xAxis: {

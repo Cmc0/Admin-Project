@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class SystemAnalyzeActiveUserTrendVO {
 
-    @ApiModelProperty(value = "年月，格式：2022年07月（字符串）")
+    @ApiModelProperty(value = "年月，格式：2022年7月（字符串）")
     private String monthDataStr;
 
     @ApiModelProperty(value = "该月活跃人数")
