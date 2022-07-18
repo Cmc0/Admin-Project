@@ -41,7 +41,7 @@ export default function () {
                                    <Typography.Text
                                        strong
                                        type={GetAvgType(sysRequestAllAvgVO.avg!)}>
-                                       avg：{sysRequestAllAvgVO.avg}ms
+                                       {sysRequestAllAvgVO.avg}ms
                                    </Typography.Text>
                                }/>
                     </span>
