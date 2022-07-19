@@ -1,7 +1,7 @@
 import {ActionType, BetaSchemaForm, ColumnsState, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {CalcOrderNo, GetIdListForHasChildrenNode} from "../../../../util/TreeUtil";
 import TableColumnList from "@/page/sys/Menu/TableColumnList";
 import SchemaFormColumnList, {InitForm} from "@/page/sys/Menu/SchemaFormColumnList";
@@ -54,10 +54,6 @@ export default function () {
             roleDictListRef.current = res
         })
     }
-
-    useEffect(() => {
-        doGetDictList()
-    }, [])
 
     return <>
         <ProTable<SysMenuDO, SysMenuPageDTO>

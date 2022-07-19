@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ProTable} from "@ant-design/pro-components";
 import {Button, Form} from "antd";
 import {PlusOutlined} from "@ant-design/icons/lib";
@@ -35,10 +35,6 @@ export default function () {
             bulletinTypeDictListRef.current = res
         })
     }
-
-    useEffect(() => {
-        doGetDictList()
-    }, [])
 
     return (
         <>

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ColumnsState, ProTable} from "@ant-design/pro-components";
 import {Button, Form} from "antd";
 import {PlusOutlined} from "@ant-design/icons/lib";
@@ -44,10 +44,6 @@ export default function () {
             userDictListRef.current = res
         })
     }
-
-    useEffect(() => {
-        doGetDictList()
-    }, [])
 
     return (
         <>
