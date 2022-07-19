@@ -55,29 +55,29 @@ public class DoAdminPackage {
 
         Session session = JschUtil.getSession(HOST, 22, USER, PRIVATE_KEY_PATH, null);
 
-        Sftp sftp = JschUtil.createSftp(session);
-
         String springPath = System.getProperty("user.dir"); // 例如：E:\Cmc0\Admin-Project\spring
 
         CountDownLatch countDownLatch = ThreadUtil.newCountDownLatch(threadCount);
 
         if (number == 1 || number == 2) {
-            ThreadUtil.execute(() -> doSpringPackage(springPath, countDownLatch, sftp, session));
+            ThreadUtil.execute(() -> doSpringPackage(springPath, session, countDownLatch));
         }
 
         if (number == 1 || number == 3) {
-            ThreadUtil.execute(() -> doVitePackage(springPath, countDownLatch, sftp));
+            ThreadUtil.execute(() -> doVitePackage(springPath, session, countDownLatch));
         }
 
         countDownLatch.await();
 
-        sftp.close();
+        JschUtil.close(session);
     }
 
     /**
      * 后端打包
      */
-    private static void doSpringPackage(String springPath, CountDownLatch countDownLatch, Sftp sftp, Session session) {
+    private static void doSpringPackage(String springPath, Session session, CountDownLatch countDownLatch) {
+
+        Sftp sftp = JschUtil.createSftp(session);
 
         try {
 
@@ -124,13 +124,16 @@ public class DoAdminPackage {
             e.printStackTrace();
         } finally {
             countDownLatch.countDown();
+            JschUtil.close(sftp.getClient());
         }
     }
 
     /**
      * 前端打包
      */
-    public static void doVitePackage(String springPath, CountDownLatch countDownLatch, Sftp sftp) {
+    public static void doVitePackage(String springPath, Session session, CountDownLatch countDownLatch) {
+
+        Sftp sftp = JschUtil.createSftp(session);
 
         try {
 
@@ -172,6 +175,7 @@ public class DoAdminPackage {
             e.printStackTrace();
         } finally {
             countDownLatch.countDown();
+            JschUtil.close(sftp.getClient());
         }
     }
 
