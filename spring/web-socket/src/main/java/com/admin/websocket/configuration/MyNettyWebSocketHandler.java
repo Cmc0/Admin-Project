@@ -8,12 +8,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.model.enums.SysRequestCategoryEnum;
 import com.admin.common.model.enums.WebSocketMessageEnum;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.websocket.model.constant.CommonConstant;
 import com.admin.websocket.model.entity.SysWebSocketDO;
-import com.admin.websocket.model.enums.SysWebSocketTypeEnum;
 import com.admin.websocket.service.SysWebSocketService;
 import com.admin.websocket.util.MyWebSocketUtil;
 import io.netty.channel.Channel;
@@ -79,10 +77,6 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<TextWeb
             // 删除 redis中该 key，目的：只能用一次
             jsonRedisTemplate.delete(redisKey);
 
-            // 由于 存在 redis中的是 数字，在给对象赋值的时候，是从 下标为 0开始进行匹配的，所以这里要 减 1
-            sysWebSocketDO.setType(SysWebSocketTypeEnum.getByCode((byte)(sysWebSocketDO.getType().getCode() - 1)));
-            sysWebSocketDO
-                .setCategory(SysRequestCategoryEnum.getByCode((byte)(sysWebSocketDO.getCategory().getCode() - 1)));
             sysWebSocketService.save(sysWebSocketDO); // 保存到数据库
 
             // 上线操作

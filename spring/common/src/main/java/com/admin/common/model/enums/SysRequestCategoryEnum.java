@@ -15,7 +15,6 @@ public enum SysRequestCategoryEnum {
     APP((byte)2, "APP（移动端）"), //
     PC((byte)3, "PC（桌面程序）"), //
     WX_APP((byte)4, "微信小程序"), //
-    MATCH((byte)5, "用于匹配，没有实际意义，但是必须存在"), //
     ;
 
     @EnumValue
