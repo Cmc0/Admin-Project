@@ -4,11 +4,13 @@ import {getAppNav} from "@/App";
 import SessionStorageKey from "@/model/constant/SessionStorageKey";
 import {logout} from "./UserUtil";
 import {sysWebSocketRegister} from "@/api/SysWebSocketController";
-import {TimeoutTwoSeconds} from "./HttpUtil";
 
 let webSocketUrl: string | undefined = ''
 let code: string | undefined = ''
 let webSocket: WebSocket | null = null
+
+// 备注：开发环境的超时时间设置长一点
+const retryTime = import.meta.env.DEV ? 5000 : 2000
 
 function getWebSocketRegisterData() {
 
@@ -18,7 +20,7 @@ function getWebSocketRegisterData() {
     return sysWebSocketRegister({
         value: Number(GetWebSocketType())
     }, {
-        timeout: TimeoutTwoSeconds,
+        timeout: retryTime,
         headers: {
             hiddenErrorMsg: true,
         },
@@ -33,9 +35,9 @@ function getWebSocketRegisterData() {
             }
             await new Promise((resolve) => {
                 setTimeout(async () => {
-                    await getWebSocketRegisterData() // 等 2秒，再次获取 webSocket服务器
+                    await getWebSocketRegisterData() // 等一定时间，再次获取 webSocket服务器
                     resolve(null)
-                }, 2000)
+                }, retryTime)
             })
         })
 }
@@ -126,7 +128,7 @@ export function connectWebSocket(
                 setTimeout(() => {
                     webSocket = null // 重置 webSocket对象，为了可以重新获取 webSocket连接地址
                     connectWebSocket(doSetSocketMessage, doSetSocketStatus)
-                }, 2000) // 等待 2秒，再去重连webSocket
+                }, retryTime) // 等一定时间，再去重连webSocket
             }
         } else {
             ToastError('您的浏览器不支持 webSocket协议，请更换浏览器再试', 5)
