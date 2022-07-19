@@ -4,27 +4,19 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import lombok.SneakyThrows;
-import org.lionsoul.ip2region.DbConfig;
-import org.lionsoul.ip2region.DbSearcher;
+import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class IpUtil {
 
-    private static DbSearcher searcher;
+    private static Searcher searcher;
 
     static {
         try {
-            // 配置
-            DbConfig dbConfig = new DbConfig();
-            // 获取 resource下面的文件，备注：需要更新时，直接访问下面的地址，下载文件之后直接覆盖即可
-            // https://gitee.com/lionsoul/ip2region/blob/master/data/ip2region.db
-            ClassPathResource cpr = new ClassPathResource("/ip2region/ip2region.db");
-            // 数据文件
-            byte[] dbBinStr = IoUtil.readBytes(cpr.getInputStream());
-
-            searcher = new DbSearcher(dbConfig, dbBinStr); // 这里只支持 MEMORY_ALGORITYM 进行静态赋值，因为只有它才是线程安全的，另外两个都不是线程安全的
+            ClassPathResource cpr = new ClassPathResource("ip2region/ip2region.xdb");
+            searcher = Searcher.newWithBuffer(IoUtil.readBytes(cpr.getInputStream()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,6 +44,6 @@ public class IpUtil {
         if (StrUtil.isBlank(ip)) {
             return "";
         }
-        return searcher.memorySearch(ip).getRegion(); // 作者说这个算法是线程安全的，并且速度是最快的
+        return searcher.search(ip);
     }
 }

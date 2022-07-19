@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.filter.JwtAuthorizationFilter;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -13,7 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import java.util.Arrays;
 import java.util.List;
 
-@Configuration
+@AutoConfiguration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // 不需要登录就可以 下载文件的地址
