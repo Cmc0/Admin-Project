@@ -118,7 +118,7 @@ public class DoAdminPackage {
 
             System.out.println("启动后端 ↑ 耗时：" + timeStr);
 
-            System.out.println("后端执行完毕！");
+            System.out.println("后端执行完毕！====================");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,7 +169,7 @@ public class DoAdminPackage {
 
             System.out.println("前端打包上传 ↑ 耗时：" + timeStr);
 
-            System.out.println("前端执行完毕！");
+            System.out.println("前端执行完毕！====================");
 
         } catch (Exception e) {
             e.printStackTrace();
