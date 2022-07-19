@@ -38,4 +38,13 @@ public class SysUserPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "最近活跃结束时间")
     private Date endLastActiveTime;
 
+    @ApiModelProperty(value = "部门主键 id")
+    private Long deptId;
+
+    @ApiModelProperty(value = "岗位主键 id")
+    private Long jobId;
+
+    @ApiModelProperty(value = "角色主键 id")
+    private Long roleId;
+
 }

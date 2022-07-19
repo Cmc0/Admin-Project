@@ -17,6 +17,9 @@
         FROM
         sys_user a
         LEFT JOIN sys_request b ON b.create_id = a.id
+        LEFT JOIN sys_dept_ref_user c ON c.user_id = a.id
+        LEFT JOIN sys_job_ref_user d ON d.user_id = a.id
+        LEFT JOIN sys_role_ref_user e ON e.user_id = a.id
         WHERE
         a.del_flag = FALSE
         <if test="dto.nickname != null and dto.nickname != ''">
@@ -42,6 +45,15 @@
         </if>
         <if test="dto.endLastActiveTime != null">
             AND IFNULL( MAX( b.create_time ), a.create_time) <![CDATA[<=]]> #{dto.endLastActiveTime}
+        </if>
+        <if test="dto.deptId != null">
+            AND c.dept_id = #{dto.deptId}
+        </if>
+        <if test="dto.jobId != null">
+            AND d.job_id = #{dto.jobId}
+        </if>
+        <if test="dto.roleId != null">
+            AND e.role_id = #{dto.roleId}
         </if>
         GROUP BY
         a.id
