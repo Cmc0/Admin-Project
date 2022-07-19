@@ -116,7 +116,7 @@ export default function () {
                     )
                 }}
                 revalidateOnFocus={false}
-                columns={TableColumnList(currentForm, setFormVisible, actionRef)}
+                columns={TableColumnList(currentForm, setFormVisible, actionRef, deptDictTreeListRef, jobDictTreeListRef, roleDictListRef)}
                 options={{
                     fullScreen: true,
                 }}

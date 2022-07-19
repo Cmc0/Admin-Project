@@ -8,6 +8,7 @@ import {SysMenuInsertOrUpdateDTO} from "@/api/SysMenuController";
 import MyIcon, {IconList} from "@/componse/MyIcon/MyIcon";
 import {Space} from "antd";
 import DictLongListVO from "@/model/vo/DictLongListVO";
+import {OptionProps} from "antd/es/select";
 
 export const InitForm: SysMenuInsertOrUpdateDTO = {
     enableFlag: true,
@@ -109,9 +110,9 @@ const SchemaFormColumnList = (menuDictListRef: React.MutableRefObject<IMyTree[]>
                                 showSearch: true,
                                 options: IconList,
                                 optionLabelProp: 'children',
-                                optionItemRender: (item: DictLongListVO) => {
+                                optionItemRender: (item: OptionProps) => {
                                     return <Space>
-                                        <MyIcon icon={item.value ? item.value as string : undefined}/> {item.value}
+                                        <MyIcon icon={item.value ? item.value : undefined}/> {item.value}
                                     </Space>
                                 },
                             }

@@ -1,5 +1,5 @@
 import {ActionType, ModalForm, ProColumns, ProFormText} from "@ant-design/pro-components";
-import {YesNoDict} from "../../../../util/DictUtil";
+import {IMyTree, YesNoDict} from "../../../../util/DictUtil";
 import React from "react";
 import {Dropdown, Menu} from "antd";
 import {EllipsisOutlined, EyeOutlined} from "@ant-design/icons/lib";
@@ -19,8 +19,9 @@ import {PasswordRSAEncrypt, RSAEncryptPro} from "../../../../util/RsaUtil";
 import {useAppSelector} from "@/store";
 import {ValidatorUtil} from "../../../../util/ValidatorUtil";
 import {GetPublicDownFileUrl} from "../../../../util/FileUtil";
+import DictLongListVO from "@/model/vo/DictLongListVO";
 
-const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>): ProColumns<SysUserPageVO>[] => [
+const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpdateDTO | null>, setFormVisible: React.Dispatch<React.SetStateAction<boolean>>, actionRef: React.RefObject<ActionType>, deptDictListRef: React.MutableRefObject<IMyTree[]>, jobDictListRef: React.MutableRefObject<IMyTree[]>, roleDictListRef: React.MutableRefObject<DictLongListVO[]>): ProColumns<SysUserPageVO>[] => [
     {
         title: '序号',
         dataIndex: 'index',
@@ -85,6 +86,41 @@ const TableColumnList = (currentForm: React.MutableRefObject<SysUserInsertOrUpda
                     endCreateTime: value[1],
                 } as SysUserPageDTO
             }
+        }
+    },
+    {
+        title: '部门', dataIndex: 'deptId', hideInTable: true,
+        valueType: 'treeSelect',
+        fieldProps: {
+            placeholder: '请选择',
+            allowClear: true,
+            treeNodeFilterProp: 'title',
+        },
+        request: async () => {
+            return deptDictListRef.current
+        }
+    },
+    {
+        title: '岗位', dataIndex: 'jobId', hideInTable: true,
+        valueType: 'treeSelect',
+        fieldProps: {
+            placeholder: '请选择',
+            allowClear: true,
+            treeNodeFilterProp: 'title',
+        },
+        request: async () => {
+            return jobDictListRef.current
+        }
+    },
+    {
+        title: '角色',
+        dataIndex: 'roleId',
+        valueType: 'select',
+        fieldProps: {
+            showSearch: true,
+        },
+        request: async () => {
+            return roleDictListRef.current
         }
     },
     {
