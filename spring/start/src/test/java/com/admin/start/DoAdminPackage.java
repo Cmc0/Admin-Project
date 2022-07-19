@@ -79,46 +79,52 @@ public class DoAdminPackage {
      */
     private static void doSpringPackage(String springPath, CountDownLatch countDownLatch, Sftp sftp, Session session) {
 
-        System.out.println("后端打包 ↓");
+        try {
 
-        long timeNumber = System.currentTimeMillis();
+            System.out.println("后端打包 ↓");
 
-        RuntimeUtil.execForStr("cmd /c cd " + springPath + "&& mvn clean package");
+            long timeNumber = System.currentTimeMillis();
 
-        timeNumber = System.currentTimeMillis() - timeNumber;
-        String timeStr = DateUtil.formatBetween(timeNumber);
+            RuntimeUtil.execForStr("cmd /c cd " + springPath + "&& mvn clean package");
 
-        System.out.println("后端打包 ↑ 耗时：" + timeStr);
+            timeNumber = System.currentTimeMillis() - timeNumber;
+            String timeStr = DateUtil.formatBetween(timeNumber);
 
-        String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
+            System.out.println("后端打包 ↑ 耗时：" + timeStr);
 
-        File file = FileUtil.newFile(jarPath);
+            String jarPath = springPath + "/start/target/start-0.0.1-SNAPSHOT.jar";
 
-        System.out.println("后端打包上传 ↓ 大小：" + DataSizeUtil.format(FileUtil.size(file)));
+            File file = FileUtil.newFile(jarPath);
 
-        timeNumber = System.currentTimeMillis();
+            System.out.println("后端打包上传 ↓ 大小：" + DataSizeUtil.format(FileUtil.size(file)));
 
-        sftp.put(jarPath, SPRING_REMOTE_PATH);
+            timeNumber = System.currentTimeMillis();
 
-        timeNumber = System.currentTimeMillis() - timeNumber;
-        timeStr = DateUtil.formatBetween(timeNumber);
+            sftp.put(jarPath, SPRING_REMOTE_PATH);
 
-        System.out.println("后端打包上传 ↑ 耗时：" + timeStr);
+            timeNumber = System.currentTimeMillis() - timeNumber;
+            timeStr = DateUtil.formatBetween(timeNumber);
 
-        System.out.println("启动后端 ↓");
+            System.out.println("后端打包上传 ↑ 耗时：" + timeStr);
 
-        timeNumber = System.currentTimeMillis();
+            System.out.println("启动后端 ↓");
 
-        JschUtil.exec(session, SPRING_REMOTE_EXEC_CMD, CharsetUtil.CHARSET_UTF_8);
+            timeNumber = System.currentTimeMillis();
 
-        timeNumber = System.currentTimeMillis() - timeNumber;
-        timeStr = DateUtil.formatBetween(timeNumber);
+            JschUtil.exec(session, SPRING_REMOTE_EXEC_CMD, CharsetUtil.CHARSET_UTF_8);
 
-        System.out.println("启动后端 ↑ 耗时：" + timeStr);
+            timeNumber = System.currentTimeMillis() - timeNumber;
+            timeStr = DateUtil.formatBetween(timeNumber);
 
-        countDownLatch.countDown();
+            System.out.println("启动后端 ↑ 耗时：" + timeStr);
 
-        System.out.println("后端执行完毕！");
+            System.out.println("后端执行完毕！");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            countDownLatch.countDown();
+        }
     }
 
     /**
@@ -126,41 +132,47 @@ public class DoAdminPackage {
      */
     public static void doVitePackage(String springPath, CountDownLatch countDownLatch, Sftp sftp) {
 
-        System.out.println("前端打包 ↓");
+        try {
 
-        long timeNumber = System.currentTimeMillis();
+            System.out.println("前端打包 ↓");
 
-        String vitePath = StrUtil.subBefore(springPath, "\\", true);
+            long timeNumber = System.currentTimeMillis();
 
-        vitePath = vitePath + "/ant-react";
+            String vitePath = StrUtil.subBefore(springPath, "\\", true);
 
-        RuntimeUtil.execForStr("cmd /c cd " + vitePath + "&& npm run build");
+            vitePath = vitePath + "/ant-react";
 
-        timeNumber = System.currentTimeMillis() - timeNumber;
-        String timeStr = DateUtil.formatBetween(timeNumber);
+            RuntimeUtil.execForStr("cmd /c cd " + vitePath + "&& npm run build");
 
-        System.out.println("前端打包 ↑ 耗时：" + timeStr);
+            timeNumber = System.currentTimeMillis() - timeNumber;
+            String timeStr = DateUtil.formatBetween(timeNumber);
 
-        String viteBuildPath = vitePath + "/dist";
+            System.out.println("前端打包 ↑ 耗时：" + timeStr);
 
-        File file = FileUtil.newFile(viteBuildPath);
+            String viteBuildPath = vitePath + "/dist";
 
-        System.out.println("前端打包上传 ↓ 大小：" + DataSizeUtil.format(FileUtil.size(file)));
+            File file = FileUtil.newFile(viteBuildPath);
 
-        timeNumber = System.currentTimeMillis();
+            System.out.println("前端打包上传 ↓ 大小：" + DataSizeUtil.format(FileUtil.size(file)));
 
-        sftp.delDir(VITE_REMOTE_PATH);
+            timeNumber = System.currentTimeMillis();
 
-        sftp.syncUpload(file, VITE_REMOTE_PATH);
+            sftp.delDir(VITE_REMOTE_PATH);
 
-        timeNumber = System.currentTimeMillis() - timeNumber;
-        timeStr = DateUtil.formatBetween(timeNumber);
+            sftp.syncUpload(file, VITE_REMOTE_PATH);
 
-        System.out.println("前端打包上传 ↑ 耗时：" + timeStr);
+            timeNumber = System.currentTimeMillis() - timeNumber;
+            timeStr = DateUtil.formatBetween(timeNumber);
 
-        countDownLatch.countDown();
+            System.out.println("前端打包上传 ↑ 耗时：" + timeStr);
 
-        System.out.println("前端执行完毕！");
+            System.out.println("前端执行完毕！");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            countDownLatch.countDown();
+        }
     }
 
 }
