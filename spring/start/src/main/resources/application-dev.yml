@@ -13,8 +13,8 @@ spring:
 
   elasticsearch:
     username: elastic
-    password:
-    uris: http://localhost:9200
+    password: changeme
+    uris: https://localhost:9200
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss # Date 类型的时间格式
