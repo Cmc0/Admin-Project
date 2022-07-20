@@ -2,10 +2,10 @@ package com.admin.xxljob.configuration;
 
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@AutoConfiguration
+@Configuration
 public class XxlJobConfiguration {
 
     @Value("${xxl.job.admin.addresses}")

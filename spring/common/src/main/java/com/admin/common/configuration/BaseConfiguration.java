@@ -4,12 +4,12 @@ import cn.hutool.system.SystemUtil;
 import com.admin.common.properties.AdminProperties;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 
-@AutoConfiguration
+@Configuration
 @ComponentScan(basePackages = "com.admin")
 @MapperScan(basePackages = "com.admin.**.mapper")
 public class BaseConfiguration {
