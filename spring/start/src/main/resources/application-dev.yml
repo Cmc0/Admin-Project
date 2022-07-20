@@ -32,6 +32,8 @@ spring:
     hiddenmethod:
       filter:
         enabled: true # 解决上传文件报错
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER # 解决 swagger-ui 启动报错
 
   redis:
     password:
