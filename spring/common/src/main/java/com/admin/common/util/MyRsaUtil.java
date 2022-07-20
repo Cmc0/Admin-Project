@@ -9,6 +9,7 @@ import cn.hutool.crypto.asymmetric.RSA;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.vo.ApiResultVO;
 import org.springframework.stereotype.Component;
 
