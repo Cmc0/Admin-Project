@@ -48,8 +48,6 @@ public class ImServiceImpl implements ImService {
     @SneakyThrows
     private void insertOrUpdateMsgDocument(ImSendDTO dto, ImToTypeEnum imToTypeEnum, Long currentUserId) {
 
-        String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
-
         ImElasticsearchMsgDocument imElasticsearchMsgDocument = new ImElasticsearchMsgDocument();
         imElasticsearchMsgDocument.setCreateId(currentUserId);
         imElasticsearchMsgDocument.setContent(dto.getContent());
@@ -57,7 +55,8 @@ public class ImServiceImpl implements ImService {
         imElasticsearchMsgDocument.setToId(dto.getToId());
         imElasticsearchMsgDocument.setToType(imToTypeEnum);
 
-        elasticsearchClient.index(i -> i.index(userImMsgIndex).document(imElasticsearchMsgDocument));
+        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_MSG_INDEX).id(currentUserId.toString())
+            .document(imElasticsearchMsgDocument));
     }
 
     /**
@@ -71,10 +70,9 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
         }
 
-        String userImBaseIndex = BaseElasticsearchIndexConstant.IM_BASE_INDEX_ + currentUserId;
-
-        GetResponse<ImElasticsearchBaseDocument> imElasticsearchBaseDocumentGetResponse =
-            elasticsearchClient.get(i -> i.index(userImBaseIndex), ImElasticsearchBaseDocument.class);
+        GetResponse<ImElasticsearchBaseDocument> imElasticsearchBaseDocumentGetResponse = elasticsearchClient
+            .get(i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
+                ImElasticsearchBaseDocument.class);
 
         ImElasticsearchBaseDocument imElasticsearchBaseDocument = imElasticsearchBaseDocumentGetResponse.source();
 
@@ -88,10 +86,13 @@ public class ImServiceImpl implements ImService {
 
         ImElasticsearchBaseDocument finalImElasticsearchBaseDocument = imElasticsearchBaseDocument;
         if (imBaseDocumentNullFlag) {
-            elasticsearchClient.index(i -> i.index(userImBaseIndex).document(finalImElasticsearchBaseDocument));
+            elasticsearchClient.index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
+                    .document(finalImElasticsearchBaseDocument));
         } else {
-            elasticsearchClient.update(i -> i.index(userImBaseIndex).id(finalImElasticsearchBaseDocument.get_id())
-                .doc(finalImElasticsearchBaseDocument), ImElasticsearchBaseDocument.class);
+            elasticsearchClient.update(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(finalImElasticsearchBaseDocument.get_id())
+                    .doc(finalImElasticsearchBaseDocument), ImElasticsearchBaseDocument.class);
         }
 
         return imToTypeEnum;
