@@ -2,13 +2,13 @@ package com.admin.common.configuration;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import lombok.SneakyThrows;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.elasticsearch.client.RestClient;
@@ -50,11 +50,9 @@ public class ElasticsearchConfiguration {
 
         RestClient restClient = RestClient.builder(httpHostArr).setHttpClientConfigCallback(
             httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-                .setSSLContext(sslContext)).build();
+                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).setSSLContext(sslContext)).build();
 
-        ElasticsearchTransport elasticsearchTransport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-
-        return new ElasticsearchClient(elasticsearchTransport);
+        return new ElasticsearchClient(new RestClientTransport(restClient, new JacksonJsonpMapper()));
     }
 
 }

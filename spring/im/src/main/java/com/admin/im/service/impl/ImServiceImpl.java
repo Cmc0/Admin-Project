@@ -2,7 +2,6 @@ package com.admin.im.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
@@ -104,16 +103,13 @@ public class ImServiceImpl implements ImService {
         return imToTypeEnum;
     }
 
-    /**
-     * TODO：判断：删除/保留
-     */
     @SneakyThrows
     private void checkAndCreateIndex(String index) {
 
         BooleanResponse booleanResponse = elasticsearchClient.indices().exists(e -> e.index(index));
 
         if (!booleanResponse.value()) {
-            CreateIndexResponse createIndexResponse = elasticsearchClient.indices().create(c -> c.index(index));
+            elasticsearchClient.indices().create(c -> c.index(index));
         }
     }
 
