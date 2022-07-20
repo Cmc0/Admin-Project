@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space, Typography} from "antd";
 import {ColumnHeightOutlined, EllipsisOutlined, PlusOutlined, VerticalAlignMiddleOutlined} from "@ant-design/icons/lib";
@@ -66,10 +66,6 @@ export default function () {
         })
     }
 
-    useEffect(() => {
-        doGetDictList()
-    }, [])
-
     return (
         <>
             <ProTable<SysUserPageVO, SysUserPageDTO>
@@ -124,6 +120,7 @@ export default function () {
                     return sysUserPage({...params, sort})
                 }}
                 postData={(data) => {
+                    doGetDictList()
                     hasChildrenIdList.current = data.map(it => it.id)
                     return data
                 }}

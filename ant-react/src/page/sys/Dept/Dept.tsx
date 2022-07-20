@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {ActionType, BetaSchemaForm, ModalForm, ProFormDigit, ProTable} from "@ant-design/pro-components";
 import {Button, Dropdown, Form, Menu, Space} from "antd";
 import {GetAreaDictList, GetDeptDictList, GetUserDictList, IMyTree} from "../../../../util/DictUtil";
@@ -50,10 +50,6 @@ export default function () {
             userDictListRef.current = res
         })
     }
-
-    useEffect(() => {
-        doGetDictList()
-    }, [])
 
     return <>
         <ProTable<SysDeptDO, SysDeptPageDTO>
