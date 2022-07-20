@@ -1,6 +1,5 @@
 package com.admin.im.service.impl;
 
-import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
@@ -62,8 +61,7 @@ public class ImServiceImpl implements ImService {
 
         checkAndCreateIndex(userImMsgIndex);
 
-        elasticsearchClient
-            .index(i -> i.index(userImMsgIndex).id(IdUtil.simpleUUID()).document(imElasticsearchMsgDocument));
+        elasticsearchClient.index(i -> i.index(userImMsgIndex).document(imElasticsearchMsgDocument));
     }
 
     /**

@@ -28,10 +28,10 @@ public class ImElasticsearchMsgDocument {
     private Set<Long> rIdSet = new HashSet<>();
 
     @ApiModelProperty(value = "冗余字段")
-    private Long toId;
+    private ImToTypeEnum toType;
 
     @ApiModelProperty(value = "冗余字段")
-    private ImToTypeEnum toType;
+    private Long toId;
 
     @ApiModelProperty(value = "冗余字段")
     private String sId;
