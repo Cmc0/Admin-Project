@@ -9,6 +9,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.MyDateUtil;
@@ -104,7 +105,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 
         } catch (Exception e) {
             // 移除 redis中的 cookie，然后再执行一次本方法
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
             return doAddJob(formJson, null);
         }
 
@@ -151,7 +152,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 
         } catch (Exception e) {
             // 移除 redis中的 cookie，然后再执行一次本方法
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
             setJobGroup(dto, null);
         }
 
@@ -164,7 +165,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 
         ValueOperations<String, JSONObject> ops = jsonRedisTemplate.opsForValue();
 
-        JSONObject jsonObject = ops.get(BaseConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
+        JSONObject jsonObject = ops.get(BaseRedisConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
 
         HttpCookie httpCookie;
 
@@ -184,7 +185,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 
             // 存储到 redis中
             httpCookie = cookieList.get(0);
-            ops.set(BaseConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE,
+            ops.set(BaseRedisConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE,
                 JSONUtil.createObj().set("name", httpCookie.getName()).set("value", httpCookie.getValue()));
         } else {
             httpCookie = new HttpCookie(jsonObject.getStr("name"), jsonObject.getStr("value"));
@@ -217,7 +218,7 @@ public class XxlJobServiceImpl implements XxlJobService {
             }
         } catch (Exception e) {
             // 移除 redis中的 cookie，然后再执行一次本方法
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_XXL_JOB_COOKIE_CACHE);
             deleteById(notNullId);
         }
 

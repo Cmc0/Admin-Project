@@ -88,7 +88,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
         }
 
         // 判断：密码错误次数过多，已被冻结
-        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_LOGIN_BLACKLIST + sysUserDO.getId());
+        Boolean hasKey = jsonRedisTemplate.hasKey(BaseRedisConstant.PRE_REDIS_LOGIN_BLACKLIST + sysUserDO.getId());
         if (BooleanUtil.isTrue(hasKey)) {
             ApiResultVO.error(BizCodeEnum.TOO_MANY_LOGIN_FAILURES);
         }
@@ -126,7 +126,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
 
         ValueOperations<String, String> ops = jsonRedisTemplate.opsForValue();
 
-        String redisKey = BaseConstant.PRE_REDIS_LOGIN_ERROR_COUNT + userId;
+        String redisKey = BaseRedisConstant.PRE_REDIS_LOGIN_ERROR_COUNT + userId;
 
         Long redisTotal = ops.increment(redisKey); // 次数 加 1
 
@@ -137,7 +137,7 @@ public class UserLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> 
             }
             if (redisTotal > 10) {
                 // 超过十次密码错误，则封禁账号，下次再错误，则才会提示
-                ops.set(BaseConstant.PRE_REDIS_LOGIN_BLACKLIST + userId, "登录失败次数过多，被锁定的账号");
+                ops.set(BaseRedisConstant.PRE_REDIS_LOGIN_BLACKLIST + userId, "登录失败次数过多，被锁定的账号");
                 // 清空错误次数
                 jsonRedisTemplate.delete(redisKey);
             }

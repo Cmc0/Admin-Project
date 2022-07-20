@@ -71,7 +71,7 @@ public class MyRsaUtil {
             ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
         }
 
-        String redisKey = BaseConstant.PRE_REDIS_RSA_ENCRYPT + str;
+        String redisKey = BaseRedisConstant.PRE_REDIS_RSA_ENCRYPT + str;
 
         // 校验 是否存在
         Boolean hasKey = jsonRedisTemplate.hasKey(redisKey);

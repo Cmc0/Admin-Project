@@ -15,6 +15,7 @@ import com.admin.bulletin.service.SysBulletinService;
 import com.admin.bulletin.task.BulletinPublishTask;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntity;
@@ -60,7 +61,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
         if (dto.getId() != null) {
             // 如果是修改，则加锁
             RLock lock =
-                redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_BULLETIN_ID + dto.getId());
+                redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_LOCK_BULLETIN_ID + dto.getId());
             lock.lock();
             try {
                 doInsertOrUpdate(dto);
@@ -107,7 +108,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
     public String publish(NotNullId notNullId) {
 
         RLock lock =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_BULLETIN_ID + notNullId.getId());
+            redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_LOCK_BULLETIN_ID + notNullId.getId());
         lock.lock();
 
         try {
@@ -151,7 +152,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
     @Override
     public String revoke(NotNullId notNullId) {
         RLock lock =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_BULLETIN_ID + notNullId.getId());
+            redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_LOCK_BULLETIN_ID + notNullId.getId());
         lock.lock();
         try {
 
@@ -220,7 +221,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
 
         // 设置连锁
         RLock multiLock =
-            MultiLockUtil.getMultiLockForLong(BaseConstant.PRE_LOCK_BULLETIN_ID, notEmptyIdSet.getIdSet());
+            MultiLockUtil.getMultiLockForLong(BaseRedisConstant.PRE_LOCK_BULLETIN_ID, notEmptyIdSet.getIdSet());
         multiLock.lock();
         try {
 

@@ -1,6 +1,7 @@
 package com.admin.common.util;
 
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class MultiLockUtil {
 
         int i = 0;
         for (String item : nameSet) {
-            lockArr[i] = redissonClient.getLock(BaseConstant.PRE_REDISSON + preName + item); // 设置锁名
+            lockArr[i] = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + preName + item); // 设置锁名
             i++;
         }
 
@@ -63,7 +64,7 @@ public class MultiLockUtil {
 
         int i = 0;
         for (Long item : nameSet) {
-            lockArr[i] = redissonClient.getLock(BaseConstant.PRE_REDISSON + preName + item); // 设置锁名
+            lockArr[i] = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + preName + item); // 设置锁名
             i++;
         }
 

@@ -157,8 +157,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
         }
 
         RLock lock1 =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail());
-        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+            redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail());
+        RLock lock2 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
 
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
@@ -292,9 +292,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         Set<String> userIdStrSet = notEmptyIdSet.getIdSet().stream().map(Object::toString).collect(Collectors.toSet());
 
-        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        RLock lock1 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
         RLock multiLock =
-            MultiLockUtil.getMultiLock(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", userIdStrSet, lock1);
+            MultiLockUtil.getMultiLock(BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", userIdStrSet, lock1);
         multiLock.lock();
 
         try {
@@ -372,7 +372,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
         }
 
         RLock multiLock = MultiLockUtil
-            .getMultiLockForLong(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", notEmptyIdSet.getIdSet());
+            .getMultiLockForLong(BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":", notEmptyIdSet.getIdSet());
         multiLock.lock();
 
         try {

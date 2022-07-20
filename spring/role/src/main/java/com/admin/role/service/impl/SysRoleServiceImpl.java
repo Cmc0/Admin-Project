@@ -50,9 +50,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     @Transactional
     public String insertOrUpdate(SysRoleInsertOrUpdateDTO dto) {
 
-        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
-        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
-        RLock lock3 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        RLock lock1 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        RLock lock3 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
         multiLock.lock();
 
@@ -175,9 +175,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     @Transactional
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
-        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
-        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
-        RLock lock3 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        RLock lock1 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+        RLock lock3 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2, lock3);
         multiLock.lock();
 

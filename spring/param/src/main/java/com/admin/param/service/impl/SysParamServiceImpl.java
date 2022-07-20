@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysParamMapper;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
 import com.admin.common.model.entity.BaseEntity;
@@ -37,7 +38,7 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
     @Transactional
     public String insertOrUpdate(SysParamInsertOrUpdateDTO dto) {
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
+        RLock lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_PARAM_CACHE);
         lock.lock();
 
         try {
@@ -93,7 +94,7 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamMapper, SysParamDO>
             ApiResultVO.error("操作失败：id【" + BaseConstant.IP_REQUESTS_PER_SECOND_ID + "】不允许删除");
         }
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
+        RLock lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_PARAM_CACHE);
         lock.lock();
 
         try {

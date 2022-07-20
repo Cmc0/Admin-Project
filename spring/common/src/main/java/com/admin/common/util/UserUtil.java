@@ -9,6 +9,7 @@ import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.*;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.entity.*;
 import com.admin.common.model.vo.ApiResultVO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
@@ -27,8 +28,9 @@ import java.util.stream.Collectors;
 public class UserUtil {
 
     private static final List<String> REDIS_CACHE_KEY_LIST = CollUtil
-        .newArrayList(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE, BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE,
-            BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE, BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        .newArrayList(BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE,
+            BaseRedisConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE,
+            BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
 
     private static SysMenuMapper sysMenuMapper;
 
@@ -224,12 +226,12 @@ public class UserUtil {
 
         Boolean hasKey = true;
         if (!allCacheExistFlag) {
-            hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+            hasKey = jsonRedisTemplate.hasKey(BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
         }
 
         if (hasKey != null && hasKey) {
             BoundHashOperations<String, String, Set<String>> ops =
-                jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+                jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
             roleIdSet = ops.get(userId); // 获取：用户绑定的 roleIdSet
         } else {
             roleIdSet = updateRoleRefUserForRedis(true).get(userId); // 更新缓存
@@ -240,7 +242,7 @@ public class UserUtil {
         }
 
         // 获取：默认角色的 id
-        Object object = jsonRedisTemplate.opsForValue().get(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+        Object object = jsonRedisTemplate.opsForValue().get(BaseRedisConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
         String defaultRoleId = Convert.toStr(object);
         if (defaultRoleId == null) {
             defaultRoleId = updateDefaultRoleIdForRedis(true); // 更新缓存
@@ -259,7 +261,8 @@ public class UserUtil {
 
         RLock lock = null;
         if (lockFlag) {
-            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+            lock = redissonClient
+                .getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
             lock.lock();
         }
 
@@ -273,9 +276,9 @@ public class UserUtil {
                     Collectors.mapping(it -> it.getRoleId().toString(), Collectors.toSet())));
 
             // 删除缓存
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE);
             // 设置缓存
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_USER_CACHE).putAll(userRefRoleIdSetMap);
+            jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_ROLE_REF_USER_CACHE).putAll(userRefRoleIdSetMap);
 
             return userRefRoleIdSetMap;
         } finally {
@@ -294,7 +297,8 @@ public class UserUtil {
 
         RLock lock = null;
         if (lockFlag) {
-            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
+            lock = redissonClient
+                .getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE);
             lock.lock();
         }
 
@@ -307,7 +311,7 @@ public class UserUtil {
             }
 
             // 设置缓存
-            jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, defaultRoleId);
+            jsonRedisTemplate.opsForValue().set(BaseRedisConstant.PRE_REDIS_DEFAULT_ROLE_ID_CACHE, defaultRoleId);
 
             return defaultRoleId;
         } finally {
@@ -326,12 +330,12 @@ public class UserUtil {
 
         Boolean hasKey = true;
         if (!allCacheExistFlag) {
-            hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            hasKey = jsonRedisTemplate.hasKey(BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
         }
 
         if (hasKey != null && hasKey) {
             BoundHashOperations<String, String, Set<String>> ops =
-                jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+                jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
             List<Set<String>> multiGetList = ops.multiGet(roleIdSet);
             if (multiGetList != null) {
                 menuIdSet = multiGetList.stream().flatMap(Collection::stream).collect(Collectors.toSet());
@@ -356,7 +360,8 @@ public class UserUtil {
 
         RLock lock = null;
         if (lockFlag) {
-            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            lock = redissonClient
+                .getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
             lock.lock();
         }
 
@@ -370,9 +375,9 @@ public class UserUtil {
                     Collectors.mapping(it -> it.getMenuId().toString(), Collectors.toSet())));
 
             // 删除缓存
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
             // 设置缓存
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE).putAll(roleRefMenuIdSetMap);
+            jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE).putAll(roleRefMenuIdSetMap);
 
             return roleRefMenuIdSetMap;
         } finally {
@@ -389,11 +394,11 @@ public class UserUtil {
 
         Boolean hasKey = true;
         if (!allCacheExistFlag) {
-            hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+            hasKey = jsonRedisTemplate.hasKey(BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
         }
 
         if (hasKey != null && hasKey) {
-            return (List)jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
+            return (List)jsonRedisTemplate.boundListOps(BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
                 .range(0, -1);
         } else {
             return updateMenuIdAndAuthsListForRedis(true); // 更新缓存
@@ -407,8 +412,8 @@ public class UserUtil {
 
         RLock lock = null;
         if (lockFlag) {
-            lock =
-                redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+            lock = redissonClient
+                .getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
             lock.lock();
         }
 
@@ -418,9 +423,9 @@ public class UserUtil {
                 .eq(BaseEntityThree::getEnableFlag, true).list();
 
             // 删除缓存
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
             // 设置缓存
-            jsonRedisTemplate.boundListOps(BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
+            jsonRedisTemplate.boundListOps(BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE)
                 .rightPushAll(ArrayUtil.toArray(sysMenuDOList, SysMenuDO.class));
 
             return sysMenuDOList;

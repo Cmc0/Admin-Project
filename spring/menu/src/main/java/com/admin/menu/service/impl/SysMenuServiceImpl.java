@@ -55,8 +55,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         }
 
         RLock lock1 =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
-        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
 
@@ -200,8 +200,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     public String deleteByIdSet(NotEmptyIdSet notEmptyIdSet) {
 
         RLock lock1 =
-            redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
-        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
+            redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_MENU_ID_AND_AUTHS_LIST_CACHE);
+        RLock lock2 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_ROLE_REF_MENU_CACHE);
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
 

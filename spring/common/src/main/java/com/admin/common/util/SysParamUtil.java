@@ -3,7 +3,7 @@ package com.admin.common.util;
 import cn.hutool.core.convert.Convert;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.mapper.SysParamMapper;
-import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.entity.BaseEntityThree;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysParamDO;
@@ -55,11 +55,11 @@ public class SysParamUtil {
             return null;
         }
 
-        Boolean hasKey = jsonRedisTemplate.hasKey(BaseConstant.PRE_REDIS_PARAM_CACHE);
+        Boolean hasKey = jsonRedisTemplate.hasKey(BaseRedisConstant.PRE_REDIS_PARAM_CACHE);
 
         if (hasKey != null && hasKey) {
             BoundHashOperations<String, String, String> ops =
-                jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE);
+                jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_PARAM_CACHE);
             return ops.get(idStr);
         }
 
@@ -74,7 +74,7 @@ public class SysParamUtil {
 
         RLock lock = null;
         if (lockFlag) {
-            lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_PARAM_CACHE);
+            lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_PARAM_CACHE);
             lock.lock();
         }
 
@@ -89,8 +89,8 @@ public class SysParamUtil {
             Map<String, String> map =
                 paramRedisList.stream().collect(Collectors.toMap(it -> it.getId().toString(), SysParamDO::getValue));
 
-            jsonRedisTemplate.delete(BaseConstant.PRE_REDIS_PARAM_CACHE);
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
+            jsonRedisTemplate.delete(BaseRedisConstant.PRE_REDIS_PARAM_CACHE);
+            jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_PARAM_CACHE).putAll(map);
 
             return map;
         } finally {

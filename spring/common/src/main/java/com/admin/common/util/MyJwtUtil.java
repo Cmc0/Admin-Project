@@ -133,7 +133,7 @@ public class MyJwtUtil {
      */
     public static String generateRedisJwtHash(String jwt, Long userId, SysRequestCategoryEnum sysRequestCategoryEnum) {
 
-        StrBuilder strBuilder = StrBuilder.create(BaseConstant.PRE_REDIS_JWT_HASH);
+        StrBuilder strBuilder = StrBuilder.create(BaseRedisConstant.PRE_REDIS_JWT_HASH);
         strBuilder.append(userId).append(":").append(sysRequestCategoryEnum.getCode()).append(":")
             .append(DigestUtil.sha512Hex(jwt));
 
@@ -145,7 +145,7 @@ public class MyJwtUtil {
      */
     public static void removeAllJwtHash() {
 
-        Set<String> jwtHashSet = RedisUtil.scan(BaseConstant.PRE_REDIS_JWT_HASH);
+        Set<String> jwtHashSet = RedisUtil.scan(BaseRedisConstant.PRE_REDIS_JWT_HASH);
 
         if (jwtHashSet.size() != 0) {
             jsonRedisTemplate.delete(jwtHashSet); // 移除：全部 jwtHash
@@ -165,14 +165,14 @@ public class MyJwtUtil {
         String userIdStr = userId.toString();
 
         BoundHashOperations<String, String, String> ops =
-            jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE);
+            jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE);
 
         String jwtSecretSuf = ops.get(userIdStr);
 
         if (jwtSecretSuf == null) {
 
             RLock lock = redissonClient.getLock(
-                BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + userId);
+                BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + userId);
             lock.lock();
 
             try {
@@ -195,7 +195,7 @@ public class MyJwtUtil {
      * 设置：redis中，userId和 jwtSecretSuf对应关系
      */
     public static void setUserIdJwtSecretSufForRedis(Long userId, String jwtSecretSuf) {
-        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE)
+        jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE)
             .put(userId.toString(), jwtSecretSuf);
     }
 
@@ -226,7 +226,7 @@ public class MyJwtUtil {
             return;
         }
 
-        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE).putAll(map);
+        jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE).putAll(map);
     }
 
     /**
@@ -234,7 +234,7 @@ public class MyJwtUtil {
      * 注意：调用时，请根据情况加分布式锁
      */
     public static void deleteUserIdJwtSecretSufForRedis(Set<String> userIdStrSet) {
-        jsonRedisTemplate.boundHashOps(BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE)
+        jsonRedisTemplate.boundHashOps(BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE)
             .delete(ArrayUtil.toArray(userIdStrSet, String.class));
     }
 

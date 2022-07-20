@@ -142,11 +142,11 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
             ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
         }
 
-        String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
+        String redisKey = BaseRedisConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + sysUserDO.getEmail();
 
-        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        RLock lock1 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + redisKey);
         RLock lock2 = redissonClient.getLock(
-            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
+            BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
 
         RLock multiLock = redissonClient.getMultiLock(lock1, lock2);
         multiLock.lock();
@@ -187,15 +187,15 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
         Long currentUserIdNotAdmin = UserUtil.getCurrentUserIdNotAdmin();
 
-        String keyRedisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + dto.getKey();
+        String keyRedisKey = BaseRedisConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + dto.getKey();
 
-        String codeRedisKey = BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
+        String codeRedisKey = BaseRedisConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
 
-        RLock lock1 = redissonClient.getLock(BaseConstant.PRE_REDISSON + keyRedisKey);
-        RLock lock2 = redissonClient.getLock(BaseConstant.PRE_REDISSON + codeRedisKey);
+        RLock lock1 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + keyRedisKey);
+        RLock lock2 = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + codeRedisKey);
 
         RLock lock3 = redissonClient.getLock(
-            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":"
+            BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":"
                 + currentUserIdNotAdmin);
 
         // 连锁
@@ -246,9 +246,9 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
         String currentUserEmail = UserUtil.getCurrentUserEmail();
 
-        String redisKey = BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail;
+        String redisKey = BaseRedisConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail;
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        RLock lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + redisKey);
         lock.lock();
 
         try {
@@ -259,7 +259,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
             // 十分钟过期
             jsonRedisTemplate.opsForValue()
-                .set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + uuid, "当前用户：修改邮箱，邮箱验证码兑换 key",
+                .set(BaseRedisConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE_CODE_TO_KEY + uuid, "当前用户：修改邮箱，邮箱验证码兑换 key",
                     BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
             jsonRedisTemplate.delete(redisKey);
@@ -282,7 +282,7 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
         sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
 
         RLock lock = redissonClient.getLock(
-            BaseConstant.PRE_REDISSON + BaseConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
+            BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE + ":" + sysUserDO.getId());
         lock.lock();
 
         try {
@@ -305,9 +305,9 @@ public class UserSelfServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO
 
         String currentUserEmail = UserUtil.getCurrentUserEmail();
 
-        String redisKey = BaseConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail;
+        String redisKey = BaseRedisConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail;
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        RLock lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + redisKey);
         lock.lock();
 
         try {

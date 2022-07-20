@@ -65,7 +65,7 @@ public class MyEmailUtil {
     public static String userSelfForgotPasswordSend(String email) {
 
         RLock lock = redissonClient
-            .getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + email);
+            .getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + email);
         lock.lock();
 
         try {
@@ -80,7 +80,7 @@ public class MyEmailUtil {
             String content = StrUtil.format(SELF_FORGOT_PASSWORD_SEND_TEMP, code);
 
             // 保存到 redis中，设置10分钟过期
-            jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + email, code,
+            jsonRedisTemplate.opsForValue().set(BaseRedisConstant.PRE_LOCK_SELF_FORGOT_PASSWORD_EMAIL_CODE + email, code,
                 BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
             MyEmailUtil.send(email, SELF_FORGOT_PASSWORD_SEND_SUBJECT, content, false);
@@ -102,7 +102,7 @@ public class MyEmailUtil {
         String content = StrUtil.format(SELF_DELETE_SEND_TEMP, code);
 
         // 保存到 redis中，设置10分钟过期
-        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail, code,
+        jsonRedisTemplate.opsForValue().set(BaseRedisConstant.PRE_LOCK_SELF_DELETE_EMAIL_CODE + currentUserEmail, code,
             BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         MyEmailUtil.send(currentUserEmail, SELF_DELETE_SEND_SUBJECT, content, false);
@@ -122,7 +122,7 @@ public class MyEmailUtil {
         String content = StrUtil.format(SELF_UPDATE_EMAIL_SEND_TEMP, code);
 
         // 保存到 redis中，设置10分钟过期
-        jsonRedisTemplate.opsForValue().set(BaseConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail, code,
+        jsonRedisTemplate.opsForValue().set(BaseRedisConstant.PRE_LOCK_SELF_UPDATE_EMAIL_EMAIL_CODE + currentUserEmail, code,
             BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         MyEmailUtil.send(currentUserEmail, SELF_UPDATE_EMAIL_SEND_SUBJECT, content, false);
@@ -142,7 +142,7 @@ public class MyEmailUtil {
 
         // 保存到 redis中，设置10分钟过期
         jsonRedisTemplate.opsForValue()
-            .set(BaseConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + currentUserEmail, code,
+            .set(BaseRedisConstant.PRE_LOCK_SELF_UPDATE_PASSWORD_EMAIL_CODE + currentUserEmail, code,
                 BaseConstant.MINUTE_10_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         MyEmailUtil.send(currentUserEmail, SELF_UPDATE_PASSWORD_SEND_SUBJECT, content, false);
@@ -155,7 +155,7 @@ public class MyEmailUtil {
      */
     public static String userRegisterSend(String email) {
 
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + BaseConstant.PRE_LOCK_EMAIL_CODE + email);
+        RLock lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + BaseRedisConstant.PRE_LOCK_EMAIL_CODE + email);
         lock.lock();
 
         try {
@@ -171,7 +171,7 @@ public class MyEmailUtil {
 
             // 保存到 redis中，设置10分钟过期
             jsonRedisTemplate.opsForValue()
-                .set(BaseConstant.PRE_LOCK_EMAIL_CODE + email, code, BaseConstant.MINUTE_10_EXPIRE_TIME,
+                .set(BaseRedisConstant.PRE_LOCK_EMAIL_CODE + email, code, BaseConstant.MINUTE_10_EXPIRE_TIME,
                     TimeUnit.MILLISECONDS);
 
             MyEmailUtil.send(email, USER_REGISTER_SEND_SUBJECT, content, false);

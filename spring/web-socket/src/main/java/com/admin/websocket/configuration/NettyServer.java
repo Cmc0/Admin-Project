@@ -4,6 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.websocket.service.SysWebSocketService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -54,7 +55,7 @@ public class NettyServer implements CommandLineRunner {
 
         ipAndPort = BaseConfiguration.adminProperties.getWebSocketAddress() + ":" + port;
 
-        webSocketRegisterCodePreKey = BaseConstant.PRE_LOCK_WEB_SOCKET_REGISTER_CODE + ipAndPort + ":";
+        webSocketRegisterCodePreKey = BaseRedisConstant.PRE_LOCK_WEB_SOCKET_REGISTER_CODE + ipAndPort + ":";
 
         sysWebSocketService.offlineAllForCurrent(); // WebSocket 全部下线
 

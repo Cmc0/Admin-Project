@@ -8,6 +8,7 @@ import cn.hutool.extra.servlet.ServletUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.configuration.JsonRedisTemplate;
 import com.admin.common.model.constant.BaseConstant;
+import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.util.ResponseUtil;
 import com.admin.common.util.SysParamUtil;
 import lombok.SneakyThrows;
@@ -65,7 +66,7 @@ public class IpFilter implements Filter {
         // 判断是否在 黑名单里
         ValueOperations<String, String> ops = jsonRedisTemplate.opsForValue();
 
-        String blackListIpKey = BaseConstant.PRE_REDIS_IP_BLACKLIST + ip;
+        String blackListIpKey = BaseRedisConstant.PRE_REDIS_IP_BLACKLIST + ip;
 
         Long expire = jsonRedisTemplate.getExpire(blackListIpKey, TimeUnit.MILLISECONDS); // 获取 key过期时间，-1 过期 -2 不存在
 
@@ -104,7 +105,7 @@ public class IpFilter implements Filter {
             return null;
         }
 
-        String ipKey = BaseConstant.PRE_REDIS_IP_TOTAL_CHECK + ip;
+        String ipKey = BaseRedisConstant.PRE_REDIS_IP_TOTAL_CHECK + ip;
 
         Long redisTotal = ops.increment(ipKey); // 次数 加 1
 

@@ -50,8 +50,8 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
             ApiResultVO.error(BizCodeEnum.PASSWORD_RESTRICTIONS); // 不合法直接抛出异常
         }
 
-        String redisKey = BaseConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
-        RLock lock = redissonClient.getLock(BaseConstant.PRE_REDISSON + redisKey);
+        String redisKey = BaseRedisConstant.PRE_LOCK_EMAIL_CODE + dto.getEmail();
+        RLock lock = redissonClient.getLock(BaseRedisConstant.PRE_REDISSON + redisKey);
         lock.lock();
 
         try {
