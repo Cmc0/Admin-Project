@@ -104,6 +104,9 @@ public class ImServiceImpl implements ImService {
         return imToTypeEnum;
     }
 
+    /**
+     * TODO：判断：删除/保留
+     */
     @SneakyThrows
     private void checkAndCreateIndex(String index) {
 
