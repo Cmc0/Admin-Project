@@ -2,8 +2,8 @@ package com.admin.common.configuration.security;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
-import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.filter.JwtAuthorizationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,11 +28,14 @@ public class SecurityConfiguration {
         .addAllIfNotContains(CollUtil.newArrayList("/swagger-resources/**", "/v3/api-docs", "/webjars/**", "/doc.html"),
             PROD_IGNORING_LIST);
 
+    @Value("${spring.profiles.active:prod}")
+    private String profile;
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeRequests().antMatchers(
-            ArrayUtil.toArray(BaseConfiguration.prodFlag ? PROD_IGNORING_LIST : IGNORING_LIST, String.class))
+        httpSecurity.authorizeRequests()
+            .antMatchers(ArrayUtil.toArray("prod".equals(profile) ? PROD_IGNORING_LIST : IGNORING_LIST, String.class))
             .permitAll() // 可以匿名访问的请求
             .anyRequest().authenticated(); // 拦截所有请求
 
@@ -46,6 +49,8 @@ public class SecurityConfiguration {
         httpSecurity.csrf().disable(); // 关闭CSRF保护
 
         httpSecurity.logout().disable(); // 禁用 logout
+
+        httpSecurity.formLogin().disable(); // 禁用 login
 
         return httpSecurity.build();
     }
