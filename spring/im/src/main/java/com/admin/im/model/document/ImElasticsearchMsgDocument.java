@@ -12,9 +12,6 @@ import java.util.Set;
 @Data
 public class ImElasticsearchMsgDocument {
 
-    @ApiModelProperty(value = "Elasticsearch id")
-    private String _id;
-
     @ApiModelProperty(value = "创建时间")
     private Date createTime = new Date();
 

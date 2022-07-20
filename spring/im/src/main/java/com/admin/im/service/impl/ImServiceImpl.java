@@ -96,7 +96,7 @@ public class ImServiceImpl implements ImService {
                     .document(finalImElasticsearchBaseDocument));
         } else {
             elasticsearchClient.update(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(finalImElasticsearchBaseDocument.get_id())
+                i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
                     .doc(finalImElasticsearchBaseDocument), ImElasticsearchBaseDocument.class);
         }
 

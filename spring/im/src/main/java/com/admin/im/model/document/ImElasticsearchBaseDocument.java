@@ -9,9 +9,6 @@ import java.util.Set;
 @Data
 public class ImElasticsearchBaseDocument {
 
-    @ApiModelProperty(value = "Elasticsearch id")
-    private String _id;
-
     @ApiModelProperty(value = "联系人 idSet")
     private Set<Long> cIdSet = new HashSet<>();
 
