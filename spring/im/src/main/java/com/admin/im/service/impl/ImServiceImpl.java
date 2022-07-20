@@ -109,7 +109,7 @@ public class ImServiceImpl implements ImService {
         BooleanResponse booleanResponse = elasticsearchClient.indices().exists(e -> e.index(index));
 
         if (!booleanResponse.value()) {
-            elasticsearchClient.indices().create(c -> c.index(index));
+            elasticsearchClient.indices().create(i -> i.index(index));
         }
     }
 
