@@ -33,4 +33,7 @@ public class ImElasticsearchMsgDocument {
     @ApiModelProperty(value = "冗余字段")
     private ImToTypeEnum toType;
 
+    @ApiModelProperty(value = "冗余字段")
+    private String sId;
+
 }

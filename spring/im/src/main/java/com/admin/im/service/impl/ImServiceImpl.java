@@ -1,5 +1,6 @@
 package com.admin.im.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
@@ -55,11 +56,14 @@ public class ImServiceImpl implements ImService {
         imElasticsearchMsgDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：暂时写成：文本
         imElasticsearchMsgDocument.setToId(dto.getToId());
         imElasticsearchMsgDocument.setToType(imToTypeEnum);
+        imElasticsearchMsgDocument.setSId(imToTypeEnum.getSId(dto.getToId()));
 
-        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_MSG_INDEX);
+        String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
 
-        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_MSG_INDEX).id(currentUserId.toString())
-            .document(imElasticsearchMsgDocument));
+        checkAndCreateIndex(userImMsgIndex);
+
+        elasticsearchClient
+            .index(i -> i.index(userImMsgIndex).id(IdUtil.simpleUUID()).document(imElasticsearchMsgDocument));
     }
 
     /**
