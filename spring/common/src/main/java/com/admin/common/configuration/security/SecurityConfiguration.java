@@ -41,7 +41,7 @@ public class SecurityConfiguration {
 
         httpSecurity.addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 不需要session
+        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).disable(); // 不需要session
 
         // 用户没有登录，但是访问需要权限的资源时，而报出的错误
         httpSecurity.exceptionHandling().authenticationEntryPoint(new MyAuthenticationEntryPoint());
