@@ -13,6 +13,12 @@
 
     <dependencies>
 
+        <!-- elasticsearch-需要此依赖，2.0.1版本以上 -->
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+        </dependency>
+
         <!-- elasticsearch -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
