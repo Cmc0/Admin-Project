@@ -45,6 +45,8 @@ public class SecurityConfiguration {
 
         httpSecurity.csrf().disable(); // 关闭CSRF保护
 
+        httpSecurity.logout().disable(); // 禁用 logout
+
         return httpSecurity.build();
     }
 
