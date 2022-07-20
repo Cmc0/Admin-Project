@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 public class ImElasticsearchMsgDocument {
@@ -23,9 +21,6 @@ public class ImElasticsearchMsgDocument {
 
     @ApiModelProperty(value = "内容类型")
     private ImContentTypeEnum contentType;
-
-    @ApiModelProperty(value = "已读这条消息的用户 idSet")
-    private Set<Long> rIdSet = new HashSet<>();
 
     @ApiModelProperty(value = "冗余字段")
     private ImToTypeEnum toType;
