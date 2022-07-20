@@ -40,15 +40,16 @@
         <module>server</module> <!-- 服务器相关功能包 -->
         <module>system</module> <!-- 平台系统相关功能包 -->
         <module>bulletin</module> <!-- 公告相关功能包 -->
+        <module>im</module> <!-- 即时通讯相关功能包 -->
     </modules>
 
     <dependencyManagement>
         <dependencies>
 
             <dependency>
-                <groupId>com.jcraft</groupId>
-                <artifactId>jsch</artifactId>
-                <version>0.1.55</version>
+                <groupId>com.admin</groupId>
+                <artifactId>im</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
@@ -151,6 +152,13 @@
                 <groupId>com.admin</groupId>
                 <artifactId>start</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <!-- ssh，sftp -->
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.55</version>
             </dependency>
 
             <!-- 腾讯云：短信服务，获取最新版本号：https://github.com/tencentcloud/tencentcloud-sdk-java -->

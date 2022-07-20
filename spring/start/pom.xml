@@ -14,10 +14,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <!-- 不会被打包 -->
-            <scope>test</scope>
+            <groupId>com.admin</groupId>
+            <artifactId>im</artifactId>
         </dependency>
 
         <dependency>
@@ -98,6 +96,13 @@
         <dependency>
             <groupId>com.admin</groupId>
             <artifactId>common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <!-- 不会被打包 -->
+            <scope>test</scope>
         </dependency>
 
         <dependency>
