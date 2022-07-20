@@ -1,6 +1,7 @@
 package com.admin.im.model.document;
 
 import com.admin.im.model.enums.ImContentTypeEnum;
+import com.admin.im.model.enums.ImToTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -26,10 +27,13 @@ public class ImElasticsearchMsgDocument {
     @ApiModelProperty(value = "内容类型")
     private ImContentTypeEnum contentType;
 
-    @ApiModelProperty(value = "联系人 idSet")
-    private Set<Long> cIdSet = new HashSet<>();
+    @ApiModelProperty(value = "已读这条消息的用户 idSet")
+    private Set<Long> rIdSet = new HashSet<>();
 
-    @ApiModelProperty(value = "群组 idSet")
-    private Set<Long> gIdSet = new HashSet<>();
+    @ApiModelProperty(value = "冗余字段")
+    private Long toId;
+
+    @ApiModelProperty(value = "冗余字段")
+    private ImToTypeEnum toType;
 
 }

@@ -7,8 +7,10 @@ import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.ImElasticsearchBaseDocument;
+import com.admin.im.model.document.ImElasticsearchMsgDocument;
 import com.admin.im.model.dto.ImPageDTO;
 import com.admin.im.model.dto.ImSendDTO;
+import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
 import com.admin.im.model.vo.ImPageVO;
 import com.admin.im.service.ImService;
@@ -31,9 +33,11 @@ public class ImServiceImpl implements ImService {
     @Override
     public String send(ImSendDTO dto) {
 
-        ImToTypeEnum imToTypeEnum = insertOrUpdateBaseDocument(dto);// 新增/修改：即时通讯功能的 基础index
+        Long currentUserId = UserUtil.getCurrentUserId();
 
-        insertOrUpdateMsgDocument(dto, imToTypeEnum); // 新增/修改：即时通讯功能的 消息index
+        ImToTypeEnum imToTypeEnum = insertOrUpdateBaseDocument(dto, currentUserId);// 新增/修改：即时通讯功能的 基础index
+
+        insertOrUpdateMsgDocument(dto, imToTypeEnum, currentUserId); // 新增/修改：即时通讯功能的 消息index
 
         return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
@@ -41,22 +45,33 @@ public class ImServiceImpl implements ImService {
     /**
      * 新增/修改：即时通讯功能的 消息index
      */
-    private void insertOrUpdateMsgDocument(ImSendDTO dto, ImToTypeEnum imToTypeEnum) {
+    @SneakyThrows
+    private void insertOrUpdateMsgDocument(ImSendDTO dto, ImToTypeEnum imToTypeEnum, Long currentUserId) {
 
+        String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
+
+        ImElasticsearchMsgDocument imElasticsearchMsgDocument = new ImElasticsearchMsgDocument();
+        imElasticsearchMsgDocument.setCreateId(currentUserId);
+        imElasticsearchMsgDocument.setContent(dto.getContent());
+        imElasticsearchMsgDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：暂时写成：文本
+        imElasticsearchMsgDocument.setToId(dto.getToId());
+        imElasticsearchMsgDocument.setToType(imToTypeEnum);
+
+        elasticsearchClient.index(i -> i.index(userImMsgIndex).document(imElasticsearchMsgDocument));
     }
 
     /**
      * 新增/修改：即时通讯功能的 基础index
      */
     @SneakyThrows
-    private ImToTypeEnum insertOrUpdateBaseDocument(ImSendDTO dto) {
+    private ImToTypeEnum insertOrUpdateBaseDocument(ImSendDTO dto, Long currentUserId) {
 
         ImToTypeEnum imToTypeEnum = ImToTypeEnum.getByCode(dto.getToType());
         if (imToTypeEnum == null) {
             ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
         }
 
-        String userImBaseIndex = BaseElasticsearchIndexConstant.IM_BASE_INDEX_ + UserUtil.getCurrentUserId();
+        String userImBaseIndex = BaseElasticsearchIndexConstant.IM_BASE_INDEX_ + currentUserId;
 
         GetResponse<ImElasticsearchBaseDocument> imElasticsearchBaseDocumentGetResponse =
             elasticsearchClient.get(i -> i.index(userImBaseIndex), ImElasticsearchBaseDocument.class);
@@ -80,7 +95,6 @@ public class ImServiceImpl implements ImService {
         }
 
         return imToTypeEnum;
-
     }
 
     /**
