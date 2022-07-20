@@ -1,9 +1,15 @@
 package com.admin.im.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.indices.GetIndexResponse;
+import co.elastic.clients.elasticsearch.core.GetResponse;
+import com.admin.common.exception.BaseBizCodeEnum;
+import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
+import com.admin.common.model.vo.ApiResultVO;
+import com.admin.common.util.UserUtil;
+import com.admin.im.model.document.ImElasticsearchBaseDocument;
 import com.admin.im.model.dto.ImPageDTO;
 import com.admin.im.model.dto.ImSendDTO;
+import com.admin.im.model.enums.ImToTypeEnum;
 import com.admin.im.model.vo.ImPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,9 +31,56 @@ public class ImServiceImpl implements ImService {
     @Override
     public String send(ImSendDTO dto) {
 
-        GetIndexResponse getIndexResponse = elasticsearchClient.indices().get(i -> i.index("IM_BASE_INDEX"));
+        ImToTypeEnum imToTypeEnum = insertOrUpdateBaseDocument(dto);// 新增/修改：即时通讯功能的 基础index
 
-        return null;
+        insertOrUpdateMsgDocument(dto, imToTypeEnum); // 新增/修改：即时通讯功能的 消息index
+
+        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+    }
+
+    /**
+     * 新增/修改：即时通讯功能的 消息index
+     */
+    private void insertOrUpdateMsgDocument(ImSendDTO dto, ImToTypeEnum imToTypeEnum) {
+
+    }
+
+    /**
+     * 新增/修改：即时通讯功能的 基础index
+     */
+    @SneakyThrows
+    private ImToTypeEnum insertOrUpdateBaseDocument(ImSendDTO dto) {
+
+        ImToTypeEnum imToTypeEnum = ImToTypeEnum.getByCode(dto.getToType());
+        if (imToTypeEnum == null) {
+            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
+        }
+
+        String userImBaseIndex = BaseElasticsearchIndexConstant.IM_BASE_INDEX_ + UserUtil.getCurrentUserId();
+
+        GetResponse<ImElasticsearchBaseDocument> imElasticsearchBaseDocumentGetResponse =
+            elasticsearchClient.get(i -> i.index(userImBaseIndex), ImElasticsearchBaseDocument.class);
+
+        ImElasticsearchBaseDocument imElasticsearchBaseDocument = imElasticsearchBaseDocumentGetResponse.source();
+
+        boolean imBaseDocumentNullFlag = imElasticsearchBaseDocument == null;
+
+        if (imBaseDocumentNullFlag) {
+            imElasticsearchBaseDocument = new ImElasticsearchBaseDocument();
+        }
+
+        imElasticsearchBaseDocument.getSIdSet().add(imToTypeEnum.getSId(dto.getToId()));
+
+        ImElasticsearchBaseDocument finalImElasticsearchBaseDocument = imElasticsearchBaseDocument;
+        if (imBaseDocumentNullFlag) {
+            elasticsearchClient.index(i -> i.index(userImBaseIndex).document(finalImElasticsearchBaseDocument));
+        } else {
+            elasticsearchClient.update(i -> i.index(userImBaseIndex).id(finalImElasticsearchBaseDocument.get_id())
+                .doc(finalImElasticsearchBaseDocument), ImElasticsearchBaseDocument.class);
+        }
+
+        return imToTypeEnum;
+
     }
 
     /**

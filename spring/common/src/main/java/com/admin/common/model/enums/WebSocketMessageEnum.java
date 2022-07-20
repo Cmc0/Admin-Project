@@ -36,7 +36,6 @@ public enum WebSocketMessageEnum {
         if (code == null) {
             return null;
         }
-
         for (WebSocketMessageEnum item : WebSocketMessageEnum.values()) {
             if (item.getCode() == code) {
                 return item;

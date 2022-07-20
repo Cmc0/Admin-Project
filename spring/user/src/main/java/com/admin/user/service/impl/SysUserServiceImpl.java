@@ -179,7 +179,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setId(dto.getId());
-            sysUserDO.setNickname(MyEntityUtil.getNotNullStr(dto.getNickname(), UserUtil.getDefaultNickname()));
+            sysUserDO.setNickname(MyEntityUtil.getNotNullStr(dto.getNickname(), UserUtil.getRandomNickname()));
             sysUserDO.setBio(MyEntityUtil.getNotNullStr(dto.getBio()));
             sysUserDO.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
             if (dto.getId() == null) { // 如果是：新增

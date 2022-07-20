@@ -13,6 +13,12 @@
 
     <dependencies>
 
+        <!-- elasticsearch -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
         <!-- 发送邮件 -->
         <dependency>
             <groupId>com.sun.mail</groupId>

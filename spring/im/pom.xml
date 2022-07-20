@@ -14,12 +14,6 @@
 
     <dependencies>
 
-        <!-- elasticsearch -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.admin</groupId>
             <artifactId>common</artifactId>

@@ -62,7 +62,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<SysUserMapper, SysUserD
             SysUserDO sysUserDO = new SysUserDO();
             sysUserDO.setUuid(IdUtil.simpleUUID());
             sysUserDO.setJwtSecretSuf(IdUtil.simpleUUID());
-            sysUserDO.setNickname(UserUtil.getDefaultNickname());
+            sysUserDO.setNickname(UserUtil.getRandomNickname());
             sysUserDO.setBio("");
             sysUserDO.setAvatarUrl("");
             sysUserDO.setPassword(PasswordConvertUtil.convert(dto.getPassword(), true));
