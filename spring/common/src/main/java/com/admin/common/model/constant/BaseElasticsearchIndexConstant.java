@@ -5,8 +5,8 @@ package com.admin.common.model.constant;
  */
 public interface BaseElasticsearchIndexConstant {
 
-    String IM_BASE_INDEX = "IM_BASE_INDEX"; // 即时通讯功能的 基础index
+    String IM_BASE_INDEX = "im_base_index"; // 即时通讯功能的 基础index
 
-    String IM_MSG_INDEX = "IM_MSG_INDEX"; // 即时通讯功能的 消息index
+    String IM_MSG_INDEX = "im_msg_index"; // 即时通讯功能的 消息index
 
 }
