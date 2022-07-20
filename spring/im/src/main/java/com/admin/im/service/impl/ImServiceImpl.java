@@ -2,6 +2,8 @@ package com.admin.im.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
+import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
 import com.admin.common.model.vo.ApiResultVO;
@@ -55,6 +57,8 @@ public class ImServiceImpl implements ImService {
         imElasticsearchMsgDocument.setToId(dto.getToId());
         imElasticsearchMsgDocument.setToType(imToTypeEnum);
 
+        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_MSG_INDEX);
+
         elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_MSG_INDEX).id(currentUserId.toString())
             .document(imElasticsearchMsgDocument));
     }
@@ -69,6 +73,8 @@ public class ImServiceImpl implements ImService {
         if (imToTypeEnum == null) {
             ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
         }
+
+        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_BASE_INDEX);
 
         GetResponse<ImElasticsearchBaseDocument> imElasticsearchBaseDocumentGetResponse = elasticsearchClient
             .get(i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
@@ -96,6 +102,16 @@ public class ImServiceImpl implements ImService {
         }
 
         return imToTypeEnum;
+    }
+
+    @SneakyThrows
+    private void checkAndCreateIndex(String index) {
+
+        BooleanResponse booleanResponse = elasticsearchClient.indices().exists(e -> e.index(index));
+
+        if (!booleanResponse.value()) {
+            CreateIndexResponse createIndexResponse = elasticsearchClient.indices().create(c -> c.index(index));
+        }
     }
 
     /**
