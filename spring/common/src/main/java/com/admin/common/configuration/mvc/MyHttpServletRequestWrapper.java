@@ -1,5 +1,6 @@
 package com.admin.common.configuration.mvc;
 
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.io.IoUtil;
 import lombok.SneakyThrows;
 
@@ -22,7 +23,10 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @SneakyThrows
     public MyHttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
-        body = IoUtil.readBytes(request.getInputStream());
+        try {
+            body = IoUtil.readBytes(request.getInputStream());
+        } catch (IORuntimeException ignored) {
+        }
     }
 
     /**

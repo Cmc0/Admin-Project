@@ -3,7 +3,6 @@ package com.admin.common.configuration.mvc;
 import lombok.SneakyThrows;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,7 +13,7 @@ public class MyDispatcherServlet extends DispatcherServlet {
 
     @SneakyThrows
     @Override
-    protected void doDispatch(HttpServletRequest request, @Nonnull HttpServletResponse response) {
+    protected void doDispatch(HttpServletRequest request, HttpServletResponse response) {
         super.doDispatch(new MyHttpServletRequestWrapper(request), response);
     }
 
