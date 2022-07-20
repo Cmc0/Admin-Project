@@ -11,6 +11,11 @@ server:
 
 spring:
 
+  elasticsearch:
+    username: elastic
+    password:
+    uris: http://localhost:9200
+
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss # Date 类型的时间格式
     time-zone: GMT+8
