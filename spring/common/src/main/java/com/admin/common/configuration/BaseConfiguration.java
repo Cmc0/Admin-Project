@@ -20,7 +20,7 @@ public class BaseConfiguration {
     public static boolean prodFlag = true; // 是否是正式环境
     public static AdminProperties adminProperties; // 本系统相关配置
 
-    @Value("${spring.application.name:admin}")
+    @Value("${spring.application.name:admin-project}")
     private void setApplicationName(String value) {
         applicationName = value;
     }
