@@ -12,32 +12,25 @@ import com.admin.common.util.MyJwtUtil;
 import com.admin.common.util.RequestUtil;
 import com.admin.common.util.ResponseUtil;
 import lombok.SneakyThrows;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 /**
  * 过滤器处理所有HTTP请求，并检查是否存在带有正确令牌的 Authorization标头，并获取用户权限
  */
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
-
+    @SneakyThrows
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
 
         String authorization = request.getHeader(BaseConstant.JWT_HEADER_KEY);
         // 如果请求头中没有 Authorization信息则直接放行了
@@ -50,7 +43,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        super.doFilterInternal(request, response, chain);
+
+        chain.doFilter(request, response);
     }
 
     /**
@@ -119,9 +113,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         // 通过 userId 获取用户具有的权限
-        List<SimpleGrantedAuthority> userRolesByToken = MyJwtUtil.getAuthSetByUserId(userId);
+        List<SimpleGrantedAuthority> userRoleListByJwt = MyJwtUtil.getAuthSetByUserId(userId);
 
-        return new UsernamePasswordAuthenticationToken(userId, null, userRolesByToken);
+        return new UsernamePasswordAuthenticationToken(userId, null, userRoleListByJwt);
 
     }
 

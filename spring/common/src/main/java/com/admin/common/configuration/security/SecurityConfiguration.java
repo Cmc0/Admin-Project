@@ -4,51 +4,48 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.admin.common.configuration.BaseConfiguration;
 import com.admin.common.filter.JwtAuthorizationFilter;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.Arrays;
 import java.util.List;
 
-@AutoConfiguration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(prePostEnabled = true) // 开启 @PreAuthorize 权限注解
+public class SecurityConfiguration {
 
     // 不需要登录就可以 下载文件的地址
     public final static String SYS_FILE_PUBLIC_DOWNLOAD_URL = "/sysFile/publicDownload";
 
-    // 生产环境，不需要 Security 处理的 url
-    private static final List<String> PROD_IGNORING_LIST =
-        Arrays.asList("/userRegister/**", "/userLogin/**", "/userForgotPassword/**", SYS_FILE_PUBLIC_DOWNLOAD_URL);
+    // 生产环境，Security 忽略的 url
+    private static final List<String> PROD_IGNORING_LIST = CollUtil
+        .newArrayList("/userRegister/**", "/userLogin/**", "/userForgotPassword/**", SYS_FILE_PUBLIC_DOWNLOAD_URL);
 
-    // 其他环境，不需要 Security 处理的 url
+    // 其他环境，Security 忽略的 url
     private static final List<String> IGNORING_LIST = CollUtil
         .addAllIfNotContains(CollUtil.newArrayList("/swagger-resources/**", "/v3/api-docs", "/webjars/**", "/doc.html"),
             PROD_IGNORING_LIST);
 
-    @Override
-    public void configure(WebSecurity web) {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        web.ignoring()
-            .antMatchers(ArrayUtil.toArray(BaseConfiguration.prodFlag ? PROD_IGNORING_LIST : IGNORING_LIST, String.class));
+        httpSecurity.authorizeRequests().antMatchers(
+            ArrayUtil.toArray(BaseConfiguration.prodFlag ? PROD_IGNORING_LIST : IGNORING_LIST, String.class))
+            .permitAll() // 可以匿名访问的请求
+            .anyRequest().authenticated(); // 拦截所有请求
 
-    }
+        httpSecurity.addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-
-        http.authorizeRequests().anyRequest().authenticated(); // 拦截所有请求
-
-        http.addFilter(new JwtAuthorizationFilter(authenticationManager()));
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 不需要session
+        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 不需要session
 
         // 用户没有登录，但是访问需要权限的资源时，而报出的错误
-        http.exceptionHandling().authenticationEntryPoint(new MyAuthenticationEntryPoint());
+        httpSecurity.exceptionHandling().authenticationEntryPoint(new MyAuthenticationEntryPoint());
 
-        http.csrf().disable(); // 关闭CSRF保护
+        httpSecurity.csrf().disable(); // 关闭CSRF保护
+
+        return httpSecurity.build();
     }
 
 }
