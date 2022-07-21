@@ -9,6 +9,7 @@ import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.admin.common.exception.BaseBizCodeEnum;
@@ -288,7 +289,9 @@ public class ImServiceImpl implements ImService {
                 .query(q -> q.term(qt -> qt.field("sid.keyword").value(dto.getSId()))) //
             , ImContentPageVO.class);
 
-        List<Hit<ImContentPageVO>> hitList = searchResponse.hits().hits();
+        HitsMetadata<ImContentPageVO> hits = searchResponse.hits();
+
+        List<Hit<ImContentPageVO>> hitList = hits.hits();
 
         List<ImContentPageVO> imContentPageVOList = new ArrayList<>();
 
@@ -303,7 +306,7 @@ public class ImServiceImpl implements ImService {
         Page<ImContentPageVO> page = dto.getPage(false);
 
         page.setRecords(imContentPageVOList);
-        page.setTotal(imContentPageVOList.size());
+        page.setTotal(hits.total().value());
 
         return page;
     }
