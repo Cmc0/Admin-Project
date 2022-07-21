@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@ant-design/pro-components": "^1.1.10",
+    "@ant-design/pro-components": "^1.1.11",
     "@reduxjs/toolkit": "^1.8.3",
     "antd": "^4.21.7",
     "crypto-js": "^4.1.1",
