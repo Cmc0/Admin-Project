@@ -134,7 +134,7 @@ public class UserUtil {
         Long userId = null;
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            userId = (Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            userId = Convert.toLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         }
 
         return userId;
