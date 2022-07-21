@@ -11,7 +11,7 @@ import java.util.Date;
 public class ImElasticsearchMsgDocument {
 
     @ApiModelProperty(value = "创建时间")
-    private Date createTime = new Date();
+    private Date createTime;
 
     @ApiModelProperty(value = "创建用户 id")
     private Long createId;
@@ -28,7 +28,7 @@ public class ImElasticsearchMsgDocument {
     @ApiModelProperty(value = "冗余字段")
     private Long toId;
 
-    @ApiModelProperty(value = "冗余字段")
+    @ApiModelProperty(value = "冗余字段，toType_toId")
     private String sId;
 
 }

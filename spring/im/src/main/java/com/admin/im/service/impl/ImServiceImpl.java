@@ -1,6 +1,7 @@
 package com.admin.im.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
@@ -16,10 +17,12 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.ImElasticsearchBaseDocument;
 import com.admin.im.model.document.ImElasticsearchMsgDocument;
+import com.admin.im.model.dto.ImContentPageDTO;
 import com.admin.im.model.dto.ImSendDTO;
 import com.admin.im.model.dto.ImSessionPageDTO;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
+import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -27,10 +30,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,6 +62,7 @@ public class ImServiceImpl implements ImService {
     private void insertOrUpdateMsgDocument(ImSendDTO dto, ImToTypeEnum imToTypeEnum, Long currentUserId) {
 
         ImElasticsearchMsgDocument imElasticsearchMsgDocument = new ImElasticsearchMsgDocument();
+        imElasticsearchMsgDocument.setCreateTime(new Date());
         imElasticsearchMsgDocument.setCreateId(currentUserId);
         imElasticsearchMsgDocument.setContent(dto.getContent());
         imElasticsearchMsgDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：暂时写成：文本
@@ -128,7 +129,7 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
-     * 分页排序查询：即时通讯会话
+     * 分页排序查询：即时通讯会话，备注：暂时不支持分页
      * 示例：
      * GET im_msg_index_1/_search
      * {
@@ -237,6 +238,72 @@ public class ImServiceImpl implements ImService {
 
         page.setRecords(imSessionPageVOList);
         page.setTotal(imSessionPageVOList.size());
+
+        return page;
+    }
+
+    /**
+     * 分页排序查询：即时通讯内容
+     * 示例：
+     * GET im_msg_index_1/_search
+     * {
+     * "query": {
+     * "term": {
+     * "sid": {
+     * "value": "1_1"
+     * }
+     * }
+     * },
+     * "sort": [
+     * {
+     * "createTime": {
+     * "order": "desc"
+     * }
+     * }
+     * ],
+     * "from": 0,
+     * "size": 10
+     * }
+     */
+    @SneakyThrows
+    @Override
+    public Page<ImContentPageVO> contentPage(ImContentPageDTO dto) {
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
+
+        checkAndCreateIndex(userImMsgIndex);
+
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        SearchResponse<ImContentPageVO> searchResponse = elasticsearchClient.search(i -> i.index(userImMsgIndex) //
+                .from((current - 1) * pageSize).size(pageSize) //
+                .sort(s -> s.field(sf -> sf.field("createTime").order(SortOrder.Desc))) //
+                .query(q -> q.term(qt -> qt.field("sid.keyword").value(dto.getSId()))) //
+            , ImContentPageVO.class);
+
+        List<Hit<ImContentPageVO>> hitList = searchResponse.hits().hits();
+
+        List<ImContentPageVO> imContentPageVOList = new ArrayList<>();
+
+        for (Hit<ImContentPageVO> item : hitList) {
+            ImContentPageVO imContentPageVO = item.source();
+            if (imContentPageVO != null) {
+                imContentPageVO.setId(item.id());
+                imContentPageVOList.add(imContentPageVO);
+            }
+        }
+
+        Page<ImContentPageVO> page = dto.getPage(false);
+
+        page.setRecords(imContentPageVOList);
+        page.setTotal(imContentPageVOList.size());
 
         return page;
     }
