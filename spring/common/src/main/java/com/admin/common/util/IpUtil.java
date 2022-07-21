@@ -44,6 +44,10 @@ public class IpUtil {
         if (StrUtil.isBlank(ip)) {
             return "";
         }
-        return searcher.search(ip);
+        try {
+            return searcher.search(ip);
+        } catch (Exception e) {
+            return "errorIp#" + ip;
+        }
     }
 }

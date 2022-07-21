@@ -13,16 +13,16 @@ public class ImSendDTO {
     @ApiModelProperty(value = "发送的内容")
     private String content;
 
-    @Min(1)
-    @NotNull
-    @ApiModelProperty(value = "给谁发送，c/gId，联系人/群组 id")
-    private Long toId;
-
     /**
      * {@link ImToTypeEnum}
      */
     @NotNull
     @ApiModelProperty(value = "即时通讯 发送对象类型，1 联系人 2 群组")
     private Byte toType;
+
+    @Min(1)
+    @NotNull
+    @ApiModelProperty(value = "给谁发送，c/gId，联系人/群组 id")
+    private Long toId;
 
 }
