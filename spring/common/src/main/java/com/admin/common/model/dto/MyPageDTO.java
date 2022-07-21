@@ -29,6 +29,7 @@ public class MyPageDTO {
 
     /**
      * 分页属性拷贝
+     * toUnderlineCaseFlag：一般为 true
      */
     public <T> Page<T> getPage(boolean toUnderlineCaseFlag) {
         Page<T> page = new Page<>();
@@ -64,9 +65,9 @@ public class MyPageDTO {
      * 自定义的排序规则，转换为 mybatis plus 的排序规则
      * underscoreFlag：是否驼峰转下划线
      */
-    private static OrderItem orderToOrderItem(MyOrderDTO order, boolean toUnderlineCaseFlag) {
+    private static OrderItem orderToOrderItem(MyOrderDTO order, boolean toUnderlineFlag) {
         OrderItem orderItem = new OrderItem();
-        orderItem.setColumn(toUnderlineCaseFlag ? StrUtil.toUnderlineCase(order.getName()) : order.getName());
+        orderItem.setColumn(toUnderlineFlag ? StrUtil.toUnderlineCase(order.getName()) : order.getName());
         if (StrUtil.isNotBlank(order.getValue())) {
             orderItem.setAsc("ascend".equals(order.getValue()));
         }
