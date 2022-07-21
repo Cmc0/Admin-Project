@@ -236,6 +236,7 @@ public class ImServiceImpl implements ImService {
         Page<ImSessionPageVO> page = dto.getPage(false);
 
         page.setRecords(imSessionPageVOList);
+        page.setTotal(imSessionPageVOList.size());
 
         return page;
     }
