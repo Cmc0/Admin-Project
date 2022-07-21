@@ -38,7 +38,7 @@ public class ImController {
         return ApiResultVO.ok(baseService.sessionPage(dto));
     }
 
-    @PostMapping(value = "/sessionPage")
+    @PostMapping(value = "/contentPage")
     @ApiOperation(value = "分页排序查询：即时通讯内容")
     public ApiResultVO<Page<ImContentPageVO>> contentPage(@RequestBody @Valid ImContentPageDTO dto) {
         return ApiResultVO.ok(baseService.contentPage(dto));
