@@ -220,6 +220,7 @@ public class ImServiceImpl implements ImService {
             List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
             if (hitList.size() != 0) {
                 Hit<JsonData> jsonDataHit = hitList.get(0);
+                String id = jsonDataHit.id();
                 JsonData source = jsonDataHit.source();
                 if (source != null) {
                     ImElasticsearchMsgDocument imElasticsearchMsgDocument = source.to(ImElasticsearchMsgDocument.class);
