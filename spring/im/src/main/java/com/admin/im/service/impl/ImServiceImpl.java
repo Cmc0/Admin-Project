@@ -13,7 +13,10 @@ import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.admin.common.exception.BaseBizCodeEnum;
+import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
+import com.admin.common.model.entity.BaseEntityTwo;
+import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.ImElasticsearchBaseDocument;
@@ -27,18 +30,22 @@ import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ImServiceImpl implements ImService {
 
     @Resource
     ElasticsearchClient elasticsearchClient;
+    @Resource
+    SysUserMapper sysUserMapper;
 
     /**
      * 发送消息
@@ -217,6 +224,8 @@ public class ImServiceImpl implements ImService {
 
         List<ImSessionPageVO> imSessionPageVOList = new ArrayList<>();
 
+        Set<Long> toIdSet = new HashSet<>();
+
         for (StringTermsBucket item : stringTermsBucketList) {
             List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
             if (hitList.size() != 0) {
@@ -226,14 +235,36 @@ public class ImServiceImpl implements ImService {
                     ImSessionPageVO imSessionPageVO = source.to(ImSessionPageVO.class);
                     imSessionPageVO.setId(jsonDataHit.id());
                     imSessionPageVOList.add(imSessionPageVO);
+                    toIdSet.add(imSessionPageVO.getToId());
                 }
             }
         }
 
+        Stream<ImSessionPageVO> stream = imSessionPageVOList.stream();
+
+        if (toIdSet.size() != 0) {
+            List<SysUserDO> sysUserDOList =
+                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, toIdSet)
+                    .select(SysUserDO::getAvatarUrl, SysUserDO::getNickname, BaseEntityTwo::getId).list();
+
+            Map<Long, SysUserDO> groupMap =
+                sysUserDOList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, it -> it));
+
+            if (groupMap.size() != 0) {
+                stream.forEach(item -> {
+                    SysUserDO sysUserDO = groupMap.get(item.getToId());
+                    if (sysUserDO != null) {
+                        item.setToAvatarUrl(sysUserDO.getAvatarUrl()); // 设置：头像等
+                        item.setToNickname(sysUserDO.getNickname());
+                    }
+                });
+            }
+        }
+
         // 根据：创建时间倒序
-        imSessionPageVOList = imSessionPageVOList.stream()
-            .sorted(Comparator.comparing(ImElasticsearchMsgDocument::getCreateTime, Comparator.reverseOrder()))
-            .collect(Collectors.toList());
+        imSessionPageVOList =
+            stream.sorted(Comparator.comparing(ImElasticsearchMsgDocument::getCreateTime, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
 
         Page<ImSessionPageVO> page = dto.getPage(false);
 
