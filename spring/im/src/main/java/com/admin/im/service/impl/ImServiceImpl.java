@@ -27,6 +27,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -127,8 +129,6 @@ public class ImServiceImpl implements ImService {
 
     /**
      * 分页排序查询：即时通讯会话
-     */
-    /**
      * 示例：
      * GET im_msg_index_1/_search
      * {
@@ -213,23 +213,31 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
+        List<ImSessionPageVO> imSessionPageVOList = new ArrayList<>();
+
         for (StringTermsBucket item : stringTermsBucketList) {
-
-            String key = item.key(); // sId
-
             List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
             if (hitList.size() != 0) {
                 Hit<JsonData> jsonDataHit = hitList.get(0);
-                String id = jsonDataHit.id();
                 JsonData source = jsonDataHit.source();
                 if (source != null) {
-                    ImElasticsearchMsgDocument imElasticsearchMsgDocument = source.to(ImElasticsearchMsgDocument.class);
-                    System.out.println(imElasticsearchMsgDocument);
+                    ImSessionPageVO imSessionPageVO = source.to(ImSessionPageVO.class);
+                    imSessionPageVO.setId(jsonDataHit.id());
+                    imSessionPageVOList.add(imSessionPageVO);
                 }
             }
         }
 
-        return null;
+        // 根据：创建时间倒序
+        imSessionPageVOList = imSessionPageVOList.stream()
+            .sorted(Comparator.comparing(ImElasticsearchMsgDocument::getCreateTime, Comparator.reverseOrder()))
+            .collect(Collectors.toList());
+
+        Page<ImSessionPageVO> page = dto.getPage(false);
+
+        page.setRecords(imSessionPageVOList);
+
+        return page;
     }
 
 }
