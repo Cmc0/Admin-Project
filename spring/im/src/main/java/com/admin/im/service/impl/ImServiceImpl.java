@@ -113,7 +113,7 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        if (currentUserId.equals(dto.getToId())) {
+        if (ImToTypeEnum.CONTACT.equals(dto.getToType()) && currentUserId.equals(dto.getToId())) {
             ApiResultVO.error("操作失败：无法给自己发送消息");
         }
 

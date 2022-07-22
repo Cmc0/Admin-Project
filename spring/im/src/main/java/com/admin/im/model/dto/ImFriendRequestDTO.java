@@ -17,7 +17,7 @@ public class ImFriendRequestDTO {
 
     @Min(1)
     @NotNull
-    @ApiModelProperty(value = "冗余字段")
+    @ApiModelProperty(value = "发送好友申请 用户主键 id")
     private Long toId;
 
 }
