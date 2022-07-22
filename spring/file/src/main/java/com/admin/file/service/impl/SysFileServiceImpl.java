@@ -81,9 +81,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
 
         path = path + newFileName;
 
-        // 上传
-        autoCreateBucketAndUpload(dto.getUploadType().getBucketName(), path, dto.getFile().getInputStream());
-
         String url =
             StrBuilder.create().append("/").append(dto.getUploadType().getBucketName()).append("/").append(path)
                 .toString();
@@ -96,7 +93,10 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         sysFileDO.setExtraJson(MyEntityUtil.getNotNullStr(dto.getExtraJson()));
         sysFileDO.setUploadType(dto.getUploadType());
 
-        save(sysFileDO);
+        save(sysFileDO); // 先保存数据库
+
+        // 上传
+        autoCreateBucketAndUpload(dto.getUploadType().getBucketName(), path, dto.getFile().getInputStream());
 
         return url;
     }
