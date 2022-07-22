@@ -46,7 +46,7 @@ type TSysFileUploadProType = 'AVATAR'
 export function SysFileUploadPro(file: string | RcFile | Blob, type: TSysFileUploadProType) {
     const formData = new FormData()
     formData.append('file', file)
-    // formData.append('uploadType', type)
+    formData.append('uploadType', type)
     return new Promise<string>((resolve, reject) => {
         sysFileUpload(formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
             resolve(res.data)

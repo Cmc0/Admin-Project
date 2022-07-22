@@ -50,6 +50,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
     public String upload(SysFileUploadDTO dto) {
 
         Assert.notNull(dto.getFile());
+        Assert.notNull(dto.getUploadType());
 
         dto.getUploadType().checkFileSize(dto.getFile()); // 检查：文件大小
 
