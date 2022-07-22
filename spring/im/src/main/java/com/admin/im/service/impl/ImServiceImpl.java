@@ -360,7 +360,10 @@ public class ImServiceImpl implements ImService {
         imElasticsearchFriendRequestDocument.setToId(dto.getToId());
         imElasticsearchFriendRequestDocument.setResult(ImFriendRequestResultEnum.PENDING);
 
-        elasticsearchClient.index(i -> i.document(imElasticsearchFriendRequestDocument));
+        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX);
+
+        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX)
+            .document(imElasticsearchFriendRequestDocument));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
