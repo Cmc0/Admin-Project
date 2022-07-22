@@ -113,6 +113,10 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
+        if (currentUserId.equals(dto.getToId())) {
+            ApiResultVO.error("操作失败：无法给自己发送消息");
+        }
+
         // 新增/修改：即时通讯功能的 基础index
         doInsertOrUpdateBaseDocument(dto.getToType(), dto.getToId(), currentUserId, true,
             i -> i.getSIdSet().add(dto.getToType().getSId(dto.getToId())));
