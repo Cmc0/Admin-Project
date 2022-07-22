@@ -20,18 +20,6 @@ public enum ImToTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
-    public static ImToTypeEnum getByCode(Byte code) {
-        if (code == null) {
-            return null;
-        }
-        for (ImToTypeEnum item : ImToTypeEnum.values()) {
-            if (item.getCode() == code) {
-                return item;
-            }
-        }
-        return null;
-    }
-
     public String getSId(Long toId) {
         return getCode() + "_" + toId;
     }

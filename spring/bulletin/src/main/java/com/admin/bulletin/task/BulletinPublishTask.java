@@ -24,7 +24,7 @@ public class BulletinPublishTask {
         long jobId = XxlJobHelper.getJobId();
 
         // 通知所有人，刷新 公告信息
-        KafkaUtil.bulletinPublish(null);
+        KafkaUtil.newBulletin(null);
 
         XxlJobHelper.handleSuccess("公告发布成功");
 

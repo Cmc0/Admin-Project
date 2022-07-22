@@ -23,6 +23,7 @@ import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
+import com.admin.common.util.KafkaUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.ImElasticsearchBaseDocument;
 import com.admin.im.model.document.ImElasticsearchFriendRequestDocument;
@@ -30,7 +31,6 @@ import com.admin.im.model.document.ImElasticsearchMsgDocument;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImFriendRequestResultEnum;
-import com.admin.im.model.enums.ImToTypeEnum;
 import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -111,9 +111,9 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        ImToTypeEnum imToTypeEnum = insertOrUpdateBaseDocument(dto, currentUserId);// 新增/修改：即时通讯功能的 基础index
+        insertOrUpdateBaseDocument(dto, currentUserId);// 新增/修改：即时通讯功能的 基础index
 
-        insertOrUpdateMsgDocument(dto, imToTypeEnum, currentUserId); // 新增/修改：即时通讯功能的 消息index
+        insertOrUpdateMsgDocument(dto, currentUserId); // 新增/修改：即时通讯功能的 消息index
 
         return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
@@ -122,7 +122,7 @@ public class ImServiceImpl implements ImService {
      * 新增/修改：即时通讯功能的 消息index
      */
     @SneakyThrows
-    private void insertOrUpdateMsgDocument(ImSendDTO dto, ImToTypeEnum imToTypeEnum, Long currentUserId) {
+    private void insertOrUpdateMsgDocument(ImSendDTO dto, Long currentUserId) {
 
         ImElasticsearchMsgDocument imElasticsearchMsgDocument = new ImElasticsearchMsgDocument();
         imElasticsearchMsgDocument.setCreateTime(new Date());
@@ -130,8 +130,8 @@ public class ImServiceImpl implements ImService {
         imElasticsearchMsgDocument.setContent(dto.getContent());
         imElasticsearchMsgDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：暂时写成：文本
         imElasticsearchMsgDocument.setToId(dto.getToId());
-        imElasticsearchMsgDocument.setToType(imToTypeEnum);
-        imElasticsearchMsgDocument.setSId(imToTypeEnum.getSId(dto.getToId()));
+        imElasticsearchMsgDocument.setToType(dto.getToType());
+        imElasticsearchMsgDocument.setSId(dto.getToType().getSId(dto.getToId()));
 
         String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
 
@@ -143,16 +143,8 @@ public class ImServiceImpl implements ImService {
      * 新增/修改：即时通讯功能的 基础index
      */
     @SneakyThrows
-    private ImToTypeEnum insertOrUpdateBaseDocument(ImSendDTO dto, Long currentUserId) {
-
-        ImToTypeEnum imToTypeEnum = ImToTypeEnum.getByCode(dto.getToType());
-        if (imToTypeEnum == null) {
-            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
-        }
-
-        doInsertOrUpdateBaseDocument(currentUserId, i -> i.getSIdSet().add(imToTypeEnum.getSId(dto.getToId())));
-
-        return imToTypeEnum;
+    private void insertOrUpdateBaseDocument(ImSendDTO dto, Long currentUserId) {
+        doInsertOrUpdateBaseDocument(currentUserId, i -> i.getSIdSet().add(dto.getToType().getSId(dto.getToId())));
     }
 
     /**
@@ -422,6 +414,8 @@ public class ImServiceImpl implements ImService {
         elasticsearchClient.index(
             i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
                 .document(imElasticsearchFriendRequestDocument));
+
+        KafkaUtil.friendRequest(Collections.singleton(dto.getToId()));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }

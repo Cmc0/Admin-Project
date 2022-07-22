@@ -72,7 +72,7 @@ public class WebSocketListener {
                 writeAndFlush(channelList, webSocketMessageEnum);
             }
 
-        } else if (code == 5) {
+        } else if (code == 5 || code == 7) {
 
             // 5 有新的通知
             Set<Number> userIdSet = json.get("userIdSet", Set.class);

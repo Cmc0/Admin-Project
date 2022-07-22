@@ -37,22 +37,22 @@ public class KafkaUtil {
     /**
      * 消息推送：公告推送
      */
-    public static void bulletinPublish(Set<Long> userIdSet) {
+    public static void newBulletin(Set<Long> userIdSet) {
 
-        WebSocketMessageEnum newBulletin = WebSocketMessageEnum.NEW_BULLETIN;
-        newBulletin.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
-        sendWebSocketMessageByKafka(newBulletin);
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.NEW_BULLETIN;
+        webSocketMessageEnum.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
 
     }
 
     /**
      * 消息推送：有新的通知
      */
-    public static void refreshNoReadNotifyCount(Set<Long> userIdSet) {
+    public static void newNotify(Set<Long> userIdSet) {
 
-        WebSocketMessageEnum newNotify = WebSocketMessageEnum.NEW_NOTIFY;
-        newNotify.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
-        sendWebSocketMessageByKafka(newNotify);
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.NEW_NOTIFY;
+        webSocketMessageEnum.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
 
     }
 
@@ -61,9 +61,10 @@ public class KafkaUtil {
      */
     public static void forcedOffline(Set<Long> webSocketIdSet, Set<Long> userIdSet) {
 
-        WebSocketMessageEnum forcedOffline = WebSocketMessageEnum.FORCED_OFFLINE;
-        forcedOffline.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet).set("userIdSet", userIdSet));
-        sendWebSocketMessageByKafka(forcedOffline);
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.FORCED_OFFLINE;
+        webSocketMessageEnum
+            .setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet).set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
 
     }
 
@@ -72,9 +73,9 @@ public class KafkaUtil {
      */
     public static void loginExpired(Set<Long> webSocketIdSet) {
 
-        WebSocketMessageEnum loginExpired = WebSocketMessageEnum.LOGIN_EXPIRED;
-        loginExpired.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet));
-        sendWebSocketMessageByKafka(loginExpired);
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.LOGIN_EXPIRED;
+        webSocketMessageEnum.setJson(JSONUtil.createObj().set("webSocketIdSet", webSocketIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
 
     }
 
@@ -83,9 +84,20 @@ public class KafkaUtil {
      */
     public static void delAccount(Set<Long> userIdSet) {
 
-        WebSocketMessageEnum delAccount = WebSocketMessageEnum.DEL_ACCOUNT;
-        delAccount.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
-        sendWebSocketMessageByKafka(delAccount);
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.DEL_ACCOUNT;
+        webSocketMessageEnum.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
+
+    }
+
+    /**
+     * 消息推送：有新的好友申请
+     */
+    public static void friendRequest(Set<Long> userIdSet) {
+
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.FRIEND_REQUEST;
+        webSocketMessageEnum.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
 
     }
 

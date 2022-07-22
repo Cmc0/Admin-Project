@@ -5,20 +5,19 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 public class ImSendDTO {
 
+    @NotBlank
     @ApiModelProperty(value = "发送的内容")
     private String content;
 
-    /**
-     * {@link ImToTypeEnum}
-     */
     @NotNull
     @ApiModelProperty(value = "即时通讯 发送对象类型，1 联系人 2 群组")
-    private Byte toType;
+    private ImToTypeEnum toType;
 
     @Min(1)
     @NotNull

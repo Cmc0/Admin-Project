@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * {@link com.admin.im.model.document.ImElasticsearchFriendRequestDocument}
@@ -15,6 +16,7 @@ public class ImFriendRequestDTO {
     private String content;
 
     @Min(1)
+    @NotNull
     @ApiModelProperty(value = "冗余字段")
     private Long toId;
 

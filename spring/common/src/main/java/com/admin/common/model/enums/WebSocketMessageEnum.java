@@ -21,6 +21,7 @@ public enum WebSocketMessageEnum {
     DEL_ACCOUNT(4, null, "账号已被注销"), // json:{ userIdSet }
     NEW_NOTIFY(5, null, "有新的通知"), // json:{ userIdSet }
     NEW_BULLETIN(6, null, "有新的公告"), // json:{ userIdSet }
+    FRIEND_REQUEST(7, null, "有新的好友申请"), // json:{ userIdSet }
     ;
 
     private int code;

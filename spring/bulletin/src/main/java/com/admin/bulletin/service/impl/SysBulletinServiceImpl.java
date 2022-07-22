@@ -14,7 +14,6 @@ import com.admin.bulletin.service.SysBulletinReadTimeRefUserService;
 import com.admin.bulletin.service.SysBulletinService;
 import com.admin.bulletin.task.BulletinPublishTask;
 import com.admin.common.exception.BaseBizCodeEnum;
-import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.dto.NotEmptyIdSet;
 import com.admin.common.model.dto.NotNullId;
@@ -262,7 +261,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
                 }
 
                 // 通知该用户，刷新 公告信息
-                KafkaUtil.bulletinPublish(Collections.singleton(currentUserId));
+                KafkaUtil.newBulletin(Collections.singleton(currentUserId));
             });
         }
 
