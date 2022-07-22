@@ -20,13 +20,14 @@ import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.ImElasticsearchBaseDocument;
+import com.admin.im.model.document.ImElasticsearchFriendRequestDocument;
 import com.admin.im.model.document.ImElasticsearchMsgDocument;
-import com.admin.im.model.dto.ImContentPageDTO;
-import com.admin.im.model.dto.ImSendDTO;
-import com.admin.im.model.dto.ImSessionPageDTO;
+import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
+import com.admin.im.model.enums.ImFriendRequestResultEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
 import com.admin.im.model.vo.ImContentPageVO;
+import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -337,9 +338,40 @@ public class ImServiceImpl implements ImService {
         Page<ImContentPageVO> page = dto.getPage(false);
 
         page.setRecords(imContentPageVOList);
-        page.setTotal(hits.total().value());
+        if (hits.total() != null) {
+            page.setTotal(hits.total().value());
+        }
 
         return page;
+    }
+
+    /**
+     * 好友申请
+     */
+    @SneakyThrows
+    @Override
+    public String friendRequest(ImFriendRequestDTO dto) {
+
+        ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument =
+            new ImElasticsearchFriendRequestDocument();
+        imElasticsearchFriendRequestDocument.setCreateId(UserUtil.getCurrentUserId());
+        imElasticsearchFriendRequestDocument.setCreateTime(new Date());
+        imElasticsearchFriendRequestDocument.setContent(dto.getContent());
+        imElasticsearchFriendRequestDocument.setToId(dto.getToId());
+        imElasticsearchFriendRequestDocument.setResult(ImFriendRequestResultEnum.PENDING);
+
+        elasticsearchClient.index(i -> i.document(imElasticsearchFriendRequestDocument));
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 分页排序查询：好友申请，备注：包含我的申请，以及对我的申请
+     */
+    @Override
+    public Page<ImFriendRequestPageVO> friendRequestPage(ImFriendRequestPageDTO dto) {
+
+        return null;
     }
 
 }
