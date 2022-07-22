@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
+
 /**
  * WebSocket 在线状态
  */
@@ -20,6 +22,7 @@ public enum SysWebSocketTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
+    @Nullable
     public static SysWebSocketTypeEnum getByCode(Byte code) {
         if (code == null) {
             return null;

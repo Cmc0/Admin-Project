@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.Min;
 import java.util.Date;
 
 /**
@@ -38,12 +37,8 @@ public class SysWebSocketPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "是否是移动端网页，true：是 false 否")
     private Boolean mobileFlag;
 
-    /**
-     * {@link SysWebSocketTypeEnum}
-     */
-    @Min(1)
     @ApiModelProperty(value = "状态：1 在线 2 隐身")
-    private Byte type;
+    private SysWebSocketTypeEnum type;
 
     @ApiModelProperty(value = "本次 Websocket连接的服务器的 ip:port")
     private String server;

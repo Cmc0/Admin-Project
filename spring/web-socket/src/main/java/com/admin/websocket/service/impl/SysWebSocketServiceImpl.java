@@ -223,10 +223,16 @@ public class SysWebSocketServiceImpl extends ServiceImpl<SysWebSocketMapper, Sys
     @Transactional
     public String changeType(NotNullByteAndId notNullByteAndId) {
 
+        SysWebSocketTypeEnum sysWebSocketTypeEnum = SysWebSocketTypeEnum.getByCode(notNullByteAndId.getValue());
+
+        if (sysWebSocketTypeEnum == null) {
+            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
+        }
+
         SysWebSocketDO sysWebSocketDO = new SysWebSocketDO();
 
         sysWebSocketDO.setId(notNullByteAndId.getId());
-        sysWebSocketDO.setType(SysWebSocketTypeEnum.getByCode(notNullByteAndId.getValue()));
+        sysWebSocketDO.setType(sysWebSocketTypeEnum);
 
         updateById(sysWebSocketDO);
 
