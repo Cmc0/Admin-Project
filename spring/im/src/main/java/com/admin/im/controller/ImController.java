@@ -2,6 +2,7 @@ package com.admin.im.controller;
 
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.im.model.dto.*;
+import com.admin.im.model.vo.ImContactPageVO;
 import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -59,6 +60,12 @@ public class ImController {
     @ApiOperation(value = "好友申请，结果处理")
     public ApiResultVO<String> friendRequestHandler(@RequestBody @Valid ImFriendRequestHandlerDTO dto) {
         return ApiResultVO.ok(baseService.friendRequestHandler(dto));
+    }
+
+    @PostMapping(value = "/contactPage")
+    @ApiOperation(value = "联系人，分页排序查询")
+    public ApiResultVO<Page<ImContactPageVO>> contactPage(@RequestBody @Valid ImContactPageDTO dto) {
+        return ApiResultVO.ok(baseService.contactPage(dto));
     }
 
 }

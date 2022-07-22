@@ -33,6 +33,7 @@ import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImFriendRequestResultEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
+import com.admin.im.model.vo.ImContactPageVO;
 import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -574,6 +575,14 @@ public class ImServiceImpl implements ImService {
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 联系人，分页排序查询
+     */
+    @Override
+    public Page<ImContactPageVO> contactPage(ImContactPageDTO dto) {
+        return null;
     }
 
 }
