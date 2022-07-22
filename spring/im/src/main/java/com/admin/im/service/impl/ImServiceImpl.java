@@ -40,6 +40,7 @@ import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.function.Function;
@@ -58,15 +59,18 @@ public class ImServiceImpl implements ImService {
      * 如果执行失败，则创建 index之后，再执行一次
      */
     @SneakyThrows
+    @Nullable
     private <TDocument> GetResponse<TDocument> autoCreateIndexAndGet(String index,
         Function<GetRequest.Builder, ObjectBuilder<GetRequest>> fn, Class<TDocument> tDocumentClass) {
 
         try {
             return elasticsearchClient.get(fn, tDocumentClass);
         } catch (ElasticsearchException e) {
-            e.printStackTrace();
-            elasticsearchClient.indices().create(c -> c.index(index));
-            return elasticsearchClient.get(fn, tDocumentClass);
+            if ("index_not_found_exception".equals(e.error().type())) {
+                elasticsearchClient.indices().create(c -> c.index(index));
+                return elasticsearchClient.get(fn, tDocumentClass);
+            }
+            throw e;
         }
     }
 
@@ -74,15 +78,26 @@ public class ImServiceImpl implements ImService {
      * 如果执行失败，则创建 index之后，再执行一次
      */
     @SneakyThrows
+    @Nullable
     private <TDocument> SearchResponse<TDocument> autoCreateIndexAndSearch(String index,
         Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> fn, Class<TDocument> tDocumentClass) {
 
         try {
             return elasticsearchClient.search(fn, tDocumentClass);
-        } catch (ElasticsearchException e) {
-            e.printStackTrace();
-            elasticsearchClient.indices().create(c -> c.index(index));
-            return elasticsearchClient.search(fn, tDocumentClass);
+        } catch (ElasticsearchException e1) {
+            if ("index_not_found_exception".equals(e1.error().type())) {
+                elasticsearchClient.indices().create(c -> c.index(index));
+                try {
+                    return elasticsearchClient.search(fn, tDocumentClass);
+                } catch (ElasticsearchException e2) {
+                    if ("search_phase_execution_exception".equals(e2.error().type())) {
+                        return null;
+                    }
+                }
+
+            }
+            e1.printStackTrace();
+            return null;
         }
     }
 
@@ -244,6 +259,10 @@ public class ImServiceImpl implements ImService {
                             .sort(saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))) //
                 , ImElasticsearchMsgDocument.class);
 
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
         List<StringTermsBucket> stringTermsBucketList =
             searchResponse.aggregations().get(groupBySidAggs).sterms().buckets().array();
 
@@ -347,6 +366,10 @@ public class ImServiceImpl implements ImService {
                     .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc))) //
                     .query(sq -> sq.term(sqt -> sqt.field("sid.keyword").value(dto.getSId()))) //
                 , ImContentPageVO.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
 
         HitsMetadata<ImContentPageVO> hits = searchResponse.hits();
 
@@ -464,6 +487,10 @@ public class ImServiceImpl implements ImService {
                     .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc))) //
                     .query(sq -> sq.bool(sqb -> sqb.should(queryList))) //
                 , ImFriendRequestPageVO.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
 
         HitsMetadata<ImFriendRequestPageVO> hits = searchResponse.hits();
 
