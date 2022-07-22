@@ -383,7 +383,7 @@ public class ImServiceImpl implements ImService {
         SearchResponse<ImContentPageVO> searchResponse =
             autoCreateIndexAndSearch(userImMsgIndex, s -> s.index(userImMsgIndex) //
                     .from((current - 1) * pageSize).size(pageSize) //
-                    .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc))) //
+                    .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Asc))) //
                     .query(sq -> sq.term(sqt -> sqt.field("sid.keyword").value(dto.getSId()))) //
                 , ImContentPageVO.class);
 
