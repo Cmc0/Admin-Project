@@ -131,13 +131,15 @@ public class ImServiceImpl implements ImService {
     }
 
     @SneakyThrows
-    private void checkAndCreateIndex(String index) {
+    private boolean checkAndCreateIndex(String index) {
 
         BooleanResponse booleanResponse = elasticsearchClient.indices().exists(e -> e.index(index));
 
         if (!booleanResponse.value()) {
             elasticsearchClient.indices().create(c -> c.index(index));
         }
+
+        return booleanResponse.value();
     }
 
     /**
@@ -316,7 +318,10 @@ public class ImServiceImpl implements ImService {
 
         String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
 
-        checkAndCreateIndex(userImMsgIndex);
+        boolean checkAndCreateIndex = checkAndCreateIndex(userImMsgIndex);
+        if (!checkAndCreateIndex) {
+            return dto.getPage(false);
+        }
 
         SearchResponse<ImContentPageVO> searchResponse = elasticsearchClient.search(s -> s.index(userImMsgIndex) //
                 .from((current - 1) * pageSize).size(pageSize) //
@@ -422,7 +427,10 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX);
+        boolean checkAndCreateIndex = checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX);
+        if (!checkAndCreateIndex) {
+            return dto.getPage(false);
+        }
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
