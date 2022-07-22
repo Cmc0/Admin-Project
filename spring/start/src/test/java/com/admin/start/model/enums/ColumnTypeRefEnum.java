@@ -1,4 +1,4 @@
-package com.admin.common.model.enums;
+package com.admin.start.model.enums;
 
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.model.vo.SyncEntityFromDbVO;
