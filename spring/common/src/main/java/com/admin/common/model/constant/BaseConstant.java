@@ -47,7 +47,7 @@ public interface BaseConstant {
     // 参数配置相关 ↑
 
     // request 相关 ↓
-    String REQUEST_HEADER_CATEGORY = "category"; // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    String REQUEST_HEADER_CATEGORY = "category"; // 请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     String USER_LOGIN_PATH = "/userLogin"; // 用户登录路径：前缀
     // request 相关 ↑
 

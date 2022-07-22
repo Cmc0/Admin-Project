@@ -26,7 +26,7 @@ public class SysRequestDO extends BaseEntityThree {
     @ApiModelProperty(value = "接口名（备用）")
     private String name;
 
-    @ApiModelProperty(value = "类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
+    @ApiModelProperty(value = "请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
     private SysRequestCategoryEnum category;
 
     @ApiModelProperty(value = "ip")

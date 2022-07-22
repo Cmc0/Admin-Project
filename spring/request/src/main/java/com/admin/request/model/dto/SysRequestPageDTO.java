@@ -1,6 +1,7 @@
 package com.admin.request.model.dto;
 
 import com.admin.common.model.dto.MyPageDTO;
+import com.admin.common.model.enums.SysRequestCategoryEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,11 +36,8 @@ public class SysRequestPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "创建人id")
     private Long createId;
 
-    /**
-     * {@link com.admin.common.model.enums.SysRequestCategoryEnum}
-     */
-    @ApiModelProperty(value = "类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
-    private Byte category;
+    @ApiModelProperty(value = "请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
+    private SysRequestCategoryEnum category;
 
     @ApiModelProperty(value = "IpUtil.getRegion() 获取到的 ip所处区域")
     private String region;

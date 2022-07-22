@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 字典 类型
+ * 字典类型
  */
 @AllArgsConstructor
 @Getter
@@ -19,17 +19,5 @@ public enum SysDictTypeEnum {
     @JsonValue
     private byte code;
     private String codeDescription; // code 说明
-
-    public static SysDictTypeEnum getByCode(Byte code) {
-        if (code == null) {
-            return null;
-        }
-        for (SysDictTypeEnum item : SysDictTypeEnum.values()) {
-            if (item.getCode() == code) {
-                return item;
-            }
-        }
-        return null;
-    }
 
 }

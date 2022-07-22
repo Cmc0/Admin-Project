@@ -1,11 +1,11 @@
 package com.admin.dict.model.dto;
 
 import com.admin.common.model.dto.BaseInsertOrUpdateDTO;
+import com.admin.common.model.enums.SysDictTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -24,13 +24,9 @@ public class SysDictInsertOrUpdateDTO extends BaseInsertOrUpdateDTO {
     @ApiModelProperty(value = "字典/字典项 名")
     private String name;
 
-    /**
-     * {@link com.admin.common.model.enums.SysDictTypeEnum}
-     */
-    @Min(1)
     @NotNull
-    @ApiModelProperty(value = "类型：1 字典 2 字典项")
-    private Byte type;
+    @ApiModelProperty(value = "字典类型：1 字典 2 字典项")
+    private SysDictTypeEnum type;
 
     @ApiModelProperty(value = "字典项 value（数字 123...）备注：字典为 -1")
     private Byte value;

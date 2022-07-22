@@ -51,12 +51,8 @@ public class SysWebSocketPageDTO extends MyPageDTO {
     @ApiModelProperty(value = "连接中/断开连接")
     private Boolean enableFlag;
 
-    /**
-     * {@link SysRequestCategoryEnum}
-     */
-    @Min(1)
-    @ApiModelProperty(value = "类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
-    private Byte category;
+    @ApiModelProperty(value = "请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
+    private SysRequestCategoryEnum category;
 
     @ApiModelProperty(value = "创建开始时间")
     private Date beginCreateTime;

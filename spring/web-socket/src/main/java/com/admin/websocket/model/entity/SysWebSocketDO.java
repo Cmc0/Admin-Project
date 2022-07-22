@@ -42,7 +42,7 @@ public class SysWebSocketDO extends BaseEntityThree {
     @ApiModelProperty(value = "本次 WebSocket 连接的服务器的 ip:port")
     private String server;
 
-    @ApiModelProperty(value = "类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
+    @ApiModelProperty(value = "请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序")
     private SysRequestCategoryEnum category;
 
     @TableField(fill = FieldFill.INSERT)

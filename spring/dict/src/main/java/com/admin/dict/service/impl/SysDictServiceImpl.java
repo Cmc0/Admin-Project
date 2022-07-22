@@ -39,12 +39,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
     @Transactional
     public String insertOrUpdate(SysDictInsertOrUpdateDTO dto) {
 
-        SysDictTypeEnum sysDictTypeEnum = SysDictTypeEnum.getByCode(dto.getType());
-        if (sysDictTypeEnum == null) {
-            ApiResultVO.error("操作失败：type【" + dto.getType() + "】不合法");
-        }
-
-        if (sysDictTypeEnum.equals(SysDictTypeEnum.DICT)) {
+        if (SysDictTypeEnum.DICT.equals(dto.getType())) {
             // 字典 key和 name不能重复
             Long count = lambdaQuery().eq(SysDictDO::getType, SysDictTypeEnum.DICT)
                 .and(i -> i.eq(SysDictDO::getDictKey, dto.getDictKey()).or().eq(SysDictDO::getName, dto.getName()))
@@ -69,7 +64,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
             }
         }
 
-        if (dto.getId() != null && sysDictTypeEnum.equals(SysDictTypeEnum.DICT)) {
+        if (dto.getId() != null && SysDictTypeEnum.DICT.equals(dto.getType())) {
             // 如果是修改，并且是字典，那么也需要修改 该字典的字典项的 dictKey
             SysDictDO sysDictDO =
                 lambdaQuery().eq(BaseEntityTwo::getId, dto.getId()).select(SysDictDO::getDictKey).one();
@@ -86,7 +81,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictDO> im
         SysDictDO sysDictDO = new SysDictDO();
         sysDictDO.setDictKey(dto.getDictKey());
         sysDictDO.setName(dto.getName());
-        sysDictDO.setType(sysDictTypeEnum);
+        sysDictDO.setType(dto.getType());
         sysDictDO.setValue(dto.getValue());
         sysDictDO.setOrderNo(dto.getOrderNo());
         sysDictDO.setEnableFlag(dto.isEnableFlag());
