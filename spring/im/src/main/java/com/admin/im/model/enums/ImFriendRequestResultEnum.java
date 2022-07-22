@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 public enum ImFriendRequestResultEnum {
     PENDING((byte)1, "未决定"), //
-    APPROVED((byte)2, "已同意"), //
+    AGREED((byte)2, "已同意"), //
     REJECTED((byte)3, "已拒绝"), //
     ;
 

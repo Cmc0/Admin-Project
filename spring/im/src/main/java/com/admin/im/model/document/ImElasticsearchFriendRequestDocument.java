@@ -15,6 +15,9 @@ public class ImElasticsearchFriendRequestDocument {
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+    @ApiModelProperty(value = "更新时间")
+    private Date updateTime;
+
     @ApiModelProperty(value = "好友申请内容")
     private String content;
 

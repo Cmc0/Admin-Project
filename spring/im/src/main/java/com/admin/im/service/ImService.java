@@ -18,4 +18,6 @@ public interface ImService {
 
     Page<ImFriendRequestPageVO> friendRequestPage(ImFriendRequestPageDTO dto);
 
+    String friendRequestHandler(ImFriendRequestHandlerDTO dto);
+
 }

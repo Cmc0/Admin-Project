@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,6 +101,18 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
         }
 
+        doInsertOrUpdateBaseDocument(currentUserId, i -> i.getSIdSet().add(imToTypeEnum.getSId(dto.getToId())));
+
+        return imToTypeEnum;
+    }
+
+    /**
+     * 执行：新增/修改：即时通讯功能的 基础index
+     */
+    @SneakyThrows
+    private void doInsertOrUpdateBaseDocument(Long currentUserId,
+        Function<ImElasticsearchBaseDocument, Object> function) {
+
         checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_BASE_INDEX);
 
         GetResponse<ImElasticsearchBaseDocument> getResponse = elasticsearchClient
@@ -114,9 +127,10 @@ public class ImServiceImpl implements ImService {
             imElasticsearchBaseDocument = new ImElasticsearchBaseDocument();
         }
 
-        imElasticsearchBaseDocument.getSIdSet().add(imToTypeEnum.getSId(dto.getToId()));
+        function.apply(imElasticsearchBaseDocument);
 
         ImElasticsearchBaseDocument finalImElasticsearchBaseDocument = imElasticsearchBaseDocument;
+
         if (imBaseDocumentNullFlag) {
             elasticsearchClient.index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
@@ -126,8 +140,6 @@ public class ImServiceImpl implements ImService {
                 u -> u.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
                     .doc(finalImElasticsearchBaseDocument), ImElasticsearchBaseDocument.class);
         }
-
-        return imToTypeEnum;
     }
 
     @SneakyThrows
@@ -366,10 +378,13 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error("操作失败：不能给自己发送好友请求");
         }
 
+        Date date = new Date();
+
         ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument =
             new ImElasticsearchFriendRequestDocument();
         imElasticsearchFriendRequestDocument.setCreateId(currentUserId);
-        imElasticsearchFriendRequestDocument.setCreateTime(new Date());
+        imElasticsearchFriendRequestDocument.setCreateTime(date);
+        imElasticsearchFriendRequestDocument.setUpdateTime(date);
         imElasticsearchFriendRequestDocument.setContent(dto.getContent());
         imElasticsearchFriendRequestDocument.setToId(dto.getToId());
         imElasticsearchFriendRequestDocument.setResult(ImFriendRequestResultEnum.PENDING);
@@ -458,6 +473,7 @@ public class ImServiceImpl implements ImService {
         for (Hit<ImFriendRequestPageVO> item : hitList) {
             ImFriendRequestPageVO imFriendRequestPageVO = item.source();
             if (imFriendRequestPageVO != null) {
+                imFriendRequestPageVO.setId(item.id());
                 imFriendRequestPageVOList.add(imFriendRequestPageVO);
             }
         }
@@ -470,6 +486,44 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    /**
+     * 好友申请，结果处理
+     */
+    @SneakyThrows
+    @Override
+    public String friendRequestHandler(ImFriendRequestHandlerDTO dto) {
+
+        GetResponse<ImElasticsearchFriendRequestDocument> getResponse = elasticsearchClient
+            .get(g -> g.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId()),
+                ImElasticsearchFriendRequestDocument.class);
+
+        ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument = getResponse.source();
+
+        if (imElasticsearchFriendRequestDocument == null) {
+            return BaseBizCodeEnum.ILLEGAL_REQUEST.getMsg();
+        }
+
+        imElasticsearchFriendRequestDocument = new ImElasticsearchFriendRequestDocument();
+        imElasticsearchFriendRequestDocument.setResult(dto.getResult());
+        imElasticsearchFriendRequestDocument.setUpdateTime(new Date());
+
+        ImElasticsearchFriendRequestDocument finalImElasticsearchFriendRequestDocument =
+            imElasticsearchFriendRequestDocument;
+
+        elasticsearchClient.update(u -> u.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId())
+            .doc(finalImElasticsearchFriendRequestDocument), ImElasticsearchFriendRequestDocument.class);
+
+        if (ImFriendRequestResultEnum.AGREED.equals(dto.getResult())) {
+            // 如果同意了，则添加双方到联系人列表
+            doInsertOrUpdateBaseDocument(finalImElasticsearchFriendRequestDocument.getCreateId(),
+                i -> i.getCIdSet().add(finalImElasticsearchFriendRequestDocument.getToId()));
+            doInsertOrUpdateBaseDocument(finalImElasticsearchFriendRequestDocument.getToId(),
+                i -> i.getCIdSet().add(finalImElasticsearchFriendRequestDocument.getCreateId()));
+        }
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
 }

@@ -32,13 +32,13 @@ public class ImController {
     }
 
     @PostMapping(value = "/sessionPage")
-    @ApiOperation(value = "分页排序查询：即时通讯会话，备注：暂时不支持分页")
+    @ApiOperation(value = "即时通讯会话，分页排序查询，备注：暂时不支持分页")
     public ApiResultVO<Page<ImSessionPageVO>> sessionPage(@RequestBody @Valid ImSessionPageDTO dto) {
         return ApiResultVO.ok(baseService.sessionPage(dto));
     }
 
     @PostMapping(value = "/contentPage")
-    @ApiOperation(value = "分页排序查询：即时通讯内容")
+    @ApiOperation(value = "即时通讯内容，分页排序查询")
     public ApiResultVO<Page<ImContentPageVO>> contentPage(@RequestBody @Valid ImContentPageDTO dto) {
         return ApiResultVO.ok(baseService.contentPage(dto));
     }
@@ -50,9 +50,15 @@ public class ImController {
     }
 
     @PostMapping(value = "/friendRequestPage")
-    @ApiOperation(value = "分页排序查询：好友申请，备注：包含我的申请，以及对我的申请")
+    @ApiOperation(value = "好友申请，分页排序查询，备注：包含我的申请，以及对我的申请")
     public ApiResultVO<Page<ImFriendRequestPageVO>> friendRequestPage(@RequestBody @Valid ImFriendRequestPageDTO dto) {
         return ApiResultVO.ok(baseService.friendRequestPage(dto));
+    }
+
+    @PostMapping(value = "/friendRequestHandler")
+    @ApiOperation(value = "好友申请，结果处理")
+    public ApiResultVO<String> friendRequestHandler(@RequestBody @Valid ImFriendRequestHandlerDTO dto) {
+        return ApiResultVO.ok(baseService.friendRequestHandler(dto));
     }
 
 }
