@@ -155,7 +155,7 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
-     * 分页排序查询：即时通讯会话，备注：暂时不支持分页
+     * 即时通讯会话，分页排序查询，备注：暂时不支持分页
      * 示例：
      * GET im_msg_index_1/_search
      * {
@@ -293,7 +293,7 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
-     * 分页排序查询：即时通讯内容
+     * 即时通讯内容，分页排序查询
      * 示例：
      * GET im_msg_index_1/_search
      * {
@@ -399,7 +399,7 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
-     * 分页排序查询：好友申请，备注：包含我的申请，以及对我的申请
+     * 好友申请，分页排序查询，备注：包含我的申请，以及对我的申请
      * 示例：
      * GET im_friend_request_index/_search
      * GET im_friend_request_index/_search
