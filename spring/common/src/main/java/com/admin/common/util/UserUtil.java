@@ -13,13 +13,14 @@ import com.admin.common.model.constant.BaseRedisConstant;
 import com.admin.common.model.entity.*;
 import com.admin.common.model.vo.ApiResultVO;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,6 +86,7 @@ public class UserUtil {
      * 获取当前 userId
      * 这里只会返回实际的 userId，如果为 null，则会抛出异常
      */
+    @Nonnull
     public static Long getCurrentUserId() {
 
         Long userId = getCurrentUserIdWillNull();
@@ -129,6 +131,7 @@ public class UserUtil {
      * 获取当前 userId，注意：这里获取 userId之后需要做 非空判断
      * 这里只会返回实际的 userId或者 null
      */
+    @Nullable
     private static Long getCurrentUserIdWillNull() {
 
         Long userId = null;
@@ -219,7 +222,7 @@ public class UserUtil {
     /**
      * 通过 userId，获取关联的 roleIdSet，redis缓存，备注：包含默认角色的 id
      */
-    @NotNull
+    @Nonnull
     public static Set<String> getRefRoleIdSetByUserIdFromRedis(String userId, boolean allCacheExistFlag) {
 
         Set<String> roleIdSet;

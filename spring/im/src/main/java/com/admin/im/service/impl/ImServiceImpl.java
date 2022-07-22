@@ -360,9 +360,15 @@ public class ImServiceImpl implements ImService {
     @Override
     public String friendRequest(ImFriendRequestDTO dto) {
 
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        if (currentUserId.equals(dto.getToId())) {
+            ApiResultVO.error("操作失败：不能给自己发送好友请求");
+        }
+
         ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument =
             new ImElasticsearchFriendRequestDocument();
-        imElasticsearchFriendRequestDocument.setCreateId(UserUtil.getCurrentUserId());
+        imElasticsearchFriendRequestDocument.setCreateId(currentUserId);
         imElasticsearchFriendRequestDocument.setCreateTime(new Date());
         imElasticsearchFriendRequestDocument.setContent(dto.getContent());
         imElasticsearchFriendRequestDocument.setToId(dto.getToId());
