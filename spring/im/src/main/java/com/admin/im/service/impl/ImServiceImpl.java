@@ -159,8 +159,7 @@ public class ImServiceImpl implements ImService {
      * 执行：新增/修改：即时通讯功能的 基础index
      */
     @SneakyThrows
-    private <T> void doInsertOrUpdateBaseDocument(Long currentUserId,
-        Function<ImElasticsearchBaseDocument, T> function) {
+    private <T> void doInsertOrUpdateBaseDocument(Long currentUserId, Function<ImElasticsearchBaseDocument, T> fn) {
 
         GetResponse<ImElasticsearchBaseDocument> getResponse =
             autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_BASE_INDEX,
@@ -173,7 +172,7 @@ public class ImServiceImpl implements ImService {
             imElasticsearchBaseDocument = new ImElasticsearchBaseDocument();
         }
 
-        function.apply(imElasticsearchBaseDocument);
+        fn.apply(imElasticsearchBaseDocument);
 
         ImElasticsearchBaseDocument finalImElasticsearchBaseDocument = imElasticsearchBaseDocument;
 
