@@ -426,6 +426,12 @@ public class ImServiceImpl implements ImService {
 
         Date date = new Date();
 
+        boolean exists = ChainWrappers.lambdaQueryChain(sysUserMapper).eq(BaseEntityTwo::getId, dto.getToId())
+            .eq(SysUserDO::getDelFlag, false).exists();
+        if (!exists) {
+            ApiResultVO.error("操作失败：不存在该用户，请刷新重试");
+        }
+
         ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument =
             new ImElasticsearchFriendRequestDocument();
         imElasticsearchFriendRequestDocument.setCreateId(currentUserId);
