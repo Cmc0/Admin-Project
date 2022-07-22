@@ -39,14 +39,14 @@ export function sysFileDownload(form: SysFileDownloadDTO) {
     })
 }
 
-// 1 头像
+// AVATAR 头像
 type TSysFileUploadProType = 'AVATAR'
 
 // 文件-管理 文件上传，二次封装
 export function SysFileUploadPro(file: string | RcFile | Blob, type: TSysFileUploadProType) {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('type', type)
+    // formData.append('uploadType', type)
     return new Promise<string>((resolve, reject) => {
         sysFileUpload(formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
             resolve(res.data)

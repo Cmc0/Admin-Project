@@ -16,7 +16,7 @@ export function sysRequestAllAvg(config?: AxiosRequestConfig) {
 export interface SysRequestPageDTO extends MyPageDTO {
     beginCreateTime?: string // 创建开始时间
     beginTimeNumber?: number // 耗时开始（毫秒）
-    category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    category?: number // 请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     current?: number // 第几页
     endCreateTime?: string // 创建结束时间
@@ -36,7 +36,7 @@ export function sysRequestAllAvgPro(form: SysRequestPageDTO, config?: AxiosReque
 }
 
 export interface SysRequestDO {
-    category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    category?: number // 请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     createId?: number // 创建人id
     createTime?: string // 创建时间
     delFlag?: boolean // 是否逻辑删除
@@ -62,7 +62,7 @@ export function sysRequestPage(form: SysRequestPageDTO, config?: AxiosRequestCon
 }
 
 export interface SysRequestSelfLoginRecordPageDTO extends MyPageDTO {
-    category?: number // 类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
+    category?: number // 请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序
     current?: number // 第几页
     ip?: string // ip
     order?: MyOrderDTO // 排序字段

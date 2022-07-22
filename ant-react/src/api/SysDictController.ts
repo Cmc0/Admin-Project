@@ -26,7 +26,7 @@ export interface SysDictDO {
     name?: string // 字典/字典项 名
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     remark?: string // 描述/备注
-    type?: number // 类型：1 字典 2 字典项
+    type?: number // 字典类型：1 字典 2 字典项
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     value?: number // 字典项 value（数字 123...）备注：字典为 -1
@@ -45,7 +45,7 @@ export interface SysDictInsertOrUpdateDTO {
     name?: string // 字典/字典项 名
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     remark?: string // 描述/备注
-    type?: number // 类型：1 字典 2 字典项
+    type?: number // 字典类型：1 字典 2 字典项
     value?: number // 字典项 value（数字 123...）备注：字典为 -1
 }
 
@@ -81,7 +81,7 @@ export interface SysDictTreeVO {
     name?: string // 字典/字典项 名
     orderNo?: number // 排序号（值越大越前面，默认为 0）
     remark?: string // 描述/备注
-    type?: number // 类型：1 字典 2 字典项
+    type?: number // 字典类型：1 字典 2 字典项
     updateId?: number // 修改人id
     updateTime?: string // 修改时间
     value?: number // 字典项 value（数字 123...）备注：字典为 -1

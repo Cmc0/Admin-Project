@@ -70,14 +70,17 @@ export interface SysUserPageDTO extends MyPageDTO {
     beginCreateTime?: string // 创建开始时间
     beginLastActiveTime?: string // 最近活跃开始时间
     current?: number // 第几页
+    deptId?: number // 部门主键 id
     email?: string // 邮箱
     enableFlag?: boolean // 正常/冻结
     endCreateTime?: string // 创建结束时间
     endLastActiveTime?: string // 最近活跃结束时间
+    jobId?: number // 岗位主键 id
     nickname?: string // 昵称
     order?: MyOrderDTO // 排序字段
     pageSize?: number // 每页显示条数
     passwordFlag?: boolean // 是否有密码
+    roleId?: number // 角色主键 id
 }
 
 export interface SysUserPageVO {

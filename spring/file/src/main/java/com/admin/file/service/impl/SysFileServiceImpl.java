@@ -20,6 +20,7 @@ import com.admin.file.model.entity.SysFileDO;
 import com.admin.file.service.SysFileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.minio.*;
+import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import lombok.SneakyThrows;
@@ -79,11 +80,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
 
         path = path + newFileName;
 
-        // 不存在则创建桶
-        checkAndCreateBucket(dto.getUploadType().getBucketName());
-
         // 上传
-        upload(dto.getUploadType().getBucketName(), path, dto.getFile().getInputStream());
+        autoCreateBucketAndUpload(dto.getUploadType().getBucketName(), path, dto.getFile().getInputStream());
 
         String url =
             StrBuilder.create().append("/").append(dto.getUploadType().getBucketName()).append("/").append(path)
@@ -103,22 +101,22 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
     }
 
     /**
-     * 检查是否存在，不存在则 创建桶
-     */
-    @SneakyThrows
-    private void checkAndCreateBucket(String bucketName) {
-        if (!bucketExists(bucketName)) {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-        }
-    }
-
-    /**
+     * 如果执行失败，则创建 bucket之后，再执行一次
      * 备注：path 相同会被覆盖掉
      */
     @SneakyThrows
-    private void upload(String bucketName, String objectName, InputStream inputStream) {
-        minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectName)
-            .stream(inputStream, -1, ObjectWriteArgs.MAX_PART_SIZE).build());
+    private void autoCreateBucketAndUpload(String bucketName, String objectName, InputStream inputStream) {
+        try {
+            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectName)
+                .stream(inputStream, -1, ObjectWriteArgs.MAX_PART_SIZE).build());
+        } catch (ErrorResponseException e) {
+            if ("NoSuchBucket".equals(e.errorResponse().code())) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+                autoCreateBucketAndUpload(bucketName, objectName, inputStream);
+                return;
+            }
+            throw e;
+        }
     }
 
     /**

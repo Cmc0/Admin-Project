@@ -5,8 +5,6 @@ import cn.hutool.core.io.unit.DataSizeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.MyFileTypeUtil;
-import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -21,13 +19,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 public enum SysFileUploadTypeEnum {
-    AVATAR(1, "头像", "public", "avatar", CollUtil.newHashSet("jpeg", "png", "jpg"), 1024 * 1024 * 2) //
+    AVATAR("public", "avatar", CollUtil.newHashSet("jpeg", "png", "jpg"), 1024 * 1024 * 2) // 头像
     ;
 
-    @EnumValue
-    @JsonValue
-    private int code;
-    private String codeDescription; // code 说明
     private String bucketName; // 桶名
     private String folderName; // 文件夹名
     private Set<String> acceptFileTypeSet; // 支持上传的文件类型（字母必须全小写），为 null则表示支持所有文件，为 空集合则表示不支持所有文件
