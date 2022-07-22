@@ -600,11 +600,11 @@ public class ImServiceImpl implements ImService {
 
             // 并由系统给双方发送一条消息
             insertOrUpdateMsgDocument(
-                new ImSendDTO("对方已经同意您的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getCreateId()),
-                imElasticsearchFriendRequestDocument.getToId(), BaseConstant.SYS_ID);
-            insertOrUpdateMsgDocument(
-                new ImSendDTO("您已经通过对方的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getToId()),
+                new ImSendDTO("对方已经同意您的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getToId()),
                 imElasticsearchFriendRequestDocument.getCreateId(), BaseConstant.SYS_ID);
+            insertOrUpdateMsgDocument(
+                new ImSendDTO("您已经通过对方的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getCreateId()),
+                imElasticsearchFriendRequestDocument.getToId(), BaseConstant.SYS_ID);
 
             KafkaUtil.friendRequestAgreed(CollUtil.newHashSet(imElasticsearchFriendRequestDocument.getCreateId(),
                 imElasticsearchFriendRequestDocument.getToId()));
