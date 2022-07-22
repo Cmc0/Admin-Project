@@ -4,16 +4,19 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.GetRequest;
 import co.elastic.clients.elasticsearch.core.GetResponse;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
-import co.elastic.clients.transport.endpoints.BooleanResponse;
+import co.elastic.clients.util.ObjectBuilder;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
@@ -52,6 +55,38 @@ public class ImServiceImpl implements ImService {
     SysUserMapper sysUserMapper;
 
     /**
+     * 如果执行失败，则创建 index之后，再执行一次
+     */
+    @SneakyThrows
+    private <TDocument> GetResponse<TDocument> autoCreateIndexAndGet(String index,
+        Function<GetRequest.Builder, ObjectBuilder<GetRequest>> fn, Class<TDocument> tDocumentClass) {
+
+        try {
+            return elasticsearchClient.get(fn, tDocumentClass);
+        } catch (ElasticsearchException e) {
+            e.printStackTrace();
+            elasticsearchClient.indices().create(c -> c.index(index));
+            return elasticsearchClient.get(fn, tDocumentClass);
+        }
+    }
+
+    /**
+     * 如果执行失败，则创建 index之后，再执行一次
+     */
+    @SneakyThrows
+    private <TDocument> SearchResponse<TDocument> autoCreateIndexAndSearch(String index,
+        Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> fn, Class<TDocument> tDocumentClass) {
+
+        try {
+            return elasticsearchClient.search(fn, tDocumentClass);
+        } catch (ElasticsearchException e) {
+            e.printStackTrace();
+            elasticsearchClient.indices().create(c -> c.index(index));
+            return elasticsearchClient.search(fn, tDocumentClass);
+        }
+    }
+
+    /**
      * 发送消息
      */
     @SneakyThrows
@@ -84,8 +119,6 @@ public class ImServiceImpl implements ImService {
 
         String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
 
-        checkAndCreateIndex(userImMsgIndex);
-
         elasticsearchClient
             .index(i -> i.index(userImMsgIndex).id(IdUtil.simpleUUID()).document(imElasticsearchMsgDocument));
     }
@@ -110,20 +143,17 @@ public class ImServiceImpl implements ImService {
      * 执行：新增/修改：即时通讯功能的 基础index
      */
     @SneakyThrows
-    private void doInsertOrUpdateBaseDocument(Long currentUserId,
-        Function<ImElasticsearchBaseDocument, Object> function) {
+    private <T> void doInsertOrUpdateBaseDocument(Long currentUserId,
+        Function<ImElasticsearchBaseDocument, T> function) {
 
-        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_BASE_INDEX);
-
-        GetResponse<ImElasticsearchBaseDocument> getResponse = elasticsearchClient
-            .get(g -> g.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
+        GetResponse<ImElasticsearchBaseDocument> getResponse =
+            autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_BASE_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
                 ImElasticsearchBaseDocument.class);
 
         ImElasticsearchBaseDocument imElasticsearchBaseDocument = getResponse.source();
 
-        boolean imBaseDocumentNullFlag = imElasticsearchBaseDocument == null;
-
-        if (imBaseDocumentNullFlag) {
+        if (imElasticsearchBaseDocument == null) {
             imElasticsearchBaseDocument = new ImElasticsearchBaseDocument();
         }
 
@@ -131,27 +161,9 @@ public class ImServiceImpl implements ImService {
 
         ImElasticsearchBaseDocument finalImElasticsearchBaseDocument = imElasticsearchBaseDocument;
 
-        if (imBaseDocumentNullFlag) {
-            elasticsearchClient.index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
-                    .document(finalImElasticsearchBaseDocument));
-        } else {
-            elasticsearchClient.update(
-                u -> u.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
-                    .doc(finalImElasticsearchBaseDocument), ImElasticsearchBaseDocument.class);
-        }
-    }
-
-    @SneakyThrows
-    private boolean checkAndCreateIndex(String index) {
-
-        BooleanResponse booleanResponse = elasticsearchClient.indices().exists(e -> e.index(index));
-
-        if (!booleanResponse.value()) {
-            elasticsearchClient.indices().create(c -> c.index(index));
-        }
-
-        return booleanResponse.value();
+        elasticsearchClient.index(
+            i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
+                .document(finalImElasticsearchBaseDocument));
     }
 
     /**
@@ -199,10 +211,9 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_BASE_INDEX);
-
-        GetResponse<ImElasticsearchBaseDocument> getResponse = elasticsearchClient
-            .get(g -> g.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
+        GetResponse<ImElasticsearchBaseDocument> getResponse =
+            autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_BASE_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
                 ImElasticsearchBaseDocument.class);
 
         ImElasticsearchBaseDocument imElasticsearchBaseDocument = getResponse.source();
@@ -225,7 +236,7 @@ public class ImServiceImpl implements ImService {
         String lastContentAggs = "last_content";
 
         SearchResponse<ImElasticsearchMsgDocument> searchResponse =
-            elasticsearchClient.search(s -> s.index(userImMsgIndex) //
+            autoCreateIndexAndSearch(userImMsgIndex, s -> s.index(userImMsgIndex) //
                     .size(0) //
                     .query(sq -> sq.terms(sqt -> sqt.field("sid.keyword").terms(sqtt -> sqtt.value(fieldValueList)))) //
                     .aggregations(groupBySidAggs, sa -> sa.terms(sat -> sat.field("sid.keyword")) //
@@ -330,16 +341,12 @@ public class ImServiceImpl implements ImService {
 
         String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
 
-        boolean checkAndCreateIndex = checkAndCreateIndex(userImMsgIndex);
-        if (!checkAndCreateIndex) {
-            return dto.getPage(false);
-        }
-
-        SearchResponse<ImContentPageVO> searchResponse = elasticsearchClient.search(s -> s.index(userImMsgIndex) //
-                .from((current - 1) * pageSize).size(pageSize) //
-                .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc))) //
-                .query(sq -> sq.term(sqt -> sqt.field("sid.keyword").value(dto.getSId()))) //
-            , ImContentPageVO.class);
+        SearchResponse<ImContentPageVO> searchResponse =
+            autoCreateIndexAndSearch(userImMsgIndex, s -> s.index(userImMsgIndex) //
+                    .from((current - 1) * pageSize).size(pageSize) //
+                    .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc))) //
+                    .query(sq -> sq.term(sqt -> sqt.field("sid.keyword").value(dto.getSId()))) //
+                , ImContentPageVO.class);
 
         HitsMetadata<ImContentPageVO> hits = searchResponse.hits();
 
@@ -388,8 +395,6 @@ public class ImServiceImpl implements ImService {
         imElasticsearchFriendRequestDocument.setContent(dto.getContent());
         imElasticsearchFriendRequestDocument.setToId(dto.getToId());
         imElasticsearchFriendRequestDocument.setResult(ImFriendRequestResultEnum.PENDING);
-
-        checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX);
 
         elasticsearchClient.index(
             i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
@@ -448,17 +453,13 @@ public class ImServiceImpl implements ImService {
 
         long currentUserId = UserUtil.getCurrentUserId();
 
-        boolean checkAndCreateIndex = checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX);
-        if (!checkAndCreateIndex) {
-            return dto.getPage(false);
-        }
-
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
                 Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId))));
 
         SearchResponse<ImFriendRequestPageVO> searchResponse =
-            elasticsearchClient.search(s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX) //
+            autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX) //
                     .from((current - 1) * pageSize).size(pageSize) //
                     .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc))) //
                     .query(sq -> sq.bool(sqb -> sqb.should(queryList))) //
@@ -495,8 +496,9 @@ public class ImServiceImpl implements ImService {
     @Override
     public String friendRequestHandler(ImFriendRequestHandlerDTO dto) {
 
-        GetResponse<ImElasticsearchFriendRequestDocument> getResponse = elasticsearchClient
-            .get(g -> g.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId()),
+        GetResponse<ImElasticsearchFriendRequestDocument> getResponse =
+            autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId()),
                 ImElasticsearchFriendRequestDocument.class);
 
         ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument = getResponse.source();
