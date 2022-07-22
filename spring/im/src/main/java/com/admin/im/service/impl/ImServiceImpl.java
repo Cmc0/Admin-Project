@@ -113,7 +113,9 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        insertOrUpdateBaseDocument(dto, currentUserId);// 新增/修改：即时通讯功能的 基础index
+        // 新增/修改：即时通讯功能的 基础index
+        doInsertOrUpdateBaseDocument(dto.getToType(), dto.getToId(), currentUserId, true,
+            i -> i.getSIdSet().add(dto.getToType().getSId(dto.getToId())));
 
         insertOrUpdateMsgDocument(dto, currentUserId, currentUserId); // 新增/修改：即时通讯功能的 消息index
 
@@ -147,18 +149,12 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
-     * 新增/修改：即时通讯功能的 基础index
-     */
-    @SneakyThrows
-    private void insertOrUpdateBaseDocument(ImSendDTO dto, Long currentUserId) {
-        doInsertOrUpdateBaseDocument(currentUserId, i -> i.getSIdSet().add(dto.getToType().getSId(dto.getToId())));
-    }
-
-    /**
      * 执行：新增/修改：即时通讯功能的 基础index
+     * checkToIdFlag：检查 toId，是否在 联系人/群组 idSet里，通常为 true
      */
     @SneakyThrows
-    private <T> void doInsertOrUpdateBaseDocument(Long currentUserId, Function<ImElasticsearchBaseDocument, T> fn) {
+    private <T> void doInsertOrUpdateBaseDocument(ImToTypeEnum toType, Long toId, Long currentUserId,
+        boolean checkToIdFlag, Function<ImElasticsearchBaseDocument, T> fn) {
 
         GetResponse<ImElasticsearchBaseDocument> getResponse =
             autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_BASE_INDEX,
@@ -166,6 +162,17 @@ public class ImServiceImpl implements ImService {
                 ImElasticsearchBaseDocument.class);
 
         ImElasticsearchBaseDocument imElasticsearchBaseDocument = getResponse.source();
+
+        if (checkToIdFlag) {
+            if (imElasticsearchBaseDocument == null) {
+                checkToIdError(toType);
+            } else {
+                if (!imElasticsearchBaseDocument.getCIdSet().contains(toId) || !imElasticsearchBaseDocument.getGIdSet()
+                    .contains(toId)) {
+                    checkToIdError(toType);
+                }
+            }
+        }
 
         if (imElasticsearchBaseDocument == null) {
             imElasticsearchBaseDocument = new ImElasticsearchBaseDocument();
@@ -178,6 +185,16 @@ public class ImServiceImpl implements ImService {
         elasticsearchClient.index(
             i -> i.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString())
                 .document(finalImElasticsearchBaseDocument));
+    }
+
+    private void checkToIdError(ImToTypeEnum toType) {
+
+        if (ImToTypeEnum.GROUP.equals(toType)) {
+            ApiResultVO.error("操作失败：您不在群组里，无法发送消息");
+        } else {
+            ApiResultVO.error("操作失败：对方不是您的好友，无法发送消息");
+        }
+
     }
 
     /**
@@ -556,16 +573,19 @@ public class ImServiceImpl implements ImService {
             String sIdForCreate = imToTypeEnum.getSId(imElasticsearchFriendRequestDocument.getCreateId());
 
             // 如果同意了，则添加双方到 联系人和会话列表
-            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getCreateId(), i -> {
-                i.getCIdSet().add(imElasticsearchFriendRequestDocument.getToId());
-                i.getSIdSet().add(sIdForTo);
-                return null;
-            });
-            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getToId(), i -> {
-                i.getCIdSet().add(imElasticsearchFriendRequestDocument.getCreateId());
-                i.getSIdSet().add(sIdForCreate);
-                return null;
-            });
+            doInsertOrUpdateBaseDocument(imToTypeEnum, imElasticsearchFriendRequestDocument.getToId(),
+                imElasticsearchFriendRequestDocument.getCreateId(), false, i -> {
+                    i.getCIdSet().add(imElasticsearchFriendRequestDocument.getToId());
+                    i.getSIdSet().add(sIdForTo);
+                    return null;
+                });
+            doInsertOrUpdateBaseDocument(imToTypeEnum, imElasticsearchFriendRequestDocument.getCreateId(),
+                imElasticsearchFriendRequestDocument.getToId(), false, i -> {
+                    i.getCIdSet().add(imElasticsearchFriendRequestDocument.getCreateId());
+                    i.getSIdSet().add(sIdForCreate);
+                    return null;
+                });
+
             // 并由系统给双方发送一条消息
             insertOrUpdateMsgDocument(
                 new ImSendDTO("对方已经同意您的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getCreateId()),
