@@ -315,7 +315,7 @@ public class ImServiceImpl implements ImService {
                 sysUserDOList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, it -> it));
 
             if (groupMap.size() != 0) {
-                stream.forEach(item -> {
+                stream = stream.peek(item -> {
                     SysUserDO sysUserDO = groupMap.get(item.getToId());
                     if (sysUserDO != null) {
                         item.setToAvatarUrl(sysUserDO.getAvatarUrl()); // 设置：头像等
