@@ -17,7 +17,7 @@ import java.util.Map;
 public class ExceptionAdvice {
 
     /**
-     * 参数校验异常
+     * 参数校验异常-1
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ApiResultVO<?> handlerValidException(MethodArgumentNotValidException e) {
@@ -39,13 +39,13 @@ public class ExceptionAdvice {
     }
 
     /**
-     * 参数校验异常
+     * 参数校验异常-2
      */
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ApiResultVO<?> handlerIllegalArgumentException(IllegalArgumentException e) {
 
         try {
-            ApiResultVO.error(e.getMessage()); // 这里肯定会抛出 BaseException异常
+            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR, e.getMessage()); // 这里肯定会抛出 BaseException异常
         } catch (BaseException baseException) {
             return getBaseExceptionApiResult(baseException);
         }
