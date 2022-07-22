@@ -72,9 +72,12 @@ public class WebSocketListener {
                 writeAndFlush(channelList, webSocketMessageEnum);
             }
 
-        } else if (code == 5 || code == 7) {
+        } else if (code == 5 || (code >= 7 && code <= 9)) {
 
             // 5 有新的通知
+            // 7 有新的好友申请
+            // 8 好友申请已通过
+            // 9 即时通讯，发送消息
             Set<Number> userIdSet = json.get("userIdSet", Set.class);
 
             channelList = MyNettyChannelGroupHelper.getChannelByIdSet(MyNettyChannelGroupHelper.USER_ID_KEY, userIdSet);

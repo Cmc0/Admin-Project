@@ -23,6 +23,7 @@ public enum WebSocketMessageEnum {
     NEW_BULLETIN(6, null, "有新的公告"), // json:{ userIdSet }
     FRIEND_REQUEST(7, null, "有新的好友申请"), // json:{ userIdSet }
     FRIEND_REQUEST_AGREED(8, null, "好友申请已通过"), // json:{ userIdSet }
+    IM_SEND(9, null, "即时通讯，发送消息"), // json:{ userIdSet }
     ;
 
     private int code;

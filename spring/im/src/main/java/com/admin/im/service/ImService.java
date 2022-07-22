@@ -1,7 +1,7 @@
 package com.admin.im.service;
 
+import com.admin.common.model.entity.SysUserDO;
 import com.admin.im.model.dto.*;
-import com.admin.im.model.vo.ImContactPageVO;
 import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -21,5 +21,5 @@ public interface ImService {
 
     String friendRequestHandler(ImFriendRequestHandlerDTO dto);
 
-    Page<ImContactPageVO> contactPage(ImContactPageDTO dto);
+    Page<SysUserDO> contactPage(ImContactPageDTO dto);
 }

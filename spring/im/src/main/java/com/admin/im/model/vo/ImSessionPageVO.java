@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class ImSessionPageVO extends ImElasticsearchMsgDocument {
 
-    @ApiModelProperty(value = "elasticsearch id")
+    @ApiModelProperty(value = "elasticsearch id，备注：toType_toId")
     private String id;
 
     @ApiModelProperty(value = "头像地址")

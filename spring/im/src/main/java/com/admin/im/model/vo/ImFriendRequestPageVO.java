@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class ImFriendRequestPageVO extends ImElasticsearchFriendRequestDocument {
 
-    @ApiModelProperty(value = "elasticsearch id")
+    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
     private String id;
 
 }

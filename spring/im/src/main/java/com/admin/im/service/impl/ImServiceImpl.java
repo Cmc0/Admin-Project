@@ -33,7 +33,6 @@ import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImFriendRequestResultEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
-import com.admin.im.model.vo.ImContactPageVO;
 import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -117,6 +116,11 @@ public class ImServiceImpl implements ImService {
         insertOrUpdateBaseDocument(dto, currentUserId);// 新增/修改：即时通讯功能的 基础index
 
         insertOrUpdateMsgDocument(dto, currentUserId, currentUserId); // 新增/修改：即时通讯功能的 消息index
+
+        if (dto.getToType().equals(ImToTypeEnum.CONTACT)) {
+            KafkaUtil.imSend(CollUtil.newHashSet(currentUserId, dto.getToId()));
+        }
+        // TODO：给群组发送消息
 
         return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
@@ -581,8 +585,30 @@ public class ImServiceImpl implements ImService {
      * 联系人，分页排序查询
      */
     @Override
-    public Page<ImContactPageVO> contactPage(ImContactPageDTO dto) {
-        return null;
+    public Page<SysUserDO> contactPage(ImContactPageDTO dto) {
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        GetResponse<ImElasticsearchBaseDocument> getResponse =
+            autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_BASE_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_BASE_INDEX).id(currentUserId.toString()),
+                ImElasticsearchBaseDocument.class);
+
+        ImElasticsearchBaseDocument imElasticsearchBaseDocument = getResponse.source();
+
+        if (imElasticsearchBaseDocument == null) {
+            return dto.getPage(false);
+        }
+
+        Set<Long> cIdSet = imElasticsearchBaseDocument.getCIdSet(); // 获取：联系人 idSet
+
+        if (cIdSet.size() == 0) {
+            return dto.getPage(false);
+        }
+
+        return ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, cIdSet)
+            .select(SysUserDO::getAvatarUrl, SysUserDO::getNickname, BaseEntityTwo::getId)
+            .orderByAsc(BaseEntityTwo::getId).page(dto.getPage(false));
     }
 
 }

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 public class ImFriendRequestHandlerDTO {
 
     @NotBlank
-    @ApiModelProperty(value = "elasticsearch id")
+    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
     private String id;
 
     @NotNull
