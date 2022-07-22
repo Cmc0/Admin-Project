@@ -20,7 +20,7 @@ public class ExceptionAdvice {
      * 参数校验异常
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ApiResultVO<?> handleValidException(MethodArgumentNotValidException e) {
+    public ApiResultVO<?> handlerValidException(MethodArgumentNotValidException e) {
 
         // 返回详细的参数校验错误信息
         Map<String, String> map = MapUtil.newHashMap();
@@ -39,10 +39,25 @@ public class ExceptionAdvice {
     }
 
     /**
+     * 参数校验异常
+     */
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ApiResultVO<?> handlerIllegalArgumentException(IllegalArgumentException e) {
+
+        try {
+            ApiResultVO.error(e.getMessage()); // 这里肯定会抛出 BaseException异常
+        } catch (BaseException baseException) {
+            return getBaseExceptionApiResult(baseException);
+        }
+
+        return null; // 这里不会执行，只是为了通过语法检查
+    }
+
+    /**
      * 自定义异常
      */
     @ExceptionHandler(value = BaseException.class)
-    public ApiResultVO<?> handleBaseException(BaseException e) {
+    public ApiResultVO<?> handlerBaseException(BaseException e) {
 
         e.printStackTrace();
 
@@ -53,7 +68,7 @@ public class ExceptionAdvice {
      * 权限不够时的异常处理
      */
     @ExceptionHandler(value = AccessDeniedException.class)
-    public ApiResultVO<?> handleAccessDeniedException(AccessDeniedException e) {
+    public ApiResultVO<?> handlerAccessDeniedException(AccessDeniedException e) {
 
         e.printStackTrace();
 
@@ -70,7 +85,7 @@ public class ExceptionAdvice {
      * 缺省异常处理，直接提示系统异常
      */
     @ExceptionHandler(value = Throwable.class)
-    public ApiResultVO<?> handleThrowable(Throwable e) {
+    public ApiResultVO<?> handlerThrowable(Throwable e) {
 
         e.printStackTrace();
 
