@@ -26,6 +26,7 @@ import io.minio.messages.DeleteObject;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -96,7 +97,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         save(sysFileDO); // 先保存数据库
 
         // 上传
-        autoCreateBucketAndUpload(dto.getUploadType().getBucketName(), path, dto.getFile().getInputStream());
+        autoCreateBucketAndUpload(dto.getUploadType().getBucketName(), path, dto.getFile());
 
         return url;
     }
@@ -106,14 +107,14 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
      * 备注：path 相同会被覆盖掉
      */
     @SneakyThrows
-    private void autoCreateBucketAndUpload(String bucketName, String objectName, InputStream inputStream) {
+    private void autoCreateBucketAndUpload(String bucketName, String objectName, MultipartFile file) {
         try {
             minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectName)
-                .stream(inputStream, -1, ObjectWriteArgs.MAX_PART_SIZE).build());
+                .stream(file.getInputStream(), -1, ObjectWriteArgs.MAX_PART_SIZE).build());
         } catch (ErrorResponseException e) {
             if ("NoSuchBucket".equals(e.errorResponse().code())) {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-                autoCreateBucketAndUpload(bucketName, objectName, inputStream);
+                autoCreateBucketAndUpload(bucketName, objectName, file);
                 return;
             }
             throw e;
