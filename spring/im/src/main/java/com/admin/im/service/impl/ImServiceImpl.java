@@ -431,7 +431,7 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        Long currentUserId = UserUtil.getCurrentUserId();
+        long currentUserId = UserUtil.getCurrentUserId();
 
         boolean checkAndCreateIndex = checkAndCreateIndex(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX);
         if (!checkAndCreateIndex) {
