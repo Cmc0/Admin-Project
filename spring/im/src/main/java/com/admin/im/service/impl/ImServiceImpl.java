@@ -560,7 +560,7 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        if (!imElasticsearchFriendRequestDocument.getCreateId().equals(currentUserId)) {
+        if (!imElasticsearchFriendRequestDocument.getToId().equals(currentUserId)) {
             ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
         }
 
