@@ -171,7 +171,7 @@ public class ImServiceImpl implements ImService {
             if (imElasticsearchBaseDocument == null) {
                 checkToIdError(toType);
             } else {
-                if (!imElasticsearchBaseDocument.getCIdSet().contains(toId) || !imElasticsearchBaseDocument.getGIdSet()
+                if (!imElasticsearchBaseDocument.getCIdSet().contains(toId) && !imElasticsearchBaseDocument.getGIdSet()
                     .contains(toId)) {
                     checkToIdError(toType);
                 }
