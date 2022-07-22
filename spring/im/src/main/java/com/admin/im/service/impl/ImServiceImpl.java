@@ -40,6 +40,7 @@ import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.util.*;
@@ -59,7 +60,7 @@ public class ImServiceImpl implements ImService {
      * 如果执行失败，则创建 index之后，再执行一次
      */
     @SneakyThrows
-    @Nullable
+    @Nonnull
     private <TDocument> GetResponse<TDocument> autoCreateIndexAndGet(String index,
         Function<GetRequest.Builder, ObjectBuilder<GetRequest>> fn, Class<TDocument> tDocumentClass) {
 
@@ -531,25 +532,29 @@ public class ImServiceImpl implements ImService {
         ImElasticsearchFriendRequestDocument imElasticsearchFriendRequestDocument = getResponse.source();
 
         if (imElasticsearchFriendRequestDocument == null) {
-            return BaseBizCodeEnum.ILLEGAL_REQUEST.getMsg();
+            ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
         }
 
-        imElasticsearchFriendRequestDocument = new ImElasticsearchFriendRequestDocument();
+        if (ImFriendRequestResultEnum.PENDING.equals(dto.getResult())) {
+            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
+        }
+
+        if (!ImFriendRequestResultEnum.PENDING.equals(imElasticsearchFriendRequestDocument.getResult())) {
+            ApiResultVO.error("操作失败：已经处理过了，请刷新重试");
+        }
+
         imElasticsearchFriendRequestDocument.setResult(dto.getResult());
         imElasticsearchFriendRequestDocument.setUpdateTime(new Date());
 
-        ImElasticsearchFriendRequestDocument finalImElasticsearchFriendRequestDocument =
-            imElasticsearchFriendRequestDocument;
-
         elasticsearchClient.update(u -> u.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId())
-            .doc(finalImElasticsearchFriendRequestDocument), ImElasticsearchFriendRequestDocument.class);
+            .doc(imElasticsearchFriendRequestDocument), ImElasticsearchFriendRequestDocument.class);
 
         if (ImFriendRequestResultEnum.AGREED.equals(dto.getResult())) {
             // 如果同意了，则添加双方到联系人列表
-            doInsertOrUpdateBaseDocument(finalImElasticsearchFriendRequestDocument.getCreateId(),
-                i -> i.getCIdSet().add(finalImElasticsearchFriendRequestDocument.getToId()));
-            doInsertOrUpdateBaseDocument(finalImElasticsearchFriendRequestDocument.getToId(),
-                i -> i.getCIdSet().add(finalImElasticsearchFriendRequestDocument.getCreateId()));
+            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getCreateId(),
+                i -> i.getCIdSet().add(imElasticsearchFriendRequestDocument.getToId()));
+            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getToId(),
+                i -> i.getCIdSet().add(imElasticsearchFriendRequestDocument.getCreateId()));
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
