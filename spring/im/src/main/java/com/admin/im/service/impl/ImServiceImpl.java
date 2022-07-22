@@ -302,18 +302,18 @@ public class ImServiceImpl implements ImService {
     @Override
     public Page<ImContentPageVO> contentPage(ImContentPageDTO dto) {
 
-        Long currentUserId = UserUtil.getCurrentUserId();
-
-        String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
-
-        checkAndCreateIndex(userImMsgIndex);
-
         Integer current = Convert.toInt(dto.getCurrent());
         Integer pageSize = Convert.toInt(dto.getPageSize());
 
         if (current == null || pageSize == null) {
             return dto.getPage(false);
         }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        String userImMsgIndex = BaseElasticsearchIndexConstant.IM_MSG_INDEX_ + currentUserId;
+
+        checkAndCreateIndex(userImMsgIndex);
 
         SearchResponse<ImContentPageVO> searchResponse = elasticsearchClient.search(i -> i.index(userImMsgIndex) //
                 .from((current - 1) * pageSize).size(pageSize) //
