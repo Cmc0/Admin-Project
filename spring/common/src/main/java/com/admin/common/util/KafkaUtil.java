@@ -35,6 +35,17 @@ public class KafkaUtil {
     }
 
     /**
+     * 消息推送：好友申请已通过
+     */
+    public static void friendRequestAgreed(Set<Long> userIdSet) {
+
+        WebSocketMessageEnum webSocketMessageEnum = WebSocketMessageEnum.FRIEND_REQUEST_AGREED;
+        webSocketMessageEnum.setJson(JSONUtil.createObj().set("userIdSet", userIdSet));
+        sendWebSocketMessageByKafka(webSocketMessageEnum);
+
+    }
+
+    /**
      * 消息推送：公告推送
      */
     public static void newBulletin(Set<Long> userIdSet) {

@@ -19,6 +19,7 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.util.ObjectBuilder;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
+import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
@@ -31,6 +32,7 @@ import com.admin.im.model.document.ImElasticsearchMsgDocument;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImFriendRequestResultEnum;
+import com.admin.im.model.enums.ImToTypeEnum;
 import com.admin.im.model.vo.ImContentPageVO;
 import com.admin.im.model.vo.ImFriendRequestPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -113,7 +115,7 @@ public class ImServiceImpl implements ImService {
 
         insertOrUpdateBaseDocument(dto, currentUserId);// 新增/修改：即时通讯功能的 基础index
 
-        insertOrUpdateMsgDocument(dto, currentUserId); // 新增/修改：即时通讯功能的 消息index
+        insertOrUpdateMsgDocument(dto, currentUserId, currentUserId); // 新增/修改：即时通讯功能的 消息index
 
         return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
@@ -122,11 +124,11 @@ public class ImServiceImpl implements ImService {
      * 新增/修改：即时通讯功能的 消息index
      */
     @SneakyThrows
-    private void insertOrUpdateMsgDocument(ImSendDTO dto, Long currentUserId) {
+    private void insertOrUpdateMsgDocument(ImSendDTO dto, Long currentUserId, Long createId) {
 
         ImElasticsearchMsgDocument imElasticsearchMsgDocument = new ImElasticsearchMsgDocument();
         imElasticsearchMsgDocument.setCreateTime(new Date());
-        imElasticsearchMsgDocument.setCreateId(currentUserId);
+        imElasticsearchMsgDocument.setCreateId(createId);
         imElasticsearchMsgDocument.setContent(dto.getContent());
         imElasticsearchMsgDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：暂时写成：文本
         imElasticsearchMsgDocument.setToId(dto.getToId());
@@ -543,11 +545,32 @@ public class ImServiceImpl implements ImService {
             .doc(imElasticsearchFriendRequestDocument), ImElasticsearchFriendRequestDocument.class);
 
         if (ImFriendRequestResultEnum.AGREED.equals(dto.getResult())) {
-            // 如果同意了，则添加双方到联系人列表
-            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getCreateId(),
-                i -> i.getCIdSet().add(imElasticsearchFriendRequestDocument.getToId()));
-            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getToId(),
-                i -> i.getCIdSet().add(imElasticsearchFriendRequestDocument.getCreateId()));
+
+            ImToTypeEnum imToTypeEnum = ImToTypeEnum.CONTACT;
+            String sIdForTo = imToTypeEnum.getSId(imElasticsearchFriendRequestDocument.getToId());
+            String sIdForCreate = imToTypeEnum.getSId(imElasticsearchFriendRequestDocument.getCreateId());
+
+            // 如果同意了，则添加双方到 联系人和会话列表
+            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getCreateId(), i -> {
+                i.getCIdSet().add(imElasticsearchFriendRequestDocument.getToId());
+                i.getSIdSet().add(sIdForTo);
+                return null;
+            });
+            doInsertOrUpdateBaseDocument(imElasticsearchFriendRequestDocument.getToId(), i -> {
+                i.getCIdSet().add(imElasticsearchFriendRequestDocument.getCreateId());
+                i.getSIdSet().add(sIdForCreate);
+                return null;
+            });
+            // 并由系统给双方发送一条消息
+            insertOrUpdateMsgDocument(
+                new ImSendDTO("对方已经同意您的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getCreateId()),
+                imElasticsearchFriendRequestDocument.getToId(), BaseConstant.SYS_ID);
+            insertOrUpdateMsgDocument(
+                new ImSendDTO("您已经通过对方的好友申请", imToTypeEnum, imElasticsearchFriendRequestDocument.getToId()),
+                imElasticsearchFriendRequestDocument.getCreateId(), BaseConstant.SYS_ID);
+
+            KafkaUtil.friendRequestAgreed(CollUtil.newHashSet(imElasticsearchFriendRequestDocument.getCreateId(),
+                imElasticsearchFriendRequestDocument.getToId()));
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();

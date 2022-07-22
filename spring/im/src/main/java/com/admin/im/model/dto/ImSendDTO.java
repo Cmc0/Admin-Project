@@ -2,13 +2,17 @@ package com.admin.im.model.dto;
 
 import com.admin.im.model.enums.ImToTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ImSendDTO {
 
     @NotBlank
