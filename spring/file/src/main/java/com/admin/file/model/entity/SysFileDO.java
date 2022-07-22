@@ -1,6 +1,7 @@
 package com.admin.file.model.entity;
 
 import com.admin.common.model.entity.BaseEntityThree;
+import com.admin.file.model.enums.SysFileUploadTypeEnum;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,5 +25,8 @@ public class SysFileDO extends BaseEntityThree {
 
     @ApiModelProperty(value = "额外信息（json格式）")
     private String extraJson;
+
+    @ApiModelProperty(value = "文件上传类型，例如：1 头像")
+    private SysFileUploadTypeEnum uploadType;
 
 }

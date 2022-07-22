@@ -17,7 +17,6 @@ import com.admin.file.model.dto.SysFileDownloadDTO;
 import com.admin.file.model.dto.SysFileRemoveDTO;
 import com.admin.file.model.dto.SysFileUploadDTO;
 import com.admin.file.model.entity.SysFileDO;
-import com.admin.file.model.enums.SysFileUploadTypeEnum;
 import com.admin.file.service.SysFileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.minio.*;
@@ -51,12 +50,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
 
         Assert.notNull(dto.getFile());
 
-        SysFileUploadTypeEnum sysFileUploadTypeEnum = dto.getType();
-        if (sysFileUploadTypeEnum == null) {
-            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
-        }
-
-        sysFileUploadTypeEnum.checkFileSize(dto.getFile()); // 检查：文件大小
+        dto.getUploadType().checkFileSize(dto.getFile()); // 检查：文件大小
 
         String originalFilename = dto.getFile().getOriginalFilename();
 
@@ -64,13 +58,13 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
             ApiResultVO.error("操作失败：文件名不能为空");
         }
 
-        String fileType = sysFileUploadTypeEnum.checkFileType(dto.getFile());
+        String fileType = dto.getUploadType().checkFileType(dto.getFile());
         if (fileType == null) {
             ApiResultVO.error("操作失败：暂不支持此文件类型【" + originalFilename + "】，请重新选择");
         }
 
         // 把文件夹路径合法化
-        List<String> splitList = StrUtil.splitTrim(sysFileUploadTypeEnum.getFolderName(), '/');
+        List<String> splitList = StrUtil.splitTrim(dto.getUploadType().getFolderName(), '/');
         if (splitList.size() == 0) {
             ApiResultVO.error("操作失败：文件夹名不合法");
         }
@@ -86,13 +80,13 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         path = path + newFileName;
 
         // 不存在则创建桶
-        checkAndCreateBucket(sysFileUploadTypeEnum.getBucketName());
+        checkAndCreateBucket(dto.getUploadType().getBucketName());
 
         // 上传
-        upload(sysFileUploadTypeEnum.getBucketName(), path, dto.getFile().getInputStream());
+        upload(dto.getUploadType().getBucketName(), path, dto.getFile().getInputStream());
 
         String url =
-            StrBuilder.create().append("/").append(sysFileUploadTypeEnum.getBucketName()).append("/").append(path)
+            StrBuilder.create().append("/").append(dto.getUploadType().getBucketName()).append("/").append(path)
                 .toString();
 
         SysFileDO sysFileDO = new SysFileDO();
@@ -101,6 +95,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         sysFileDO.setFileExtName(fileType); // 存储：文件类型
         sysFileDO.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
         sysFileDO.setExtraJson(MyEntityUtil.getNotNullStr(dto.getExtraJson()));
+        sysFileDO.setUploadType(dto.getUploadType());
 
         save(sysFileDO);
 

@@ -15,7 +15,7 @@ public class SysFileUploadDTO {
     private MultipartFile file;
 
     @ApiModelProperty(value = "文件上传的类型")
-    private SysFileUploadTypeEnum type;
+    private SysFileUploadTypeEnum uploadType;
 
     @ApiModelProperty(value = "备注")
     private String remark;
