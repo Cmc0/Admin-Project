@@ -11,7 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ImToTypeEnum {
-    CONTACT((byte)1, "联系人"), //
+    FRIEND((byte)1, "好友"), //
     GROUP((byte)2, "群组"), //
     ;
 
@@ -19,9 +19,5 @@ public enum ImToTypeEnum {
     @JsonValue
     private byte code;
     private String codeDescription; // code 说明
-
-    public String getSId(Long toId) {
-        return getCode() + "_" + toId;
-    }
 
 }

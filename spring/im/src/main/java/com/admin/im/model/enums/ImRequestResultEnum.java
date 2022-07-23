@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 即时通讯 好友申请结果
+ * 即时通讯 申请结果
  */
 @AllArgsConstructor
 @Getter
-public enum ImFriendRequestResultEnum {
+public enum ImRequestResultEnum {
     PENDING((byte)1, "未决定"), //
     AGREED((byte)2, "已同意"), //
     REJECTED((byte)3, "已拒绝"), //
@@ -20,17 +20,5 @@ public enum ImFriendRequestResultEnum {
     @JsonValue
     private byte code;
     private String codeDescription; // code 说明
-
-    public static ImFriendRequestResultEnum getByCode(Byte code) {
-        if (code == null) {
-            return null;
-        }
-        for (ImFriendRequestResultEnum item : ImFriendRequestResultEnum.values()) {
-            if (item.getCode() == code) {
-                return item;
-            }
-        }
-        return null;
-    }
 
 }

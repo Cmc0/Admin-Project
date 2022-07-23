@@ -8,6 +8,7 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.util.ObjectBuilder;
 import com.admin.common.mapper.SysUserMapper;
+import com.admin.im.model.dto.ImFriendRequestDTO;
 import com.admin.im.service.ImService;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,14 @@ public class ImServiceImpl implements ImService {
     ElasticsearchClient elasticsearchClient;
     @Resource
     SysUserMapper sysUserMapper;
+
+    /**
+     * 发送好友申请
+     */
+    @Override
+    public String friendRequest(ImFriendRequestDTO dto) {
+        return null;
+    }
 
     /**
      * 如果执行失败，则创建 index之后，再执行一次

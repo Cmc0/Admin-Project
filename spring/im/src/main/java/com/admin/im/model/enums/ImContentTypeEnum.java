@@ -23,16 +23,4 @@ public enum ImContentTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
-    public static ImContentTypeEnum getByCode(Byte code) {
-        if (code == null) {
-            return null;
-        }
-        for (ImContentTypeEnum item : ImContentTypeEnum.values()) {
-            if (item.getCode() == code) {
-                return item;
-            }
-        }
-        return null;
-    }
-
 }
