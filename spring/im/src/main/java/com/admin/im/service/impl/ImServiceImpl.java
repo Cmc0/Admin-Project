@@ -21,6 +21,7 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public String friendRequest(ImFriendRequestDTO dto) {
+
         return null;
     }
 
