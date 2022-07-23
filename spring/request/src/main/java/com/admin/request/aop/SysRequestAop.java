@@ -67,7 +67,7 @@ public class SysRequestAop {
             } else {
                 sysRequestDO.setErrorMsg(StrUtil.maxLength(throwable.getMessage(), 200));
             }
-            sysRequestService.save(sysRequestDO); // 更新
+            sysRequestService.save(sysRequestDO); // 更新，TODO：优化，用 kafka批量消费
             throw throwable;
         }
 
@@ -86,7 +86,7 @@ public class SysRequestAop {
             sysRequestDO.setUpdateId(userId);
         }
 
-        sysRequestService.save(sysRequestDO); // 更新
+        sysRequestService.save(sysRequestDO); // 更新，TODO：优化，用 kafka批量消费
 
         return object;
     }
