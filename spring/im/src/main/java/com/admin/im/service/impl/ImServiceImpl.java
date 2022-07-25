@@ -536,6 +536,10 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
+        if (currentUserId.toString().equals(dto.getToId())) {
+            return dto.getPage(false);
+        }
+
         ArrayList<FieldValue> fieldValueList =
             CollUtil.newArrayList(FieldValue.of(dto.getToId()), FieldValue.of(currentUserId));
 
