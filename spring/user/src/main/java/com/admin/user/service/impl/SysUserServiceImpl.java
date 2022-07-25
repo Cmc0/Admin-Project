@@ -72,7 +72,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
 
         Page<SysUserPageVO> page = baseMapper.myPage(dto.getCreateTimeDescDefaultOrderPage(), dto);
 
-        Set<Long> userIdSet = new HashSet<>();
+        Set<Long> userIdSet = new HashSet<>(MyMapUtil.getInitialCapacity(page.getRecords().size()));
 
         for (SysUserPageVO item : page.getRecords()) {
             item.setEmail(DesensitizedUtil.email(item.getEmail())); // 脱敏
