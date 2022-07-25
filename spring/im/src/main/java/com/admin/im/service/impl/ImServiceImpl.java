@@ -5,6 +5,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.GetResponse;
@@ -535,9 +536,12 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
+        ArrayList<FieldValue> fieldValueList =
+            CollUtil.newArrayList(FieldValue.of(dto.getToId()), FieldValue.of(currentUserId));
+
         List<Query> queryList = CollUtil
-            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("toId").value(dto.getToId()))),
+            .newArrayList(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
+                Query.of(q -> q.terms(qt -> qt.field("toId").terms(qtt -> qtt.value(fieldValueList)))),
                 Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
