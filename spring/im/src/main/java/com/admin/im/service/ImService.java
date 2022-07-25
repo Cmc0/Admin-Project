@@ -4,6 +4,7 @@ import com.admin.im.model.document.ImFriendRequestDocument;
 import com.admin.im.model.dto.ImFriendRequestDTO;
 import com.admin.im.model.dto.ImFriendRequestHandlerDTO;
 import com.admin.im.model.dto.ImFriendRequestPageDTO;
+import com.admin.im.model.dto.ImSendDTO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 public interface ImService {
@@ -13,5 +14,7 @@ public interface ImService {
     String friendRequestHandler(ImFriendRequestHandlerDTO dto);
 
     Page<ImFriendRequestDocument> friendRequestPage(ImFriendRequestPageDTO dto);
+
+    String send(ImSendDTO dto);
 
 }

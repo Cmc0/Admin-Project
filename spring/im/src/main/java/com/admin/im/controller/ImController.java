@@ -5,6 +5,7 @@ import com.admin.im.model.document.ImFriendRequestDocument;
 import com.admin.im.model.dto.ImFriendRequestDTO;
 import com.admin.im.model.dto.ImFriendRequestHandlerDTO;
 import com.admin.im.model.dto.ImFriendRequestPageDTO;
+import com.admin.im.model.dto.ImSendDTO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -42,6 +43,12 @@ public class ImController {
     public ApiResultVO<Page<ImFriendRequestDocument>> friendRequestPage(
         @RequestBody @Valid ImFriendRequestPageDTO dto) {
         return ApiResultVO.ok(baseService.friendRequestPage(dto));
+    }
+
+    @ApiOperation(value = "发送消息")
+    @PostMapping(value = "/send")
+    public ApiResultVO<String> send(@RequestBody @Valid ImSendDTO dto) {
+        return ApiResultVO.ok(baseService.send(dto));
     }
 
 }

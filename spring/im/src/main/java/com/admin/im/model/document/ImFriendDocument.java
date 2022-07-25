@@ -8,6 +8,9 @@ import java.util.Date;
 @Data
 public class ImFriendDocument {
 
+    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
+    private String id;
+
     @ApiModelProperty(value = "好友归属用户 id")
     private Long createId;
 

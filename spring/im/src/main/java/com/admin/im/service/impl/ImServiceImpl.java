@@ -22,10 +22,16 @@ import com.admin.common.util.MyEntityUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.ImFriendDocument;
 import com.admin.im.model.document.ImFriendRequestDocument;
+import com.admin.im.model.document.ImMessageDocument;
+import com.admin.im.model.document.ImSessionDocument;
 import com.admin.im.model.dto.ImFriendRequestDTO;
 import com.admin.im.model.dto.ImFriendRequestHandlerDTO;
 import com.admin.im.model.dto.ImFriendRequestPageDTO;
+import com.admin.im.model.dto.ImSendDTO;
+import com.admin.im.model.enums.ImContentTypeEnum;
+import com.admin.im.model.enums.ImMessageCreateTypeEnum;
 import com.admin.im.model.enums.ImRequestResultEnum;
+import com.admin.im.model.enums.ImToTypeEnum;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
@@ -35,6 +41,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -62,12 +69,10 @@ public class ImServiceImpl implements ImService {
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
                 Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
 
-        SearchResponse<ImFriendDocument> searchResponse = ElasticsearchUtil
-            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
+        long searchTotal = ElasticsearchUtil
+            .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX)
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImFriendDocument.class);
-
-        long searchTotal = ElasticsearchUtil.searchTotal(searchResponse);
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))));
 
         if (searchTotal > 0) {
             ApiResultVO.error("操作失败：对方已经是您的好友");
@@ -131,10 +136,10 @@ public class ImServiceImpl implements ImService {
 
         Date date = new Date();
 
-        List<BulkOperation> bulkOperationList = new ArrayList<>();
-
         imFriendRequestDocument.setResult(dto.getResult());
         imFriendRequestDocument.setResultTime(date);
+
+        List<BulkOperation> bulkOperationList = new ArrayList<>();
 
         bulkOperationList.add(new BulkOperation.Builder().update(
             u -> u.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId())
@@ -156,12 +161,10 @@ public class ImServiceImpl implements ImService {
                 Query.of(q -> q.term(qt -> qt.field("createId").value(imFriendRequestDocument.getToId()))),
                 Query.of(q -> q.term(qt -> qt.field("uId").value(imFriendRequestDocument.getCreateId()))));
 
-            SearchResponse<ImFriendDocument> searchResponse = ElasticsearchUtil
-                .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
+            long searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
                     s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX)
-                        .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImFriendDocument.class);
-
-            long searchTotal = ElasticsearchUtil.searchTotal(searchResponse);
+                        .query(sq -> sq.bool(sqb -> sqb.must(queryList))));
 
             if (searchTotal == 0) {
                 ImFriendDocument imFriendDocumentTo = new ImFriendDocument();
@@ -232,6 +235,162 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    /**
+     * 发送消息
+     */
+    @SneakyThrows
+    @Override
+    public String send(ImSendDTO dto) {
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        sendCheck(dto, currentUserId);
+
+        doSend(currentUserId, dto.getContent(), dto.getToId(), dto.getToType(), ImMessageCreateTypeEnum.USER);
+
+        return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
+    }
+
+    @SneakyThrows
+    private void doSend(Long createId, String content, Long toId, ImToTypeEnum toType,
+        ImMessageCreateTypeEnum createType) {
+
+        ImMessageDocument imMessageDocument = new ImMessageDocument();
+        imMessageDocument.setCreateId(createId);
+        imMessageDocument.setCreateTime(new Date());
+        imMessageDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：检测消息类型
+        imMessageDocument.setContent(content);
+        imMessageDocument.setToId(toId);
+        imMessageDocument.setToType(toType);
+        imMessageDocument.setCreateType(createType);
+        imMessageDocument.setRIdSet(new HashSet<>());
+
+        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
+            .document(imMessageDocument));
+
+        Date date = new Date();
+
+        List<BulkOperation> bulkOperationList = new ArrayList<>();
+
+        List<Query> queryOneList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
+                Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
+                Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
+
+        if (ImToTypeEnum.FRIEND.equals(toType)) {
+
+            long searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                    s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryOneList))));
+
+            if (searchTotal == 0) {
+
+                ImSessionDocument imSessionDocument = new ImSessionDocument();
+                imSessionDocument.setCreateId(createId);
+                imSessionDocument.setToId(toId);
+                imSessionDocument.setType(toType);
+                imSessionDocument.setLastTime(date);
+
+                bulkOperationList.add(new BulkOperation.Builder().index(
+                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
+                        .document(imSessionDocument)).build());
+            }
+
+            List<Query> queryTwoList = CollUtil
+                .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
+                    Query.of(q -> q.term(qt -> qt.field("toId").value(createId))),
+                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
+
+            searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                    s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryOneList))));
+
+            if (searchTotal == 0) {
+                ImSessionDocument imSessionDocument = new ImSessionDocument();
+                imSessionDocument.setCreateId(toId);
+                imSessionDocument.setToId(createId);
+                imSessionDocument.setType(toType);
+                imSessionDocument.setLastTime(date);
+
+                bulkOperationList.add(new BulkOperation.Builder().index(
+                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
+                        .document(imSessionDocument)).build());
+            }
+
+        } else {
+
+            long searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                    s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryOneList))));
+
+            if (searchTotal == 0) {
+                ImSessionDocument imSessionDocument = new ImSessionDocument();
+                imSessionDocument.setCreateId(createId);
+                imSessionDocument.setToId(toId);
+                imSessionDocument.setType(toType);
+                imSessionDocument.setLastTime(date);
+
+                bulkOperationList.add(new BulkOperation.Builder().index(
+                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
+                        .document(imSessionDocument)).build());
+            }
+
+        }
+
+        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+
+    }
+
+    private void sendCheck(ImSendDTO dto, Long currentUserId) {
+
+        if (ImToTypeEnum.FRIEND.equals(dto.getToType())) {
+
+            List<Query> queryList = CollUtil
+                .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                    Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
+
+            long searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
+                    s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX)
+                        .query(sq -> sq.bool(sqb -> sqb.must(queryList))));
+
+            if (searchTotal == 0) {
+                ApiResultVO.error("操作失败：对方不是您的好友，无法发送消息");
+            }
+
+            boolean exists = ChainWrappers.lambdaQueryChain(sysUserMapper).eq(BaseEntityTwo::getId, dto.getToId())
+                .eq(SysUserDO::getDelFlag, false).exists();
+
+            if (!exists) {
+                ApiResultVO.error("操作失败：对方账号已注销");
+            }
+        } else {
+
+            List<Query> queryList = CollUtil
+                .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                    Query.of(q -> q.term(qt -> qt.field("gid").value(dto.getToId()))));
+
+            long searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                    s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                        .query(sq -> sq.bool(sqb -> sqb.must(queryList))));
+
+            if (searchTotal == 0) {
+                ApiResultVO.error("操作失败：您不在群组里，无法发送消息");
+            }
+
+            searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                    s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                        .query(sq -> sq.term(sqt -> sqt.field("gid").value(dto.getToId()))));
+
+            if (searchTotal == 0) {
+                ApiResultVO.error("操作失败：群组已解散");
+            }
+
+        }
     }
 
 }

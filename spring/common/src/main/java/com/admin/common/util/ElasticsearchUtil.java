@@ -86,4 +86,12 @@ public class ElasticsearchUtil {
         }
     }
 
+    /**
+     * 如果执行失败，则创建 index之后，再执行一次 search，并返回 search的 total
+     */
+    public static <TDocument> long autoCreateIndexAndGetSearchTotal(String index,
+        Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> fn) {
+        return searchTotal(autoCreateIndexAndSearch(index, fn, Object.class));
+    }
+
 }
