@@ -360,7 +360,7 @@ public class ImServiceImpl implements ImService {
 
         if (ImToTypeEnum.FRIEND.equals(dto.getToType())) {
 
-            if (currentUserId.equals(dto.getToId())) {
+            if (currentUserId.toString().equals(dto.getToId())) {
                 ApiResultVO.error("操作失败：对方不是您的好友，无法发送消息");
             }
 
