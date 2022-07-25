@@ -24,10 +24,7 @@ import com.admin.im.model.document.ImFriendDocument;
 import com.admin.im.model.document.ImFriendRequestDocument;
 import com.admin.im.model.document.ImMessageDocument;
 import com.admin.im.model.document.ImSessionDocument;
-import com.admin.im.model.dto.ImFriendRequestDTO;
-import com.admin.im.model.dto.ImFriendRequestHandlerDTO;
-import com.admin.im.model.dto.ImFriendRequestPageDTO;
-import com.admin.im.model.dto.ImSendDTO;
+import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImMessageCreateTypeEnum;
 import com.admin.im.model.enums.ImRequestResultEnum;
@@ -330,7 +327,7 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setLastTime(date);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
+                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
                     .document(imSessionDocument)).build());
         }
 
@@ -384,6 +381,15 @@ public class ImServiceImpl implements ImService {
             }
 
         }
+    }
+
+    /**
+     * 会话：分页排序查询
+     */
+    @Override
+    public Page<ImSessionDocument> sessionPage(ImSessionPageDTO dto) {
+
+        return null;
     }
 
 }
