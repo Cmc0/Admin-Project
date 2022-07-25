@@ -526,34 +526,38 @@ public class ImServiceImpl implements ImService {
     private List<ImSessionPageVO> getSessionPageOther(List<ImSessionPageVO> imSessionPageVOList, Long currentUserId) {
 
         // 获取：最后一次聊天的内容 ↓
+
+        Map<String, ImMessageDocument> friendLastContentMap = null;
+
+        Map<String, ImMessageDocument> groupLastContentMap = null;
+
         List<FieldValue> lastContentFieldValueList =
             imSessionPageVOList.stream().map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
 
         String groupByQidAggs = "group_by_qid";
         String lastContentAggs = "last_content";
+        String qidKeyword = "qid.keyword";
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
                 Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId.toString()))),
-                Query.of(q -> q.terms(qt -> qt.field("toId").terms(qtt -> qtt.value(lastContentFieldValueList)))));
+                Query.of(q -> q.terms(qt -> qt.field(qidKeyword).terms(qtt -> qtt.value(lastContentFieldValueList)))));
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
-                        sa -> sa.terms(sat -> sat.field("qid.keyword")).aggregations(lastContentAggs, saa -> saa
-                            .topHits(saat -> saat.size(1).sort(
+                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
+                            saat -> saat.size(1).sort(
                                 saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
                 ImMessageDocument.class);
-
-        Map<String, ImMessageDocument> lastContentMap = null;
 
         if (searchResponse != null) {
             List<StringTermsBucket> stringTermsBucketList =
                 searchResponse.aggregations().get(groupByQidAggs).sterms().buckets().array();
             if (stringTermsBucketList.size() != 0) {
 
-                lastContentMap = MapUtil.newHashMap(stringTermsBucketList.size());
+                friendLastContentMap = MapUtil.newHashMap(stringTermsBucketList.size());
 
                 for (StringTermsBucket item : stringTermsBucketList) {
                     List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
@@ -562,7 +566,7 @@ public class ImServiceImpl implements ImService {
                         JsonData source = jsonDataHit.source();
                         if (source != null) {
                             ImMessageDocument imMessageDocument = source.to(ImMessageDocument.class);
-                            lastContentMap.put(imMessageDocument.getQId(), imMessageDocument);
+                            friendLastContentMap.put(imMessageDocument.getQId(), imMessageDocument);
                         }
                     }
                 }
@@ -570,15 +574,27 @@ public class ImServiceImpl implements ImService {
         }
 
         // 组装：最后一次聊天的内容，并排序
-        if (CollUtil.isNotEmpty(lastContentMap)) {
-            Map<String, ImMessageDocument> finalLastContentMap = lastContentMap;
+        if (CollUtil.isNotEmpty(friendLastContentMap) || CollUtil.isNotEmpty(groupLastContentMap)) {
+            Map<String, ImMessageDocument> finalFriendLastContentMap = friendLastContentMap;
+            Map<String, ImMessageDocument> finalGroupLastContentMap = groupLastContentMap;
             imSessionPageVOList.forEach(item -> {
-                ImMessageDocument imMessageDocument = finalLastContentMap.get(item.getQId());
-                if (imMessageDocument != null) {
-                    item.setLastContent(imMessageDocument.getContent());
-                    item.setLastContentCreateTime(imMessageDocument.getCreateTime());
-                } else {
-                    item.setLastContentCreateTime(item.getCreateTime());
+                if (finalFriendLastContentMap != null && ImToTypeEnum.FRIEND.equals(item.getType())) {
+                    ImMessageDocument imMessageDocument = finalFriendLastContentMap.get(item.getQId());
+                    if (imMessageDocument != null) {
+                        item.setLastContent(imMessageDocument.getContent());
+                        item.setLastContentCreateTime(imMessageDocument.getCreateTime());
+                    } else {
+                        item.setLastContentCreateTime(item.getCreateTime());
+                    }
+                }
+                if (finalGroupLastContentMap != null && ImToTypeEnum.GROUP.equals(item.getType())) {
+                    ImMessageDocument imMessageDocument = finalGroupLastContentMap.get(item.getQId());
+                    if (imMessageDocument != null) {
+                        item.setLastContent(imMessageDocument.getContent());
+                        item.setLastContentCreateTime(imMessageDocument.getCreateTime());
+                    } else {
+                        item.setLastContentCreateTime(item.getCreateTime());
+                    }
                 }
             });
             imSessionPageVOList = imSessionPageVOList.stream()
