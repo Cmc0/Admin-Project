@@ -2,8 +2,8 @@ package com.admin.im.controller;
 
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.im.model.document.ImFriendRequestDocument;
-import com.admin.im.model.document.ImSessionDocument;
 import com.admin.im.model.dto.*;
+import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -51,7 +51,7 @@ public class ImController {
 
     @ApiOperation(value = "会话：分页排序查询")
     @PostMapping(value = "/sessionPage")
-    public ApiResultVO<Page<ImSessionDocument>> sessionPage(@RequestBody @Valid ImSessionPageDTO dto) {
+    public ApiResultVO<Page<ImSessionPageVO>> sessionPage(@RequestBody @Valid ImSessionPageDTO dto) {
         return ApiResultVO.ok(baseService.sessionPage(dto));
     }
 

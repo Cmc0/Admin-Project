@@ -1,8 +1,8 @@
 package com.admin.im.service;
 
 import com.admin.im.model.document.ImFriendRequestDocument;
-import com.admin.im.model.document.ImSessionDocument;
 import com.admin.im.model.dto.*;
+import com.admin.im.model.vo.ImSessionPageVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 public interface ImService {
@@ -15,6 +15,6 @@ public interface ImService {
 
     String send(ImSendDTO dto);
 
-    Page<ImSessionDocument> sessionPage(ImSessionPageDTO dto);
+    Page<ImSessionPageVO> sessionPage(ImSessionPageDTO dto);
 
 }

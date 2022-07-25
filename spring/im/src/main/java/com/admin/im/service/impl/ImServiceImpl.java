@@ -29,6 +29,7 @@ import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImMessageCreateTypeEnum;
 import com.admin.im.model.enums.ImRequestResultEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
+import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
@@ -337,6 +338,10 @@ public class ImServiceImpl implements ImService {
 
         if (ImToTypeEnum.FRIEND.equals(dto.getToType())) {
 
+            if (currentUserId.equals(dto.getToId())) {
+                ApiResultVO.error("操作失败：对方不是您的好友，无法发送消息");
+            }
+
             List<Query> queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
                     Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
@@ -387,9 +392,49 @@ public class ImServiceImpl implements ImService {
      * 会话：分页排序查询
      */
     @Override
-    public Page<ImSessionDocument> sessionPage(ImSessionPageDTO dto) {
+    public Page<ImSessionPageVO> sessionPage(ImSessionPageDTO dto) {
 
-        return null;
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        SearchResponse<ImSessionPageVO> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).from((current - 1) * pageSize)
+                    .size(pageSize).query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))),
+                ImSessionPageVO.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
+        HitsMetadata<ImSessionPageVO> hits = searchResponse.hits();
+
+        List<Hit<ImSessionPageVO>> hitList = hits.hits();
+
+        List<ImSessionPageVO> imSessionPageVOList = new ArrayList<>();
+
+        for (Hit<ImSessionPageVO> item : hitList) {
+            ImSessionPageVO imSessionPageVO = item.source();
+            if (imSessionPageVO != null) {
+                imSessionPageVO.setId(item.id());
+                imSessionPageVOList.add(imSessionPageVO);
+            }
+        }
+
+        Page<ImSessionPageVO> page = dto.getPage(false);
+
+        page.setRecords(imSessionPageVOList);
+        if (hits.total() != null) {
+            page.setTotal(hits.total().value());
+        }
+
+        return page;
     }
 
 }
