@@ -547,7 +547,7 @@ public class ImServiceImpl implements ImService {
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).from((current - 1) * pageSize)
-                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("lastContentCreateTime").order(SortOrder.Asc)))
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Asc)))
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImMessageDocument.class);
 
         if (searchResponse == null) {
