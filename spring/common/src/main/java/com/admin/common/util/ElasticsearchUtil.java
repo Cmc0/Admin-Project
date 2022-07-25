@@ -32,7 +32,7 @@ public class ElasticsearchUtil {
      * 如果执行失败，则创建 index之后，再执行一次 mget
      */
     @SneakyThrows
-    @Nonnull
+    @Nullable
     public static <TDocument> MgetResponse<TDocument> autoCreateIndexAndMget(String index,
         Function<MgetRequest.Builder, ObjectBuilder<MgetRequest>> fn, Class<TDocument> tDocumentClass) {
 
@@ -40,8 +40,7 @@ public class ElasticsearchUtil {
             return elasticsearchClient.mget(fn, tDocumentClass);
         } catch (ElasticsearchException e) {
             if (NO_DOCUMENTS_TO_GET_EXCEPTION.equals(e.error().reason())) {
-                elasticsearchClient.indices().create(c -> c.index(index));
-                return elasticsearchClient.mget(fn, tDocumentClass);
+                return null;
             }
             throw e;
         }

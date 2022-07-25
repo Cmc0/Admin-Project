@@ -530,17 +530,21 @@ public class ImServiceImpl implements ImService {
             .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
                 g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(groupIdStrList), ImGroupDocument.class);
 
-        List<MultiGetResponseItem<ImGroupDocument>> docList = mgetResponse.docs();
+        Map<String, ImGroupDocument> groupGroupMap = null;
+        if (mgetResponse != null) {
+            List<MultiGetResponseItem<ImGroupDocument>> docList = mgetResponse.docs();
 
-        Map<String, ImGroupDocument> groupGroupMap = MapUtil.newHashMap(docList.size());
+            groupGroupMap = MapUtil.newHashMap(docList.size());
 
-        for (MultiGetResponseItem<ImGroupDocument> item : docList) {
-            GetResult<ImGroupDocument> result = item.result();
-            ImGroupDocument imGroupDocument = result.source();
-            groupGroupMap.put(result.id(), imGroupDocument);
+            for (MultiGetResponseItem<ImGroupDocument> item : docList) {
+                GetResult<ImGroupDocument> result = item.result();
+                ImGroupDocument imGroupDocument = result.source();
+                groupGroupMap.put(result.id(), imGroupDocument);
+            }
         }
 
         Map<String, SysUserDO> finalFriendGroupMap = friendGroupMap;
+        Map<String, ImGroupDocument> finalGroupGroupMap = groupGroupMap;
         imSessionPageVOList.forEach(item -> {
             if (ImToTypeEnum.FRIEND.equals(item.getType())) {
                 if (finalFriendGroupMap != null) {
@@ -551,10 +555,12 @@ public class ImServiceImpl implements ImService {
                     }
                 }
             } else {
-                ImGroupDocument imGroupDocument = groupGroupMap.get(item.getToId());
-                if (imGroupDocument != null) {
-                    item.setTargetName(imGroupDocument.getName());
-                    item.setTargetAvatarUrl(imGroupDocument.getAvatarUrl());
+                if (finalGroupGroupMap != null) {
+                    ImGroupDocument imGroupDocument = finalGroupGroupMap.get(item.getToId());
+                    if (imGroupDocument != null) {
+                        item.setTargetName(imGroupDocument.getName());
+                        item.setTargetAvatarUrl(imGroupDocument.getAvatarUrl());
+                    }
                 }
             }
         });
