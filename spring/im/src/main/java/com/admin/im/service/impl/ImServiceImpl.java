@@ -342,14 +342,13 @@ public class ImServiceImpl implements ImService {
         } else {
             if (addUnreadTotalFlag) {
 
-                imSessionDocument.setId(imSessionDocumentHit.id());
                 imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1);
                 imSessionDocument.setLastContent(content);
                 imSessionDocument.setLastContentCreateTime(date);
 
                 ImSessionDocument finalImSessionDocument = imSessionDocument;
                 bulkOperationList.add(new BulkOperation.Builder().update(
-                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(finalImSessionDocument.getId())
+                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(imSessionDocumentHit.id())
                         .action(ua -> ua.doc(finalImSessionDocument))).build());
             }
         }
