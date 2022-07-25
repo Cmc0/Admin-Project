@@ -300,7 +300,7 @@ public class ImServiceImpl implements ImService {
 
             doSendAddToBulkOperationList(Convert.toLong(toId), createId.toString(), toType, date, bulkOperationList,
                 CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
-                    Query.of(q -> q.term(qt -> qt.field("toId").value(createId))),
+                    Query.of(q -> q.term(qt -> qt.field("toId").value(createId.toString()))),
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
 
         } else {
@@ -322,11 +322,15 @@ public class ImServiceImpl implements ImService {
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
                 s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImSessionDocument.class);
 
-        ImSessionDocument imSessionDocument = ElasticsearchUtil.searchGetSource(searchResponse);
+        Hit<ImSessionDocument> imSessionDocumentHit = ElasticsearchUtil.searchGetSourceHit(searchResponse);
 
-        boolean imSessionDocumentNullFlag = imSessionDocument == null;
+        ImSessionDocument imSessionDocument = null;
 
-        if (imSessionDocumentNullFlag) {
+        if (imSessionDocumentHit != null) {
+            imSessionDocument = imSessionDocumentHit.source();
+        }
+
+        if (imSessionDocument == null) {
             imSessionDocument = new ImSessionDocument();
             imSessionDocument.setCreateId(createId);
             imSessionDocument.setCreateTime(date);
@@ -334,18 +338,24 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setType(toType);
             imSessionDocument.setUnreadTotal(addUnreadTotalFlag ? 1L : 0L);
             imSessionDocument.setQId(ImToTypeEnum.getQId(toType, toId, createId));
-        } else {
-            if (addUnreadTotalFlag) {
-                imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1);
-            }
-        }
 
-        ImSessionDocument finalImSessionDocument = imSessionDocument;
-        if (imSessionDocumentNullFlag || addUnreadTotalFlag) {
+            ImSessionDocument finalImSessionDocument = imSessionDocument;
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
                     .document(finalImSessionDocument)).build());
+        } else {
+            if (addUnreadTotalFlag) {
+
+                imSessionDocument.setId(imSessionDocumentHit.id());
+                imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1);
+
+                ImSessionDocument finalImSessionDocument = imSessionDocument;
+                bulkOperationList.add(new BulkOperation.Builder().update(
+                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(finalImSessionDocument.getId())
+                        .action(ua -> ua.doc(finalImSessionDocument))).build());
+            }
         }
+
     }
 
     private void sendCheck(ImSendDTO dto, Long currentUserId) {

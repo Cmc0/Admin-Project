@@ -3,6 +3,7 @@ package com.admin.common.util;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.util.ObjectBuilder;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -115,10 +116,10 @@ public class ElasticsearchUtil {
      * 获取：search 第一个元素的 source
      */
     @Nullable
-    public static <T> T searchGetSource(SearchResponse<T> searchResponse) {
+    public static <T> Hit<T> searchGetSourceHit(SearchResponse<T> searchResponse) {
         if (searchResponse != null && searchResponse.hits().total() != null
             && searchResponse.hits().total().value() != 0) {
-            return searchResponse.hits().hits().get(0).source();
+            return searchResponse.hits().hits().get(0);
         } else {
             return null;
         }
