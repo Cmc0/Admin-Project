@@ -126,7 +126,7 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
         }
 
-        if (!ImRequestResultEnum.PENDING.equals(dto.getResult())) {
+        if (!ImRequestResultEnum.PENDING.equals(imFriendRequestDocument.getResult())) {
             ApiResultVO.error("操作失败：已经处理过了，请刷新重试");
         }
 
