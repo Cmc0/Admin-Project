@@ -1,8 +1,11 @@
 package com.admin.im.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.GetResponse;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
@@ -49,7 +52,21 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error("操作失败：不能添加自己为好友");
         }
 
-        // TODO：判断好友是否存在于好友列表
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
+
+        SearchResponse<ImFriendDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImFriendDocument.class);
+
+        if (searchResponse != null && searchResponse.hits().total() != null) {
+            long value = searchResponse.hits().total().value();
+            if (value > 0) {
+                ApiResultVO.error("操作失败：对方已经是您的好友");
+            }
+        }
 
         boolean exists = ChainWrappers.lambdaQueryChain(sysUserMapper).eq(BaseEntityTwo::getId, dto.getToId())
             .eq(SysUserDO::getDelFlag, false).exists();
