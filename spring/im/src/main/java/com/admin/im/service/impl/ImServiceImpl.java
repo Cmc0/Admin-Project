@@ -525,7 +525,53 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public Page<ImMessageDocument> messagePage(ImMessagePageDTO dto) {
-        return null;
+
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("toId").value(dto.getToId()))),
+                Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
+
+        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).from((current - 1) * pageSize)
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("lastContentCreateTime").order(SortOrder.Asc)))
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImMessageDocument.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
+        HitsMetadata<ImMessageDocument> hits = searchResponse.hits();
+
+        List<Hit<ImMessageDocument>> hitList = hits.hits();
+
+        List<ImMessageDocument> imMessageDocumentList = new ArrayList<>();
+
+        for (Hit<ImMessageDocument> item : hitList) {
+            ImMessageDocument imMessageDocument = item.source();
+            if (imMessageDocument != null) {
+                imMessageDocument.setId(item.id());
+                imMessageDocumentList.add(imMessageDocument);
+            }
+        }
+
+        Page<ImMessageDocument> page = dto.getPage(false);
+
+        page.setRecords(imMessageDocumentList);
+        if (hits.total() != null) {
+            page.setTotal(hits.total().value());
+        }
+
+        return page;
     }
 
 }
