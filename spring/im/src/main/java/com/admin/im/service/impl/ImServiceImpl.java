@@ -71,7 +71,7 @@ public class ImServiceImpl implements ImService {
         boolean exists = ChainWrappers.lambdaQueryChain(sysUserMapper).eq(BaseEntityTwo::getId, dto.getToId())
             .eq(SysUserDO::getDelFlag, false).exists();
 
-        if (exists) {
+        if (!exists) {
             ApiResultVO.error("操作失败：用户不存在");
         }
 
