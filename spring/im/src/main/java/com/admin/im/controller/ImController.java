@@ -2,6 +2,7 @@ package com.admin.im.controller;
 
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.im.model.document.ImFriendRequestDocument;
+import com.admin.im.model.document.ImGroupRequestDocument;
 import com.admin.im.model.document.ImMessageDocument;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.vo.ImSessionPageVO;
@@ -60,6 +61,30 @@ public class ImController {
     @PostMapping(value = "/messagePage")
     public ApiResultVO<Page<ImMessageDocument>> messagePage(@RequestBody @Valid ImMessagePageDTO dto) {
         return ApiResultVO.ok(baseService.messagePage(dto));
+    }
+
+    @ApiOperation(value = "新增/修改 群组")
+    @PostMapping(value = "/insertOrUpdateGroup")
+    public ApiResultVO<String> insertOrUpdateGroup(@RequestBody @Valid ImInsertOrUpdateGroupDTO dto) {
+        return ApiResultVO.ok(baseService.insertOrUpdateGroup(dto));
+    }
+
+    @ApiOperation(value = "群组申请：发送")
+    @PostMapping(value = "/groupRequest")
+    public ApiResultVO<String> groupRequest(@RequestBody @Valid ImGroupRequestDTO dto) {
+        return ApiResultVO.ok(baseService.groupRequest(dto));
+    }
+
+    @ApiOperation(value = "群组申请：处理")
+    @PostMapping(value = "/groupRequestHandler")
+    public ApiResultVO<String> groupRequestHandler(@RequestBody @Valid ImGroupRequestHandlerDTO dto) {
+        return ApiResultVO.ok(baseService.groupRequestHandler(dto));
+    }
+
+    @ApiOperation(value = "群组申请：分页排序查询")
+    @PostMapping(value = "/groupRequestPage")
+    public ApiResultVO<Page<ImGroupRequestDocument>> friendRequestPage(@RequestBody @Valid ImGroupRequestPageDTO dto) {
+        return ApiResultVO.ok(baseService.groupRequestPage(dto));
     }
 
 }

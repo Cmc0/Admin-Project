@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ImFriendRequestHandlerDTO {
+public class ImGroupRequestHandlerDTO {
 
     @NotBlank
     @ApiModelProperty(value = "elasticsearch id，备注：uuid")

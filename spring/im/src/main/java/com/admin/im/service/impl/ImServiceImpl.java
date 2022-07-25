@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
@@ -18,6 +19,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
+import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
@@ -68,8 +70,8 @@ public class ImServiceImpl implements ImService {
                 Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
 
         long searchTotal = ElasticsearchUtil
-            .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX)
+            .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX)
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList))));
 
         if (searchTotal > 0) {
@@ -119,7 +121,7 @@ public class ImServiceImpl implements ImService {
         ImFriendRequestDocument imFriendRequestDocument = getResponse.source();
 
         if (imFriendRequestDocument == null) {
-            ApiResultVO.error("操作失败：好友请求不存在");
+            ApiResultVO.error("操作失败：好友请求不存在，请刷新重试");
         }
 
         Long currentUserId = UserUtil.getCurrentUserId();
@@ -149,7 +151,6 @@ public class ImServiceImpl implements ImService {
             imFriendDocumentFrom.setCreateId(imFriendRequestDocument.getCreateId());
             imFriendDocumentFrom.setCreateTime(date);
             imFriendDocumentFrom.setUId(imFriendRequestDocument.getToId());
-            imFriendDocumentFrom.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
@@ -169,7 +170,6 @@ public class ImServiceImpl implements ImService {
                 imFriendDocumentTo.setCreateId(imFriendRequestDocument.getToId());
                 imFriendDocumentTo.setCreateTime(date);
                 imFriendDocumentTo.setUId(imFriendRequestDocument.getCreateId());
-                imFriendDocumentTo.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
 
                 bulkOperationList.add(new BulkOperation.Builder().index(
                     i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
@@ -580,6 +580,154 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    /**
+     * 新增/修改 群组
+     */
+    @SneakyThrows
+    @Override
+    public String insertOrUpdateGroup(ImInsertOrUpdateGroupDTO dto) {
+
+        ImGroupDocument imGroupDocument = new ImGroupDocument();
+        imGroupDocument.setName(MyEntityUtil.getNotNullStr(dto.getName()));
+        imGroupDocument.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
+
+        if (StrUtil.isBlank(dto.getId())) {
+
+            imGroupDocument.setCreateId(UserUtil.getCurrentUserId());
+            imGroupDocument.setCreateTime(new Date());
+
+            elasticsearchClient.index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(IdUtil.simpleUUID())
+                    .document(imGroupDocument));
+
+        } else {
+
+            elasticsearchClient.update(
+                u -> u.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(dto.getId()).doc(imGroupDocument),
+                ImGroupDocument.class);
+
+        }
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 群组申请：发送
+     */
+    @SneakyThrows
+    @Override
+    public String groupRequest(ImGroupRequestDTO dto) {
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("gId").value(dto.getGId()))));
+
+        long searchTotal = ElasticsearchUtil
+            .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))));
+
+        if (searchTotal > 0) {
+            ApiResultVO.error("操作失败：您已加入该群，请勿重复添加");
+        }
+
+        GetResponse<ImGroupDocument> getResponse = ElasticsearchUtil
+            .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX), ImGroupDocument.class);
+
+        if (getResponse.source() == null) {
+            ApiResultVO.error("操作失败：加入的群不存在，请刷新重试");
+        }
+
+        Date date = new Date();
+
+        ImGroupRequestDocument imGroupRequestDocument = new ImGroupRequestDocument();
+
+        imGroupRequestDocument.setContent(MyEntityUtil.getNotNullStr(dto.getContent()));
+        imGroupRequestDocument.setGId(dto.getGId());
+        imGroupRequestDocument.setCreateId(currentUserId);
+        imGroupRequestDocument.setCreateTime(date);
+        imGroupRequestDocument.setResultId(BaseConstant.SYS_ID);
+        imGroupRequestDocument.setResult(ImRequestResultEnum.PENDING);
+        imGroupRequestDocument.setResultTime(date);
+
+        elasticsearchClient.index(
+            i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).id(IdUtil.simpleUUID())
+                .document(imGroupRequestDocument));
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 群组申请：处理
+     */
+    @SneakyThrows
+    @Override
+    public String groupRequestHandler(ImGroupRequestHandlerDTO dto) {
+
+        if (ImRequestResultEnum.PENDING.equals(dto.getResult())) {
+            ApiResultVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
+        }
+
+        GetResponse<ImGroupRequestDocument> getResponse = ElasticsearchUtil
+            .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).id(dto.getId()),
+                ImGroupRequestDocument.class);
+
+        ImGroupRequestDocument imGroupRequestDocument = getResponse.source();
+
+        if (imGroupRequestDocument == null) {
+            ApiResultVO.error("操作失败：群组申请不存在，请刷新重试");
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        if (!ImRequestResultEnum.PENDING.equals(imGroupRequestDocument.getResult())) {
+            ApiResultVO.error("操作失败：已经处理过了，请刷新重试");
+        }
+
+        Date date = new Date();
+
+        imGroupRequestDocument.setResultId(currentUserId);
+        imGroupRequestDocument.setResult(dto.getResult());
+        imGroupRequestDocument.setResultTime(date);
+
+        List<BulkOperation> bulkOperationList = new ArrayList<>();
+
+        bulkOperationList.add(new BulkOperation.Builder().update(
+            u -> u.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).id(dto.getId())
+                .action(ua -> ua.doc(imGroupRequestDocument))).build());
+
+        if (ImRequestResultEnum.AGREED.equals(dto.getResult())) {
+
+            ImGroupJoinDocument imGroupJoinDocument = new ImGroupJoinDocument();
+            imGroupJoinDocument.setCreateId(imGroupRequestDocument.getCreateId());
+            imGroupJoinDocument.setCreateTime(date);
+            imGroupJoinDocument.setGId(imGroupRequestDocument.getGId());
+
+            bulkOperationList.add(new BulkOperation.Builder().index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(IdUtil.simpleUUID())
+                    .document(imGroupJoinDocument)).build());
+
+            doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGId(), ImToTypeEnum.GROUP,
+                ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
+        }
+
+        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 群组申请：分页排序查询
+     */
+    @Override
+    public Page<ImGroupRequestDocument> groupRequestPage(ImGroupRequestPageDTO dto) {
+        return null;
     }
 
 }
