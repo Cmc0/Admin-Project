@@ -531,47 +531,11 @@ public class ImServiceImpl implements ImService {
 
         Map<String, ImMessageDocument> groupLastContentMap = null;
 
-        List<FieldValue> lastContentFieldValueList =
-            imSessionPageVOList.stream().map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
+        // 查询：用户之间的 最后一次聊天内容
+        getSessionPageOtherFriendLastContentMap(imSessionPageVOList, currentUserId, friendLastContentMap);
 
-        String groupByQidAggs = "group_by_qid";
-        String lastContentAggs = "last_content";
-        String qidKeyword = "qid.keyword";
-
-        List<Query> queryList = CollUtil
-            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId.toString()))),
-                Query.of(q -> q.terms(qt -> qt.field(qidKeyword).terms(qtt -> qtt.value(lastContentFieldValueList)))));
-
-        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
-            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
-                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
-                            saat -> saat.size(1).sort(
-                                saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
-                ImMessageDocument.class);
-
-        if (searchResponse != null) {
-            List<StringTermsBucket> stringTermsBucketList =
-                searchResponse.aggregations().get(groupByQidAggs).sterms().buckets().array();
-            if (stringTermsBucketList.size() != 0) {
-
-                friendLastContentMap = MapUtil.newHashMap(stringTermsBucketList.size());
-
-                for (StringTermsBucket item : stringTermsBucketList) {
-                    List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
-                    if (hitList.size() != 0) {
-                        Hit<JsonData> jsonDataHit = hitList.get(0);
-                        JsonData source = jsonDataHit.source();
-                        if (source != null) {
-                            ImMessageDocument imMessageDocument = source.to(ImMessageDocument.class);
-                            friendLastContentMap.put(imMessageDocument.getQId(), imMessageDocument);
-                        }
-                    }
-                }
-            }
-        }
+        // 查询：群组的 最后一次聊天内容
+        getSessionPageOtherGroupLastContentMap(imSessionPageVOList, currentUserId, groupLastContentMap);
 
         // 组装：最后一次聊天的内容，并排序
         if (CollUtil.isNotEmpty(friendLastContentMap) || CollUtil.isNotEmpty(groupLastContentMap)) {
@@ -662,6 +626,134 @@ public class ImServiceImpl implements ImService {
         });
 
         return imSessionPageVOList;
+    }
+
+    private Map<String, ImMessageDocument> getSessionPageOtherGroupLastContentMap(
+        List<ImSessionPageVO> imSessionPageVOList, Long currentUserId,
+        Map<String, ImMessageDocument> groupLastContentMap) {
+
+        List<ImSessionPageVO> groupImSessionPageVOList =
+            imSessionPageVOList.stream().filter(it -> ImToTypeEnum.GROUP.equals(it.getType()))
+                .collect(Collectors.toList());
+
+        if (groupImSessionPageVOList.size() == 0) {
+            return groupLastContentMap;
+        }
+
+        List<FieldValue> groupToIdFieldValueList =
+            groupImSessionPageVOList.stream().map(it -> FieldValue.of(it.getToId())).collect(Collectors.toList());
+
+        // 查询出：加入的群组
+
+        SearchResponse<ImGroupJoinDocument> groupJoinSearchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                    .query(sq -> sq.terms(sqt -> sqt.field("gid").terms(sqtt -> sqtt.value(groupToIdFieldValueList)))),
+                ImGroupJoinDocument.class);
+
+        List<ImGroupJoinDocument> imGroupJoinDocumentList = new ArrayList<>();
+
+        Set<String> gIdSet = new HashSet<>();
+
+        if (groupJoinSearchResponse != null) {
+            for (Hit<ImGroupJoinDocument> item : groupJoinSearchResponse.hits().hits()) {
+                ImGroupJoinDocument imGroupJoinDocument = item.source();
+                if (imGroupJoinDocument != null) {
+                    imGroupJoinDocumentList.add(imGroupJoinDocument);
+                    gIdSet.add(imGroupJoinDocument.getGId());
+                }
+            }
+        }
+
+        groupImSessionPageVOList =
+            groupImSessionPageVOList.stream().filter(it -> gIdSet.contains(it.getToId())).collect(Collectors.toList());
+
+        // 如果都不存在于：我加入的群组
+        if (groupImSessionPageVOList.size() == 0) {
+            return groupLastContentMap;
+        }
+
+        Map<String, ImGroupJoinDocument> groupJoinMap =
+            imGroupJoinDocumentList.stream().collect(Collectors.toMap(ImGroupJoinDocument::getGId, it -> it));
+
+        // TODO：获取每个群里的最后一条消息
+
+        String groupByQidAggs = "group_by_qid";
+        String lastContentAggs = "last_content";
+        String qidKeyword = "qid.keyword";
+
+        List<FieldValue> groupLastContentFieldValueList =
+            groupImSessionPageVOList.stream().map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
+
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("toType").value(ImToTypeEnum.FRIEND.getCode()))), Query
+                .of(q -> q.terms(qt -> qt.field(qidKeyword).terms(qtt -> qtt.value(groupLastContentFieldValueList)))));
+
+        SearchResponse<ImMessageDocument> messageSearchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
+                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
+                            saat -> saat.size(1).sort(
+                                saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
+                ImMessageDocument.class);
+
+        return groupLastContentMap;
+    }
+
+    private Map<String, ImMessageDocument> getSessionPageOtherFriendLastContentMap(
+        List<ImSessionPageVO> imSessionPageVOList, Long currentUserId,
+        Map<String, ImMessageDocument> friendLastContentMap) {
+
+        List<FieldValue> friendLastContentFieldValueList =
+            imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
+                .map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
+
+        if (friendLastContentFieldValueList.size() == 0) {
+            return friendLastContentMap;
+        }
+
+        String groupByQidAggs = "group_by_qid";
+        String lastContentAggs = "last_content";
+        String qidKeyword = "qid.keyword";
+
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId.toString()))),
+                Query.of(q -> q.term(qt -> qt.field("toType").value(ImToTypeEnum.FRIEND.getCode()))), Query.of(q -> q
+                    .terms(qt -> qt.field(qidKeyword).terms(qtt -> qtt.value(friendLastContentFieldValueList)))));
+
+        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
+                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
+                            saat -> saat.size(1).sort(
+                                saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
+                ImMessageDocument.class);
+
+        if (searchResponse != null) {
+            List<StringTermsBucket> stringTermsBucketList =
+                searchResponse.aggregations().get(groupByQidAggs).sterms().buckets().array();
+            if (stringTermsBucketList.size() != 0) {
+
+                friendLastContentMap = MapUtil.newHashMap(stringTermsBucketList.size());
+
+                for (StringTermsBucket item : stringTermsBucketList) {
+                    List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
+                    if (hitList.size() != 0) {
+                        Hit<JsonData> jsonDataHit = hitList.get(0);
+                        JsonData source = jsonDataHit.source();
+                        if (source != null) {
+                            ImMessageDocument imMessageDocument = source.to(ImMessageDocument.class);
+                            friendLastContentMap.put(imMessageDocument.getQId(), imMessageDocument);
+                        }
+                    }
+                }
+            }
+        }
+
+        return friendLastContentMap;
     }
 
 }
