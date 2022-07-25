@@ -177,6 +177,10 @@ public class ImServiceImpl implements ImService {
                     i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
                         .document(imFriendDocumentTo)).build());
             }
+
+            doSend(imFriendRequestDocument.getToId(), "", imFriendRequestDocument.getCreateId(), ImToTypeEnum.FRIEND,
+                ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
+
         }
 
         elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
@@ -248,18 +252,32 @@ public class ImServiceImpl implements ImService {
 
         sendCheck(dto, currentUserId);
 
-        doSend(currentUserId, dto.getContent(), dto.getToId(), dto.getToType(), ImMessageCreateTypeEnum.USER);
+        doSend(currentUserId, dto.getContent(), dto.getToId(), dto.getToType(), ImMessageCreateTypeEnum.USER, null,
+            null);
 
         return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
 
+    /**
+     * bulkOperationList：为 null，则会执行：elasticsearchClient.bulk，反之 不执行
+     */
     @SneakyThrows
     private void doSend(Long createId, String content, Long toId, ImToTypeEnum toType,
-        ImMessageCreateTypeEnum createType) {
+        ImMessageCreateTypeEnum createType, List<BulkOperation> bulkOperationList, Date date) {
+
+        boolean bulkOperationListNullFlag = bulkOperationList == null;
+
+        if (date == null) {
+            date = new Date();
+        }
+
+        if (bulkOperationListNullFlag) {
+            bulkOperationList = new ArrayList<>();
+        }
 
         ImMessageDocument imMessageDocument = new ImMessageDocument();
         imMessageDocument.setCreateId(createId);
-        imMessageDocument.setCreateTime(new Date());
+        imMessageDocument.setCreateTime(date);
         imMessageDocument.setContentType(ImContentTypeEnum.TEXT); // TODO：检测消息类型
         imMessageDocument.setContent(content);
         imMessageDocument.setToId(toId);
@@ -267,12 +285,9 @@ public class ImServiceImpl implements ImService {
         imMessageDocument.setCreateType(createType);
         imMessageDocument.setRIdSet(new HashSet<>());
 
-        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
-            .document(imMessageDocument));
-
-        Date date = new Date();
-
-        List<BulkOperation> bulkOperationList = new ArrayList<>();
+        bulkOperationList.add(new BulkOperation.Builder().index(
+            i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
+                .document(imMessageDocument)).build());
 
         List<Query> queryOneList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
@@ -281,65 +296,43 @@ public class ImServiceImpl implements ImService {
 
         if (ImToTypeEnum.FRIEND.equals(toType)) {
 
-            long searchTotal = ElasticsearchUtil
-                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                    s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryOneList))));
-
-            if (searchTotal == 0) {
-
-                ImSessionDocument imSessionDocument = new ImSessionDocument();
-                imSessionDocument.setCreateId(createId);
-                imSessionDocument.setToId(toId);
-                imSessionDocument.setType(toType);
-                imSessionDocument.setLastTime(date);
-
-                bulkOperationList.add(new BulkOperation.Builder().index(
-                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
-                        .document(imSessionDocument)).build());
-            }
+            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryOneList);
 
             List<Query> queryTwoList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
                     Query.of(q -> q.term(qt -> qt.field("toId").value(createId))),
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
 
-            searchTotal = ElasticsearchUtil
-                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                    s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryOneList))));
-
-            if (searchTotal == 0) {
-                ImSessionDocument imSessionDocument = new ImSessionDocument();
-                imSessionDocument.setCreateId(toId);
-                imSessionDocument.setToId(createId);
-                imSessionDocument.setType(toType);
-                imSessionDocument.setLastTime(date);
-
-                bulkOperationList.add(new BulkOperation.Builder().index(
-                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
-                        .document(imSessionDocument)).build());
-            }
+            doSendAddToBulkOperationList(toId, createId, toType, date, bulkOperationList, queryTwoList);
 
         } else {
-
-            long searchTotal = ElasticsearchUtil
-                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                    s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryOneList))));
-
-            if (searchTotal == 0) {
-                ImSessionDocument imSessionDocument = new ImSessionDocument();
-                imSessionDocument.setCreateId(createId);
-                imSessionDocument.setToId(toId);
-                imSessionDocument.setType(toType);
-                imSessionDocument.setLastTime(date);
-
-                bulkOperationList.add(new BulkOperation.Builder().index(
-                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
-                        .document(imSessionDocument)).build());
-            }
-
+            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryOneList);
         }
 
-        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+        if (bulkOperationListNullFlag) {
+            List<BulkOperation> finalBulkOperationList = bulkOperationList;
+            elasticsearchClient.bulk(b -> b.operations(finalBulkOperationList));
+        }
+    }
+
+    private void doSendAddToBulkOperationList(Long createId, Long toId, ImToTypeEnum toType, Date date,
+        List<BulkOperation> bulkOperationList, List<Query> queryList) {
+
+        long searchTotal = ElasticsearchUtil
+            .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryList))));
+
+        if (searchTotal == 0) {
+            ImSessionDocument imSessionDocument = new ImSessionDocument();
+            imSessionDocument.setCreateId(createId);
+            imSessionDocument.setToId(toId);
+            imSessionDocument.setType(toType);
+            imSessionDocument.setLastTime(date);
+
+            bulkOperationList.add(new BulkOperation.Builder().index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
+                    .document(imSessionDocument)).build());
+        }
 
     }
 
