@@ -541,7 +541,7 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
-                Query.of(q -> q.terms(qt -> qt.field("toId").terms(qtt -> qtt.value(fieldValueList)))),
+                Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
                 Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
