@@ -226,7 +226,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFileDO> im
         Long userId = UserUtil.getCurrentUserId();
         String userIdStr = Convert.toStr(userId);
 
-        HashMap<String, Set<String>> delMap = MapUtil.newHashMap();
+        HashMap<String, Set<String>> delMap = MapUtil.newHashMap(dto.getUrlSet().size());
         for (String item : dto.getUrlSet()) { // item，例如：/bucketName/userId/folderName/fileName.xxx
             List<String> splitTrimList = StrUtil.splitTrim(item, "/");
             if (splitTrimList.size() < 4) {

@@ -465,6 +465,63 @@ public class ImServiceImpl implements ImService {
         return page;
     }
 
+    /**
+     * 获取：最后一次聊天的内容，示例：
+     * GET im_message_index/_search
+     * {
+     * "aggs": {
+     * "group_by_qid": {
+     * "aggs": {
+     * "last_content": {
+     * "top_hits": {
+     * "size": 1,
+     * "sort": [
+     * {
+     * "createTime": {
+     * "order": "desc"
+     * }
+     * }
+     * ]
+     * }
+     * }
+     * },
+     * "terms": {
+     * "field": "qid.keyword"
+     * }
+     * }
+     * },
+     * "query": {
+     * "bool": {
+     * "must": [
+     * {
+     * "terms": {
+     * "qid.keyword": [
+     * "1_6"
+     * ]
+     * }
+     * },
+     * {
+     * "terms": {
+     * "createId": [
+     * "1",
+     * "5"
+     * ]
+     * }
+     * },
+     * {
+     * "terms": {
+     * "toId": [
+     * "1",
+     * "5"
+     * ]
+     * }
+     * }
+     * ]
+     * }
+     * },
+     * "size": 0
+     * }
+     */
     @SneakyThrows
     private List<ImSessionPageVO> getSessionPageOther(List<ImSessionPageVO> imSessionPageVOList, Long currentUserId) {
 
@@ -476,13 +533,18 @@ public class ImServiceImpl implements ImService {
         String lastContentAggs = "last_content";
         String qidKeyword = "qid.keyword";
 
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId.toString()))),
+                Query.of(q -> q.terms(qt -> qt.field("toId").terms(qtt -> qtt.value(lastContentFieldValueList)))));
+
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0).query(
-                    sq -> sq.terms(sqt -> sqt.field(qidKeyword).terms(sqtt -> sqtt.value(lastContentFieldValueList))))
-                    .aggregations(groupByQidAggs, sa -> sa.terms(sat -> sat.field(qidKeyword))
-                        .aggregations(lastContentAggs, saa -> saa.topHits(saat -> saat.size(1)
-                            .sort(saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
+                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
+                            saat -> saat.size(1).sort(
+                                saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
                 ImMessageDocument.class);
 
         Map<String, ImMessageDocument> lastContentMap = null;
@@ -492,7 +554,7 @@ public class ImServiceImpl implements ImService {
                 searchResponse.aggregations().get(groupByQidAggs).sterms().buckets().array();
             if (stringTermsBucketList.size() != 0) {
 
-                lastContentMap = MapUtil.newHashMap();
+                lastContentMap = MapUtil.newHashMap(stringTermsBucketList.size());
 
                 for (StringTermsBucket item : stringTermsBucketList) {
                     List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
@@ -506,7 +568,6 @@ public class ImServiceImpl implements ImService {
                     }
                 }
             }
-
         }
 
         if (CollUtil.isNotEmpty(lastContentMap)) {
@@ -520,24 +581,20 @@ public class ImServiceImpl implements ImService {
                     item.setLastContentCreateTime(item.getCreateTime());
                 }
             });
-            imSessionPageVOList = imSessionPageVOList.stream()
-                .sorted(Comparator.comparing(ImSessionPageVO::getLastContentCreateTime, Comparator.reverseOrder()))
+            imSessionPageVOList = imSessionPageVOList.stream().sorted(Comparator.comparing(ImSessionPageVO::getLastContentCreateTime, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
         } else {
-            imSessionPageVOList = imSessionPageVOList.stream()
-                .sorted(Comparator.comparing(ImSessionPageVO::getCreateTime, Comparator.reverseOrder()))
+            imSessionPageVOList = imSessionPageVOList.stream().sorted(Comparator.comparing(ImSessionPageVO::getCreateTime, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
         }
 
-        Set<String> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
-            .map(ImSessionDocument::getToId).collect(Collectors.toSet());
+        Set<String> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType())).map(ImSessionDocument::getToId).collect(Collectors.toSet());
 
         Map<String, SysUserDO> friendGroupMap = null;
 
         if (friendIdSet.size() != 0) {
             List<SysUserDO> sysUserDOList =
-                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet)
-                    .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
+                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet).select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
             friendGroupMap = sysUserDOList.stream().collect(Collectors.toMap(it -> it.getId().toString(), it -> it));
         }
 
@@ -545,8 +602,7 @@ public class ImServiceImpl implements ImService {
             .map(ImSessionDocument::getToId).collect(Collectors.toList());
 
         MgetResponse<ImGroupDocument> mgetResponse = ElasticsearchUtil
-            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
-                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(groupIdStrList), ImGroupDocument.class);
+            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX, g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(groupIdStrList), ImGroupDocument.class);
 
         Map<String, ImGroupDocument> groupGroupMap = null;
         if (mgetResponse != null) {

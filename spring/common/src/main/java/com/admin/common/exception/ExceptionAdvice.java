@@ -23,7 +23,7 @@ public class ExceptionAdvice {
     public ApiResultVO<?> handlerValidException(MethodArgumentNotValidException e) {
 
         // 返回详细的参数校验错误信息
-        Map<String, String> map = MapUtil.newHashMap();
+        Map<String, String> map = MapUtil.newHashMap(e.getBindingResult().getFieldErrors().size());
         BindingResult bindingResult = e.getBindingResult();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             map.put(fieldError.getField(), fieldError.getDefaultMessage());
