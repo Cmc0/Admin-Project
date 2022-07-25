@@ -2,6 +2,7 @@ package com.admin.im.controller;
 
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.im.model.document.ImFriendRequestDocument;
+import com.admin.im.model.document.ImMessageDocument;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
@@ -53,6 +54,12 @@ public class ImController {
     @PostMapping(value = "/sessionPage")
     public ApiResultVO<Page<ImSessionPageVO>> sessionPage(@RequestBody @Valid ImSessionPageDTO dto) {
         return ApiResultVO.ok(baseService.sessionPage(dto));
+    }
+
+    @ApiOperation(value = "聊天记录：分页排序查询")
+    @PostMapping(value = "/messagePage")
+    public ApiResultVO<Page<ImMessageDocument>> messagePage(@RequestBody @Valid ImMessagePageDTO dto) {
+        return ApiResultVO.ok(baseService.messagePage(dto));
     }
 
 }

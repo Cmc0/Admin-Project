@@ -2,13 +2,17 @@ package com.admin.im.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.GetResponse;
+import co.elastic.clients.elasticsearch.core.MgetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.get.GetResult;
+import co.elastic.clients.elasticsearch.core.mget.MultiGetResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.admin.common.exception.BaseBizCodeEnum;
@@ -20,10 +24,7 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.ElasticsearchUtil;
 import com.admin.common.util.MyEntityUtil;
 import com.admin.common.util.UserUtil;
-import com.admin.im.model.document.ImFriendDocument;
-import com.admin.im.model.document.ImFriendRequestDocument;
-import com.admin.im.model.document.ImMessageDocument;
-import com.admin.im.model.document.ImSessionDocument;
+import com.admin.im.model.document.*;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImMessageCreateTypeEnum;
@@ -37,10 +38,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ImServiceImpl implements ImService {
@@ -450,6 +449,66 @@ public class ImServiceImpl implements ImService {
             }
         }
 
+        if (imSessionPageVOList.size() != 0) {
+
+            Set<String> friendIdSet =
+                imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
+                    .map(ImSessionDocument::getToId).collect(Collectors.toSet());
+
+            Map<String, SysUserDO> friendGroupMap = null;
+
+            if (friendIdSet.size() != 0) {
+                List<SysUserDO> sysUserDOList =
+                    ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet)
+                        .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
+                friendGroupMap =
+                    sysUserDOList.stream().collect(Collectors.toMap(it -> it.getId().toString(), it -> it));
+            }
+
+            List<String> groupIdStrList =
+                imSessionPageVOList.stream().filter(it -> ImToTypeEnum.GROUP.equals(it.getType()))
+                    .map(ImSessionDocument::getToId).collect(Collectors.toList());
+
+            MgetResponse<ImGroupDocument> mgetResponse = ElasticsearchUtil
+                .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
+                    g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(groupIdStrList),
+                    ImGroupDocument.class);
+
+            Map<String, ImGroupDocument> groupGroupMap = null;
+            if (mgetResponse != null) {
+                List<MultiGetResponseItem<ImGroupDocument>> docList = mgetResponse.docs();
+
+                groupGroupMap = MapUtil.newHashMap(docList.size());
+
+                for (MultiGetResponseItem<ImGroupDocument> item : docList) {
+                    GetResult<ImGroupDocument> result = item.result();
+                    groupGroupMap.put(result.id(), result.source());
+                }
+            }
+
+            Map<String, SysUserDO> finalFriendGroupMap = friendGroupMap;
+            Map<String, ImGroupDocument> finalGroupGroupMap = groupGroupMap;
+            imSessionPageVOList.forEach(item -> {
+                if (ImToTypeEnum.FRIEND.equals(item.getType())) {
+                    if (finalFriendGroupMap != null) {
+                        SysUserDO sysUserDO = finalFriendGroupMap.get(item.getToId());
+                        if (sysUserDO != null) {
+                            item.setTargetName(sysUserDO.getNickname());
+                            item.setTargetAvatarUrl(sysUserDO.getAvatarUrl());
+                        }
+                    }
+                } else {
+                    if (finalGroupGroupMap != null) {
+                        ImGroupDocument imGroupDocument = finalGroupGroupMap.get(item.getToId());
+                        if (imGroupDocument != null) {
+                            item.setTargetName(imGroupDocument.getName());
+                            item.setTargetAvatarUrl(imGroupDocument.getAvatarUrl());
+                        }
+                    }
+                }
+            });
+        }
+
         Page<ImSessionPageVO> page = dto.getPage(false);
 
         page.setRecords(imSessionPageVOList);
@@ -458,6 +517,14 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    /**
+     * 聊天记录：分页排序查询
+     */
+    @Override
+    public Page<ImMessageDocument> messagePage(ImMessagePageDTO dto) {
+        return null;
     }
 
 }
