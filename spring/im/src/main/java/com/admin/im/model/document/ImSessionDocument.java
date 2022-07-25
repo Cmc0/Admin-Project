@@ -24,7 +24,7 @@ public class ImSessionDocument {
     @ApiModelProperty(value = "上次访问时间")
     private Date lastTime;
 
-    @ApiModelProperty(value = "方便检索一个会话下的所有消息，组成：好友 toType_toId_createId 群组 toType_toId")
+    @ApiModelProperty(value = "方便检索一个会话下的所有消息，组成：好友 toType_(toId + createId) 群组 toType_toId")
     private String qId;
 
 }

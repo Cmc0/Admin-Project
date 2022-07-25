@@ -2,15 +2,19 @@ package com.admin.im.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.json.JsonData;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
@@ -443,20 +447,59 @@ public class ImServiceImpl implements ImService {
 
     private void getSessionPageOther(List<ImSessionPageVO> imSessionPageVOList, Long currentUserId) {
 
-        // 获取：最后一次聊天的内容
+        // 获取：最后一次聊天的内容 ↓
+        List<FieldValue> fieldValueList =
+            imSessionPageVOList.stream().map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
+
+        String groupByQidAggs = "group_by_qid";
         String lastContentAggs = "last_content";
+        String gidKeyword = "gid.keyword";
 
-        Set<String> qIdSet = imSessionPageVOList.stream().map(ImSessionDocument::getQId).collect(Collectors.toSet());
+        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
+                    .query(sq -> sq.terms(sqt -> sqt.field(gidKeyword).terms(sqtt -> sqtt.value(fieldValueList))))
+                    .aggregations(groupByQidAggs, sa -> sa.terms(sat -> sat.field(gidKeyword))
+                        .aggregations(lastContentAggs, saa -> saa.topHits(saat -> saat.size(1)
+                            .sort(saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
+                ImMessageDocument.class);
 
-        //        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
-        //            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
-        //                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
-        //                    .query(sq -> sq.terms(sqt -> sqt.field("").terms(sqtt -> sqtt.value(fieldValueList))))
-        //                    .aggregations(lastContentAggs, sa -> sa.topHits(sat -> sat.size(1)
-        //                        .sort(sats -> sats.field(satsf -> satsf.field("createTime").order(SortOrder.Desc))))),
-        //                ImMessageDocument.class);
+        Map<String, ImMessageDocument> lastContentMap = null;
 
-        // 获取：未读消息的数量
+        if (searchResponse != null) {
+            List<StringTermsBucket> stringTermsBucketList =
+                searchResponse.aggregations().get(groupByQidAggs).sterms().buckets().array();
+            if (stringTermsBucketList.size() != 0) {
+
+                lastContentMap = MapUtil.newHashMap();
+
+                for (StringTermsBucket item : stringTermsBucketList) {
+                    List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
+                    if (hitList.size() != 0) {
+                        Hit<JsonData> jsonDataHit = hitList.get(0);
+                        JsonData source = jsonDataHit.source();
+                        if (source != null) {
+                            ImMessageDocument imMessageDocument = source.to(ImMessageDocument.class);
+                            lastContentMap.put(imMessageDocument.getQId(), imMessageDocument);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (CollUtil.isNotEmpty(lastContentMap)) {
+            Map<String, ImMessageDocument> finalLastContentMap = lastContentMap;
+            imSessionPageVOList.forEach(item -> {
+                ImMessageDocument imMessageDocument = finalLastContentMap.get(item.getQId());
+                if (imMessageDocument != null) {
+                    item.setLastContent(imMessageDocument.getContent());
+                    item.setLastContentCreateTime(imMessageDocument.getCreateTime());
+                }
+            });
+        }
+
+        // 获取：未读消息的数量 ↓
 
     }
 

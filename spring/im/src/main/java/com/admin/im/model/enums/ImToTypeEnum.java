@@ -23,7 +23,7 @@ public enum ImToTypeEnum {
     public static String getQId(ImToTypeEnum imToTypeEnum, Long toId, Long createId) {
 
         if (FRIEND.equals(imToTypeEnum)) {
-            return imToTypeEnum.getCode() + "_" + toId + "_" + createId;
+            return imToTypeEnum.getCode() + "_" + (toId + createId);
         }
         return imToTypeEnum.getCode() + "_" + toId;
 

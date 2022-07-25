@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ImSessionPageVO extends ImSessionDocument {
@@ -13,7 +15,7 @@ public class ImSessionPageVO extends ImSessionDocument {
     private String lastContent;
 
     @ApiModelProperty(value = "最后一次聊天内容的创建时间")
-    private String lastContentCreateTime;
+    private Date lastContentCreateTime;
 
     @ApiModelProperty(value = "会话对象的名称")
     private String targetName;
