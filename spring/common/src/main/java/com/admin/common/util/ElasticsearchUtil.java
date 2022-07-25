@@ -2,10 +2,7 @@ package com.admin.common.util;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
-import co.elastic.clients.elasticsearch.core.GetRequest;
-import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.util.ObjectBuilder;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -27,6 +24,25 @@ public class ElasticsearchUtil {
     @Resource
     private void setElasticsearchClient(ElasticsearchClient value) {
         elasticsearchClient = value;
+    }
+
+    /**
+     * 如果执行失败，则创建 index之后，再执行一次 mget
+     */
+    @SneakyThrows
+    @Nonnull
+    public static <TDocument> MgetResponse<TDocument> autoCreateIndexAndMget(String index,
+        Function<MgetRequest.Builder, ObjectBuilder<MgetRequest>> fn, Class<TDocument> tDocumentClass) {
+
+        try {
+            return elasticsearchClient.mget(fn, tDocumentClass);
+        } catch (ElasticsearchException e) {
+            if (INDEX_NOT_FOUND_EXCEPTION.equals(e.error().type())) {
+                elasticsearchClient.indices().create(c -> c.index(index));
+                return elasticsearchClient.mget(fn, tDocumentClass);
+            }
+            throw e;
+        }
     }
 
     /**

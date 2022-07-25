@@ -23,7 +23,4 @@ public class ImSessionPageVO extends ImSessionDocument {
     @ApiModelProperty(value = "会话对象的头像 url")
     private String targetAvatarUrl;
 
-    @ApiModelProperty(value = "未读消息的总数")
-    private long unreadTotal;
-
 }
