@@ -399,12 +399,12 @@ public class ImServiceImpl implements ImService {
                 ApiResultVO.error("操作失败：您不在群组里，无法发送消息");
             }
 
-            searchTotal = ElasticsearchUtil
-                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
-                    s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
-                        .query(sq -> sq.term(sqt -> sqt.field("gid").value(dto.getToId()))));
+            GetResponse<ImGroupDocument> getResponse = ElasticsearchUtil
+                .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
+                    g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(dto.getToId()),
+                    ImGroupDocument.class);
 
-            if (searchTotal == 0) {
+            if (getResponse.source() == null) {
                 ApiResultVO.error("操作失败：群组已解散");
             }
 
