@@ -341,9 +341,9 @@ public class ImServiceImpl implements ImService {
                     .document(finalImSessionDocument)).build());
         } else {
             if (addUnreadTotalFlag) {
-                imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1);
+                imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1L);
             } else {
-                imSessionDocument.setUnreadTotal(0);
+                imSessionDocument.setUnreadTotal(0L);
             }
             imSessionDocument.setLastContent(content);
             imSessionDocument.setLastContentCreateTime(date);
