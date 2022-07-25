@@ -15,9 +15,6 @@ public class ImSessionDocument {
     @ApiModelProperty(value = "会话归属用户 id")
     private Long createId;
 
-    @ApiModelProperty(value = "创建时间")
-    private Date createTime;
-
     @ApiModelProperty(value = "会话目标对象 id")
     private String toId;
 
@@ -27,7 +24,10 @@ public class ImSessionDocument {
     @ApiModelProperty(value = "未读消息的总数")
     private long unreadTotal;
 
-    @ApiModelProperty(value = "方便检索一个会话下的所有消息，组成：好友 toType_(toId + createId) 群组 toType_toId")
-    private String qId;
+    @ApiModelProperty(value = "最后一次聊天的内容")
+    private String lastContent;
+
+    @ApiModelProperty(value = "最后一次聊天内容的创建时间")
+    private Date lastContentCreateTime;
 
 }

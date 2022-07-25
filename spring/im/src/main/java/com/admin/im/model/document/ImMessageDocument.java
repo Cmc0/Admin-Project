@@ -39,7 +39,4 @@ public class ImMessageDocument {
     @ApiModelProperty(value = "已读的用户 idSet ，备注：不包含 createId")
     private Set<Long> rIdSet;
 
-    @ApiModelProperty(value = "方便检索一个会话下的所有消息，组成：好友 toType_(toId + createId) 群组 toType_toId")
-    private String qId;
-
 }

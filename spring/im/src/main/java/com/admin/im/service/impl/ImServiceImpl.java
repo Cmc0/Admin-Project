@@ -2,22 +2,15 @@ package com.admin.im.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.core.MgetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
-import co.elastic.clients.elasticsearch.core.get.GetResult;
-import co.elastic.clients.elasticsearch.core.mget.MultiGetResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
-import co.elastic.clients.json.JsonData;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
@@ -27,7 +20,10 @@ import com.admin.common.model.vo.ApiResultVO;
 import com.admin.common.util.ElasticsearchUtil;
 import com.admin.common.util.MyEntityUtil;
 import com.admin.common.util.UserUtil;
-import com.admin.im.model.document.*;
+import com.admin.im.model.document.ImFriendDocument;
+import com.admin.im.model.document.ImFriendRequestDocument;
+import com.admin.im.model.document.ImMessageDocument;
+import com.admin.im.model.document.ImSessionDocument;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.ImContentTypeEnum;
 import com.admin.im.model.enums.ImMessageCreateTypeEnum;
@@ -41,8 +37,10 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class ImServiceImpl implements ImService {
@@ -284,7 +282,6 @@ public class ImServiceImpl implements ImService {
         imMessageDocument.setToType(toType);
         imMessageDocument.setCreateType(createType);
         imMessageDocument.setRIdSet(new HashSet<>());
-        imMessageDocument.setQId(ImToTypeEnum.getQId(toType, toId, createId));
 
         bulkOperationList.add(new BulkOperation.Builder().index(
             i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
@@ -296,16 +293,16 @@ public class ImServiceImpl implements ImService {
 
         if (ImToTypeEnum.FRIEND.equals(toType)) {
 
-            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryList, false);
+            doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, queryList, false);
 
-            doSendAddToBulkOperationList(Convert.toLong(toId), createId.toString(), toType, date, bulkOperationList,
-                CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
+            doSendAddToBulkOperationList(content, Convert.toLong(toId), createId.toString(), toType, date,
+                bulkOperationList, CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
                     Query.of(q -> q.term(qt -> qt.field("toId").value(createId.toString()))),
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
 
         } else {
 
-            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryList, true);
+            doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, queryList, true);
 
         }
 
@@ -315,8 +312,8 @@ public class ImServiceImpl implements ImService {
         }
     }
 
-    private void doSendAddToBulkOperationList(Long createId, String toId, ImToTypeEnum toType, Date date,
-        List<BulkOperation> bulkOperationList, List<Query> queryList, boolean addUnreadTotalFlag) {
+    private void doSendAddToBulkOperationList(String content, Long createId, String toId, ImToTypeEnum toType,
+        Date date, List<BulkOperation> bulkOperationList, List<Query> queryList, boolean addUnreadTotalFlag) {
 
         SearchResponse<ImSessionDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
@@ -333,11 +330,11 @@ public class ImServiceImpl implements ImService {
         if (imSessionDocument == null) {
             imSessionDocument = new ImSessionDocument();
             imSessionDocument.setCreateId(createId);
-            imSessionDocument.setCreateTime(date);
             imSessionDocument.setToId(toId);
             imSessionDocument.setType(toType);
             imSessionDocument.setUnreadTotal(addUnreadTotalFlag ? 1L : 0L);
-            imSessionDocument.setQId(ImToTypeEnum.getQId(toType, toId, createId));
+            imSessionDocument.setLastContent(content);
+            imSessionDocument.setLastContentCreateTime(date);
 
             ImSessionDocument finalImSessionDocument = imSessionDocument;
             bulkOperationList.add(new BulkOperation.Builder().index(
@@ -348,6 +345,8 @@ public class ImServiceImpl implements ImService {
 
                 imSessionDocument.setId(imSessionDocumentHit.id());
                 imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1);
+                imSessionDocument.setLastContent(content);
+                imSessionDocument.setLastContentCreateTime(date);
 
                 ImSessionDocument finalImSessionDocument = imSessionDocument;
                 bulkOperationList.add(new BulkOperation.Builder().update(
@@ -430,8 +429,8 @@ public class ImServiceImpl implements ImService {
         SearchResponse<ImSessionPageVO> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).from((current - 1) * pageSize)
-                    .size(pageSize).query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))),
-                ImSessionPageVO.class);
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))), ImSessionPageVO.class);
 
         if (searchResponse == null) {
             return dto.getPage(false);
@@ -451,10 +450,6 @@ public class ImServiceImpl implements ImService {
             }
         }
 
-        if (hitList.size() != 0) {
-            getSessionPageOther(imSessionPageVOList, currentUserId);
-        }
-
         Page<ImSessionPageVO> page = dto.getPage(false);
 
         page.setRecords(imSessionPageVOList);
@@ -463,297 +458,6 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
-    }
-
-    /**
-     * 获取：最后一次聊天的内容，示例：
-     * GET im_message_index/_search
-     * {
-     * "aggs": {
-     * "group_by_qid": {
-     * "aggs": {
-     * "last_content": {
-     * "top_hits": {
-     * "size": 1,
-     * "sort": [
-     * {
-     * "createTime": {
-     * "order": "desc"
-     * }
-     * }
-     * ]
-     * }
-     * }
-     * },
-     * "terms": {
-     * "field": "qid.keyword"
-     * }
-     * }
-     * },
-     * "query": {
-     * "bool": {
-     * "must": [
-     * {
-     * "terms": {
-     * "qid.keyword": [
-     * "1_6"
-     * ]
-     * }
-     * },
-     * {
-     * "terms": {
-     * "createId": [
-     * "1",
-     * "5"
-     * ]
-     * }
-     * },
-     * {
-     * "terms": {
-     * "toId": [
-     * "1",
-     * "5"
-     * ]
-     * }
-     * }
-     * ]
-     * }
-     * },
-     * "size": 0
-     * }
-     */
-    @SneakyThrows
-    private List<ImSessionPageVO> getSessionPageOther(List<ImSessionPageVO> imSessionPageVOList, Long currentUserId) {
-
-        // 获取：最后一次聊天的内容 ↓
-
-        Map<String, ImMessageDocument> friendLastContentMap = null;
-
-        Map<String, ImMessageDocument> groupLastContentMap = null;
-
-        // 查询：用户之间的 最后一次聊天内容
-        getSessionPageOtherFriendLastContentMap(imSessionPageVOList, currentUserId, friendLastContentMap);
-
-        // 查询：群组的 最后一次聊天内容
-        getSessionPageOtherGroupLastContentMap(imSessionPageVOList, currentUserId, groupLastContentMap);
-
-        // 组装：最后一次聊天的内容，并排序
-        if (CollUtil.isNotEmpty(friendLastContentMap) || CollUtil.isNotEmpty(groupLastContentMap)) {
-            Map<String, ImMessageDocument> finalFriendLastContentMap = friendLastContentMap;
-            Map<String, ImMessageDocument> finalGroupLastContentMap = groupLastContentMap;
-            imSessionPageVOList.forEach(item -> {
-                if (finalFriendLastContentMap != null && ImToTypeEnum.FRIEND.equals(item.getType())) {
-                    ImMessageDocument imMessageDocument = finalFriendLastContentMap.get(item.getQId());
-                    if (imMessageDocument != null) {
-                        item.setLastContent(imMessageDocument.getContent());
-                        item.setLastContentCreateTime(imMessageDocument.getCreateTime());
-                    } else {
-                        item.setLastContentCreateTime(item.getCreateTime());
-                    }
-                }
-                if (finalGroupLastContentMap != null && ImToTypeEnum.GROUP.equals(item.getType())) {
-                    ImMessageDocument imMessageDocument = finalGroupLastContentMap.get(item.getQId());
-                    if (imMessageDocument != null) {
-                        item.setLastContent(imMessageDocument.getContent());
-                        item.setLastContentCreateTime(imMessageDocument.getCreateTime());
-                    } else {
-                        item.setLastContentCreateTime(item.getCreateTime());
-                    }
-                }
-            });
-            imSessionPageVOList = imSessionPageVOList.stream()
-                .sorted(Comparator.comparing(ImSessionPageVO::getLastContentCreateTime, Comparator.reverseOrder()))
-                .collect(Collectors.toList());
-        } else {
-            imSessionPageVOList = imSessionPageVOList.stream()
-                .sorted(Comparator.comparing(ImSessionPageVO::getCreateTime, Comparator.reverseOrder()))
-                .collect(Collectors.toList());
-        }
-
-        // 获取：用户/群组，名称头像
-
-        Set<String> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
-            .map(ImSessionDocument::getToId).collect(Collectors.toSet());
-
-        Map<String, SysUserDO> friendGroupMap = null;
-
-        if (friendIdSet.size() != 0) {
-            List<SysUserDO> sysUserDOList =
-                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet)
-                    .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
-            friendGroupMap = sysUserDOList.stream().collect(Collectors.toMap(it -> it.getId().toString(), it -> it));
-        }
-
-        List<String> groupIdStrList = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.GROUP.equals(it.getType()))
-            .map(ImSessionDocument::getToId).collect(Collectors.toList());
-
-        MgetResponse<ImGroupDocument> mgetResponse = ElasticsearchUtil
-            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX, g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(groupIdStrList), ImGroupDocument.class);
-
-        Map<String, ImGroupDocument> groupGroupMap = null;
-        if (mgetResponse != null) {
-            List<MultiGetResponseItem<ImGroupDocument>> docList = mgetResponse.docs();
-
-            groupGroupMap = MapUtil.newHashMap(docList.size());
-
-            for (MultiGetResponseItem<ImGroupDocument> item : docList) {
-                GetResult<ImGroupDocument> result = item.result();
-                ImGroupDocument imGroupDocument = result.source();
-                groupGroupMap.put(result.id(), imGroupDocument);
-            }
-        }
-
-        Map<String, SysUserDO> finalFriendGroupMap = friendGroupMap;
-        Map<String, ImGroupDocument> finalGroupGroupMap = groupGroupMap;
-        imSessionPageVOList.forEach(item -> {
-            if (ImToTypeEnum.FRIEND.equals(item.getType())) {
-                if (finalFriendGroupMap != null) {
-                    SysUserDO sysUserDO = finalFriendGroupMap.get(item.getToId());
-                    if (sysUserDO != null) {
-                        item.setTargetName(sysUserDO.getNickname());
-                        item.setTargetAvatarUrl(sysUserDO.getAvatarUrl());
-                    }
-                }
-            } else {
-                if (finalGroupGroupMap != null) {
-                    ImGroupDocument imGroupDocument = finalGroupGroupMap.get(item.getToId());
-                    if (imGroupDocument != null) {
-                        item.setTargetName(imGroupDocument.getName());
-                        item.setTargetAvatarUrl(imGroupDocument.getAvatarUrl());
-                    }
-                }
-            }
-        });
-
-        return imSessionPageVOList;
-    }
-
-    private Map<String, ImMessageDocument> getSessionPageOtherGroupLastContentMap(
-        List<ImSessionPageVO> imSessionPageVOList, Long currentUserId,
-        Map<String, ImMessageDocument> groupLastContentMap) {
-
-        List<ImSessionPageVO> groupImSessionPageVOList =
-            imSessionPageVOList.stream().filter(it -> ImToTypeEnum.GROUP.equals(it.getType()))
-                .collect(Collectors.toList());
-
-        if (groupImSessionPageVOList.size() == 0) {
-            return groupLastContentMap;
-        }
-
-        List<FieldValue> groupToIdFieldValueList =
-            groupImSessionPageVOList.stream().map(it -> FieldValue.of(it.getToId())).collect(Collectors.toList());
-
-        // 查询出：加入的群组
-
-        SearchResponse<ImGroupJoinDocument> groupJoinSearchResponse = ElasticsearchUtil
-            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
-                    .query(sq -> sq.terms(sqt -> sqt.field("gid").terms(sqtt -> sqtt.value(groupToIdFieldValueList)))),
-                ImGroupJoinDocument.class);
-
-        List<ImGroupJoinDocument> imGroupJoinDocumentList = new ArrayList<>();
-
-        Set<String> gIdSet = new HashSet<>();
-
-        if (groupJoinSearchResponse != null) {
-            for (Hit<ImGroupJoinDocument> item : groupJoinSearchResponse.hits().hits()) {
-                ImGroupJoinDocument imGroupJoinDocument = item.source();
-                if (imGroupJoinDocument != null) {
-                    imGroupJoinDocumentList.add(imGroupJoinDocument);
-                    gIdSet.add(imGroupJoinDocument.getGId());
-                }
-            }
-        }
-
-        groupImSessionPageVOList =
-            groupImSessionPageVOList.stream().filter(it -> gIdSet.contains(it.getToId())).collect(Collectors.toList());
-
-        // 如果都不存在于：我加入的群组
-        if (groupImSessionPageVOList.size() == 0) {
-            return groupLastContentMap;
-        }
-
-        Map<String, ImGroupJoinDocument> groupJoinMap =
-            imGroupJoinDocumentList.stream().collect(Collectors.toMap(ImGroupJoinDocument::getGId, it -> it));
-
-        // TODO：获取每个群里的最后一条消息
-
-        String groupByQidAggs = "group_by_qid";
-        String lastContentAggs = "last_content";
-        String qidKeyword = "qid.keyword";
-
-        List<FieldValue> groupLastContentFieldValueList =
-            groupImSessionPageVOList.stream().map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
-
-        List<Query> queryList = CollUtil
-            .newArrayList(Query.of(q -> q.term(qt -> qt.field("toType").value(ImToTypeEnum.FRIEND.getCode()))), Query
-                .of(q -> q.terms(qt -> qt.field(qidKeyword).terms(qtt -> qtt.value(groupLastContentFieldValueList)))));
-
-        SearchResponse<ImMessageDocument> messageSearchResponse = ElasticsearchUtil
-            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
-                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
-                            saat -> saat.size(1).sort(
-                                saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
-                ImMessageDocument.class);
-
-        return groupLastContentMap;
-    }
-
-    private Map<String, ImMessageDocument> getSessionPageOtherFriendLastContentMap(
-        List<ImSessionPageVO> imSessionPageVOList, Long currentUserId,
-        Map<String, ImMessageDocument> friendLastContentMap) {
-
-        List<FieldValue> friendLastContentFieldValueList =
-            imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
-                .map(it -> FieldValue.of(it.getQId())).collect(Collectors.toList());
-
-        if (friendLastContentFieldValueList.size() == 0) {
-            return friendLastContentMap;
-        }
-
-        String groupByQidAggs = "group_by_qid";
-        String lastContentAggs = "last_content";
-        String qidKeyword = "qid.keyword";
-
-        List<Query> queryList = CollUtil
-            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId.toString()))),
-                Query.of(q -> q.term(qt -> qt.field("toType").value(ImToTypeEnum.FRIEND.getCode()))), Query.of(q -> q
-                    .terms(qt -> qt.field(qidKeyword).terms(qtt -> qtt.value(friendLastContentFieldValueList)))));
-
-        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
-            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
-                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
-                            saat -> saat.size(1).sort(
-                                saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
-                ImMessageDocument.class);
-
-        if (searchResponse != null) {
-            List<StringTermsBucket> stringTermsBucketList =
-                searchResponse.aggregations().get(groupByQidAggs).sterms().buckets().array();
-            if (stringTermsBucketList.size() != 0) {
-
-                friendLastContentMap = MapUtil.newHashMap(stringTermsBucketList.size());
-
-                for (StringTermsBucket item : stringTermsBucketList) {
-                    List<Hit<JsonData>> hitList = item.aggregations().get(lastContentAggs).topHits().hits().hits();
-                    if (hitList.size() != 0) {
-                        Hit<JsonData> jsonDataHit = hitList.get(0);
-                        JsonData source = jsonDataHit.source();
-                        if (source != null) {
-                            ImMessageDocument imMessageDocument = source.to(ImMessageDocument.class);
-                            friendLastContentMap.put(imMessageDocument.getQId(), imMessageDocument);
-                        }
-                    }
-                }
-            }
-        }
-
-        return friendLastContentMap;
     }
 
 }
