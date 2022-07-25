@@ -5,6 +5,16 @@ package com.admin.common.model.constant;
  */
 public interface BaseElasticsearchIndexConstant {
 
+    /**
+     * DELETE im_message_index
+     * DELETE im_friend_index
+     * DELETE im_friend_request_index
+     * DELETE im_group_index
+     * DELETE im_group_join_index
+     * DELETE im_group_request_index
+     * DELETE im_session_index
+     */
+
     String IM_MESSAGE_INDEX = "im_message_index"; // 即时通讯功能的 全部消息index
 
     String IM_FRIEND_INDEX = "im_friend_index"; // 即时通讯功能的 好友index
