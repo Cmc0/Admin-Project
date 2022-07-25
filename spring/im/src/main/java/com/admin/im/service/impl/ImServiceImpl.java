@@ -37,10 +37,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ImServiceImpl implements ImService {
@@ -282,6 +280,7 @@ public class ImServiceImpl implements ImService {
         imMessageDocument.setToType(toType);
         imMessageDocument.setCreateType(createType);
         imMessageDocument.setRIdSet(new HashSet<>());
+        imMessageDocument.setQId(ImToTypeEnum.getQId(toType, toId, createId));
 
         bulkOperationList.add(new BulkOperation.Builder().index(
             i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
@@ -326,6 +325,7 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setToId(toId);
             imSessionDocument.setType(toType);
             imSessionDocument.setLastTime(date);
+            imSessionDocument.setQId(ImToTypeEnum.getQId(toType, toId, createId));
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
@@ -344,7 +344,7 @@ public class ImServiceImpl implements ImService {
 
             List<Query> queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                    Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
+                    Query.of(q -> q.term(qt -> qt.field("uid").value(dto.getToId()))));
 
             long searchTotal = ElasticsearchUtil
                 .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
@@ -427,6 +427,10 @@ public class ImServiceImpl implements ImService {
             }
         }
 
+        if (hitList.size() != 0) {
+            getSessionPageOther(imSessionPageVOList, currentUserId);
+        }
+
         Page<ImSessionPageVO> page = dto.getPage(false);
 
         page.setRecords(imSessionPageVOList);
@@ -435,6 +439,25 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    private void getSessionPageOther(List<ImSessionPageVO> imSessionPageVOList, Long currentUserId) {
+
+        // 获取：最后一次聊天的内容
+        String lastContentAggs = "last_content";
+
+        Set<String> qIdSet = imSessionPageVOList.stream().map(ImSessionDocument::getQId).collect(Collectors.toSet());
+
+        //        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+        //            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+        //                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
+        //                    .query(sq -> sq.terms(sqt -> sqt.field("").terms(sqtt -> sqtt.value(fieldValueList))))
+        //                    .aggregations(lastContentAggs, sa -> sa.topHits(sat -> sat.size(1)
+        //                        .sort(sats -> sats.field(satsf -> satsf.field("createTime").order(SortOrder.Desc))))),
+        //                ImMessageDocument.class);
+
+        // 获取：未读消息的数量
+
     }
 
 }

@@ -20,4 +20,13 @@ public enum ImToTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
+    public static String getQId(ImToTypeEnum imToTypeEnum, Long toId, Long createId) {
+
+        if (FRIEND.equals(imToTypeEnum)) {
+            return imToTypeEnum.getCode() + "_" + toId + "_" + createId;
+        }
+        return imToTypeEnum.getCode() + "_" + toId;
+
+    }
+
 }
