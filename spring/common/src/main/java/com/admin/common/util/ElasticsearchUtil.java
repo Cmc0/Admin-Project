@@ -75,4 +75,15 @@ public class ElasticsearchUtil {
         }
     }
 
+    /**
+     * 获取：search的 total
+     */
+    public static long searchTotal(SearchResponse<?> searchResponse) {
+        if (searchResponse != null && searchResponse.hits().total() != null) {
+            return searchResponse.hits().total().value();
+        } else {
+            return 0L;
+        }
+    }
+
 }

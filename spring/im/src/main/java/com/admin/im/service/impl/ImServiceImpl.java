@@ -67,11 +67,10 @@ public class ImServiceImpl implements ImService {
                 s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX)
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImFriendDocument.class);
 
-        if (searchResponse != null && searchResponse.hits().total() != null) {
-            long value = searchResponse.hits().total().value();
-            if (value > 0) {
-                ApiResultVO.error("操作失败：对方已经是您的好友");
-            }
+        long searchTotal = ElasticsearchUtil.searchTotal(searchResponse);
+
+        if (searchTotal > 0) {
+            ApiResultVO.error("操作失败：对方已经是您的好友");
         }
 
         boolean exists = ChainWrappers.lambdaQueryChain(sysUserMapper).eq(BaseEntityTwo::getId, dto.getToId())
@@ -150,18 +149,31 @@ public class ImServiceImpl implements ImService {
             imFriendDocumentFrom.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(dto.getId())
+                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
                     .document(imFriendDocumentFrom)).build());
 
-            ImFriendDocument imFriendDocumentTo = new ImFriendDocument();
-            imFriendDocumentTo.setCreateId(imFriendRequestDocument.getToId());
-            imFriendDocumentTo.setCreateTime(date);
-            imFriendDocumentTo.setUId(imFriendRequestDocument.getCreateId());
-            imFriendDocumentTo.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+            List<Query> queryList = CollUtil.newArrayList(
+                Query.of(q -> q.term(qt -> qt.field("createId").value(imFriendRequestDocument.getToId()))),
+                Query.of(q -> q.term(qt -> qt.field("uId").value(imFriendRequestDocument.getCreateId()))));
 
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(dto.getId())
-                    .document(imFriendDocumentTo)).build());
+            SearchResponse<ImFriendDocument> searchResponse = ElasticsearchUtil
+                .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
+                    s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX)
+                        .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImFriendDocument.class);
+
+            long searchTotal = ElasticsearchUtil.searchTotal(searchResponse);
+
+            if (searchTotal == 0) {
+                ImFriendDocument imFriendDocumentTo = new ImFriendDocument();
+                imFriendDocumentTo.setCreateId(imFriendRequestDocument.getToId());
+                imFriendDocumentTo.setCreateTime(date);
+                imFriendDocumentTo.setUId(imFriendRequestDocument.getCreateId());
+                imFriendDocumentTo.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+
+                bulkOperationList.add(new BulkOperation.Builder().index(
+                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
+                        .document(imFriendDocumentTo)).build());
+            }
         }
 
         elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
