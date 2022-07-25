@@ -9,6 +9,9 @@ import java.util.Date;
 @Data
 public class ImFriendRequestDocument {
 
+    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
+    private String id;
+
     @ApiModelProperty(value = "申请内容")
     private String content;
 

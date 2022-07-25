@@ -1,12 +1,16 @@
 package com.admin.im.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
@@ -20,8 +24,10 @@ import com.admin.im.model.document.ImFriendDocument;
 import com.admin.im.model.document.ImFriendRequestDocument;
 import com.admin.im.model.dto.ImFriendRequestDTO;
 import com.admin.im.model.dto.ImFriendRequestHandlerDTO;
+import com.admin.im.model.dto.ImFriendRequestPageDTO;
 import com.admin.im.model.enums.ImRequestResultEnum;
 import com.admin.im.service.ImService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -151,6 +157,59 @@ public class ImServiceImpl implements ImService {
         elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 好友申请：分页排序查询
+     */
+    @Override
+    public Page<ImFriendRequestDocument> friendRequestPage(ImFriendRequestPageDTO dto) {
+
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId))));
+
+        SearchResponse<ImFriendRequestDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).from((current - 1) * pageSize)
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .query(sq -> sq.bool(sqb -> sqb.should(queryList))), ImFriendRequestDocument.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
+        HitsMetadata<ImFriendRequestDocument> hits = searchResponse.hits();
+
+        List<Hit<ImFriendRequestDocument>> hitList = hits.hits();
+
+        List<ImFriendRequestDocument> imFriendRequestDocumentList = new ArrayList<>();
+
+        for (Hit<ImFriendRequestDocument> item : hitList) {
+            ImFriendRequestDocument imFriendRequestDocument = item.source();
+            if (imFriendRequestDocument != null) {
+                imFriendRequestDocument.setId(item.id());
+                imFriendRequestDocumentList.add(imFriendRequestDocument);
+            }
+        }
+
+        Page<ImFriendRequestDocument> page = dto.getPage(false);
+
+        page.setRecords(imFriendRequestDocumentList);
+        if (hits.total() != null) {
+            page.setTotal(hits.total().value());
+        }
+
+        return page;
     }
 
 }
