@@ -4,7 +4,6 @@ import com.admin.im.model.enums.ImToTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -20,10 +19,10 @@ public class ImSendDTO {
     @ApiModelProperty(value = "内容，最大长度 2000")
     private String content;
 
-    @Min(1)
-    @NotNull
+    @Size(max = 32)
+    @NotBlank
     @ApiModelProperty(value = "目标对象 id")
-    private Long toId;
+    private String toId;
 
     @NotNull
     @ApiModelProperty(value = "目标对象类型：1 好友 2 群组")

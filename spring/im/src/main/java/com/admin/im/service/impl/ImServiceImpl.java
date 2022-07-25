@@ -178,8 +178,8 @@ public class ImServiceImpl implements ImService {
                         .document(imFriendDocumentTo)).build());
             }
 
-            doSend(imFriendRequestDocument.getToId(), "", imFriendRequestDocument.getCreateId(), ImToTypeEnum.FRIEND,
-                ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
+            doSend(imFriendRequestDocument.getToId(), "", imFriendRequestDocument.getCreateId().toString(),
+                ImToTypeEnum.FRIEND, ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
 
         }
 
@@ -262,7 +262,7 @@ public class ImServiceImpl implements ImService {
      * bulkOperationList：为 null，则会执行：elasticsearchClient.bulk，反之 不执行
      */
     @SneakyThrows
-    private void doSend(Long createId, String content, Long toId, ImToTypeEnum toType,
+    private void doSend(Long createId, String content, String toId, ImToTypeEnum toType,
         ImMessageCreateTypeEnum createType, List<BulkOperation> bulkOperationList, Date date) {
 
         boolean bulkOperationListNullFlag = bulkOperationList == null;
@@ -304,7 +304,8 @@ public class ImServiceImpl implements ImService {
                     Query.of(q -> q.term(qt -> qt.field("toId").value(createId))),
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
 
-            doSendAddToBulkOperationList(toId, createId, toType, date, bulkOperationList, queryTwoList);
+            doSendAddToBulkOperationList(Convert.toLong(toId), createId.toString(), toType, date, bulkOperationList,
+                queryTwoList);
 
         } else {
             doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryOneList);
@@ -316,7 +317,7 @@ public class ImServiceImpl implements ImService {
         }
     }
 
-    private void doSendAddToBulkOperationList(Long createId, Long toId, ImToTypeEnum toType, Date date,
+    private void doSendAddToBulkOperationList(Long createId, String toId, ImToTypeEnum toType, Date date,
         List<BulkOperation> bulkOperationList, List<Query> queryList) {
 
         long searchTotal = ElasticsearchUtil
@@ -510,20 +511,20 @@ public class ImServiceImpl implements ImService {
                 .collect(Collectors.toList());
         }
 
-        Set<Long> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
+        Set<String> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
             .map(ImSessionDocument::getToId).collect(Collectors.toSet());
 
-        Map<Long, SysUserDO> friendGroupMap = null;
+        Map<String, SysUserDO> friendGroupMap = null;
 
         if (friendIdSet.size() != 0) {
             List<SysUserDO> sysUserDOList =
                 ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet)
                     .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
-            friendGroupMap = sysUserDOList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, it -> it));
+            friendGroupMap = sysUserDOList.stream().collect(Collectors.toMap(it -> it.getId().toString(), it -> it));
         }
 
         List<String> groupIdStrList = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.GROUP.equals(it.getType()))
-            .map(it -> it.getToId().toString()).collect(Collectors.toList());
+            .map(ImSessionDocument::getToId).collect(Collectors.toList());
 
         MgetResponse<ImGroupDocument> mgetResponse = ElasticsearchUtil
             .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
@@ -539,7 +540,7 @@ public class ImServiceImpl implements ImService {
             groupGroupMap.put(result.id(), imGroupDocument);
         }
 
-        Map<Long, SysUserDO> finalFriendGroupMap = friendGroupMap;
+        Map<String, SysUserDO> finalFriendGroupMap = friendGroupMap;
         imSessionPageVOList.forEach(item -> {
             if (ImToTypeEnum.FRIEND.equals(item.getType())) {
                 if (finalFriendGroupMap != null) {

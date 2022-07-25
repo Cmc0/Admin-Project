@@ -19,7 +19,7 @@ public class ImSessionDocument {
     private Date createTime;
 
     @ApiModelProperty(value = "会话目标对象 id")
-    private Long toId;
+    private String toId;
 
     @ApiModelProperty(value = "目标对象类型：1 好友 2 群组")
     private ImToTypeEnum type;
