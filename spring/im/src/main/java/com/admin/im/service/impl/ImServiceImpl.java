@@ -290,25 +290,23 @@ public class ImServiceImpl implements ImService {
             i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
                 .document(imMessageDocument)).build());
 
-        List<Query> queryOneList = CollUtil
-            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
-                Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
-                Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
+            Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
+            Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
 
         if (ImToTypeEnum.FRIEND.equals(toType)) {
 
-            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryOneList);
-
-            List<Query> queryTwoList = CollUtil
-                .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
-                    Query.of(q -> q.term(qt -> qt.field("toId").value(createId))),
-                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
+            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryList, false);
 
             doSendAddToBulkOperationList(Convert.toLong(toId), createId.toString(), toType, date, bulkOperationList,
-                queryTwoList);
+                CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
+                    Query.of(q -> q.term(qt -> qt.field("toId").value(createId))),
+                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
 
         } else {
-            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryOneList);
+
+            doSendAddToBulkOperationList(createId, toId, toType, date, bulkOperationList, queryList, true);
+
         }
 
         if (bulkOperationListNullFlag) {
@@ -318,26 +316,36 @@ public class ImServiceImpl implements ImService {
     }
 
     private void doSendAddToBulkOperationList(Long createId, String toId, ImToTypeEnum toType, Date date,
-        List<BulkOperation> bulkOperationList, List<Query> queryList) {
+        List<BulkOperation> bulkOperationList, List<Query> queryList, boolean addUnreadTotalFlag) {
 
-        long searchTotal = ElasticsearchUtil
-            .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryList))));
+        SearchResponse<ImSessionDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImSessionDocument.class);
 
-        if (searchTotal == 0) {
-            ImSessionDocument imSessionDocument = new ImSessionDocument();
+        ImSessionDocument imSessionDocument = ElasticsearchUtil.searchGetSource(searchResponse);
+
+        boolean imSessionDocumentNullFlag = imSessionDocument == null;
+
+        if (imSessionDocumentNullFlag) {
+            imSessionDocument = new ImSessionDocument();
             imSessionDocument.setCreateId(createId);
             imSessionDocument.setCreateTime(date);
             imSessionDocument.setToId(toId);
             imSessionDocument.setType(toType);
-            imSessionDocument.setUnreadTotal(0L);
+            imSessionDocument.setUnreadTotal(addUnreadTotalFlag ? 1L : 0L);
             imSessionDocument.setQId(ImToTypeEnum.getQId(toType, toId, createId));
-
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
-                    .document(imSessionDocument)).build());
+        } else {
+            if (addUnreadTotalFlag) {
+                imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1);
+            }
         }
 
+        ImSessionDocument finalImSessionDocument = imSessionDocument;
+        if (imSessionDocumentNullFlag || addUnreadTotalFlag) {
+            bulkOperationList.add(new BulkOperation.Builder().index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
+                    .document(finalImSessionDocument)).build());
+        }
     }
 
     private void sendCheck(ImSendDTO dto, Long currentUserId) {

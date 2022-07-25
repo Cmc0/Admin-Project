@@ -111,4 +111,17 @@ public class ElasticsearchUtil {
         return searchTotal(autoCreateIndexAndSearch(index, fn, Object.class));
     }
 
+    /**
+     * 获取：search 第一个元素的 source
+     */
+    @Nullable
+    public static <T> T searchGetSource(SearchResponse<T> searchResponse) {
+        if (searchResponse != null && searchResponse.hits().total() != null
+            && searchResponse.hits().total().value() != 0) {
+            return searchResponse.hits().hits().get(0).source();
+        } else {
+            return null;
+        }
+    }
+
 }
