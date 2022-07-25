@@ -727,7 +727,53 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public Page<ImGroupRequestDocument> groupRequestPage(ImGroupRequestPageDTO dto) {
-        return null;
+
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        List<Query> queryList =
+            CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))));
+
+        // TODO：群组管理员级别的，查看 入群申请
+
+        SearchResponse<ImGroupRequestDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).from((current - 1) * pageSize)
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .query(sq -> sq.bool(sqb -> sqb.should(queryList))), ImGroupRequestDocument.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
+        HitsMetadata<ImGroupRequestDocument> hits = searchResponse.hits();
+
+        List<Hit<ImGroupRequestDocument>> hitList = hits.hits();
+
+        List<ImGroupRequestDocument> imGroupRequestDocumentList = new ArrayList<>();
+
+        for (Hit<ImGroupRequestDocument> item : hitList) {
+            ImGroupRequestDocument imGroupRequestDocument = item.source();
+            if (imGroupRequestDocument != null) {
+                imGroupRequestDocument.setId(item.id());
+                imGroupRequestDocumentList.add(imGroupRequestDocument);
+            }
+        }
+
+        Page<ImGroupRequestDocument> page = dto.getPage(false);
+
+        page.setRecords(imGroupRequestDocumentList);
+        if (hits.total() != null) {
+            page.setTotal(hits.total().value());
+        }
+
+        return page;
     }
 
 }
