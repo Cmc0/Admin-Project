@@ -18,6 +18,8 @@ public class ElasticsearchUtil {
     private static final String INDEX_NOT_FOUND_EXCEPTION = "index_not_found_exception"; // index未找到异常
     // 搜索阶段执行异常，主要是存在 index，但是不存在 document时，会报出这个错误
     private static final String SEARCH_PHASE_EXECUTION_EXCEPTION = "search_phase_execution_exception";
+    // mget，index 不存在时，抛出的异常
+    private static final String NO_DOCUMENTS_TO_GET_EXCEPTION = "Validation Failed: 1: no documents to get;";
 
     private static ElasticsearchClient elasticsearchClient;
 
@@ -37,7 +39,7 @@ public class ElasticsearchUtil {
         try {
             return elasticsearchClient.mget(fn, tDocumentClass);
         } catch (ElasticsearchException e) {
-            if (INDEX_NOT_FOUND_EXCEPTION.equals(e.error().type())) {
+            if (NO_DOCUMENTS_TO_GET_EXCEPTION.equals(e.error().reason())) {
                 elasticsearchClient.indices().create(c -> c.index(index));
                 return elasticsearchClient.mget(fn, tDocumentClass);
             }
