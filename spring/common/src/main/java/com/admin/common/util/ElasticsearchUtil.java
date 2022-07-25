@@ -34,7 +34,7 @@ public class ElasticsearchUtil {
      */
     @SneakyThrows
     @Nonnull
-    private <TDocument> GetResponse<TDocument> autoCreateIndexAndGet(String index,
+    public static <TDocument> GetResponse<TDocument> autoCreateIndexAndGet(String index,
         Function<GetRequest.Builder, ObjectBuilder<GetRequest>> fn, Class<TDocument> tDocumentClass) {
 
         try {
@@ -53,7 +53,7 @@ public class ElasticsearchUtil {
      */
     @SneakyThrows
     @Nullable
-    private <TDocument> SearchResponse<TDocument> autoCreateIndexAndSearch(String index,
+    public static <TDocument> SearchResponse<TDocument> autoCreateIndexAndSearch(String index,
         Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> fn, Class<TDocument> tDocumentClass) {
 
         try {
