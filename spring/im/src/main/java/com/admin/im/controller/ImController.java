@@ -29,7 +29,7 @@ public class ImController {
     }
 
     @ApiOperation(value = "好友申请：处理")
-    @PostMapping(value = "/friendRequest")
+    @PostMapping(value = "/friendRequestHandler")
     public ApiResultVO<String> friendRequestHandler(@RequestBody @Valid ImFriendRequestHandlerDTO dto) {
         return ApiResultVO.ok(baseService.friendRequestHandler(dto));
     }
