@@ -143,15 +143,25 @@ public class ImServiceImpl implements ImService {
 
         if (ImRequestResultEnum.AGREED.equals(dto.getResult())) {
 
-            ImFriendDocument imFriendDocument = new ImFriendDocument();
-            imFriendDocument.setCreateId(imFriendRequestDocument.getCreateId());
-            imFriendDocument.setCreateTime(date);
-            imFriendDocument.setUId(imFriendRequestDocument.getToId());
-            imFriendDocument.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+            ImFriendDocument imFriendDocumentFrom = new ImFriendDocument();
+            imFriendDocumentFrom.setCreateId(imFriendRequestDocument.getCreateId());
+            imFriendDocumentFrom.setCreateTime(date);
+            imFriendDocumentFrom.setUId(imFriendRequestDocument.getToId());
+            imFriendDocumentFrom.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(dto.getId()).document(imFriendDocument))
-                .build());
+                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(dto.getId())
+                    .document(imFriendDocumentFrom)).build());
+
+            ImFriendDocument imFriendDocumentTo = new ImFriendDocument();
+            imFriendDocumentTo.setCreateId(imFriendRequestDocument.getToId());
+            imFriendDocumentTo.setCreateTime(date);
+            imFriendDocumentTo.setUId(imFriendRequestDocument.getCreateId());
+            imFriendDocumentTo.setRemark(MyEntityUtil.getNotNullStr(dto.getRemark()));
+
+            bulkOperationList.add(new BulkOperation.Builder().index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(dto.getId())
+                    .document(imFriendDocumentTo)).build());
         }
 
         elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
