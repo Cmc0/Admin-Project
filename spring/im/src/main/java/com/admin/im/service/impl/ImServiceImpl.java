@@ -531,7 +531,6 @@ public class ImServiceImpl implements ImService {
 
         String groupByQidAggs = "group_by_qid";
         String lastContentAggs = "last_content";
-        String qidKeyword = "qid.keyword";
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
@@ -542,8 +541,8 @@ public class ImServiceImpl implements ImService {
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(0)
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList))).aggregations(groupByQidAggs,
-                        sa -> sa.terms(sat -> sat.field(qidKeyword)).aggregations(lastContentAggs, saa -> saa.topHits(
-                            saat -> saat.size(1).sort(
+                        sa -> sa.terms(sat -> sat.field("qid.keyword")).aggregations(lastContentAggs, saa -> saa
+                            .topHits(saat -> saat.size(1).sort(
                                 saats -> saats.field(saatsf -> saatsf.field("createTime").order(SortOrder.Desc)))))),
                 ImMessageDocument.class);
 
@@ -570,6 +569,7 @@ public class ImServiceImpl implements ImService {
             }
         }
 
+        // 组装：最后一次聊天的内容，并排序
         if (CollUtil.isNotEmpty(lastContentMap)) {
             Map<String, ImMessageDocument> finalLastContentMap = lastContentMap;
             imSessionPageVOList.forEach(item -> {
@@ -581,20 +581,26 @@ public class ImServiceImpl implements ImService {
                     item.setLastContentCreateTime(item.getCreateTime());
                 }
             });
-            imSessionPageVOList = imSessionPageVOList.stream().sorted(Comparator.comparing(ImSessionPageVO::getLastContentCreateTime, Comparator.reverseOrder()))
+            imSessionPageVOList = imSessionPageVOList.stream()
+                .sorted(Comparator.comparing(ImSessionPageVO::getLastContentCreateTime, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
         } else {
-            imSessionPageVOList = imSessionPageVOList.stream().sorted(Comparator.comparing(ImSessionPageVO::getCreateTime, Comparator.reverseOrder()))
+            imSessionPageVOList = imSessionPageVOList.stream()
+                .sorted(Comparator.comparing(ImSessionPageVO::getCreateTime, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
         }
 
-        Set<String> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType())).map(ImSessionDocument::getToId).collect(Collectors.toSet());
+        // 获取：用户/群组，名称头像
+
+        Set<String> friendIdSet = imSessionPageVOList.stream().filter(it -> ImToTypeEnum.FRIEND.equals(it.getType()))
+            .map(ImSessionDocument::getToId).collect(Collectors.toSet());
 
         Map<String, SysUserDO> friendGroupMap = null;
 
         if (friendIdSet.size() != 0) {
             List<SysUserDO> sysUserDOList =
-                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet).select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
+                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, friendIdSet)
+                    .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
             friendGroupMap = sysUserDOList.stream().collect(Collectors.toMap(it -> it.getId().toString(), it -> it));
         }
 
