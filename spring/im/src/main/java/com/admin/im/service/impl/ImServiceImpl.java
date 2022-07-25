@@ -427,7 +427,8 @@ public class ImServiceImpl implements ImService {
         SearchResponse<ImSessionPageVO> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).from((current - 1) * pageSize)
-                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .size(pageSize)
+                    .sort(ss -> ss.field(ssf -> ssf.field("lastContentCreateTime").order(SortOrder.Desc)))
                     .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))), ImSessionPageVO.class);
 
         if (searchResponse == null) {
