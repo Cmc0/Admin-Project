@@ -1,5 +1,6 @@
 package com.admin.im.model.document;
 
+import com.admin.im.model.enums.ImMessageCreateTypeEnum;
 import com.admin.im.model.enums.ImToTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,5 +30,8 @@ public class ImSessionDocument {
 
     @ApiModelProperty(value = "最后一次聊天内容的创建时间")
     private Date lastContentCreateTime;
+
+    @ApiModelProperty(value = "消息创建来源：1 用户 2 通过验证 3 创建完成")
+    private ImMessageCreateTypeEnum lastContentCreateType;
 
 }

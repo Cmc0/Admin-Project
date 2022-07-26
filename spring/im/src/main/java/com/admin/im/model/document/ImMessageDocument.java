@@ -33,7 +33,7 @@ public class ImMessageDocument {
     @ApiModelProperty(value = "目标对象类型：1 好友 2 群组")
     private ImToTypeEnum toType;
 
-    @ApiModelProperty(value = "消息创建来源：1 用户 2 通过验证")
+    @ApiModelProperty(value = "消息创建来源：1 用户 2 通过验证 3 创建完成")
     private ImMessageCreateTypeEnum createType;
 
     @ApiModelProperty(value = "已读的用户 idSet ，备注：不包含 createId")

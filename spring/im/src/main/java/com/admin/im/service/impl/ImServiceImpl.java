@@ -288,16 +288,16 @@ public class ImServiceImpl implements ImService {
             doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
                     Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(toId))),
-                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), false);
+                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), false, createType);
 
             doSendAddToBulkOperationList(content, Convert.toLong(toId), createId.toString(), toType, date,
                 bulkOperationList, CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
                     Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(createId.toString()))),
-                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
+                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true, createType);
 
         } else {
             doSendAddToBulkOperationListForGroup(createId, toId, toType, content, date, bulkOperationList,
-                joinGroupUserIdSetTemp);
+                joinGroupUserIdSetTemp, createType);
         }
 
         if (bulkOperationListNullFlag) {
@@ -307,7 +307,8 @@ public class ImServiceImpl implements ImService {
     }
 
     private void doSendAddToBulkOperationListForGroup(Long createId, String toId, ImToTypeEnum toType, String content,
-        Date date, List<BulkOperation> bulkOperationList, Set<Long> joinGroupUserIdSetTemp) {
+        Date date, List<BulkOperation> bulkOperationList, Set<Long> joinGroupUserIdSetTemp,
+        ImMessageCreateTypeEnum lastContentCreateType) {
 
         // 获取：加入群组的用户
         SearchResponse<ImGroupJoinDocument> groupJoinDocumentSearchResponse = ElasticsearchUtil
@@ -347,7 +348,7 @@ public class ImServiceImpl implements ImService {
         if (sessionDocumentSearchResponse == null) {
             // 如果全部不存在，则都新增
             doSendAddToBulkOperationListForGroupAddBulkOperationList(createId, toId, toType, content, date,
-                bulkOperationList, joinGroupUserIdSet);
+                bulkOperationList, joinGroupUserIdSet, lastContentCreateType);
         } else {
             // 存在会话的，更新，不存在会话的，新增
             List<ImSessionDocument> imSessionDocumentList =
@@ -367,6 +368,7 @@ public class ImServiceImpl implements ImService {
                 item.setUnreadTotal(item.getUnreadTotal() + 1L);
                 item.setLastContent(content);
                 item.setLastContentCreateTime(date);
+                item.setLastContentCreateType(lastContentCreateType);
 
                 // 更新
                 bulkOperationList.add(new BulkOperation.Builder().update(
@@ -385,13 +387,13 @@ public class ImServiceImpl implements ImService {
             }
 
             doSendAddToBulkOperationListForGroupAddBulkOperationList(createId, toId, toType, content, date,
-                bulkOperationList, addSessionUserIdSet);
+                bulkOperationList, addSessionUserIdSet, lastContentCreateType);
         }
     }
 
     private void doSendAddToBulkOperationListForGroupAddBulkOperationList(Long createId, String toId,
         ImToTypeEnum toType, String content, Date date, List<BulkOperation> bulkOperationList,
-        Set<Long> addSessionUserIdSet) {
+        Set<Long> addSessionUserIdSet, ImMessageCreateTypeEnum lastContentCreateType) {
 
         for (Long item : addSessionUserIdSet) {
 
@@ -402,6 +404,7 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setUnreadTotal(item.equals(createId) ? 0L : 1L);
             imSessionDocument.setLastContent(content);
             imSessionDocument.setLastContentCreateTime(date);
+            imSessionDocument.setLastContentCreateType(lastContentCreateType);
 
             // 新增
             bulkOperationList.add(new BulkOperation.Builder().index(
@@ -411,7 +414,8 @@ public class ImServiceImpl implements ImService {
     }
 
     private void doSendAddToBulkOperationList(String content, Long createId, String toId, ImToTypeEnum toType,
-        Date date, List<BulkOperation> bulkOperationList, List<Query> queryList, boolean addUnreadTotalFlag) {
+        Date date, List<BulkOperation> bulkOperationList, List<Query> queryList, boolean addUnreadTotalFlag,
+        ImMessageCreateTypeEnum lastContentCreateType) {
 
         SearchResponse<ImSessionDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
@@ -434,6 +438,7 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setUnreadTotal(addUnreadTotalFlag ? 1L : 0L);
             imSessionDocument.setLastContent(content);
             imSessionDocument.setLastContentCreateTime(date);
+            imSessionDocument.setLastContentCreateType(lastContentCreateType);
 
             ImSessionDocument finalImSessionDocument = imSessionDocument;
             bulkOperationList.add(new BulkOperation.Builder().index(
@@ -445,6 +450,7 @@ public class ImServiceImpl implements ImService {
             }
             imSessionDocument.setLastContent(content);
             imSessionDocument.setLastContentCreateTime(date);
+            imSessionDocument.setLastContentCreateType(lastContentCreateType);
 
             ImSessionDocument finalImSessionDocument = imSessionDocument;
             bulkOperationList.add(new BulkOperation.Builder().update(
