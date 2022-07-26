@@ -33,3 +33,4 @@ Will have the most powerful !
 10. 公告管理
 11. 在线用户（netty）
 12. 请求监控
+13. 即时通讯（开发中）
