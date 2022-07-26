@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 public class ImGroupRequestHandlerDTO {
 
     @NotBlank
-    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
+    @ApiModelProperty(value = "群组申请 id，备注：elasticsearch id，备注：gr_createId_gid")
     private String id;
 
     @NotNull

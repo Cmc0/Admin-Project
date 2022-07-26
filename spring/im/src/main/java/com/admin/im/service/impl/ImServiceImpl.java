@@ -794,7 +794,7 @@ public class ImServiceImpl implements ImService {
 
         GetResponse<ImGroupDocument> getResponse = ElasticsearchUtil
             .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
-                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX), ImGroupDocument.class);
+                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(dto.getGid()), ImGroupDocument.class);
 
         if (getResponse.source() == null) {
             ApiResultVO.error("操作失败：加入的群不存在，请刷新重试");
@@ -904,7 +904,7 @@ public class ImServiceImpl implements ImService {
 
             // 判断是不是管理员
             if (!groupManagerFlag(dto.getGid(), currentUserId)) {
-                return dto.getPage(false);
+                ApiResultVO.error(BaseBizCodeEnum.INSUFFICIENT_PERMISSIONS);
             }
 
             queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getGid()))));
