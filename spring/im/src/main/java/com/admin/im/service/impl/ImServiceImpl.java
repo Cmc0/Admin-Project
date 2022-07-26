@@ -1,5 +1,6 @@
 package com.admin.im.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
@@ -674,13 +675,18 @@ public class ImServiceImpl implements ImService {
         for (ImMessageDocument item : imMessageDocumentList) {
 
             if (!currentUserId.equals(item.getCreateId()) && !item.getRIdSet().contains(currentUserId)) {
-                item.getRIdSet().add(currentUserId);
+
+                // 属性拷贝
+                ImMessageDocument imMessageDocument = BeanUtil.copyProperties(item, ImMessageDocument.class);
+
+                imMessageDocument.setId(null); // 取消：id的设置
+                imMessageDocument.getRIdSet().add(currentUserId);
                 unreadTotal++;
 
                 // 增加：此条消息已读数量
                 bulkOperationList.add(new BulkOperation.Builder().update(
                     u -> u.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
-                        .action(ua -> ua.doc(item))).build());
+                        .action(ua -> ua.doc(imMessageDocument))).build());
             }
         }
 
@@ -751,10 +757,14 @@ public class ImServiceImpl implements ImService {
 
         } else {
 
+            // 判断是否是管理员级别的用户
+            if (!groupManagerFlag(dto.getId(), currentUserId)) {
+                ApiResultVO.error(BaseBizCodeEnum.INSUFFICIENT_PERMISSIONS);
+            }
+
             elasticsearchClient.update(
                 u -> u.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(dto.getId()).doc(imGroupDocument),
                 ImGroupDocument.class);
-
         }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
@@ -889,21 +899,11 @@ public class ImServiceImpl implements ImService {
         List<Query> queryList;
 
         if (StrUtil.isNotBlank(dto.getGId())) {
+
             // 如果是：群组管理员级别，在查看入群申请
 
-            queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("gId").value(dto.getGId()))), Query.of(q -> q.terms(
-                    qt -> qt.field("role").terms(qtt -> qtt.value(CollUtil
-                        .newArrayList(FieldValue.of(ImGroupJoinRoleEnum.CREATOR.getCode()),
-                            FieldValue.of(ImGroupJoinRoleEnum.MANAGER.getCode())))))));
-
-            List<Query> finalQueryList = queryList;
-            long searchTotal = ElasticsearchUtil
-                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
-                    s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
-                        .query(sq -> sq.bool(sqb -> sqb.must(finalQueryList))));
-
-            if (searchTotal == 0) {
+            // 判断是不是管理员
+            if (!groupManagerFlag(dto.getGId(), currentUserId)) {
                 return dto.getPage(false);
             }
 
@@ -938,6 +938,22 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    /**
+     * 获取：用户是不是 该群里的管理员
+     */
+    private boolean groupManagerFlag(String gId, Long currentUserId) {
+
+        List<Query> checkQueryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("gId").value(gId))), Query.of(q -> q.terms(qt -> qt.field("role")
+                    .terms(qtt -> qtt.value(CollUtil.newArrayList(FieldValue.of(ImGroupJoinRoleEnum.CREATOR.getCode()),
+                        FieldValue.of(ImGroupJoinRoleEnum.MANAGER.getCode())))))));
+
+        return ElasticsearchUtil.autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+            s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                .query(sq -> sq.bool(sqb -> sqb.must(checkQueryList)))) > 0;
     }
 
     /**

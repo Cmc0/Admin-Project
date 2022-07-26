@@ -66,7 +66,7 @@ public class ImController {
         return ApiResultVO.ok(baseService.messagePage(dto));
     }
 
-    @ApiOperation(value = "新增/修改 群组")
+    @ApiOperation(value = "群组：新增/修改")
     @PostMapping(value = "/insertOrUpdateGroup")
     public ApiResultVO<String> insertOrUpdateGroup(@RequestBody @Valid ImInsertOrUpdateGroupDTO dto) {
         return ApiResultVO.ok(baseService.insertOrUpdateGroup(dto));
