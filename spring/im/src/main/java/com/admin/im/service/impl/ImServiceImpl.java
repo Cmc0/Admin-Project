@@ -173,7 +173,7 @@ public class ImServiceImpl implements ImService {
 
                 bulkOperationList.add(new BulkOperation.Builder().index(
                     i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
-                        .getFriendId(imFriendRequestDocument.getCreateId(), imFriendRequestDocument.getToId()))
+                        .getFriendId(imFriendRequestDocument.getToId(), imFriendRequestDocument.getCreateId()))
                         .document(imFriendDocumentTo)).build());
             }
 
