@@ -216,25 +216,19 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        HitsMetadata<ImFriendRequestDocument> hits = searchResponse.hits();
-
-        List<Hit<ImFriendRequestDocument>> hitList = hits.hits();
-
-        List<ImFriendRequestDocument> imFriendRequestDocumentList = new ArrayList<>();
-
-        for (Hit<ImFriendRequestDocument> item : hitList) {
-            ImFriendRequestDocument imFriendRequestDocument = item.source();
-            if (imFriendRequestDocument != null) {
-                imFriendRequestDocument.setId(item.id());
-                imFriendRequestDocumentList.add(imFriendRequestDocument);
+        List<ImFriendRequestDocument> imFriendRequestDocumentList = searchResponse.hits().hits().stream().map(it -> {
+            if (it.source() != null) {
+                it.source().setId(it.id());
+                return it.source();
             }
-        }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
 
         Page<ImFriendRequestDocument> page = dto.getPage(false);
 
         page.setRecords(imFriendRequestDocumentList);
-        if (hits.total() != null) {
-            page.setTotal(hits.total().value());
+        if (searchResponse.hits().total() != null) {
+            page.setTotal(searchResponse.hits().total().value());
         }
 
         return page;
@@ -979,9 +973,16 @@ public class ImServiceImpl implements ImService {
     @Override
     public String sessionDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
 
-        //        elasticsearchClient.deleteByQuery(d -> d.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).i);
+        Long currentUserId = UserUtil.getCurrentUserId();
 
-        return null;
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.ids(qi -> qi.values(CollUtil.newArrayList(notEmptyStrIdSet.getIdSet())))));
+
+        elasticsearchClient.deleteByQuery(d -> d.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+            .query(dq -> dq.bool(dqb -> dqb.must(queryList))));
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**
@@ -1021,7 +1022,41 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public Page<ImFriendDocument> friendPage(ImFriendPageDTO dto) {
-        return null;
+
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        SearchResponse<ImFriendDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX)
+                    .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))), ImFriendDocument.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
+        List<ImFriendDocument> imFriendDocumentList = searchResponse.hits().hits().stream().map(it -> {
+            if (it.source() != null) {
+                it.source().setId(it.id());
+                return it.source();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+
+        Page<ImFriendDocument> page = dto.getPage(false);
+
+        page.setRecords(imFriendDocumentList);
+        if (searchResponse.hits().total() != null) {
+            page.setTotal(searchResponse.hits().total().value());
+        }
+
+        return page;
     }
 
     /**
