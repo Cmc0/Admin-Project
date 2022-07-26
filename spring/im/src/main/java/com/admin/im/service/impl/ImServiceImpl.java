@@ -672,7 +672,8 @@ public class ImServiceImpl implements ImService {
             queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(dto.getToId()))),
                     Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))), Query.of(q -> q
-                        .range(qr -> qr.field("createTime").lte(JsonData.of(createTime)).gte(JsonData.of(outTime)))));
+                        .range(qr -> qr.field("createTime").lte(JsonData.of(createTime))
+                            .gte(outTime == null ? null : JsonData.of(outTime)))));
         }
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
