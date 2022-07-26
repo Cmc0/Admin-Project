@@ -18,7 +18,7 @@ public class ImFriendDocument {
     private Date createTime;
 
     @ApiModelProperty(value = "好友用户主键 id")
-    private Long uId;
+    private Long uid;
 
     @ApiModelProperty(value = "备注名称")
     private String remark;

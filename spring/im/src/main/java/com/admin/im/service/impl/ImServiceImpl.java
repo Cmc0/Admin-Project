@@ -67,7 +67,7 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
+                Query.of(q -> q.term(qt -> qt.field("uid").value(dto.getToId()))));
 
         long searchTotal = ElasticsearchUtil
             .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
@@ -149,7 +149,7 @@ public class ImServiceImpl implements ImService {
             ImFriendDocument imFriendDocumentFrom = new ImFriendDocument();
             imFriendDocumentFrom.setCreateId(imFriendRequestDocument.getCreateId());
             imFriendDocumentFrom.setCreateTime(date);
-            imFriendDocumentFrom.setUId(imFriendRequestDocument.getToId());
+            imFriendDocumentFrom.setUid(imFriendRequestDocument.getToId());
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
@@ -158,7 +158,7 @@ public class ImServiceImpl implements ImService {
 
             List<Query> queryList = CollUtil.newArrayList(
                 Query.of(q -> q.term(qt -> qt.field("createId").value(imFriendRequestDocument.getToId()))),
-                Query.of(q -> q.term(qt -> qt.field("uId").value(imFriendRequestDocument.getCreateId()))));
+                Query.of(q -> q.term(qt -> qt.field("uid").value(imFriendRequestDocument.getCreateId()))));
 
             long searchTotal = ElasticsearchUtil
                 .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
@@ -169,7 +169,7 @@ public class ImServiceImpl implements ImService {
                 ImFriendDocument imFriendDocumentTo = new ImFriendDocument();
                 imFriendDocumentTo.setCreateId(imFriendRequestDocument.getToId());
                 imFriendDocumentTo.setCreateTime(date);
-                imFriendDocumentTo.setUId(imFriendRequestDocument.getCreateId());
+                imFriendDocumentTo.setUid(imFriendRequestDocument.getCreateId());
 
                 bulkOperationList.add(new BulkOperation.Builder().index(
                     i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
@@ -457,7 +457,7 @@ public class ImServiceImpl implements ImService {
 
             List<Query> queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                    Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
+                    Query.of(q -> q.term(qt -> qt.field("uid").value(dto.getToId()))));
 
             long searchTotal = ElasticsearchUtil
                 .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
@@ -1031,7 +1031,7 @@ public class ImServiceImpl implements ImService {
 
         if (imFriendPageVOList.size() != 0) {
 
-            Set<Long> uIdSet = imFriendPageVOList.stream().map(ImFriendDocument::getUId).collect(Collectors.toSet());
+            Set<Long> uIdSet = imFriendPageVOList.stream().map(ImFriendDocument::getUid).collect(Collectors.toSet());
 
             List<SysUserDO> sysUserDOList =
                 ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, uIdSet)
@@ -1041,7 +1041,7 @@ public class ImServiceImpl implements ImService {
                 sysUserDOList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, it -> it));
 
             imFriendPageVOList.forEach(item -> {
-                SysUserDO sysUserDO = userGroupMap.get(item.getUId());
+                SysUserDO sysUserDO = userGroupMap.get(item.getUid());
                 if (sysUserDO != null) {
                     item.setTargetName(sysUserDO.getNickname());
                     item.setTargetAvatarUrl(sysUserDO.getAvatarUrl());
