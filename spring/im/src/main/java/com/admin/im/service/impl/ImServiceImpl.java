@@ -357,13 +357,16 @@ public class ImServiceImpl implements ImService {
 
             for (ImSessionDocument item : imSessionDocumentList) {
 
+                String id = item.getId();
+                item.setId(null); // // 取消：id的设置
+
                 item.setUnreadTotal(item.getUnreadTotal() + 1L);
                 item.setLastContent(content);
                 item.setLastContentCreateTime(date);
 
                 // 更新
-                bulkOperationList.add(new BulkOperation.Builder().index(
-                    i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(item.getId()).document(item))
+                bulkOperationList.add(new BulkOperation.Builder().update(
+                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(id).action(ua -> ua.doc(item)))
                     .build());
             }
 
