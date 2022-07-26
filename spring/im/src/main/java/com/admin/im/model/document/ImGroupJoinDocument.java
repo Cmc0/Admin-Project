@@ -30,7 +30,7 @@ public class ImGroupJoinDocument {
     @ApiModelProperty(value = "是否退出群组")
     private Boolean outFlag;
 
-    @ApiModelProperty(value = "退出群组的时间，默认为：入群时间")
+    @ApiModelProperty(value = "退出群组的时间")
     private Date outTime;
 
 }

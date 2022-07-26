@@ -18,6 +18,7 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.get.GetResult;
 import co.elastic.clients.elasticsearch.core.mget.MultiGetResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
@@ -330,7 +331,9 @@ public class ImServiceImpl implements ImService {
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toSet());
 
-        joinGroupUserIdSet.addAll(joinGroupUserIdSetTemp); // 添加额外的：joinGroupUserId
+        if (CollUtil.isNotEmpty(joinGroupUserIdSetTemp)) {
+            joinGroupUserIdSet.addAll(joinGroupUserIdSetTemp); // 添加额外的：joinGroupUserId
+        }
 
         if (joinGroupUserIdSet.size() == 0) {
             return;
@@ -652,17 +655,33 @@ public class ImServiceImpl implements ImService {
 
         } else {
 
+            // 获取：加入群组的时间
+            GetResponse<ImGroupJoinDocument> getResponse = ElasticsearchUtil
+                .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                    g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                        .id(ImHelpUtil.getGroupJoinId(currentUserId, dto.getToId())), ImGroupJoinDocument.class);
+
+            ImGroupJoinDocument imGroupJoinDocument = getResponse.source();
+            if (imGroupJoinDocument == null) {
+                ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
+            }
+
+            Date createTime = imGroupJoinDocument.getCreateTime();
+            Date outTime = imGroupJoinDocument.getOutTime();
+
             queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(dto.getToId()))),
-                    Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
-
+                    Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))), Query.of(q -> q
+                        .range(qr -> qr.field("createTime").lte(JsonData.of(createTime)).gte(JsonData.of(outTime)))));
         }
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).from((current - 1) * pageSize)
                     .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Asc)))
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImMessageDocument.class);
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList) //
+                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId)) // 不显示，对自己隐藏的的消息
+                        ))), ImMessageDocument.class);
 
         if (searchResponse == null) {
             return dto.getPage(false);
@@ -776,7 +795,7 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setRemark("");
             imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.CREATOR);
             imGroupJoinDocument.setOutFlag(false);
-            imGroupJoinDocument.setOutTime(date);
+            imGroupJoinDocument.setOutTime(null);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
@@ -904,7 +923,7 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setRemark("");
             imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.USER);
             imGroupJoinDocument.setOutFlag(false);
-            imGroupJoinDocument.setOutTime(date);
+            imGroupJoinDocument.setOutTime(null);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(ImHelpUtil
@@ -1022,6 +1041,9 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+
+        // TODO：
+
         return null;
     }
 
@@ -1030,6 +1052,9 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public String friendDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+
+        // TODO：
+
         return null;
     }
 
@@ -1038,6 +1063,9 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public String groupOutByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+
+        // TODO：
+
         return null;
     }
 
@@ -1046,6 +1074,9 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public String groupDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+
+        // TODO：
+
         return null;
     }
 
