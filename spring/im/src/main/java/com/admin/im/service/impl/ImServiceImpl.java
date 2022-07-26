@@ -31,6 +31,7 @@ import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.*;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.enums.*;
+import com.admin.im.model.vo.ImFriendPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.admin.im.util.ImHelpUtil;
@@ -994,7 +995,7 @@ public class ImServiceImpl implements ImService {
      * 好友：分页排序查询
      */
     @Override
-    public Page<ImFriendDocument> friendPage(ImFriendPageDTO dto) {
+    public Page<ImFriendPageVO> friendPage(ImFriendPageDTO dto) {
 
         Integer current = Convert.toInt(dto.getCurrent());
         Integer pageSize = Convert.toInt(dto.getPageSize());
@@ -1005,26 +1006,47 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        SearchResponse<ImFriendDocument> searchResponse = ElasticsearchUtil
+        SearchResponse<ImFriendPageVO> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX)
-                    .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))), ImFriendDocument.class);
+                s -> s.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).from((current - 1) * pageSize)
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))), ImFriendPageVO.class);
 
         if (searchResponse == null) {
             return dto.getPage(false);
         }
 
-        List<ImFriendDocument> imFriendDocumentList =
+        List<ImFriendPageVO> imFriendPageVOList =
             searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
                 it.source().setId(it.id());
                 return it.source();
             }).collect(Collectors.toList());
 
-        Page<ImFriendDocument> page = dto.getPage(false);
+        Page<ImFriendPageVO> page = dto.getPage(false);
 
-        page.setRecords(imFriendDocumentList);
+        page.setRecords(imFriendPageVOList);
         if (searchResponse.hits().total() != null) {
             page.setTotal(searchResponse.hits().total().value());
+        }
+
+        if (imFriendPageVOList.size() != 0) {
+
+            Set<Long> uIdSet = imFriendPageVOList.stream().map(ImFriendDocument::getUId).collect(Collectors.toSet());
+
+            List<SysUserDO> sysUserDOList =
+                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, uIdSet)
+                    .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
+
+            Map<Long, SysUserDO> userGroupMap =
+                sysUserDOList.stream().collect(Collectors.toMap(BaseEntityTwo::getId, it -> it));
+
+            imFriendPageVOList.forEach(item -> {
+                SysUserDO sysUserDO = userGroupMap.get(item.getUId());
+                if (sysUserDO != null) {
+                    item.setTargetName(sysUserDO.getNickname());
+                    item.setTargetAvatarUrl(sysUserDO.getAvatarUrl());
+                }
+            });
         }
 
         return page;
@@ -1035,7 +1057,71 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public Page<ImGroupDocument> groupPage(ImGroupPageDTO dto) {
-        return null;
+
+        Integer current = Convert.toInt(dto.getCurrent());
+        Integer pageSize = Convert.toInt(dto.getPageSize());
+
+        if (current == null || pageSize == null) {
+            return dto.getPage(false);
+        }
+
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        SearchResponse<ImGroupJoinDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).from((current - 1) * pageSize)
+                    .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))),
+                ImGroupJoinDocument.class);
+
+        if (searchResponse == null) {
+            return dto.getPage(false);
+        }
+
+        List<ImGroupJoinDocument> imGroupJoinDocumentList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
+                it.source().setId(it.id());
+                return it.source();
+            }).collect(Collectors.toList());
+
+        if (imGroupJoinDocumentList.size() == 0) {
+            return dto.getPage(false);
+        }
+
+        List<String> gIdList =
+            imGroupJoinDocumentList.stream().map(ImGroupJoinDocument::getGId).collect(Collectors.toList());
+
+        MgetResponse<ImGroupDocument> mgetResponse = ElasticsearchUtil
+            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(gIdList), ImGroupDocument.class);
+
+        List<ImGroupDocument> imGroupDocumentList = new ArrayList<>();
+
+        if (mgetResponse != null) {
+
+            Map<String, ImGroupDocument> groupMap =
+                mgetResponse.docs().stream().filter(it -> it.result().source() != null).map(it -> {
+                    it.result().source().setId(it.result().id());
+                    return it.result().source();
+                }).collect(Collectors.toMap(ImGroupDocument::getId, it -> it));
+
+            imGroupDocumentList = imGroupJoinDocumentList.stream().map(item -> {
+                ImGroupDocument imGroupDocument = groupMap.get(item.getGId());
+                if (imGroupDocument != null) {
+                    return imGroupDocument;
+                }
+                return null;
+            }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
+
+        Page<ImGroupDocument> page = dto.getPage(false);
+
+        page.setRecords(imGroupDocumentList);
+        if (searchResponse.hits().total() != null) {
+            page.setTotal(searchResponse.hits().total().value());
+        }
+
+        return page;
     }
 
 }

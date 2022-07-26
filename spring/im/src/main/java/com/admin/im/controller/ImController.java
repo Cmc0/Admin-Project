@@ -2,8 +2,12 @@ package com.admin.im.controller;
 
 import com.admin.common.model.dto.NotEmptyStrIdSet;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.im.model.document.*;
+import com.admin.im.model.document.ImFriendRequestDocument;
+import com.admin.im.model.document.ImGroupDocument;
+import com.admin.im.model.document.ImGroupRequestDocument;
+import com.admin.im.model.document.ImMessageDocument;
 import com.admin.im.model.dto.*;
+import com.admin.im.model.vo.ImFriendPageVO;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -118,7 +122,7 @@ public class ImController {
 
     @ApiOperation(value = "好友：分页排序查询")
     @PostMapping(value = "/friendPage")
-    public ApiResultVO<Page<ImFriendDocument>> friendPage(@RequestBody @Valid ImFriendPageDTO dto) {
+    public ApiResultVO<Page<ImFriendPageVO>> friendPage(@RequestBody @Valid ImFriendPageDTO dto) {
         return ApiResultVO.ok(baseService.friendPage(dto));
     }
 
