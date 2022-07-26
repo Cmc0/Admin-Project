@@ -1,6 +1,5 @@
 package com.admin.im.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
@@ -723,10 +722,8 @@ public class ImServiceImpl implements ImService {
 
             if (!currentUserId.equals(item.getCreateId()) && !item.getRIdSet().contains(currentUserId)) {
 
-                // 属性拷贝
-                ImMessageDocument imMessageDocument = BeanUtil.copyProperties(item, ImMessageDocument.class);
-
-                imMessageDocument.setId(null); // 取消：id的设置
+                ImMessageDocument imMessageDocument = new ImMessageDocument();
+                imMessageDocument.setRIdSet(new HashSet<>(item.getRIdSet()));
                 imMessageDocument.getRIdSet().add(currentUserId);
                 unreadTotal++;
 
@@ -1040,12 +1037,14 @@ public class ImServiceImpl implements ImService {
     /**
      * 聊天记录：批量删除
      */
+    @SneakyThrows
     @Override
     public String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
 
-        // TODO：
+        ElasticsearchUtil.autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+            g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX), ImMessageDocument.class);
 
-        return null;
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**
