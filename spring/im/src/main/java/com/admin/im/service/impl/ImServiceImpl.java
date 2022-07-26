@@ -842,6 +842,10 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
+        if (!groupManagerFlag(imGroupRequestDocument.getGid(), currentUserId)) {
+            ApiResultVO.error(BaseBizCodeEnum.INSUFFICIENT_PERMISSIONS);
+        }
+
         if (!ImRequestResultEnum.PENDING.equals(imGroupRequestDocument.getResult())) {
             ApiResultVO.error("操作失败：已经处理过了，请刷新重试");
         }
