@@ -23,6 +23,9 @@ public class ImGroupJoinDocument {
     @ApiModelProperty(value = "备注名称")
     private String remark;
 
+    @ApiModelProperty(value = "是否退出群组")
+    private Boolean outFlag;
+
     @ApiModelProperty(value = "退出群组的时间")
     private Date outTime;
 

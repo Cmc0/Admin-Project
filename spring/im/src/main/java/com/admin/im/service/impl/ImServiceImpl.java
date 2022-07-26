@@ -287,13 +287,12 @@ public class ImServiceImpl implements ImService {
             i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
                 .document(imMessageDocument)).build());
 
-        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
-            Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
-            Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))));
-
         if (ImToTypeEnum.FRIEND.equals(toType)) {
 
-            doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, queryList, false);
+            doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, CollUtil
+                .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
+                    Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
+                    Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), false);
 
             doSendAddToBulkOperationList(content, Convert.toLong(toId), createId.toString(), toType, date,
                 bulkOperationList, CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
@@ -301,9 +300,7 @@ public class ImServiceImpl implements ImService {
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
 
         } else {
-
-            doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, queryList, true);
-
+            doSendAddToBulkOperationListForGroup(createId, toId, toType, content, date, bulkOperationList);
         }
 
         if (bulkOperationListNullFlag) {
@@ -312,12 +309,113 @@ public class ImServiceImpl implements ImService {
         }
     }
 
+    private void doSendAddToBulkOperationListForGroup(Long createId, String toId, ImToTypeEnum toType, String content,
+        Date date, List<BulkOperation> bulkOperationList) {
+
+        // 获取：加入群组的用户
+        SearchResponse<ImGroupJoinDocument> groupJoinDocumentSearchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).query(sq -> sq.bool(sqb -> sqb.must(
+                    CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gId").value(toId))),
+                        Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))))))), ImGroupJoinDocument.class);
+
+        if (groupJoinDocumentSearchResponse == null) {
+            return;
+        }
+
+        Set<Long> joinGroupUserIdSet = groupJoinDocumentSearchResponse.hits().hits().stream().map(it -> {
+            if (it.source() != null) {
+                return it.source().getCreateId();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
+
+        if (joinGroupUserIdSet.size() == 0) {
+            return;
+        }
+
+        List<FieldValue> fieldValueList = joinGroupUserIdSet.stream().map(FieldValue::of).collect(Collectors.toList());
+
+        // 获取：会话
+        SearchResponse<ImSessionDocument> sessionDocumentSearchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).query(sq -> sq.bool(sqb -> sqb.must(
+                    CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
+                        Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))),
+                        Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))))))),
+                ImSessionDocument.class);
+
+        if (sessionDocumentSearchResponse == null) {
+            // 如果全部不存在，则都新增
+            doSendAddToBulkOperationListForGroupAddBulkOperationList(createId, toId, toType, content, date,
+                bulkOperationList, joinGroupUserIdSet);
+        } else {
+            // 存在会话的，更新，不存在会话的，新增
+            List<ImSessionDocument> imSessionDocumentList =
+                sessionDocumentSearchResponse.hits().hits().stream().map(it -> {
+                    if (it.source() != null) {
+                        it.source().setId(it.id());
+                        return it.source();
+                    }
+                    return null;
+                }).filter(Objects::nonNull).collect(Collectors.toList());
+
+            for (ImSessionDocument item : imSessionDocumentList) {
+
+                item.setUnreadTotal(item.getUnreadTotal() + 1L);
+                item.setLastContent(content);
+                item.setLastContentCreateTime(date);
+
+                // 更新
+                bulkOperationList.add(new BulkOperation.Builder().index(
+                    i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(item.getId()).document(item))
+                    .build());
+            }
+
+            Set<Long> createIdSet =
+                imSessionDocumentList.stream().map(ImSessionDocument::getCreateId).collect(Collectors.toSet());
+
+            Set<Long> addSessionUserIdSet =
+                joinGroupUserIdSet.stream().filter(it -> !createIdSet.contains(it)).collect(Collectors.toSet());
+
+            if (addSessionUserIdSet.size() == 0) {
+                return;
+            }
+
+            doSendAddToBulkOperationListForGroupAddBulkOperationList(createId, toId, toType, content, date,
+                bulkOperationList, addSessionUserIdSet);
+
+        }
+    }
+
+    private void doSendAddToBulkOperationListForGroupAddBulkOperationList(Long createId, String toId,
+        ImToTypeEnum toType, String content, Date date, List<BulkOperation> bulkOperationList,
+        Set<Long> addSessionUserIdSet) {
+
+        for (Long item : addSessionUserIdSet) {
+
+            ImSessionDocument imSessionDocument = new ImSessionDocument();
+            imSessionDocument.setCreateId(item);
+            imSessionDocument.setToId(toId);
+            imSessionDocument.setType(toType);
+            imSessionDocument.setUnreadTotal(item.equals(createId) ? 0L : 1L);
+            imSessionDocument.setLastContent(content);
+            imSessionDocument.setLastContentCreateTime(date);
+
+            // 新增
+            bulkOperationList.add(new BulkOperation.Builder().index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
+                    .document(imSessionDocument)).build());
+        }
+    }
+
     private void doSendAddToBulkOperationList(String content, Long createId, String toId, ImToTypeEnum toType,
         Date date, List<BulkOperation> bulkOperationList, List<Query> queryList, boolean addUnreadTotalFlag) {
 
         SearchResponse<ImSessionDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                s -> s.query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImSessionDocument.class);
+                s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImSessionDocument.class);
 
         Hit<ImSessionDocument> imSessionDocumentHit = ElasticsearchUtil.searchGetSourceHit(searchResponse);
 
@@ -343,8 +441,6 @@ public class ImServiceImpl implements ImService {
         } else {
             if (addUnreadTotalFlag) {
                 imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1L);
-            } else {
-                imSessionDocument.setUnreadTotal(0L);
             }
             imSessionDocument.setLastContent(content);
             imSessionDocument.setLastContentCreateTime(date);
@@ -708,6 +804,7 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setCreateId(imGroupRequestDocument.getCreateId());
             imGroupJoinDocument.setCreateTime(date);
             imGroupJoinDocument.setGId(imGroupRequestDocument.getGId());
+            imGroupJoinDocument.setOutFlag(false);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(IdUtil.simpleUUID())
