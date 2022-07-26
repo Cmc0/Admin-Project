@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class ImFriendRequestDocument {
 
-    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
+    @ApiModelProperty(value = "elasticsearch id，备注：fr_createId_toId")
     private String id;
 
     @ApiModelProperty(value = "申请内容")

@@ -6,13 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 即时通讯 发送对象类型
+ * 即时通讯 在群组里的角色
  */
 @AllArgsConstructor
 @Getter
-public enum ImToTypeEnum {
-    FRIEND((byte)1, "好友"), //
-    GROUP((byte)2, "群组"), //
+public enum ImGroupJoinRoleEnum {
+    CREATOR((byte)1, "创建人"), //
+    MANAGER((byte)2, "管理员"), //
+    USER((byte)3, "普通用户"), //
     ;
 
     @EnumValue

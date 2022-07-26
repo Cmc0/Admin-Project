@@ -29,12 +29,10 @@ import com.admin.common.util.MyEntityUtil;
 import com.admin.common.util.UserUtil;
 import com.admin.im.model.document.*;
 import com.admin.im.model.dto.*;
-import com.admin.im.model.enums.ImContentTypeEnum;
-import com.admin.im.model.enums.ImMessageCreateTypeEnum;
-import com.admin.im.model.enums.ImRequestResultEnum;
-import com.admin.im.model.enums.ImToTypeEnum;
+import com.admin.im.model.enums.*;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
+import com.admin.im.util.ImHelpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import lombok.SneakyThrows;
@@ -95,9 +93,8 @@ public class ImServiceImpl implements ImService {
         imFriendRequestDocument.setResult(ImRequestResultEnum.PENDING);
         imFriendRequestDocument.setResultTime(date);
 
-        elasticsearchClient.index(
-            i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(IdUtil.simpleUUID())
-                .document(imFriendRequestDocument));
+        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX)
+            .id(ImHelpUtil.getFriendRequestId(currentUserId, dto.getToId())).document(imFriendRequestDocument));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -153,7 +150,8 @@ public class ImServiceImpl implements ImService {
             imFriendDocumentFrom.setUId(imFriendRequestDocument.getToId());
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
+                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
+                    .getFriendId(imFriendRequestDocument.getCreateId(), imFriendRequestDocument.getToId()))
                     .document(imFriendDocumentFrom)).build());
 
             List<Query> queryList = CollUtil.newArrayList(
@@ -172,7 +170,8 @@ public class ImServiceImpl implements ImService {
                 imFriendDocumentTo.setUId(imFriendRequestDocument.getCreateId());
 
                 bulkOperationList.add(new BulkOperation.Builder().index(
-                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(IdUtil.simpleUUID())
+                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
+                        .getFriendId(imFriendRequestDocument.getCreateId(), imFriendRequestDocument.getToId()))
                         .document(imFriendDocumentTo)).build());
             }
 
@@ -315,9 +314,9 @@ public class ImServiceImpl implements ImService {
         // 获取：加入群组的用户
         SearchResponse<ImGroupJoinDocument> groupJoinDocumentSearchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).query(sq -> sq.bool(sqb -> sqb.must(
-                    CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gId").value(toId))),
-                        Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))))))), ImGroupJoinDocument.class);
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).query(sq -> sq.bool(
+                    sqb -> sqb.must(CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gId").value(toId))))))),
+                ImGroupJoinDocument.class);
 
         if (groupJoinDocumentSearchResponse == null) {
             return;
@@ -405,7 +404,7 @@ public class ImServiceImpl implements ImService {
             // 新增
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
-                    .id(ImToTypeEnum.getSessionId(toType, toId, item)).document(imSessionDocument)).build());
+                    .id(ImHelpUtil.getSessionId(toType, item, toId)).document(imSessionDocument)).build());
         }
     }
 
@@ -437,7 +436,7 @@ public class ImServiceImpl implements ImService {
             ImSessionDocument finalImSessionDocument = imSessionDocument;
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
-                    .id(ImToTypeEnum.getSessionId(toType, toId, createId)).document(finalImSessionDocument)).build());
+                    .id(ImHelpUtil.getSessionId(toType, createId, toId)).document(finalImSessionDocument)).build());
         } else {
             if (addUnreadTotalFlag) {
                 imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1L);
@@ -685,18 +684,38 @@ public class ImServiceImpl implements ImService {
     @Override
     public String insertOrUpdateGroup(ImInsertOrUpdateGroupDTO dto) {
 
+        Long currentUserId = UserUtil.getCurrentUserId();
+        Date date = new Date();
+
         ImGroupDocument imGroupDocument = new ImGroupDocument();
         imGroupDocument.setName(MyEntityUtil.getNotNullStr(dto.getName()));
         imGroupDocument.setAvatarUrl(MyEntityUtil.getNotNullStr(dto.getAvatarUrl()));
 
         if (StrUtil.isBlank(dto.getId())) {
 
-            imGroupDocument.setCreateId(UserUtil.getCurrentUserId());
-            imGroupDocument.setCreateTime(new Date());
+            imGroupDocument.setCreateId(currentUserId);
+            imGroupDocument.setCreateTime(date);
 
-            elasticsearchClient.index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(IdUtil.simpleUUID())
-                    .document(imGroupDocument));
+            String uuid = IdUtil.simpleUUID();
+
+            List<BulkOperation> bulkOperationList = new ArrayList<>();
+
+            bulkOperationList.add(new BulkOperation.Builder()
+                .index(i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(uuid).document(imGroupDocument))
+                .build());
+
+            ImGroupJoinDocument imGroupJoinDocument = new ImGroupJoinDocument();
+            imGroupJoinDocument.setCreateId(currentUserId);
+            imGroupJoinDocument.setCreateTime(date);
+            imGroupJoinDocument.setGId(uuid);
+            imGroupJoinDocument.setRemark("");
+            imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.CREATOR);
+
+            bulkOperationList.add(new BulkOperation.Builder().index(
+                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                    .id(ImHelpUtil.getGroupJoinId(currentUserId, uuid)).document(imGroupJoinDocument)).build());
+
+            elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
         } else {
 
@@ -751,9 +770,8 @@ public class ImServiceImpl implements ImService {
         imGroupRequestDocument.setResult(ImRequestResultEnum.PENDING);
         imGroupRequestDocument.setResultTime(date);
 
-        elasticsearchClient.index(
-            i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).id(IdUtil.simpleUUID())
-                .document(imGroupRequestDocument));
+        elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX)
+            .id(ImHelpUtil.getGroupRequestId(currentUserId, dto.getGId())).document(imGroupRequestDocument));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -804,10 +822,12 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setCreateId(imGroupRequestDocument.getCreateId());
             imGroupJoinDocument.setCreateTime(date);
             imGroupJoinDocument.setGId(imGroupRequestDocument.getGId());
-            imGroupJoinDocument.setOutFlag(false);
+            imGroupJoinDocument.setRemark("");
+            imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.USER);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(IdUtil.simpleUUID())
+                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(ImHelpUtil
+                    .getGroupJoinId(imGroupRequestDocument.getCreateId(), imGroupRequestDocument.getGId()))
                     .document(imGroupJoinDocument)).build());
 
             doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGId(), ImToTypeEnum.GROUP,
@@ -834,16 +854,39 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        List<Query> queryList =
-            CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))));
+        List<Query> queryList;
 
-        // TODO：群组管理员级别的，查看 入群申请
+        if (StrUtil.isNotBlank(dto.getGId())) {
+            // 如果是：群组管理员级别，在查看入群申请
 
+            queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("gId").value(dto.getGId()))), Query.of(q -> q.terms(
+                    qt -> qt.field("role").terms(qtt -> qtt.value(CollUtil
+                        .newArrayList(FieldValue.of(ImGroupJoinRoleEnum.CREATOR.getCode()),
+                            FieldValue.of(ImGroupJoinRoleEnum.MANAGER.getCode())))))));
+
+            List<Query> finalQueryList = queryList;
+            long searchTotal = ElasticsearchUtil
+                .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
+                    s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                        .query(sq -> sq.bool(sqb -> sqb.must(finalQueryList))));
+
+            if (searchTotal == 0) {
+                return dto.getPage(false);
+            }
+
+            queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid").value(dto.getGId()))));
+
+        } else {
+            queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))));
+        }
+
+        List<Query> finalQueryList = queryList;
         SearchResponse<ImGroupRequestDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).from((current - 1) * pageSize)
                     .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
-                    .query(sq -> sq.bool(sqb -> sqb.should(queryList))), ImGroupRequestDocument.class);
+                    .query(sq -> sq.bool(sqb -> sqb.should(finalQueryList))), ImGroupRequestDocument.class);
 
         if (searchResponse == null) {
             return dto.getPage(false);

@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class ImGroupRequestDocument {
 
-    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
+    @ApiModelProperty(value = "elasticsearch id，备注：gr_createId_gid")
     private String id;
 
     @ApiModelProperty(value = "群组申请创建人 id")
