@@ -456,7 +456,7 @@ public class ImServiceImpl implements ImService {
 
             List<Query> queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                    Query.of(q -> q.term(qt -> qt.field("uid").value(dto.getToId()))));
+                    Query.of(q -> q.term(qt -> qt.field("uId").value(dto.getToId()))));
 
             long searchTotal = ElasticsearchUtil
                 .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX,
