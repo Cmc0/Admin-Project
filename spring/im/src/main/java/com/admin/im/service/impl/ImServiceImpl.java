@@ -3,6 +3,7 @@ package com.admin.im.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
@@ -674,7 +675,60 @@ public class ImServiceImpl implements ImService {
             page.setTotal(hits.total().value());
         }
 
+        // 已读消息：扣除未读消息数量
+        ThreadUtil.execute(() -> messageRead(imMessageDocumentList, currentUserId, dto.getToType(), dto.getToId()));
+
         return page;
+    }
+
+    @SneakyThrows
+    private void messageRead(List<ImMessageDocument> imMessageDocumentList, Long currentUserId, ImToTypeEnum toType,
+        String toId) {
+
+        if (imMessageDocumentList.size() == 0) {
+            return;
+        }
+
+        List<BulkOperation> bulkOperationList = new ArrayList<>();
+
+        long unreadTotal = 0; // 待扣除的，未读消息数量
+
+        for (ImMessageDocument item : imMessageDocumentList) {
+
+            if (!currentUserId.equals(item.getCreateId()) && !item.getRIdSet().contains(currentUserId)) {
+                item.getRIdSet().add(currentUserId);
+                unreadTotal++;
+
+                // 增加：此条消息已读数量
+                bulkOperationList.add(new BulkOperation.Builder().update(
+                    u -> u.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
+                        .action(ua -> ua.doc(item))).build());
+            }
+        }
+
+        if (unreadTotal != 0) {
+            GetResponse<ImSessionDocument> getResponse = ElasticsearchUtil
+                .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                    g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+                        .id(ImHelpUtil.getSessionId(toType, currentUserId, toId)), ImSessionDocument.class);
+
+            ImSessionDocument imSessionDocument = getResponse.source();
+
+            if (imSessionDocument != null) {
+
+                unreadTotal = imSessionDocument.getUnreadTotal() - unreadTotal;
+
+                imSessionDocument.setUnreadTotal(unreadTotal < 0 ? 0 : unreadTotal);
+
+                // 减少：未读数量
+                bulkOperationList.add(new BulkOperation.Builder().update(
+                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(getResponse.id())
+                        .action(ua -> ua.doc(imSessionDocument))).build());
+            }
+
+        }
+
+        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
     }
 
     /**
