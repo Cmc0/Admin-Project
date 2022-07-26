@@ -23,6 +23,7 @@ public enum BaseBizCodeEnum implements IBizCode {
     ILLEGAL_REQUEST(100021, "非法请求"), //
     PLEASE_DELETE_THE_CHILD_NODE_FIRST(100031, "请先删除子节点"), //
     INSUFFICIENT_PERMISSIONS(100041, "权限不足"), //
+    NO_DATA_AFFECTED(100051, "操作失败：未有数据受到影响"), //
     NOT_LOGGED_IN_YET(100111, "尚未登录，请先登录"), // 返回这个 code，会触发前端，登出功能（清除所有缓存，并重定向到 /login页面）
     LOGIN_EXPIRED(100111, "登录过期，请重新登录"), //
     FORCED_OFFLINE(100111, "账号在其他地方登录，您被迫下线"), //

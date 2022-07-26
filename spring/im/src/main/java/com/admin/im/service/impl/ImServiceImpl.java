@@ -341,8 +341,8 @@ public class ImServiceImpl implements ImService {
         List<FieldValue> fieldValueList = joinGroupUserIdSet.stream().map(FieldValue::of).collect(Collectors.toList());
 
         // 获取：会话
-        SearchResponse<ImSessionDocument> sessionDocumentSearchResponse =
-            ElasticsearchUtil.autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+        SearchResponse<ImSessionDocument> sessionDocumentSearchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).query(sq -> sq.bool(sqb -> sqb.must(
                     CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(toId))),
                         Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))),
@@ -756,7 +756,9 @@ public class ImServiceImpl implements ImService {
 
         }
 
-        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+        if (bulkOperationList.size() != 0) {
+            elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+        }
     }
 
     /**
@@ -1041,8 +1043,48 @@ public class ImServiceImpl implements ImService {
     @Override
     public String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
 
-        ElasticsearchUtil.autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-            g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX), ImMessageDocument.class);
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        List<String> idList = CollUtil.newArrayList(notEmptyStrIdSet.getIdSet());
+
+        MgetResponse<ImMessageDocument> mgetResponse = ElasticsearchUtil
+            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).ids(idList), ImMessageDocument.class);
+
+        if (mgetResponse == null) {
+            ApiResultVO.error(BaseBizCodeEnum.NO_DATA_AFFECTED);
+        }
+
+        List<ImMessageDocument> imMessageDocumentList =
+            mgetResponse.docs().stream().filter(it -> it.result().source() != null).map(it -> {
+                it.result().source().setId(it.result().id());
+                return it.result().source();
+            }).collect(Collectors.toList());
+
+        if (imMessageDocumentList.size() == 0) {
+            ApiResultVO.error(BaseBizCodeEnum.NO_DATA_AFFECTED);
+        }
+
+        List<BulkOperation> bulkOperationList = new ArrayList<>();
+
+        for (ImMessageDocument item : imMessageDocumentList) {
+            if (!item.getHIdSet().contains(currentUserId)) {
+
+                ImMessageDocument imMessageDocument = new ImMessageDocument();
+                imMessageDocument.setHIdSet(new HashSet<>(item.getHIdSet()));
+                imMessageDocument.getHIdSet().add(currentUserId);
+
+                bulkOperationList.add(new BulkOperation.Builder().update(
+                    u -> u.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
+                        .action(ua -> ua.doc(imMessageDocument))).build());
+            }
+        }
+
+        if (bulkOperationList.size() == 0) {
+            ApiResultVO.error(BaseBizCodeEnum.NO_DATA_AFFECTED);
+        }
+
+        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
