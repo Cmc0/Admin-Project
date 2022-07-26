@@ -202,7 +202,7 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("toId").value(currentUserId))));
+                Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(currentUserId))));
 
         SearchResponse<ImFriendRequestDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX,
@@ -290,12 +290,12 @@ public class ImServiceImpl implements ImService {
 
             doSendAddToBulkOperationList(content, createId, toId, toType, date, bulkOperationList, CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(createId))),
-                    Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
+                    Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(toId))),
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), false);
 
             doSendAddToBulkOperationList(content, Convert.toLong(toId), createId.toString(), toType, date,
                 bulkOperationList, CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(toId))),
-                    Query.of(q -> q.term(qt -> qt.field("toId").value(createId.toString()))),
+                    Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(createId.toString()))),
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
 
         } else {
@@ -339,7 +339,7 @@ public class ImServiceImpl implements ImService {
         SearchResponse<ImSessionDocument> sessionDocumentSearchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).query(sq -> sq.bool(sqb -> sqb.must(
-                    CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toId").value(toId))),
+                    CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(toId))),
                         Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))),
                         Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))))))),
                 ImSessionDocument.class);
