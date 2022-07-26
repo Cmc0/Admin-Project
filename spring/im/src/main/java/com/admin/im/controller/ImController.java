@@ -2,9 +2,7 @@ package com.admin.im.controller;
 
 import com.admin.common.model.dto.NotEmptyStrIdSet;
 import com.admin.common.model.vo.ApiResultVO;
-import com.admin.im.model.document.ImFriendRequestDocument;
-import com.admin.im.model.document.ImGroupRequestDocument;
-import com.admin.im.model.document.ImMessageDocument;
+import com.admin.im.model.document.*;
 import com.admin.im.model.dto.*;
 import com.admin.im.model.vo.ImSessionPageVO;
 import com.admin.im.service.ImService;
@@ -116,6 +114,18 @@ public class ImController {
     @PostMapping(value = "/groupDeleteByIdSet")
     public ApiResultVO<String> groupDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
         return ApiResultVO.ok(baseService.groupDeleteByIdSet(notEmptyStrIdSet));
+    }
+
+    @ApiOperation(value = "好友：分页排序查询")
+    @PostMapping(value = "/friendPage")
+    public ApiResultVO<Page<ImFriendDocument>> friendPage(@RequestBody @Valid ImFriendPageDTO dto) {
+        return ApiResultVO.ok(baseService.friendPage(dto));
+    }
+
+    @ApiOperation(value = "群组：分页排序查询")
+    @PostMapping(value = "/groupPage")
+    public ApiResultVO<Page<ImGroupDocument>> groupPage(@RequestBody @Valid ImGroupPageDTO dto) {
+        return ApiResultVO.ok(baseService.groupPage(dto));
     }
 
 }

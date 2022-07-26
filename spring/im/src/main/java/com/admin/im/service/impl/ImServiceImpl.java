@@ -975,8 +975,12 @@ public class ImServiceImpl implements ImService {
     /**
      * 会话：批量删除
      */
+    @SneakyThrows
     @Override
     public String sessionDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+
+        //        elasticsearchClient.deleteByQuery(d -> d.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).i);
+
         return null;
     }
 
@@ -1009,6 +1013,22 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     public String groupDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+        return null;
+    }
+
+    /**
+     * 好友：分页排序查询
+     */
+    @Override
+    public Page<ImFriendDocument> friendPage(ImFriendPageDTO dto) {
+        return null;
+    }
+
+    /**
+     * 群组：分页排序查询
+     */
+    @Override
+    public Page<ImGroupDocument> groupPage(ImGroupPageDTO dto) {
         return null;
     }
 
