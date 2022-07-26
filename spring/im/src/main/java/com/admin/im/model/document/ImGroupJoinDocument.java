@@ -27,4 +27,10 @@ public class ImGroupJoinDocument {
     @ApiModelProperty(value = "在群组里的角色：1 创建人 2 管理员 3 普通用户")
     private ImGroupJoinRoleEnum role;
 
+    @ApiModelProperty(value = "是否退出群组")
+    private Boolean outFlag;
+
+    @ApiModelProperty(value = "退出群组的时间，默认为：入群时间")
+    private Date outTime;
+
 }

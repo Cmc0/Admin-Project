@@ -310,12 +310,14 @@ public class ImServiceImpl implements ImService {
         Date date, List<BulkOperation> bulkOperationList, Set<Long> joinGroupUserIdSetTemp,
         ImMessageCreateTypeEnum lastContentCreateType) {
 
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(toId))),
+            Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))));
+
         // 获取：加入群组的用户
         SearchResponse<ImGroupJoinDocument> groupJoinDocumentSearchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).query(sq -> sq.bool(sqb -> sqb
-                    .must(CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(toId))))))),
-                ImGroupJoinDocument.class);
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImGroupJoinDocument.class);
 
         if (groupJoinDocumentSearchResponse == null) {
             return;
@@ -491,7 +493,8 @@ public class ImServiceImpl implements ImService {
 
             List<Query> queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                    Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getToId()))));
+                    Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getToId()))),
+                    Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))));
 
             long searchTotal = ElasticsearchUtil
                 .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
@@ -635,13 +638,25 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        ArrayList<FieldValue> fieldValueList =
-            CollUtil.newArrayList(FieldValue.of(dto.getToId()), FieldValue.of(currentUserId));
+        List<Query> queryList;
 
-        List<Query> queryList = CollUtil
-            .newArrayList(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
+        if (ImToTypeEnum.FRIEND.equals(dto.getToType())) {
+
+            List<FieldValue> fieldValueList =
+                CollUtil.newArrayList(FieldValue.of(dto.getToId()), FieldValue.of(currentUserId));
+
+            queryList = CollUtil.newArrayList(
+                Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
                 Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
                 Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
+
+        } else {
+
+            queryList = CollUtil
+                .newArrayList(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(dto.getToId()))),
+                    Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
+
+        }
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
@@ -760,6 +775,8 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setGid(uuid);
             imGroupJoinDocument.setRemark("");
             imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.CREATOR);
+            imGroupJoinDocument.setOutFlag(false);
+            imGroupJoinDocument.setOutTime(date);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
@@ -796,7 +813,8 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getGid()))));
+                Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getGid()))),
+                Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))));
 
         long searchTotal = ElasticsearchUtil
             .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
@@ -885,10 +903,12 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setGid(imGroupRequestDocument.getGid());
             imGroupJoinDocument.setRemark("");
             imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.USER);
+            imGroupJoinDocument.setOutFlag(false);
+            imGroupJoinDocument.setOutTime(date);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(
-                    ImHelpUtil.getGroupJoinId(imGroupRequestDocument.getCreateId(), imGroupRequestDocument.getGid()))
+                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(ImHelpUtil
+                    .getGroupJoinId(imGroupRequestDocument.getCreateId(), imGroupRequestDocument.getGid()))
                     .document(imGroupJoinDocument)).build());
 
             doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGid(), ImToTypeEnum.GROUP,
@@ -965,16 +985,17 @@ public class ImServiceImpl implements ImService {
      */
     private boolean groupManagerFlag(String gid, Long currentUserId) {
 
-        List<Query> checkQueryList = CollUtil
+        List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(gid))), Query.of(q -> q.terms(
+                Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(gid))),
+                Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))), Query.of(q -> q.terms(
                     qt -> qt.field("role").terms(qtt -> qtt.value(CollUtil
                         .newArrayList(FieldValue.of(ImGroupJoinRoleEnum.CREATOR.getCode()),
                             FieldValue.of(ImGroupJoinRoleEnum.MANAGER.getCode())))))));
 
         return ElasticsearchUtil.autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
             s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
-                .query(sq -> sq.bool(sqb -> sqb.must(checkQueryList)))) > 0;
+                .query(sq -> sq.bool(sqb -> sqb.must(queryList)))) > 0;
     }
 
     /**
@@ -1104,12 +1125,15 @@ public class ImServiceImpl implements ImService {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+                Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))));
+
         SearchResponse<ImGroupJoinDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).from((current - 1) * pageSize)
                     .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
-                    .query(sq -> sq.term(sqt -> sqt.field("createId").value(currentUserId))),
-                ImGroupJoinDocument.class);
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImGroupJoinDocument.class);
 
         if (searchResponse == null) {
             return dto.getPage(false);
