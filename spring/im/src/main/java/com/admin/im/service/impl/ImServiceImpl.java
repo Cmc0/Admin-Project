@@ -17,7 +17,6 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.get.GetResult;
 import co.elastic.clients.elasticsearch.core.mget.MultiGetResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
@@ -216,13 +215,11 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        List<ImFriendRequestDocument> imFriendRequestDocumentList = searchResponse.hits().hits().stream().map(it -> {
-            if (it.source() != null) {
+        List<ImFriendRequestDocument> imFriendRequestDocumentList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
                 it.source().setId(it.id());
                 return it.source();
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+            }).collect(Collectors.toList());
 
         Page<ImFriendRequestDocument> page = dto.getPage(false);
 
@@ -529,19 +526,11 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        HitsMetadata<ImSessionPageVO> hits = searchResponse.hits();
-
-        List<Hit<ImSessionPageVO>> hitList = hits.hits();
-
-        List<ImSessionPageVO> imSessionPageVOList = new ArrayList<>();
-
-        for (Hit<ImSessionPageVO> item : hitList) {
-            ImSessionPageVO imSessionPageVO = item.source();
-            if (imSessionPageVO != null) {
-                imSessionPageVO.setId(item.id());
-                imSessionPageVOList.add(imSessionPageVO);
-            }
-        }
+        List<ImSessionPageVO> imSessionPageVOList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
+                it.source().setId(it.id());
+                return it.source();
+            }).collect(Collectors.toList());
 
         if (imSessionPageVOList.size() != 0) {
 
@@ -606,8 +595,8 @@ public class ImServiceImpl implements ImService {
         Page<ImSessionPageVO> page = dto.getPage(false);
 
         page.setRecords(imSessionPageVOList);
-        if (hits.total() != null) {
-            page.setTotal(hits.total().value());
+        if (searchResponse.hits().total() != null) {
+            page.setTotal(searchResponse.hits().total().value());
         }
 
         return page;
@@ -650,25 +639,17 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        HitsMetadata<ImMessageDocument> hits = searchResponse.hits();
-
-        List<Hit<ImMessageDocument>> hitList = hits.hits();
-
-        List<ImMessageDocument> imMessageDocumentList = new ArrayList<>();
-
-        for (Hit<ImMessageDocument> item : hitList) {
-            ImMessageDocument imMessageDocument = item.source();
-            if (imMessageDocument != null) {
-                imMessageDocument.setId(item.id());
-                imMessageDocumentList.add(imMessageDocument);
-            }
-        }
+        List<ImMessageDocument> imMessageDocumentList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
+                it.source().setId(it.id());
+                return it.source();
+            }).collect(Collectors.toList());
 
         Page<ImMessageDocument> page = dto.getPage(false);
 
         page.setRecords(imMessageDocumentList);
-        if (hits.total() != null) {
-            page.setTotal(hits.total().value());
+        if (searchResponse.hits().total() != null) {
+            page.setTotal(searchResponse.hits().total().value());
         }
 
         // 已读消息：扣除未读消息数量
@@ -942,25 +923,17 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        HitsMetadata<ImGroupRequestDocument> hits = searchResponse.hits();
-
-        List<Hit<ImGroupRequestDocument>> hitList = hits.hits();
-
-        List<ImGroupRequestDocument> imGroupRequestDocumentList = new ArrayList<>();
-
-        for (Hit<ImGroupRequestDocument> item : hitList) {
-            ImGroupRequestDocument imGroupRequestDocument = item.source();
-            if (imGroupRequestDocument != null) {
-                imGroupRequestDocument.setId(item.id());
-                imGroupRequestDocumentList.add(imGroupRequestDocument);
-            }
-        }
+        List<ImGroupRequestDocument> imGroupRequestDocumentList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
+                it.source().setId(it.id());
+                return it.source();
+            }).collect(Collectors.toList());
 
         Page<ImGroupRequestDocument> page = dto.getPage(false);
 
         page.setRecords(imGroupRequestDocumentList);
-        if (hits.total() != null) {
-            page.setTotal(hits.total().value());
+        if (searchResponse.hits().total() != null) {
+            page.setTotal(searchResponse.hits().total().value());
         }
 
         return page;
@@ -1041,13 +1014,11 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        List<ImFriendDocument> imFriendDocumentList = searchResponse.hits().hits().stream().map(it -> {
-            if (it.source() != null) {
+        List<ImFriendDocument> imFriendDocumentList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
                 it.source().setId(it.id());
                 return it.source();
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+            }).collect(Collectors.toList());
 
         Page<ImFriendDocument> page = dto.getPage(false);
 
