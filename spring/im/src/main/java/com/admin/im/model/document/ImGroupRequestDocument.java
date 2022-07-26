@@ -22,7 +22,7 @@ public class ImGroupRequestDocument {
     private String content;
 
     @ApiModelProperty(value = "群组主表 id，uuid")
-    private String gId;
+    private String gid;
 
     @ApiModelProperty(value = "申请结果处理人 id")
     private Long resultId;

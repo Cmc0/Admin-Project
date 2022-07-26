@@ -19,7 +19,7 @@ public class ImGroupJoinDocument {
     private Date createTime;
 
     @ApiModelProperty(value = "群组主表 id，uuid")
-    private String gId;
+    private String gid;
 
     @ApiModelProperty(value = "备注名称")
     private String remark;

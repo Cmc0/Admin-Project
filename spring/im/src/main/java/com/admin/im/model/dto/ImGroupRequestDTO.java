@@ -18,6 +18,6 @@ public class ImGroupRequestDTO {
     @Size(min = 32, max = 32)
     @NotBlank
     @ApiModelProperty(value = "群组主表 id，uuid")
-    private String gId;
+    private String gid;
 
 }

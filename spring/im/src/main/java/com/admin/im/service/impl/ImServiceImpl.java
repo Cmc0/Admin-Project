@@ -310,8 +310,8 @@ public class ImServiceImpl implements ImService {
         // 获取：加入群组的用户
         SearchResponse<ImGroupJoinDocument> groupJoinDocumentSearchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
-                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).query(sq -> sq.bool(
-                    sqb -> sqb.must(CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gId").value(toId))))))),
+                s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).query(sq -> sq.bool(sqb -> sqb
+                    .must(CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(toId))))))),
                 ImGroupJoinDocument.class);
 
         if (groupJoinDocumentSearchResponse == null) {
@@ -479,7 +479,7 @@ public class ImServiceImpl implements ImService {
 
             List<Query> queryList = CollUtil
                 .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                    Query.of(q -> q.term(qt -> qt.field("gid").value(dto.getToId()))));
+                    Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getToId()))));
 
             long searchTotal = ElasticsearchUtil
                 .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
@@ -745,7 +745,7 @@ public class ImServiceImpl implements ImService {
             ImGroupJoinDocument imGroupJoinDocument = new ImGroupJoinDocument();
             imGroupJoinDocument.setCreateId(currentUserId);
             imGroupJoinDocument.setCreateTime(date);
-            imGroupJoinDocument.setGId(uuid);
+            imGroupJoinDocument.setGid(uuid);
             imGroupJoinDocument.setRemark("");
             imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.CREATOR);
 
@@ -781,7 +781,7 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("gId").value(dto.getGId()))));
+                Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getGid()))));
 
         long searchTotal = ElasticsearchUtil
             .autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
@@ -805,7 +805,7 @@ public class ImServiceImpl implements ImService {
         ImGroupRequestDocument imGroupRequestDocument = new ImGroupRequestDocument();
 
         imGroupRequestDocument.setContent(MyEntityUtil.getNotNullStr(dto.getContent()));
-        imGroupRequestDocument.setGId(dto.getGId());
+        imGroupRequestDocument.setGid(dto.getGid());
         imGroupRequestDocument.setCreateId(currentUserId);
         imGroupRequestDocument.setCreateTime(date);
         imGroupRequestDocument.setResultId(BaseConstant.SYS_ID);
@@ -813,7 +813,7 @@ public class ImServiceImpl implements ImService {
         imGroupRequestDocument.setResultTime(date);
 
         elasticsearchClient.index(i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX)
-            .id(ImHelpUtil.getGroupRequestId(currentUserId, dto.getGId())).document(imGroupRequestDocument));
+            .id(ImHelpUtil.getGroupRequestId(currentUserId, dto.getGid())).document(imGroupRequestDocument));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -863,16 +863,16 @@ public class ImServiceImpl implements ImService {
             ImGroupJoinDocument imGroupJoinDocument = new ImGroupJoinDocument();
             imGroupJoinDocument.setCreateId(imGroupRequestDocument.getCreateId());
             imGroupJoinDocument.setCreateTime(date);
-            imGroupJoinDocument.setGId(imGroupRequestDocument.getGId());
+            imGroupJoinDocument.setGid(imGroupRequestDocument.getGid());
             imGroupJoinDocument.setRemark("");
             imGroupJoinDocument.setRole(ImGroupJoinRoleEnum.USER);
 
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(ImHelpUtil
-                    .getGroupJoinId(imGroupRequestDocument.getCreateId(), imGroupRequestDocument.getGId()))
+                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(
+                    ImHelpUtil.getGroupJoinId(imGroupRequestDocument.getCreateId(), imGroupRequestDocument.getGid()))
                     .document(imGroupJoinDocument)).build());
 
-            doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGId(), ImToTypeEnum.GROUP,
+            doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGid(), ImToTypeEnum.GROUP,
                 ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
         }
 
@@ -898,16 +898,16 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList;
 
-        if (StrUtil.isNotBlank(dto.getGId())) {
+        if (StrUtil.isNotBlank(dto.getGid())) {
 
             // 如果是：群组管理员级别，在查看入群申请
 
             // 判断是不是管理员
-            if (!groupManagerFlag(dto.getGId(), currentUserId)) {
+            if (!groupManagerFlag(dto.getGid(), currentUserId)) {
                 return dto.getPage(false);
             }
 
-            queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid").value(dto.getGId()))));
+            queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(dto.getGid()))));
 
         } else {
             queryList = CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))));
@@ -943,13 +943,14 @@ public class ImServiceImpl implements ImService {
     /**
      * 获取：用户是不是 该群里的管理员
      */
-    private boolean groupManagerFlag(String gId, Long currentUserId) {
+    private boolean groupManagerFlag(String gid, Long currentUserId) {
 
         List<Query> checkQueryList = CollUtil
             .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                Query.of(q -> q.term(qt -> qt.field("gId").value(gId))), Query.of(q -> q.terms(qt -> qt.field("role")
-                    .terms(qtt -> qtt.value(CollUtil.newArrayList(FieldValue.of(ImGroupJoinRoleEnum.CREATOR.getCode()),
-                        FieldValue.of(ImGroupJoinRoleEnum.MANAGER.getCode())))))));
+                Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(gid))), Query.of(q -> q.terms(
+                    qt -> qt.field("role").terms(qtt -> qtt.value(CollUtil
+                        .newArrayList(FieldValue.of(ImGroupJoinRoleEnum.CREATOR.getCode()),
+                            FieldValue.of(ImGroupJoinRoleEnum.MANAGER.getCode())))))));
 
         return ElasticsearchUtil.autoCreateIndexAndGetSearchTotal(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
             s -> s.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
@@ -1047,10 +1048,10 @@ public class ImServiceImpl implements ImService {
 
         if (imFriendPageVOList.size() != 0) {
 
-            Set<Long> uIdSet = imFriendPageVOList.stream().map(ImFriendDocument::getUid).collect(Collectors.toSet());
+            Set<Long> uidSet = imFriendPageVOList.stream().map(ImFriendDocument::getUid).collect(Collectors.toSet());
 
             List<SysUserDO> sysUserDOList =
-                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, uIdSet)
+                ChainWrappers.lambdaQueryChain(sysUserMapper).in(BaseEntityTwo::getId, uidSet)
                     .select(SysUserDO::getNickname, SysUserDO::getAvatarUrl, BaseEntityTwo::getId).list();
 
             Map<Long, SysUserDO> userGroupMap =
@@ -1104,12 +1105,12 @@ public class ImServiceImpl implements ImService {
             return dto.getPage(false);
         }
 
-        List<String> gIdList =
-            imGroupJoinDocumentList.stream().map(ImGroupJoinDocument::getGId).collect(Collectors.toList());
+        List<String> gidList =
+            imGroupJoinDocumentList.stream().map(ImGroupJoinDocument::getGid).collect(Collectors.toList());
 
         MgetResponse<ImGroupDocument> mgetResponse = ElasticsearchUtil
             .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_GROUP_INDEX,
-                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(gIdList), ImGroupDocument.class);
+                g -> g.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).ids(gidList), ImGroupDocument.class);
 
         List<ImGroupDocument> imGroupDocumentList = new ArrayList<>();
 
@@ -1122,7 +1123,7 @@ public class ImServiceImpl implements ImService {
                 }).collect(Collectors.toMap(ImGroupDocument::getId, it -> it));
 
             imGroupDocumentList = imGroupJoinDocumentList.stream().map(item -> {
-                ImGroupDocument imGroupDocument = groupMap.get(item.getGId());
+                ImGroupDocument imGroupDocument = groupMap.get(item.getGid());
                 if (imGroupDocument != null) {
                     return imGroupDocument;
                 }
