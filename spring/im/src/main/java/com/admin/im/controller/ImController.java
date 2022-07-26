@@ -102,6 +102,12 @@ public class ImController {
         return ApiResultVO.ok(baseService.messageDeleteByIdSet(notEmptyStrIdSet));
     }
 
+    @ApiOperation(value = "聊天记录：批量撤回")
+    @PostMapping(value = "/messageRevokeByIdSet")
+    public ApiResultVO<String> messageRevokeByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
+        return ApiResultVO.ok(baseService.messageRevokeByIdSet(notEmptyStrIdSet));
+    }
+
     @ApiOperation(value = "好友：批量删除")
     @PostMapping(value = "/friendDeleteByIdSet")
     public ApiResultVO<String> friendDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {

@@ -36,6 +36,8 @@ public interface ImService {
 
     String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
 
+    String messageRevokeByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+
     String friendDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
 
     String groupOutByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
@@ -45,4 +47,5 @@ public interface ImService {
     Page<ImFriendPageVO> friendPage(ImFriendPageDTO dto);
 
     Page<ImGroupDocument> groupPage(ImGroupPageDTO dto);
+
 }

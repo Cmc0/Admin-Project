@@ -1090,6 +1090,17 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
+     * 聊天记录：批量撤回
+     */
+    @Override
+    public String messageRevokeByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+
+        // TODO：
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
      * 好友：批量删除
      */
     @Override
