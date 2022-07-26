@@ -1,5 +1,6 @@
 package com.admin.im.controller;
 
+import com.admin.common.model.dto.NotEmptyStrIdSet;
 import com.admin.common.model.vo.ApiResultVO;
 import com.admin.im.model.document.ImFriendRequestDocument;
 import com.admin.im.model.document.ImGroupRequestDocument;
@@ -85,6 +86,36 @@ public class ImController {
     @PostMapping(value = "/groupRequestPage")
     public ApiResultVO<Page<ImGroupRequestDocument>> friendRequestPage(@RequestBody @Valid ImGroupRequestPageDTO dto) {
         return ApiResultVO.ok(baseService.groupRequestPage(dto));
+    }
+
+    @ApiOperation(value = "会话：批量删除")
+    @PostMapping(value = "/sessionDeleteByIdSet")
+    public ApiResultVO<String> sessionDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
+        return ApiResultVO.ok(baseService.sessionDeleteByIdSet(notEmptyStrIdSet));
+    }
+
+    @ApiOperation(value = "聊天记录：批量删除")
+    @PostMapping(value = "/messageDeleteByIdSet")
+    public ApiResultVO<String> messageDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
+        return ApiResultVO.ok(baseService.messageDeleteByIdSet(notEmptyStrIdSet));
+    }
+
+    @ApiOperation(value = "好友：批量删除")
+    @PostMapping(value = "/friendDeleteByIdSet")
+    public ApiResultVO<String> friendDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
+        return ApiResultVO.ok(baseService.friendDeleteByIdSet(notEmptyStrIdSet));
+    }
+
+    @ApiOperation(value = "群组：批量退出")
+    @PostMapping(value = "/groupOutByIdSet")
+    public ApiResultVO<String> groupOutByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
+        return ApiResultVO.ok(baseService.groupOutByIdSet(notEmptyStrIdSet));
+    }
+
+    @ApiOperation(value = "群组：解散")
+    @PostMapping(value = "/groupDeleteByIdSet")
+    public ApiResultVO<String> groupDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
+        return ApiResultVO.ok(baseService.groupDeleteByIdSet(notEmptyStrIdSet));
     }
 
 }

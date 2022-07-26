@@ -1,5 +1,6 @@
 package com.admin.im.service;
 
+import com.admin.common.model.dto.NotEmptyStrIdSet;
 import com.admin.im.model.document.ImFriendRequestDocument;
 import com.admin.im.model.document.ImGroupRequestDocument;
 import com.admin.im.model.document.ImMessageDocument;
@@ -29,4 +30,13 @@ public interface ImService {
 
     Page<ImGroupRequestDocument> groupRequestPage(ImGroupRequestPageDTO dto);
 
+    String sessionDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+
+    String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+
+    String friendDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+
+    String groupOutByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+
+    String groupDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
 }

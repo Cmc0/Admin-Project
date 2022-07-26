@@ -22,6 +22,7 @@ import com.admin.common.exception.BaseBizCodeEnum;
 import com.admin.common.mapper.SysUserMapper;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.constant.BaseElasticsearchIndexConstant;
+import com.admin.common.model.dto.NotEmptyStrIdSet;
 import com.admin.common.model.entity.BaseEntityTwo;
 import com.admin.common.model.entity.SysUserDO;
 import com.admin.common.model.vo.ApiResultVO;
@@ -282,6 +283,7 @@ public class ImServiceImpl implements ImService {
         imMessageDocument.setToType(toType);
         imMessageDocument.setCreateType(createType);
         imMessageDocument.setRIdSet(new HashSet<>());
+        imMessageDocument.setHIdSet(new HashSet<>());
 
         bulkOperationList.add(new BulkOperation.Builder().index(
             i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
@@ -968,6 +970,46 @@ public class ImServiceImpl implements ImService {
         }
 
         return page;
+    }
+
+    /**
+     * 会话：批量删除
+     */
+    @Override
+    public String sessionDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+        return null;
+    }
+
+    /**
+     * 聊天记录：批量删除
+     */
+    @Override
+    public String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+        return null;
+    }
+
+    /**
+     * 好友：批量删除
+     */
+    @Override
+    public String friendDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+        return null;
+    }
+
+    /**
+     * 群组：批量退出
+     */
+    @Override
+    public String groupOutByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+        return null;
+    }
+
+    /**
+     * 群组：解散
+     */
+    @Override
+    public String groupDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+        return null;
     }
 
 }
