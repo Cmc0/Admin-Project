@@ -179,7 +179,7 @@ public class ImServiceImpl implements ImService {
             }
 
             doSend(imFriendRequestDocument.getToId(), "", imFriendRequestDocument.getCreateId().toString(),
-                ImToTypeEnum.FRIEND, ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
+                ImToTypeEnum.FRIEND, ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date, null);
 
         }
 
@@ -245,7 +245,7 @@ public class ImServiceImpl implements ImService {
         sendCheck(dto, currentUserId);
 
         doSend(currentUserId, dto.getContent(), dto.getToId(), dto.getToType(), ImMessageCreateTypeEnum.USER, null,
-            null);
+            null, null);
 
         return BaseBizCodeEnum.API_RESULT_SEND_OK.getMsg();
     }
@@ -255,7 +255,8 @@ public class ImServiceImpl implements ImService {
      */
     @SneakyThrows
     private void doSend(Long createId, String content, String toId, ImToTypeEnum toType,
-        ImMessageCreateTypeEnum createType, List<BulkOperation> bulkOperationList, Date date) {
+        ImMessageCreateTypeEnum createType, List<BulkOperation> bulkOperationList, Date date,
+        Set<Long> joinGroupUserIdSetTemp) {
 
         boolean bulkOperationListNullFlag = bulkOperationList == null;
 
@@ -295,7 +296,8 @@ public class ImServiceImpl implements ImService {
                     Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode())))), true);
 
         } else {
-            doSendAddToBulkOperationListForGroup(createId, toId, toType, content, date, bulkOperationList);
+            doSendAddToBulkOperationListForGroup(createId, toId, toType, content, date, bulkOperationList,
+                joinGroupUserIdSetTemp);
         }
 
         if (bulkOperationListNullFlag) {
@@ -305,7 +307,7 @@ public class ImServiceImpl implements ImService {
     }
 
     private void doSendAddToBulkOperationListForGroup(Long createId, String toId, ImToTypeEnum toType, String content,
-        Date date, List<BulkOperation> bulkOperationList) {
+        Date date, List<BulkOperation> bulkOperationList, Set<Long> joinGroupUserIdSetTemp) {
 
         // 获取：加入群组的用户
         SearchResponse<ImGroupJoinDocument> groupJoinDocumentSearchResponse = ElasticsearchUtil
@@ -325,6 +327,8 @@ public class ImServiceImpl implements ImService {
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toSet());
 
+        joinGroupUserIdSet.addAll(joinGroupUserIdSetTemp); // 添加额外的：joinGroupUserId
+
         if (joinGroupUserIdSet.size() == 0) {
             return;
         }
@@ -332,8 +336,8 @@ public class ImServiceImpl implements ImService {
         List<FieldValue> fieldValueList = joinGroupUserIdSet.stream().map(FieldValue::of).collect(Collectors.toList());
 
         // 获取：会话
-        SearchResponse<ImSessionDocument> sessionDocumentSearchResponse = ElasticsearchUtil
-            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+        SearchResponse<ImSessionDocument> sessionDocumentSearchResponse =
+            ElasticsearchUtil.autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).query(sq -> sq.bool(sqb -> sqb.must(
                     CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(toId))),
                         Query.of(q -> q.term(qt -> qt.field("type").value(toType.getCode()))),
@@ -756,7 +760,7 @@ public class ImServiceImpl implements ImService {
                     .id(ImHelpUtil.getGroupJoinId(currentUserId, uuid)).document(imGroupJoinDocument)).build());
 
             doSend(BaseConstant.SYS_ID, "", uuid, ImToTypeEnum.GROUP, ImMessageCreateTypeEnum.CREATE_COMPLETE,
-                bulkOperationList, date);
+                bulkOperationList, date, CollUtil.newHashSet(currentUserId));
 
             elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
@@ -882,7 +886,8 @@ public class ImServiceImpl implements ImService {
                     .document(imGroupJoinDocument)).build());
 
             doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGid(), ImToTypeEnum.GROUP,
-                ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date);
+                ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date,
+                CollUtil.newHashSet(imGroupRequestDocument.getCreateId()));
         }
 
         elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
