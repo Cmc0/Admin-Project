@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class ImSessionDocument {
 
-    @ApiModelProperty(value = "elasticsearch id，备注：uuid")
+    @ApiModelProperty(value = "elasticsearch id，备注：toType_createId_toId")
     private String id;
 
     @ApiModelProperty(value = "会话归属用户 id")

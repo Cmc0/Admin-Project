@@ -1,6 +1,5 @@
 package com.admin.im.model.enums;
 
-import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
@@ -21,13 +20,8 @@ public enum ImToTypeEnum {
     private byte code;
     private String codeDescription; // code 说明
 
-    public static String getQId(ImToTypeEnum imToTypeEnum, String toId, Long createId) {
-
-        if (FRIEND.equals(imToTypeEnum)) {
-            return imToTypeEnum.getCode() + "_" + (Convert.toLong(toId) + createId);
-        }
-        return imToTypeEnum.getCode() + "_" + toId;
-
+    public static String getSessionId(ImToTypeEnum imToTypeEnum, String toId, Long createId) {
+        return imToTypeEnum.getCode() + "_" + createId + "_" + toId;
     }
 
 }

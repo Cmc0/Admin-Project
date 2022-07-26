@@ -404,8 +404,8 @@ public class ImServiceImpl implements ImService {
 
             // 新增
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
-                    .document(imSessionDocument)).build());
+                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+                    .id(ImToTypeEnum.getSessionId(toType, toId, item)).document(imSessionDocument)).build());
         }
     }
 
@@ -436,8 +436,8 @@ public class ImServiceImpl implements ImService {
 
             ImSessionDocument finalImSessionDocument = imSessionDocument;
             bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(IdUtil.simpleUUID())
-                    .document(finalImSessionDocument)).build());
+                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+                    .id(ImToTypeEnum.getSessionId(toType, toId, createId)).document(finalImSessionDocument)).build());
         } else {
             if (addUnreadTotalFlag) {
                 imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1L);
