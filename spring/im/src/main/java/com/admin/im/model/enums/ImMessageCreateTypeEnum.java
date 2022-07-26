@@ -13,6 +13,7 @@ import lombok.Getter;
 public enum ImMessageCreateTypeEnum {
     USER((byte)1, "用户"), //
     REQUEST_RESULT((byte)2, "通过验证"), //
+    CREATE_COMPLETE((byte)3, "创建完成"), //
     ;
 
     @EnumValue

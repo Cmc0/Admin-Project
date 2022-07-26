@@ -379,7 +379,6 @@ public class ImServiceImpl implements ImService {
 
             doSendAddToBulkOperationListForGroupAddBulkOperationList(createId, toId, toType, content, date,
                 bulkOperationList, addSessionUserIdSet);
-
         }
     }
 
@@ -752,6 +751,9 @@ public class ImServiceImpl implements ImService {
             bulkOperationList.add(new BulkOperation.Builder().index(
                 i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
                     .id(ImHelpUtil.getGroupJoinId(currentUserId, uuid)).document(imGroupJoinDocument)).build());
+
+            doSend(BaseConstant.SYS_ID, "", uuid, ImToTypeEnum.GROUP, ImMessageCreateTypeEnum.CREATE_COMPLETE,
+                bulkOperationList, date);
 
             elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
