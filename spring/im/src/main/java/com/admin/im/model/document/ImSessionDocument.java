@@ -25,6 +25,9 @@ public class ImSessionDocument {
     @ApiModelProperty(value = "未读消息的总数")
     private long unreadTotal;
 
+    @ApiModelProperty(value = "最后一次聊天内容的 id，elasticsearch id，备注：uuid")
+    private String lastContentMessageId;
+
     @ApiModelProperty(value = "最后一次聊天的内容")
     private String lastContent;
 
