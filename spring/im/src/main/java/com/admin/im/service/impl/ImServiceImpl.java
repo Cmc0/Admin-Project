@@ -1097,11 +1097,15 @@ public class ImServiceImpl implements ImService {
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
 
+        Set<String> hiddenMessageIdSet = new HashSet<>(); // 要隐藏的 messageIdSet
+
         for (ImMessageDocument item : imMessageDocumentList) {
 
             ImMessageDocument imMessageDocument = new ImMessageDocument();
             imMessageDocument.setHIdSet(new HashSet<>(item.getHIdSet()));
             imMessageDocument.getHIdSet().add(currentUserId);
+
+            hiddenMessageIdSet.add(item.getId());
 
             bulkOperationList.add(BulkOperation.of(b -> b.update(
                 bu -> bu.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
@@ -1111,37 +1115,74 @@ public class ImServiceImpl implements ImService {
         if (bulkOperationList.size() != 0) {
             elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
-            ThreadUtil.execute(() -> sessionLastContentChange(
-                CollUtil.newHashSet(ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()))));
+            ThreadUtil.execute(() -> sessionLastContentChangeForFriend(
+                ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()), hiddenMessageIdSet,
+                currentUserId, dto.getToType(), dto.getToId()));
         }
     }
 
     /**
      * 重新设置：session的 最后一次聊天的内容相关数据
+     * hiddenMessageIdSet：用于做判断，是否需要更新 session最后一次的消息
      */
-    private void sessionLastContentChange(Set<String> sessionIdSet) {
+    @SneakyThrows
+    private void sessionLastContentChangeForFriend(String sessionId, Set<String> hiddenMessageIdSet, Long currentUserId,
+        ImToTypeEnum toType, String toId) {
 
-        List<String> sessionIdList = CollUtil.newArrayList(sessionIdSet);
+        GetResponse<ImSessionDocument> getResponse = ElasticsearchUtil
+            .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(sessionId), ImSessionDocument.class);
 
-        MgetResponse<ImSessionDocument> mgetResponse = ElasticsearchUtil
-            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).ids(sessionIdList),
-                ImSessionDocument.class);
+        ImSessionDocument imSessionDocument = getResponse.source();
 
-        if (mgetResponse == null) {
+        if (imSessionDocument == null) {
             return;
         }
 
-        List<ImSessionDocument> imSessionDocumentList =
-            mgetResponse.docs().stream().filter(it -> it.result().source() != null).map(it -> {
-                it.result().source().setId(it.result().id());
-                return it.result().source();
-            }).collect(Collectors.toList());
-
-        if (imSessionDocumentList.size() == 0) {
+        // 判断是否需要更新，如果 包含，则需要更新
+        if (!hiddenMessageIdSet.contains(imSessionDocument.getLastContentMessageId())) {
             return;
         }
 
+        List<FieldValue> fieldValueList = CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(toId));
+
+        List<Query> queryList = CollUtil
+            .newArrayList(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
+                Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
+                Query.of(q -> q.term(qt -> qt.field("toType").value(toType.getCode()))));
+
+        // 查询：最近一条，没有被隐藏的消息
+        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).size(1)
+                    .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList)
+                        // 不查询，对自己隐藏了的消息内容
+                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId))))),
+                ImMessageDocument.class);
+
+        if (searchResponse == null || searchResponse.hits().hits() == null
+            || searchResponse.hits().hits().size() == 0) {
+            return;
+        }
+
+        ImMessageDocument imMessageDocument = searchResponse.hits().hits().get(0).source();
+
+        if (imMessageDocument == null) {
+            return;
+        }
+
+        imSessionDocument = new ImSessionDocument();
+        imSessionDocument.setLastContentMessageId(searchResponse.hits().hits().get(0).id());
+        imSessionDocument.setLastContent(imMessageDocument.getContent());
+        imSessionDocument.setLastContentCreateTime(imMessageDocument.getCreateTime());
+        imSessionDocument.setLastContentCreateType(imMessageDocument.getCreateType());
+
+        // 更新：session的最后一条消息记录
+        ImSessionDocument finalImSessionDocument = imSessionDocument;
+        elasticsearchClient.update(
+            u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(sessionId).doc(finalImSessionDocument),
+            ImSessionDocument.class);
     }
 
     private void messageBatchDeleteForGroup(MessageBatchDeleteDTO dto) {
