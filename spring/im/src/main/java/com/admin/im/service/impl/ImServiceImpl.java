@@ -10,6 +10,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.MgetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -1082,7 +1083,7 @@ public class ImServiceImpl implements ImService {
                 ImMessageDocument.class);
 
         if (searchResponse == null) {
-            return;
+            ApiResultVO.error("操作失败：消息不存在，请刷新重试");
         }
 
         List<ImMessageDocument> imMessageDocumentList =
@@ -1092,7 +1093,7 @@ public class ImServiceImpl implements ImService {
             }).collect(Collectors.toList());
 
         if (imMessageDocumentList.size() == 0) {
-            return;
+            ApiResultVO.error("操作失败：消息不存在，请刷新重试");
         }
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
@@ -1113,11 +1114,13 @@ public class ImServiceImpl implements ImService {
         }
 
         if (bulkOperationList.size() != 0) {
-            elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+            BulkResponse bulkResponse = elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
-            ThreadUtil.execute(() -> sessionLastContentChangeForFriend(
-                ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()), hiddenMessageIdSet,
-                currentUserId, dto.getToType(), dto.getToId()));
+            if (!bulkResponse.errors()) {
+                ThreadUtil.execute(() -> sessionLastContentChangeForFriend(
+                    ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()), hiddenMessageIdSet,
+                    currentUserId, dto.getToType(), dto.getToId()));
+            }
         }
     }
 
