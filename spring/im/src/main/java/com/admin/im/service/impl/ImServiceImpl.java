@@ -1140,14 +1140,20 @@ public class ImServiceImpl implements ImService {
             return;
         }
 
-        List<FieldValue> fieldValueList = CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(toId));
-
-        List<Query> queryList = CollUtil.newArrayList(
-            Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
-            Query.of(q -> q.term(qt -> qt.field("toType").value(toType.getCode()))));
+        List<Query> queryList =
+            CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toType").value(toType.getCode()))));
 
         if (ImToTypeEnum.FRIEND.equals(toType)) {
+
+            List<FieldValue> fieldValueList = CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(toId));
+
+            queryList
+                .add(Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))));
             queryList.add(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))));
+
+        } else {
+
+            queryList.add(Query.of(q -> q.term(qt -> qt.field("toId.keyword").value(toId))));
         }
 
         // 查询：最近一条，没有被隐藏的消息
