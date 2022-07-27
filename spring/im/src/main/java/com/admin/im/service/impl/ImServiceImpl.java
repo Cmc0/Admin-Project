@@ -1050,18 +1050,6 @@ public class ImServiceImpl implements ImService {
     @Override
     public String messageBatchDelete(MessageBatchDeleteDTO dto) {
 
-        if (dto.getToType().equals(ImToTypeEnum.FRIEND)) {
-            messageBatchDeleteForFriend(dto);
-        } else {
-            messageBatchDeleteForGroup(dto);
-        }
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
-    }
-
-    @SneakyThrows
-    private void messageBatchDeleteForFriend(MessageBatchDeleteDTO dto) {
-
         Long currentUserId = UserUtil.getCurrentUserId();
 
         List<String> messageIdList = CollUtil.newArrayList(dto.getMessageIdSet());
@@ -1070,9 +1058,12 @@ public class ImServiceImpl implements ImService {
             CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(dto.getToId()));
 
         List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
-            Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
             Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
             Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
+
+        if (ImToTypeEnum.FRIEND.equals(dto.getToType())) {
+            queryList.add(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))));
+        }
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
@@ -1117,11 +1108,13 @@ public class ImServiceImpl implements ImService {
             BulkResponse bulkResponse = elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
             if (!bulkResponse.errors()) {
-                ThreadUtil.execute(() -> sessionLastContentChangeForFriend(
+                ThreadUtil.execute(() -> sessionLastContentChange(
                     ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()), hiddenMessageIdSet,
                     currentUserId, dto.getToType(), dto.getToId()));
             }
         }
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
     /**
@@ -1129,7 +1122,7 @@ public class ImServiceImpl implements ImService {
      * hiddenMessageIdSet：用于做判断，是否需要更新 session最后一次的消息
      */
     @SneakyThrows
-    private void sessionLastContentChangeForFriend(String sessionId, Set<String> hiddenMessageIdSet, Long currentUserId,
+    private void sessionLastContentChange(String sessionId, Set<String> hiddenMessageIdSet, Long currentUserId,
         ImToTypeEnum toType, String toId) {
 
         GetResponse<ImSessionDocument> getResponse = ElasticsearchUtil
@@ -1149,10 +1142,13 @@ public class ImServiceImpl implements ImService {
 
         List<FieldValue> fieldValueList = CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(toId));
 
-        List<Query> queryList = CollUtil
-            .newArrayList(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
-                Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
-                Query.of(q -> q.term(qt -> qt.field("toType").value(toType.getCode()))));
+        List<Query> queryList = CollUtil.newArrayList(
+            Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
+            Query.of(q -> q.term(qt -> qt.field("toType").value(toType.getCode()))));
+
+        if (ImToTypeEnum.FRIEND.equals(toType)) {
+            queryList.add(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))));
+        }
 
         // 查询：最近一条，没有被隐藏的消息
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
@@ -1186,9 +1182,6 @@ public class ImServiceImpl implements ImService {
         elasticsearchClient.update(
             u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(sessionId).doc(finalImSessionDocument),
             ImSessionDocument.class);
-    }
-
-    private void messageBatchDeleteForGroup(MessageBatchDeleteDTO dto) {
     }
 
     /**
