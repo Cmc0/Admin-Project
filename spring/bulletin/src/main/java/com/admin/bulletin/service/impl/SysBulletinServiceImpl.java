@@ -1,5 +1,6 @@
 package com.admin.bulletin.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
@@ -36,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Collections;
 import java.util.Date;
 
 @Service
@@ -261,7 +261,7 @@ public class SysBulletinServiceImpl extends ServiceImpl<SysBulletinMapper, SysBu
                 }
 
                 // 通知该用户，刷新 公告信息
-                KafkaUtil.newBulletin(Collections.singleton(currentUserId));
+                KafkaUtil.newBulletin(CollUtil.newHashSet(currentUserId));
             });
         }
 

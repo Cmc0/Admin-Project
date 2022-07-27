@@ -29,7 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,7 +84,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             dto.setLinkFlag(StrUtil.startWith(dto.getPath(), "http", true));
 
             if (dto.getId() != null) {
-                deleteByIdSetSub(Collections.singleton(dto.getId())); // 先删除 子表数据
+                deleteByIdSetSub(CollUtil.newHashSet(dto.getId())); // 先删除 子表数据
             }
 
             SysMenuDO sysMenuDO = getEntityByDTO(dto);

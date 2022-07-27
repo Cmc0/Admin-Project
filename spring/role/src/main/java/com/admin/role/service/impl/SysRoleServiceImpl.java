@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,7 +90,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
             } else { // 修改
                 baseMapper.updateById(sysRoleDO);
                 // 先删除子表数据
-                deleteByIdSetSub(Collections.singleton(dto.getId()));
+                deleteByIdSetSub(CollUtil.newHashSet(dto.getId()));
             }
 
             // 再插入子表数据

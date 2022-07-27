@@ -215,7 +215,7 @@ public class UserUtil {
         // 通过 menuIdSet，获取 userIdSet
         userIdSet = sysMenuMapper.getUserIdSetByMenuIdSet(menuIdSet);
 
-        userIdSet.removeAll(Collections.singleton(null));
+        userIdSet.removeAll(CollUtil.newHashSet(null));
         return userIdSet;
     }
 

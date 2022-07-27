@@ -1102,7 +1102,17 @@ public class ImServiceImpl implements ImService {
 
         if (bulkOperationList.size() != 0) {
             elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+
+            ThreadUtil.execute(() -> sessionLastContentChange(
+                CollUtil.newHashSet(ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()))));
         }
+    }
+
+    /**
+     * 重新设置：session的 最后一次聊天的内容相关数据
+     */
+    private void sessionLastContentChange(Set<String> sessionIdSet) {
+
     }
 
     private void messageBatchDeleteForGroup(MessageBatchDeleteDTO dto) {

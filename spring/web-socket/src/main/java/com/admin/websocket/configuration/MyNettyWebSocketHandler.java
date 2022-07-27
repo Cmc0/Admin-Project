@@ -25,7 +25,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Collections;
 
 @Component
 @Scope("prototype") // 多例
@@ -42,7 +41,7 @@ public class MyNettyWebSocketHandler extends SimpleChannelInboundHandler<TextWeb
 
         Long socketId = ctx.channel().attr(MyNettyChannelGroupHelper.WEB_SOCKET_ID_KEY).get();
 
-        sysWebSocketService.offlineByWebSocketIdSet(Collections.singleton(socketId)); // 调用离线方法
+        sysWebSocketService.offlineByWebSocketIdSet(CollUtil.newHashSet(socketId)); // 调用离线方法
 
         super.channelInactive(ctx);
     }

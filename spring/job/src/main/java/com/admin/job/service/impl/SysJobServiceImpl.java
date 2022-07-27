@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJobDO> imple
         }
 
         if (dto.getId() != null) { // 如果是修改
-            deleteByIdSetSub(Collections.singleton(dto.getId())); // 先移除子表数据
+            deleteByIdSetSub(CollUtil.newHashSet(dto.getId())); // 先移除子表数据
         }
 
         SysJobDO sysJobDO = new SysJobDO();

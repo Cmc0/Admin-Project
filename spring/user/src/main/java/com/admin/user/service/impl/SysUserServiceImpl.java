@@ -174,7 +174,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserProMapper, SysUserDO>
             }
 
             if (dto.getId() != null) {
-                deleteByIdSetSub(Collections.singleton(dto.getId())); // 先删除 子表数据
+                deleteByIdSetSub(CollUtil.newHashSet(dto.getId())); // 先删除 子表数据
             }
 
             SysUserDO sysUserDO = new SysUserDO();

@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,7 +71,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptDO> im
 
         if (dto.getId() != null) {
             // 先删除子表数据，再插入
-            deleteByIdSetSub(Collections.singleton(dto.getId()));
+            deleteByIdSetSub(CollUtil.newHashSet(dto.getId()));
         }
 
         saveOrUpdate(sysDeptDO);
