@@ -97,9 +97,9 @@ public class ImController {
     }
 
     @ApiOperation(value = "聊天记录：批量删除")
-    @PostMapping(value = "/messageDeleteByIdSet")
-    public ApiResultVO<String> messageDeleteByIdSet(@RequestBody @Valid NotEmptyStrIdSet notEmptyStrIdSet) {
-        return ApiResultVO.ok(baseService.messageDeleteByIdSet(notEmptyStrIdSet));
+    @PostMapping(value = "/messageBatchDelete")
+    public ApiResultVO<String> messageBatchDelete(@RequestBody @Valid MessageBatchDeleteDTO dto) {
+        return ApiResultVO.ok(baseService.messageBatchDelete(dto));
     }
 
     @ApiOperation(value = "聊天记录：批量撤回")

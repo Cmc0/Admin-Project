@@ -34,7 +34,7 @@ public interface ImService {
 
     String sessionDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
 
-    String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+    String messageBatchDelete(MessageBatchDeleteDTO dto);
 
     String messageRevokeByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
 

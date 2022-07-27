@@ -141,9 +141,9 @@ public class ImServiceImpl implements ImService {
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
 
-        bulkOperationList.add(new BulkOperation.Builder().update(
-            u -> u.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId())
-                .action(ua -> ua.doc(imFriendRequestDocument))).build());
+        bulkOperationList.add(BulkOperation.of(b -> b.update(
+            bu -> bu.index(BaseElasticsearchIndexConstant.IM_FRIEND_REQUEST_INDEX).id(dto.getId())
+                .action(ua -> ua.doc(imFriendRequestDocument)))));
 
         if (ImRequestResultEnum.AGREED.equals(dto.getResult())) {
 
@@ -152,10 +152,10 @@ public class ImServiceImpl implements ImService {
             imFriendDocumentFrom.setCreateTime(date);
             imFriendDocumentFrom.setUid(imFriendRequestDocument.getToId());
 
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
+            bulkOperationList.add(BulkOperation.of(b -> b.index(
+                bi -> bi.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
                     .getFriendId(imFriendRequestDocument.getCreateId(), imFriendRequestDocument.getToId()))
-                    .document(imFriendDocumentFrom)).build());
+                    .document(imFriendDocumentFrom))));
 
             List<Query> queryList = CollUtil.newArrayList(
                 Query.of(q -> q.term(qt -> qt.field("createId").value(imFriendRequestDocument.getToId()))),
@@ -172,10 +172,10 @@ public class ImServiceImpl implements ImService {
                 imFriendDocumentTo.setCreateTime(date);
                 imFriendDocumentTo.setUid(imFriendRequestDocument.getCreateId());
 
-                bulkOperationList.add(new BulkOperation.Builder().index(
-                    i -> i.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
+                bulkOperationList.add(BulkOperation.of(b -> b.index(
+                    bi -> bi.index(BaseElasticsearchIndexConstant.IM_FRIEND_INDEX).id(ImHelpUtil
                         .getFriendId(imFriendRequestDocument.getToId(), imFriendRequestDocument.getCreateId()))
-                        .document(imFriendDocumentTo)).build());
+                        .document(imFriendDocumentTo))));
             }
 
             doSend(imFriendRequestDocument.getToId(), "", imFriendRequestDocument.getCreateId().toString(),
@@ -279,9 +279,9 @@ public class ImServiceImpl implements ImService {
         imMessageDocument.setRIdSet(new HashSet<>());
         imMessageDocument.setHIdSet(new HashSet<>());
 
-        bulkOperationList.add(new BulkOperation.Builder().index(
-            i -> i.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
-                .document(imMessageDocument)).build());
+        bulkOperationList.add(BulkOperation.of(b -> b.index(
+            bi -> bi.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(IdUtil.simpleUUID())
+                .document(imMessageDocument))));
 
         if (ImToTypeEnum.FRIEND.equals(toType)) {
 
@@ -375,9 +375,9 @@ public class ImServiceImpl implements ImService {
                 item.setLastContentCreateType(lastContentCreateType);
 
                 // 更新
-                bulkOperationList.add(new BulkOperation.Builder().update(
-                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(id).action(ua -> ua.doc(item)))
-                    .build());
+                bulkOperationList.add(BulkOperation.of(b -> b.update(
+                    bu -> bu.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(id)
+                        .action(ua -> ua.doc(item)))));
             }
 
             Set<Long> createIdSet =
@@ -411,9 +411,9 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setLastContentCreateType(lastContentCreateType);
 
             // 新增
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
-                    .id(ImHelpUtil.getSessionId(toType, item, toId)).document(imSessionDocument)).build());
+            bulkOperationList.add(BulkOperation.of(b -> b.index(
+                bi -> bi.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+                    .id(ImHelpUtil.getSessionId(toType, item, toId)).document(imSessionDocument))));
         }
     }
 
@@ -445,9 +445,9 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setLastContentCreateType(lastContentCreateType);
 
             ImSessionDocument finalImSessionDocument = imSessionDocument;
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
-                    .id(ImHelpUtil.getSessionId(toType, createId, toId)).document(finalImSessionDocument)).build());
+            bulkOperationList.add(BulkOperation.of(b -> b.index(
+                bi -> bi.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
+                    .id(ImHelpUtil.getSessionId(toType, createId, toId)).document(finalImSessionDocument))));
         } else {
             if (addUnreadTotalFlag) {
                 imSessionDocument.setUnreadTotal(imSessionDocument.getUnreadTotal() + 1L);
@@ -457,9 +457,9 @@ public class ImServiceImpl implements ImService {
             imSessionDocument.setLastContentCreateType(lastContentCreateType);
 
             ImSessionDocument finalImSessionDocument = imSessionDocument;
-            bulkOperationList.add(new BulkOperation.Builder().update(
-                u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(imSessionDocumentHit.id())
-                    .action(ua -> ua.doc(finalImSessionDocument))).build());
+            bulkOperationList.add(BulkOperation.of(b -> b.update(
+                bu -> bu.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(imSessionDocumentHit.id())
+                    .action(ua -> ua.doc(finalImSessionDocument)))));
         }
 
     }
@@ -728,9 +728,9 @@ public class ImServiceImpl implements ImService {
                 unreadTotal++;
 
                 // 增加：此条消息已读数量
-                bulkOperationList.add(new BulkOperation.Builder().update(
-                    u -> u.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
-                        .action(ua -> ua.doc(imMessageDocument))).build());
+                bulkOperationList.add(BulkOperation.of(b -> b.update(
+                    bu -> bu.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
+                        .action(ua -> ua.doc(imMessageDocument)))));
             }
         }
 
@@ -748,9 +748,9 @@ public class ImServiceImpl implements ImService {
                 imSessionDocument.setUnreadTotal(unreadTotal < 0 ? 0 : unreadTotal);
 
                 // 减少：未读数量
-                bulkOperationList.add(new BulkOperation.Builder().update(
-                    u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(getResponse.id())
-                        .action(ua -> ua.doc(imSessionDocument))).build());
+                bulkOperationList.add(BulkOperation.of(b -> b.update(
+                    bu -> bu.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(getResponse.id())
+                        .action(ua -> ua.doc(imSessionDocument)))));
             }
 
         }
@@ -783,9 +783,8 @@ public class ImServiceImpl implements ImService {
 
             List<BulkOperation> bulkOperationList = new ArrayList<>();
 
-            bulkOperationList.add(new BulkOperation.Builder()
-                .index(i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(uuid).document(imGroupDocument))
-                .build());
+            bulkOperationList.add(BulkOperation.of(b -> b.index(
+                bi -> bi.index(BaseElasticsearchIndexConstant.IM_GROUP_INDEX).id(uuid).document(imGroupDocument))));
 
             ImGroupJoinDocument imGroupJoinDocument = new ImGroupJoinDocument();
             imGroupJoinDocument.setCreateId(currentUserId);
@@ -796,9 +795,9 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setOutFlag(false);
             imGroupJoinDocument.setOutTime(null);
 
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
-                    .id(ImHelpUtil.getGroupJoinId(currentUserId, uuid)).document(imGroupJoinDocument)).build());
+            bulkOperationList.add(BulkOperation.of(b -> b.index(
+                bi -> bi.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX)
+                    .id(ImHelpUtil.getGroupJoinId(currentUserId, uuid)).document(imGroupJoinDocument))));
 
             doSend(BaseConstant.SYS_ID, "", uuid, ImToTypeEnum.GROUP, ImMessageCreateTypeEnum.CREATE_COMPLETE,
                 bulkOperationList, date, CollUtil.newHashSet(currentUserId));
@@ -909,9 +908,9 @@ public class ImServiceImpl implements ImService {
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
 
-        bulkOperationList.add(new BulkOperation.Builder().update(
-            u -> u.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).id(dto.getId())
-                .action(ua -> ua.doc(imGroupRequestDocument))).build());
+        bulkOperationList.add(BulkOperation.of(b -> b.update(
+            bu -> bu.index(BaseElasticsearchIndexConstant.IM_GROUP_REQUEST_INDEX).id(dto.getId())
+                .action(ua -> ua.doc(imGroupRequestDocument)))));
 
         if (ImRequestResultEnum.AGREED.equals(dto.getResult())) {
 
@@ -924,10 +923,10 @@ public class ImServiceImpl implements ImService {
             imGroupJoinDocument.setOutFlag(false);
             imGroupJoinDocument.setOutTime(null);
 
-            bulkOperationList.add(new BulkOperation.Builder().index(
-                i -> i.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(ImHelpUtil
+            bulkOperationList.add(BulkOperation.of(b -> b.index(
+                bi -> bi.index(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX).id(ImHelpUtil
                     .getGroupJoinId(imGroupRequestDocument.getCreateId(), imGroupRequestDocument.getGid()))
-                    .document(imGroupJoinDocument)).build());
+                    .document(imGroupJoinDocument))));
 
             doSend(BaseConstant.SYS_ID, "", imGroupRequestDocument.getGid(), ImToTypeEnum.GROUP,
                 ImMessageCreateTypeEnum.REQUEST_RESULT, bulkOperationList, date,
@@ -1040,84 +1039,67 @@ public class ImServiceImpl implements ImService {
      */
     @SneakyThrows
     @Override
-    public String messageDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+    public String messageBatchDelete(MessageBatchDeleteDTO dto) {
+
+        if (dto.getToType().equals(ImToTypeEnum.FRIEND)) {
+            messageBatchDeleteForFriend(dto);
+        } else {
+            messageBatchDeleteForGroup(dto);
+        }
+
+        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    @SneakyThrows
+    private void messageBatchDeleteForFriend(MessageBatchDeleteDTO dto) {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        List<String> idList = CollUtil.newArrayList(notEmptyStrIdSet.getIdSet());
+        List<String> messageIdList = CollUtil.newArrayList(dto.getMessageIdSet());
 
-        MgetResponse<ImMessageDocument> mgetResponse = ElasticsearchUtil
-            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
-                g -> g.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).ids(idList), ImMessageDocument.class);
+        List<FieldValue> fieldValueList =
+            CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(dto.getToId()));
 
-        if (mgetResponse == null) {
-            ApiResultVO.error(BaseBizCodeEnum.NO_DATA_AFFECTED);
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
+            Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
+            Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
+            Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
+
+        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList)
+                        // 不查询，对自己隐藏了的消息内容
+                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId))))),
+                ImMessageDocument.class);
+
+        if (searchResponse == null) {
+            return;
         }
 
         List<ImMessageDocument> imMessageDocumentList =
-            mgetResponse.docs().stream().filter(it -> it.result().source() != null).map(it -> {
-                it.result().source().setId(it.result().id());
-                return it.result().source();
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
+                it.source().setId(it.id());
+                return it.source();
             }).collect(Collectors.toList());
 
         if (imMessageDocumentList.size() == 0) {
-            ApiResultVO.error(BaseBizCodeEnum.NO_DATA_AFFECTED);
+            return;
         }
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
 
         for (ImMessageDocument item : imMessageDocumentList) {
-            if (!item.getHIdSet().contains(currentUserId)) {
 
-                ImMessageDocument imMessageDocument = new ImMessageDocument();
-                imMessageDocument.setHIdSet(new HashSet<>(item.getHIdSet()));
-                imMessageDocument.getHIdSet().add(currentUserId);
-
-                bulkOperationList.add(new BulkOperation.Builder().update(
-                    u -> u.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).id(item.getId())
-                        .action(ua -> ua.doc(imMessageDocument))).build());
-            }
+            //            bulkOperationList.add(BulkOperation.of(b -> b.));
         }
 
-        if (bulkOperationList.size() == 0) {
-            ApiResultVO.error(BaseBizCodeEnum.NO_DATA_AFFECTED);
+        if (bulkOperationList.size() != 0) {
+            elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
         }
-
-        elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
-
-        ThreadUtil.execute(() -> {
-            sessionLastContentChange(currentUserId, imMessageDocumentList);
-        });
-
-        return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
 
-    /**
-     * 改变 session 的最后一条消息
-     */
-    private void sessionLastContentChange(Long currentUserId, List<ImMessageDocument> imMessageDocumentList) {
-
-        List<String> sessionIdList = imMessageDocumentList.stream()
-            .map(it -> ImHelpUtil.getSessionId(it.getToType(), currentUserId, it.getToId())).distinct()
-            .collect(Collectors.toList());
-
-        MgetResponse<ImSessionDocument> mgetResponse = ElasticsearchUtil
-            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
-                g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).ids(sessionIdList),
-                ImSessionDocument.class);
-
-        if (mgetResponse == null) {
-            return;
-        }
-
-        List<ImSessionDocument> imSessionDocumentList =
-            mgetResponse.docs().stream().filter(it -> it.result().source() != null).map(it -> {
-                it.result().source().setId(it.result().id());
-                return it.result().source();
-            }).collect(Collectors.toList());
-
-
-
+    private void messageBatchDeleteForGroup(MessageBatchDeleteDTO dto) {
     }
 
     /**
