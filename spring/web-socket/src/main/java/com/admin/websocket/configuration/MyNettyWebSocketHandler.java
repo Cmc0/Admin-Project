@@ -1,5 +1,6 @@
 package com.admin.websocket.configuration;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.net.url.UrlQuery;
 import cn.hutool.core.thread.ThreadUtil;
