@@ -36,7 +36,7 @@ public interface ImService {
 
     String messageBatchDelete(MessageBatchDeleteDTO dto);
 
-    String messageRevokeByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
+    String messageRevokeByIdSet(MessageBatchDeleteDTO dto);
 
     String friendDeleteByIdSet(NotEmptyStrIdSet notEmptyStrIdSet);
 

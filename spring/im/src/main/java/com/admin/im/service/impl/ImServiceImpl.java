@@ -2,6 +2,8 @@ package com.admin.im.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
@@ -1191,12 +1193,45 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
-     * 聊天记录：批量撤回
+     * 聊天记录：批量撤回，备注：只能撤回两分钟之内（包含）的消息
      */
     @Override
-    public String messageRevokeByIdSet(NotEmptyStrIdSet notEmptyStrIdSet) {
+    @SneakyThrows
+    public String messageRevokeByIdSet(MessageBatchDeleteDTO dto) {
 
-        // TODO：
+        Long currentUserId = UserUtil.getCurrentUserId();
+
+        List<String> messageIdOneList = CollUtil.newArrayList(dto.getMessageIdSet());
+
+        DateTime beginTime = DateUtil.offsetMinute(new Date(), -2); // 往前偏移两分钟
+
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdOneList))),
+            Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
+            Query.of(q -> q.term(qt -> qt.field("toId").value(dto.getToId()))),
+            Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))),
+            Query.of(q -> q.range(qr -> qr.gte(JsonData.of(beginTime)))));
+
+        SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImMessageDocument.class);
+
+        if (searchResponse == null) {
+            ApiResultVO.error("操作失败：超过两分钟的消息不能撤回");
+        }
+
+        List<String> messageIdTwoList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(Hit::id)
+                .collect(Collectors.toList());
+
+        if (messageIdTwoList.size() == 0) {
+            ApiResultVO.error("操作失败：超过两分钟的消息不能撤回");
+        }
+
+        elasticsearchClient.deleteByQuery(d -> d.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
+            .query(dq -> dq.ids(dqi -> dqi.values(messageIdTwoList))));
+
+        // 更新 session到最新的消息
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
