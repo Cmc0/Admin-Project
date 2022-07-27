@@ -1069,18 +1069,20 @@ public class ImServiceImpl implements ImService {
         List<FieldValue> fieldValueList =
             CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(dto.getToId()));
 
-        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
+        List<Query> queryMustList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
             Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
             Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
             Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
 
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.bool(qb -> qb.must(queryMustList))),
+            // 不查询，对自己隐藏了的消息内容
+            Query.of(q -> q
+                .bool(qb -> qb.mustNot(qbm -> qbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId))))));
+
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList)
-                        // 不查询，对自己隐藏了的消息内容
-                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId))))),
-                ImMessageDocument.class);
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImMessageDocument.class);
 
         if (searchResponse == null) {
             ApiResultVO.error("操作失败：消息不存在，请刷新重试");
