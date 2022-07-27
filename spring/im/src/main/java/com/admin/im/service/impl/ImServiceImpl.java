@@ -740,12 +740,11 @@ public class ImServiceImpl implements ImService {
                     g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX)
                         .id(ImHelpUtil.getSessionId(toType, currentUserId, toId)), ImSessionDocument.class);
 
-            ImSessionDocument imSessionDocument = getResponse.source();
+            if (getResponse.source() != null) {
 
-            if (imSessionDocument != null) {
+                unreadTotal = getResponse.source().getUnreadTotal() - unreadTotal;
 
-                unreadTotal = imSessionDocument.getUnreadTotal() - unreadTotal;
-
+                ImSessionDocument imSessionDocument = new ImSessionDocument();
                 imSessionDocument.setUnreadTotal(unreadTotal < 0 ? 0 : unreadTotal);
 
                 // 减少：未读数量
@@ -1086,7 +1085,39 @@ public class ImServiceImpl implements ImService {
 
         elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
+        ThreadUtil.execute(() -> {
+            sessionLastContentChange(currentUserId, imMessageDocumentList);
+        });
+
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 改变 session 的最后一条消息
+     */
+    private void sessionLastContentChange(Long currentUserId, List<ImMessageDocument> imMessageDocumentList) {
+
+        List<String> sessionIdList = imMessageDocumentList.stream()
+            .map(it -> ImHelpUtil.getSessionId(it.getToType(), currentUserId, it.getToId())).distinct()
+            .collect(Collectors.toList());
+
+        MgetResponse<ImSessionDocument> mgetResponse = ElasticsearchUtil
+            .autoCreateIndexAndMget(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                g -> g.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).ids(sessionIdList),
+                ImSessionDocument.class);
+
+        if (mgetResponse == null) {
+            return;
+        }
+
+        List<ImSessionDocument> imSessionDocumentList =
+            mgetResponse.docs().stream().filter(it -> it.result().source() != null).map(it -> {
+                it.result().source().setId(it.result().id());
+                return it.result().source();
+            }).collect(Collectors.toList());
+
+
+
     }
 
     /**
