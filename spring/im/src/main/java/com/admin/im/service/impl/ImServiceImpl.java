@@ -277,8 +277,8 @@ public class ImServiceImpl implements ImService {
         imMessageDocument.setToId(toId);
         imMessageDocument.setToType(toType);
         imMessageDocument.setCreateType(createType);
-        imMessageDocument.setRIdSet(new HashSet<>());
-        imMessageDocument.setHIdSet(new HashSet<>());
+        imMessageDocument.setRidSet(new HashSet<>());
+        imMessageDocument.setHidSet(new HashSet<>());
 
         String messageId = IdUtil.simpleUUID();
 
@@ -689,7 +689,7 @@ public class ImServiceImpl implements ImService {
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX).from((current - 1) * pageSize)
                     .size(pageSize).sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Asc)))
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList) //
-                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId)) // 不显示，对自己隐藏的的消息
+                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hidSet").value(currentUserId)) // 不显示，对自己隐藏的的消息
                         ))), ImMessageDocument.class);
 
         if (searchResponse == null) {
@@ -729,11 +729,11 @@ public class ImServiceImpl implements ImService {
 
         for (ImMessageDocument item : imMessageDocumentList) {
 
-            if (!currentUserId.equals(item.getCreateId()) && !item.getRIdSet().contains(currentUserId)) {
+            if (!currentUserId.equals(item.getCreateId()) && !item.getRidSet().contains(currentUserId)) {
 
                 ImMessageDocument imMessageDocument = new ImMessageDocument();
-                imMessageDocument.setRIdSet(new HashSet<>(item.getRIdSet()));
-                imMessageDocument.getRIdSet().add(currentUserId);
+                imMessageDocument.setRidSet(new HashSet<>(item.getRidSet()));
+                imMessageDocument.getRidSet().add(currentUserId);
                 unreadTotal++;
 
                 // 增加：此条消息已读数量
@@ -1069,20 +1069,18 @@ public class ImServiceImpl implements ImService {
         List<FieldValue> fieldValueList =
             CollUtil.newArrayList(FieldValue.of(currentUserId), FieldValue.of(dto.getToId()));
 
-        List<Query> queryMustList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
             Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))),
             Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
             Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
 
-        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.bool(qb -> qb.must(queryMustList))),
-            // 不查询，对自己隐藏了的消息内容
-            Query.of(q -> q
-                .bool(qb -> qb.mustNot(qbm -> qbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId))))));
-
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
                 s -> s.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
-                    .query(sq -> sq.bool(sqb -> sqb.must(queryList))), ImMessageDocument.class);
+                    .query(sq -> sq.bool(sqb -> sqb.must(queryList)
+                        // 不查询，对自己隐藏了的消息内容
+                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hidSet").value(currentUserId))))),
+                ImMessageDocument.class);
 
         if (searchResponse == null) {
             ApiResultVO.error("操作失败：消息不存在，请刷新重试");
@@ -1105,8 +1103,8 @@ public class ImServiceImpl implements ImService {
         for (ImMessageDocument item : imMessageDocumentList) {
 
             ImMessageDocument imMessageDocument = new ImMessageDocument();
-            imMessageDocument.setHIdSet(new HashSet<>(item.getHIdSet()));
-            imMessageDocument.getHIdSet().add(currentUserId);
+            imMessageDocument.setHidSet(new HashSet<>(item.getHidSet()));
+            imMessageDocument.getHidSet().add(currentUserId);
 
             hiddenMessageIdSet.add(item.getId());
 
@@ -1163,7 +1161,7 @@ public class ImServiceImpl implements ImService {
                     .sort(ss -> ss.field(ssf -> ssf.field("createTime").order(SortOrder.Desc)))
                     .query(sq -> sq.bool(sqb -> sqb.must(queryList)
                         // 不查询，对自己隐藏了的消息内容
-                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hIdSet").value(currentUserId))))),
+                        .mustNot(sqbm -> sqbm.term(sqbmt -> sqbmt.field("hidSet").value(currentUserId))))),
                 ImMessageDocument.class);
 
         if (searchResponse == null || searchResponse.hits().hits() == null

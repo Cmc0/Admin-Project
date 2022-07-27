@@ -37,9 +37,9 @@ public class ImMessageDocument {
     private ImMessageCreateTypeEnum createType;
 
     @ApiModelProperty(value = "已读的用户 idSet ，备注：不包含 createId")
-    private Set<Long> rIdSet;
+    private Set<Long> ridSet;
 
     @ApiModelProperty(value = "对这些用户不可见，也不能检索")
-    private Set<Long> hIdSet;
+    private Set<Long> hidSet;
 
 }
