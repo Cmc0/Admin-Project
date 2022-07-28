@@ -1058,7 +1058,8 @@ public class ImServiceImpl implements ImService {
 
         List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdList))),
             Query.of(q -> q.terms(qt -> qt.field("toId.keyword").terms(qtt -> qtt.value(fieldValueList)))),
-            Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))));
+            Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))),
+            Query.of(q -> q.term(qt -> qt.field("createType").value(ImMessageCreateTypeEnum.USER.getCode()))));
 
         if (ImToTypeEnum.FRIEND.equals(dto.getToType())) {
             queryList.add(Query.of(q -> q.terms(qt -> qt.field("createId").terms(qtt -> qtt.value(fieldValueList)))));
@@ -1236,7 +1237,8 @@ public class ImServiceImpl implements ImService {
             Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
             Query.of(q -> q.term(qt -> qt.field("toId").value(dto.getToId()))),
             Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))),
-            Query.of(q -> q.range(qr -> qr.field("createTime").gte(JsonData.of(beginTime)))));
+            Query.of(q -> q.range(qr -> qr.field("createTime").gte(JsonData.of(beginTime)))),
+            Query.of(q -> q.term(qt -> qt.field("createType").value(ImMessageCreateTypeEnum.USER.getCode()))));
 
         SearchResponse<ImMessageDocument> searchResponse = ElasticsearchUtil
             .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX,
