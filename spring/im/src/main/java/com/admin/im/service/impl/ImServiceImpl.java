@@ -12,10 +12,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.core.MgetResponse;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.get.GetResult;
 import co.elastic.clients.elasticsearch.core.mget.MultiGetResponseItem;
@@ -1258,11 +1255,14 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error("操作失败：超过两分钟的消息不能撤回");
         }
 
-        elasticsearchClient.deleteByQuery(d -> d.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
-            .query(dq -> dq.ids(dqi -> dqi.values(messageIdList))));
+        DeleteByQueryResponse deleteByQueryResponse = elasticsearchClient.deleteByQuery(
+            d -> d.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
+                .query(dq -> dq.ids(dqi -> dqi.values(messageIdList))));
 
-        // 更新 session到最新的消息
-        ThreadUtil.execute(() -> sessionLastContentChangeForMessageBatchRevoke(messageIdList, dto.getToType()));
+        if (deleteByQueryResponse.deleted() != null && deleteByQueryResponse.deleted() != 0) {
+            // 更新 session到最新的消息
+            ThreadUtil.execute(() -> sessionLastContentChangeForMessageBatchRevoke(messageIdList));
+        }
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
     }
@@ -1271,7 +1271,7 @@ public class ImServiceImpl implements ImService {
      * 重新设置：session的 最后一次聊天的内容相关数据
      */
     @SneakyThrows
-    private void sessionLastContentChangeForMessageBatchRevoke(List<String> messageIdList, ImToTypeEnum toType) {
+    private void sessionLastContentChangeForMessageBatchRevoke(List<String> messageIdList) {
 
         List<FieldValue> fieldValueList = messageIdList.stream().map(FieldValue::of).collect(Collectors.toList());
 
