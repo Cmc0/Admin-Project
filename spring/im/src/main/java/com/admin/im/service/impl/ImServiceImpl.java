@@ -1140,6 +1140,8 @@ public class ImServiceImpl implements ImService {
             return;
         }
 
+        ThreadUtil.sleep(200); // TODO：这里会查询到已经被删除了的数据，等官方修复这个 bug
+
         doSessionLastContentChange(sessionId, currentUserId, toType, toId, null);
     }
 
@@ -1293,6 +1295,12 @@ public class ImServiceImpl implements ImService {
                 it.source().setId(it.id());
                 return it.source();
             }).collect(Collectors.toList());
+
+        if (imSessionDocumentList.size() == 0) {
+            return;
+        }
+
+        ThreadUtil.sleep(200); // TODO：这里会查询到已经被删除了的数据，等官方修复这个 bug
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
 
