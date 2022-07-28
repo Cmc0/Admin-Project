@@ -1142,6 +1142,16 @@ public class ImServiceImpl implements ImService {
             return;
         }
 
+        doSessionLastContentChange(sessionId, currentUserId, toType, toId, null);
+    }
+
+    /**
+     * 重新设置：session的 最后一次聊天的内容相关数据
+     */
+    @SneakyThrows
+    private void doSessionLastContentChange(String sessionId, Long currentUserId, ImToTypeEnum toType, String toId,
+        List<BulkOperation> bulkOperationList) {
+
         List<Query> queryList =
             CollUtil.newArrayList(Query.of(q -> q.term(qt -> qt.field("toType").value(toType.getCode()))));
 
@@ -1194,17 +1204,22 @@ public class ImServiceImpl implements ImService {
             return;
         }
 
-        imSessionDocument = new ImSessionDocument();
+        ImSessionDocument imSessionDocument = new ImSessionDocument();
         imSessionDocument.setLastContentMessageId(searchResponse.hits().hits().get(0).id());
         imSessionDocument.setLastContent(imMessageDocument.getContent());
         imSessionDocument.setLastContentCreateTime(imMessageDocument.getCreateTime());
         imSessionDocument.setLastContentCreateType(imMessageDocument.getCreateType());
 
-        // 更新：session的最后一条消息记录
-        ImSessionDocument finalImSessionDocument = imSessionDocument;
-        elasticsearchClient.update(
-            u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(sessionId).doc(finalImSessionDocument),
-            ImSessionDocument.class);
+        if (bulkOperationList == null) {
+            // 更新：session的最后一条消息记录
+            elasticsearchClient.update(
+                u -> u.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(sessionId).doc(imSessionDocument),
+                ImSessionDocument.class);
+        } else {
+            bulkOperationList.add(BulkOperation.of(b -> b.update(
+                bu -> bu.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).id(sessionId)
+                    .action(bua -> bua.doc(imSessionDocument)))));
+        }
     }
 
     /**
@@ -1255,6 +1270,7 @@ public class ImServiceImpl implements ImService {
     /**
      * 重新设置：session的 最后一次聊天的内容相关数据
      */
+    @SneakyThrows
     private void sessionLastContentChangeForMessageBatchRevoke(List<String> messageIdList, ImToTypeEnum toType) {
 
         List<FieldValue> fieldValueList = messageIdList.stream().map(FieldValue::of).collect(Collectors.toList());
@@ -1276,6 +1292,16 @@ public class ImServiceImpl implements ImService {
                 return it.source();
             }).collect(Collectors.toList());
 
+        List<BulkOperation> bulkOperationList = new ArrayList<>();
+
+        for (ImSessionDocument item : imSessionDocumentList) {
+            doSessionLastContentChange(item.getId(), item.getCreateId(), item.getType(), item.getToId(),
+                bulkOperationList);
+        }
+
+        if (bulkOperationList.size() != 0) {
+            elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
+        }
     }
 
     /**
