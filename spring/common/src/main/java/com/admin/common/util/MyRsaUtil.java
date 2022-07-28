@@ -69,7 +69,7 @@ public class MyRsaUtil {
         DateTime checkTime = DateUtil.date(Long.parseLong(split[1]));
         int compare = DateUtil.compare(checkTime, new Date());
         if (compare < 0) {
-            ApiResultVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
+            ApiResultVO.error("操作失败，您的时间【" + checkTime.toString() + "】偏慢，请调整时间后再试");
         }
 
         String redisKey = BaseRedisConstant.PRE_REDIS_RSA_ENCRYPT + str;
