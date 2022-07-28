@@ -14,7 +14,6 @@ import com.admin.common.model.vo.ApiResultVO;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -67,9 +66,12 @@ public class MyRsaUtil {
 
         // 校验 时间戳是否过期
         DateTime checkTime = DateUtil.date(Long.parseLong(split[1]));
-        int compare = DateUtil.compare(checkTime, new Date());
+
+        DateTime now = new DateTime();
+
+        int compare = DateUtil.compare(checkTime, now);
         if (compare < 0) {
-            ApiResultVO.error("操作失败，您的时间【" + checkTime.toString() + "】偏慢，请调整时间后再试");
+            ApiResultVO.error("操作失败：您的时间【" + checkTime.toString() + "】小于【" + now.toString() + "】，请调整时间后再试");
         }
 
         String redisKey = BaseRedisConstant.PRE_REDIS_RSA_ENCRYPT + str;
