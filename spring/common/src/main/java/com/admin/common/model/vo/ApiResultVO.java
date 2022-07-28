@@ -48,7 +48,7 @@ public class ApiResultVO<T> {
     /**
      * 系统异常
      */
-    public static <T> void sysError() {
+    public static void sysError() {
         error(BaseBizCodeEnum.API_RESULT_SYS_ERROR);
     }
 
