@@ -103,9 +103,9 @@ public class ImController {
     }
 
     @ApiOperation(value = "聊天记录：批量撤回，备注：只能撤回两分钟之内（包含）的消息")
-    @PostMapping(value = "/messageRevokeByIdSet")
-    public ApiResultVO<String> messageRevokeByIdSet(@RequestBody @Valid MessageBatchDeleteDTO dto) {
-        return ApiResultVO.ok(baseService.messageRevokeByIdSet(dto));
+    @PostMapping(value = "/messageBatchRevoke")
+    public ApiResultVO<String> messageBatchRevoke(@RequestBody @Valid MessageBatchDeleteDTO dto) {
+        return ApiResultVO.ok(baseService.messageBatchRevoke(dto));
     }
 
     @ApiOperation(value = "好友：批量删除")

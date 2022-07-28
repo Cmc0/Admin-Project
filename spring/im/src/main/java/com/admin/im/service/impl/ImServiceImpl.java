@@ -1110,7 +1110,7 @@ public class ImServiceImpl implements ImService {
             BulkResponse bulkResponse = elasticsearchClient.bulk(b -> b.operations(bulkOperationList));
 
             if (!bulkResponse.errors()) {
-                ThreadUtil.execute(() -> sessionLastContentChange(
+                ThreadUtil.execute(() -> sessionLastContentChangeForMessageBatchDelete(
                     ImHelpUtil.getSessionId(dto.getToType(), currentUserId, dto.getToId()), hiddenMessageIdSet,
                     currentUserId, dto.getToType(), dto.getToId()));
             }
@@ -1124,8 +1124,8 @@ public class ImServiceImpl implements ImService {
      * hiddenMessageIdSet：用于做判断，是否需要更新 session最后一次的消息
      */
     @SneakyThrows
-    private void sessionLastContentChange(String sessionId, Set<String> hiddenMessageIdSet, Long currentUserId,
-        ImToTypeEnum toType, String toId) {
+    private void sessionLastContentChangeForMessageBatchDelete(String sessionId, Set<String> hiddenMessageIdSet,
+        Long currentUserId, ImToTypeEnum toType, String toId) {
 
         GetResponse<ImSessionDocument> getResponse = ElasticsearchUtil
             .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
@@ -1197,15 +1197,15 @@ public class ImServiceImpl implements ImService {
      */
     @Override
     @SneakyThrows
-    public String messageRevokeByIdSet(MessageBatchDeleteDTO dto) {
+    public String messageBatchRevoke(MessageBatchDeleteDTO dto) {
 
         Long currentUserId = UserUtil.getCurrentUserId();
 
-        List<String> messageIdOneList = CollUtil.newArrayList(dto.getMessageIdSet());
+        List<String> messageIdTempList = CollUtil.newArrayList(dto.getMessageIdSet());
 
         DateTime beginTime = DateUtil.offsetMinute(new Date(), -2); // 往前偏移两分钟
 
-        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdOneList))),
+        List<Query> queryList = CollUtil.newArrayList(Query.of(q -> q.ids(qi -> qi.values(messageIdTempList))),
             Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
             Query.of(q -> q.term(qt -> qt.field("toId").value(dto.getToId()))),
             Query.of(q -> q.term(qt -> qt.field("toType").value(dto.getToType().getCode()))),
@@ -1220,20 +1220,47 @@ public class ImServiceImpl implements ImService {
             ApiResultVO.error("操作失败：超过两分钟的消息不能撤回");
         }
 
-        List<String> messageIdTwoList =
+        List<String> messageIdList =
             searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(Hit::id)
                 .collect(Collectors.toList());
 
-        if (messageIdTwoList.size() == 0) {
+        if (messageIdList.size() == 0) {
             ApiResultVO.error("操作失败：超过两分钟的消息不能撤回");
         }
 
         elasticsearchClient.deleteByQuery(d -> d.index(BaseElasticsearchIndexConstant.IM_MESSAGE_INDEX)
-            .query(dq -> dq.ids(dqi -> dqi.values(messageIdTwoList))));
+            .query(dq -> dq.ids(dqi -> dqi.values(messageIdList))));
 
         // 更新 session到最新的消息
+        ThreadUtil.execute(() -> sessionLastContentChangeForMessageBatchRevoke(messageIdList, dto.getToType()));
 
         return BaseBizCodeEnum.API_RESULT_OK.getMsg();
+    }
+
+    /**
+     * 重新设置：session的 最后一次聊天的内容相关数据
+     */
+    private void sessionLastContentChangeForMessageBatchRevoke(List<String> messageIdList, ImToTypeEnum toType) {
+
+        List<FieldValue> fieldValueList = messageIdList.stream().map(FieldValue::of).collect(Collectors.toList());
+
+        // 找到：最后一次 messageId 在 messageIdList里面的 session数据
+        SearchResponse<ImSessionDocument> searchResponse = ElasticsearchUtil
+            .autoCreateIndexAndSearch(BaseElasticsearchIndexConstant.IM_SESSION_INDEX,
+                s -> s.index(BaseElasticsearchIndexConstant.IM_SESSION_INDEX).query(
+                    sq -> sq.terms(sqt -> sqt.field("lastContentMessageId").terms(sqtt -> sqtt.value(fieldValueList)))),
+                ImSessionDocument.class);
+
+        if (searchResponse == null) {
+            return;
+        }
+
+        List<ImSessionDocument> imSessionDocumentList =
+            searchResponse.hits().hits().stream().filter(it -> it.source() != null).map(it -> {
+                it.source().setId(it.id());
+                return it.source();
+            }).collect(Collectors.toList());
+
     }
 
     /**
