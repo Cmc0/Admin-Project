@@ -3,8 +3,10 @@ package com.admin.request.aop;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
 import com.admin.common.model.constant.BaseConstant;
 import com.admin.common.model.vo.ApiResultVO;
@@ -56,6 +58,19 @@ public class SysRequestAop {
         sysRequestDO.setRegion(IpUtil.getRegion(sysRequestDO.getIp()));
         sysRequestDO.setSuccessFlag(true);
         sysRequestDO.setErrorMsg("");
+
+        StrBuilder strBuilder = StrBuilder.create();
+
+        int index = 0;
+        for (Object item : proceedingJoinPoint.getArgs()) {
+            if (index != 0) {
+                strBuilder.append(";");
+            }
+            strBuilder.append(JSONUtil.toJsonStr(item));
+            index++;
+        }
+
+        sysRequestDO.setRequestParam(StrUtil.maxLength(strBuilder.toString(), 500));
 
         Object object;
         try {

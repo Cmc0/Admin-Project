@@ -41,4 +41,7 @@ public class SysRequestDO extends BaseEntityThree {
     @ApiModelProperty(value = "失败信息")
     private String errorMsg;
 
+    @ApiModelProperty(value = "请求的参数")
+    private String requestParam;
+
 }
