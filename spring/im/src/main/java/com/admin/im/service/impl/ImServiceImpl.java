@@ -1155,11 +1155,6 @@ public class ImServiceImpl implements ImService {
 
         } else {
 
-            List<Query> groupJoinQueryList = CollUtil
-                .newArrayList(Query.of(q -> q.term(qt -> qt.field("createId").value(currentUserId))),
-                    Query.of(q -> q.term(qt -> qt.field("gid.keyword").value(toId))),
-                    Query.of(q -> q.term(qt -> qt.field("outFlag").value(false))));
-
             // 查询出：退群的时间
             GetResponse<ImGroupJoinDocument> groupJoinGetResponse = ElasticsearchUtil
                 .autoCreateIndexAndGet(BaseElasticsearchIndexConstant.IM_GROUP_JOIN_INDEX,
