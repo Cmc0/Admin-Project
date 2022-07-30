@@ -1140,7 +1140,7 @@ public class ImServiceImpl implements ImService {
             return;
         }
 
-        ThreadUtil.sleep(1000); // TODO：这里会查询到已经被删除了的数据，等官方修复这个 bug
+        ThreadUtil.sleep(1000); // elasticsearch在更新时，会有一秒的延迟
 
         doSessionLastContentChange(sessionId, currentUserId, toType, toId, null);
     }
@@ -1300,7 +1300,7 @@ public class ImServiceImpl implements ImService {
             return;
         }
 
-        ThreadUtil.sleep(1000); // TODO：这里会查询到已经被删除了的数据，等官方修复这个 bug
+        ThreadUtil.sleep(1000); // elasticsearch在更新时，会有一秒的延迟
 
         List<BulkOperation> bulkOperationList = new ArrayList<>();
 
