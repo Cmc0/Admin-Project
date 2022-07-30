@@ -137,11 +137,11 @@ CREATE TABLE `sys_dict`  (
                              `remark` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '描述/备注',
                              `dict_key` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '字典 key（不能重复），字典项要冗余这个 key，目的：方便操作',
                              `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '字典/字典项 名',
-                             `type` tinyint NOT NULL COMMENT '类型：1 字典 2 字典项',
+                             `type` tinyint NOT NULL COMMENT '字典类型：1 字典 2 字典项',
                              `value` tinyint NOT NULL COMMENT '字典项 value（数字 123...）备注：字典为 -1',
                              `order_no` int NOT NULL COMMENT '排序号（值越大越前面，默认为 0）',
                              PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '字典主表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '字典主表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dict
@@ -172,6 +172,7 @@ CREATE TABLE `sys_file`  (
                              `file_ext_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件类型，备注：这个是读取文件流的头部信息获得文件类型',
                              `extra_json` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '额外信息（json格式）',
                              `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '文件 url（包含文件类型）',
+                             `upload_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件上传类型，例如：AVATAR 头像',
                              PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件上传记录主表' ROW_FORMAT = DYNAMIC;
 
@@ -244,7 +245,7 @@ CREATE TABLE `sys_menu`  (
                              `first_flag` tinyint(1) NOT NULL COMMENT '是否是起始页面，备注：只能存在一个 firstFlag === true 的菜单',
                              `auth_flag` tinyint(1) NOT NULL COMMENT '是否是权限菜单，权限菜单：不显示，只代表菜单权限',
                              PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 469 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单主表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 66 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单主表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -333,7 +334,7 @@ CREATE TABLE `sys_param`  (
                               `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '配置名，以 id为不变值进行使用，不要用此属性',
                               `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '值',
                               PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统参数主表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统参数主表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_param
@@ -359,11 +360,12 @@ CREATE TABLE `sys_request`  (
                                 `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '接口名（备用）',
                                 `time_str` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '耗时（字符串）',
                                 `time_number` bigint NOT NULL COMMENT '耗时（毫秒）',
-                                `category` tinyint NOT NULL COMMENT '类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序',
+                                `category` tinyint NOT NULL COMMENT '请求类别：1 H5（网页端） 2 APP（移动端） 3 PC（桌面程序） 4 微信小程序',
                                 `region` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'IpUtil.getRegion() 获取到的 ip所处区域',
                                 `ip` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'ip',
                                 `success_flag` tinyint(1) NOT NULL COMMENT '请求是否成功',
                                 `error_msg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '失败信息',
+                                `request_param` varchar(550) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '请求的参数',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '接口请求记录主表' ROW_FORMAT = DYNAMIC;
 
@@ -388,7 +390,7 @@ CREATE TABLE `sys_role`  (
                              `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色名（不能重复）',
                              `default_flag` tinyint(1) NOT NULL COMMENT '是否是默认角色，备注：只会有一个默认角色',
                              PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色主表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色主表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role
