@@ -9,7 +9,7 @@ public interface BaseRedisConstant {
 
     String PRE_REDISSON = "PRE_REDISSON:"; // 锁前缀，所有的分布式锁，都要加这个前缀
 
-    String PRE_LOCK_BULLETIN_ID = ""; // 公告修改，发布，取消时的 id锁前缀
+    String PRE_LOCK_BULLETIN_ID = "PRE_LOCK_BULLETIN_ID"; // 公告修改，发布，取消时的 id锁前缀
 
     String PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE = "PRE_REDIS_USER_ID_JWT_SECRET_SUF_CACHE";
     // 用户 id和私钥后缀 缓存，以及分布式锁，锁用户 主键 id
