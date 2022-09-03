@@ -5,8 +5,8 @@ import MyPageDTO from "@/model/dto/MyPageDTO";
 import LocalStorageKey from "@/model/constant/LocalStorageKey";
 import {logout} from "./UserUtil";
 
-export const timeoutMsg = '请求超时，请重试'
-export const baseErrorMsg = "请求错误："
+export const TIMEOUT_MSG = '请求超时，请重试'
+export const BASE_ERROR_MSG = "请求错误："
 
 let hiddenErrorMsgFlag = false
 
@@ -35,7 +35,7 @@ $http.interceptors.request.use(
         return config
     },
     (err) => {
-        ToastError(baseErrorMsg + err.message, 5)
+        ToastError(BASE_ERROR_MSG + err.message, 5)
         return Promise.reject(err)
     }
 )
@@ -87,12 +87,12 @@ $http.interceptors.response.use(
         if (msg === 'Network Error') {
             msg = '连接异常，请重试'
         } else if (msg.includes('timeout')) {
-            msg = timeoutMsg
+            msg = TIMEOUT_MSG
         } else if (msg.includes('Request failed with status code')) {
             msg = '接口【' + msg.substring(msg.length - 3) + '】异常，请联系管理员'
         }
 
-        ToastError(msg || (baseErrorMsg + err.message), 5)
+        ToastError(msg || (BASE_ERROR_MSG + err.message), 5)
         return Promise.reject(err) // 这里会触发 catch
     }
 )
