@@ -1,4 +1,4 @@
-# 不维护了，全力开发 Admin-Project 3.0
+# 不维护了，全力开发 Admin-Project 3.0，地址：[https://github.com/CmcOrg-20230301](https://github.com/CmcOrg-20230301)
 
 # Admin-Project
 Will have the most powerful !
